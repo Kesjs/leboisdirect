@@ -78,8 +78,8 @@ export default function Home() {
       {/* Quality Section */}
       <section className="py-120 bg-white reveal-up">
         <div className="container-custom">
-          <div className="grid md:grid-cols-4 gap-40 md:gap-32 reveal-stagger">
-            <div className="text-center md:text-left">
+          <div className="grid md:grid-cols-12 gap-40 md:gap-24 reveal-stagger">
+            <div className="md:col-span-6 text-center md:text-left">
               <div className="w-48 h-48 mx-auto md:mx-0 mb-20 rounded-full bg-braise/10 flex items-center justify-center">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B85C3A" strokeWidth="2">
                   <path d="M12 2L2 7l10 5 10-5-10-5z"/>
@@ -95,7 +95,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="text-center md:text-left">
+            <div className="md:col-span-2 text-center md:text-left md:border-l md:border-hairline md:pl-24">
               <div className="w-48 h-48 mx-auto md:mx-0 mb-20 rounded-full bg-braise/10 flex items-center justify-center">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B85C3A" strokeWidth="2">
                   <circle cx="12" cy="12" r="10"/>
@@ -110,7 +110,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="text-center md:text-left">
+            <div className="md:col-span-2 text-center md:text-left md:border-l md:border-hairline md:pl-24">
               <div className="w-48 h-48 mx-auto md:mx-0 mb-20 rounded-full bg-braise/10 flex items-center justify-center">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B85C3A" strokeWidth="2">
                   <rect x="1" y="3" width="15" height="13"/>
@@ -125,7 +125,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="text-center md:text-left">
+            <div className="md:col-span-2 text-center md:text-left md:border-l md:border-hairline md:pl-24">
               <div className="w-48 h-48 mx-auto md:mx-0 mb-20 rounded-full bg-braise/10 flex items-center justify-center">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B85C3A" strokeWidth="2">
                   <path d="M3 3h18v18H3z"/>

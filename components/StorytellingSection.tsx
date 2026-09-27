@@ -88,7 +88,7 @@ export default function StorytellingSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[100dvh] h-[100dvh] w-full overflow-hidden bg-charcoal isolate"
+      className="relative min-h-[100dvh] h-[100dvh] w-full overflow-hidden bg-ivory isolate"
     >
       {/* Scene 01 */}
       <div className="story-scene absolute inset-0 flex items-center justify-center">
@@ -101,7 +101,7 @@ export default function StorytellingSection() {
             sizes="100vw"
             quality={75}
           />
-          <div className="absolute inset-0 bg-charcoal/40" />
+          <div className="absolute inset-0 bg-charcoal/30" />
         </div>
         <div className="relative z-10 text-center text-white max-w-[700px] px-20">
           <div className="flex items-center justify-center gap-12 mb-20">
@@ -129,7 +129,7 @@ export default function StorytellingSection() {
             sizes="100vw"
             quality={75}
           />
-          <div className="absolute inset-0 bg-charcoal/40" />
+          <div className="absolute inset-0 bg-charcoal/30" />
         </div>
         <div className="relative z-10 text-center text-white max-w-[700px] px-20">
           <div className="flex items-center justify-center gap-12 mb-20">
@@ -157,7 +157,7 @@ export default function StorytellingSection() {
             sizes="100vw"
             quality={75}
           />
-          <div className="absolute inset-0 bg-charcoal/40" />
+          <div className="absolute inset-0 bg-charcoal/30" />
         </div>
         <div className="relative z-10 text-center text-white max-w-[700px] px-20">
           <div className="flex items-center justify-center gap-12 mb-20">
@@ -175,7 +175,7 @@ export default function StorytellingSection() {
       </div>
 
       {/* Scene 04 */}
-      <div className="story-scene absolute inset-0 flex items-center justify-center opacity-0">
+      <div className="story-scene absolute inset-0 flex items-center justify-center opacity-100">
         <div className="absolute inset-0 scene-image">
           <Image
             src="/images/scandinavian-interior-with-fireplace-stump-table-pile-logs-fire.jpg"
