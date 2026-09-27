@@ -29,7 +29,7 @@ export default function Header() {
                 Boutique
               </Link>
               <Link
-                href="/boutique/buches"
+                href="/boutique?cat=buches"
                 className="text-body text-charcoal hover:text-braise transition-colors"
               >
                 Bois de chauffage
@@ -155,7 +155,7 @@ export default function Header() {
                   Boutique
                 </Link>
                 <Link
-                  href="/boutique/buches"
+                  href="/boutique?cat=buches"
                   className="text-body text-charcoal hover:text-braise transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >

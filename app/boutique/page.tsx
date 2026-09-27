@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/Header'
@@ -15,6 +15,11 @@ export default function ShopPage() {
   const [selectedSpecies, setSelectedSpecies] = useState<string>('all')
   const [sortBy, setSortBy] = useState<SortOption>('relevance')
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+
+  useEffect(() => {
+    const category = new URLSearchParams(window.location.search).get('cat')
+    if (category && categories.some((item) => item.id === category)) setSelectedCategory(category)
+  }, [])
 
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = [...products]
@@ -270,6 +275,26 @@ export default function ShopPage() {
             </svg>
             Filtres
           </button>
+
+          {mobileFiltersOpen && (
+            <div className="md:hidden fixed inset-0 z-50 bg-charcoal/40" onClick={() => setMobileFiltersOpen(false)}>
+              <div className="absolute inset-x-0 bottom-0 bg-white rounded-t-3xl p-24" onClick={(event) => event.stopPropagation()}>
+                <div className="flex items-center justify-between mb-24">
+                  <h2 className="text-heading-sm font-semibold text-charcoal">Filtres</h2>
+                  <button onClick={() => setMobileFiltersOpen(false)} className="text-smoke" aria-label="Fermer les filtres">Fermer</button>
+                </div>
+                <h3 className="text-[11px] font-semibold text-ash uppercase tracking-wide mb-12">Catégorie</h3>
+                <div className="grid grid-cols-2 gap-8 mb-24">
+                  {(['all', ...categories.map((cat) => cat.id)] as string[]).map((category) => (
+                    <button key={category} onClick={() => setSelectedCategory(category)} className={`text-left px-12 py-10 rounded-md border ${selectedCategory === category ? 'border-braise bg-braise/10 text-charcoal' : 'border-hairline text-smoke'}`}>
+                      {category === 'all' ? 'Tous' : categories.find((cat) => cat.id === category)?.name}
+                    </button>
+                  ))}
+                </div>
+                <button onClick={() => setMobileFiltersOpen(false)} className="w-full py-12 bg-charcoal text-white rounded-pill">Voir les produits</button>
+              </div>
+            </div>
+          )}
         </div>
       </main>
       <Footer />

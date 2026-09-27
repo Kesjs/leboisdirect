@@ -19,16 +19,16 @@ export default function Footer() {
           <div className="md:col-span-2">
             <h3 className="text-body font-semibold text-charcoal mb-16">Produits</h3>
             <nav className="flex flex-col gap-12">
-              <Link href="/boutique/buches" className="text-body-sm text-smoke hover:text-braise transition-colors">
+              <Link href="/boutique?cat=buches" className="text-body-sm text-smoke hover:text-braise transition-colors">
                 Bûches
               </Link>
-              <Link href="/boutique/bois-compresse" className="text-body-sm text-smoke hover:text-braise transition-colors">
+              <Link href="/boutique?cat=bois-compresse" className="text-body-sm text-smoke hover:text-braise transition-colors">
                 Bois compressé
               </Link>
-              <Link href="/boutique/granules" className="text-body-sm text-smoke hover:text-braise transition-colors">
+              <Link href="/boutique?cat=granules" className="text-body-sm text-smoke hover:text-braise transition-colors">
                 Granulés
               </Link>
-              <Link href="/boutique/allumage" className="text-body-sm text-smoke hover:text-braise transition-colors">
+              <Link href="/boutique?cat=allumage" className="text-body-sm text-smoke hover:text-braise transition-colors">
                 Allumage
               </Link>
             </nav>
@@ -50,9 +50,7 @@ export default function Footer() {
               <Link href="/conseils" className="text-body-sm text-smoke hover:text-braise transition-colors">
                 Conseils
               </Link>
-              <Link href="/contact" className="text-body-sm text-smoke hover:text-braise transition-colors">
-                Contact
-              </Link>
+              <a href="mailto:contact@leboisdirect.fr" className="text-body-sm text-smoke hover:text-braise transition-colors">Contact</a>
             </nav>
           </div>
 
@@ -60,18 +58,7 @@ export default function Footer() {
           <div className="md:col-span-3">
             <h3 className="text-body font-semibold text-charcoal mb-16">Légal</h3>
             <nav className="flex flex-col gap-12">
-              <Link href="/mentions-legales" className="text-body-sm text-smoke hover:text-braise transition-colors">
-                Mentions légales
-              </Link>
-              <Link href="/cgv" className="text-body-sm text-smoke hover:text-braise transition-colors">
-                CGV
-              </Link>
-              <Link href="/politique-confidentialite" className="text-body-sm text-smoke hover:text-braise transition-colors">
-                Confidentialité
-              </Link>
-              <Link href="/droit-retractation" className="text-body-sm text-smoke hover:text-braise transition-colors">
-                Droit de rétractation
-              </Link>
+              <li className="list-none text-body-sm text-smoke">Informations légales sur demande</li>
             </nav>
           </div>
         </div>
