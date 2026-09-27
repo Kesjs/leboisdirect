@@ -10,19 +10,19 @@ const faqs = [
     questions: [
       {
         q: 'Quel bois choisir pour mon foyer ?',
-        a: 'Le chêne offre une combustion longue et un excellent pouvoir calorifique. Le hêtre brûle avec de belles flammes et peu de résidus. Le charme produit une chaleur intense avec des braises durables. Tout dépend de votre installation et de vos préférences.',
+        a: "Le chêne offre une combustion longue et un excellent pouvoir calorifique. Le hêtre brûle avec de belles flammes et peu de résidus. Le charme produit une chaleur intense avec des braises durables. Tout dépend de votre installation et de vos préférences.",
       },
       {
         q: 'Quelle longueur de bûches choisir ?',
-        a: 'Mesurez l'intérieur de votre foyer ou poêle. Pour un foyer standard, les bûches de 33 cm conviennent. Les grands foyers peuvent accueillir des bûches de 50 cm. Prévoyez toujours 5 à 10 cm de moins que la taille de votre foyer.',
+        a: "Mesurez l'intérieur de votre foyer ou poêle. Pour un foyer standard, les bûches de 33 cm conviennent. Les grands foyers peuvent accueillir des bûches de 50 cm. Prévoyez toujours 5 à 10 cm de moins que la taille de votre foyer.",
       },
       {
-        q: 'Quel est le taux d'humidité du bois ?',
-        a: 'Notre bois est séché naturellement pendant 18 à 24 mois. Le taux d'humidité est inférieur à 20%, ce qui garantit une combustion optimale et un bon rendement énergétique.',
+        q: "Quel est le taux d'humidité du bois ?",
+        a: "Notre bois est séché naturellement pendant 18 à 24 mois. Le taux d'humidité est inférieur à 20%, ce qui garantit une combustion optimale et un bon rendement énergétique.",
       },
       {
         q: 'Quelle quantité commander ?',
-        a: 'Pour un usage principal, comptez environ 8 à 12 stères par hiver. Pour un chauffage d'appoint, 3 à 5 stères suffisent généralement. Votre consommation dépend de la surface à chauffer et de l'isolation de votre habitation.',
+        a: "Pour un usage principal, comptez environ 8 à 12 stères par hiver. Pour un chauffage d'appoint, 3 à 5 stères suffisent généralement. Votre consommation dépend de la surface à chauffer et de l'isolation de votre habitation.",
       },
     ],
   },
@@ -47,7 +47,7 @@ const faqs = [
       },
       {
         q: 'Où le bois sera-t-il déchargé ?',
-        a: 'Lors de l'organisation de la livraison, vous indiquez l'emplacement souhaité (garage, abri de jardin, allée, etc.). Le chauffeur décharge le bois à cet endroit.',
+        a: "Lors de l'organisation de la livraison, vous indiquez l'emplacement souhaité (garage, abri de jardin, allée, etc.). Le chauffeur décharge le bois à cet endroit.",
       },
     ],
   },
@@ -56,15 +56,15 @@ const faqs = [
     questions: [
       {
         q: 'Comment stocker le bois correctement ?',
-        a: 'Stockez votre bois dans un endroit sec, aéré et à l'abri de la pluie. Un abri ouvert sur les côtés est idéal. Évitez le contact direct avec le sol en utilisant des palettes ou des supports.',
+        a: "Stockez votre bois dans un endroit sec, aéré et à l'abri de la pluie. Un abri ouvert sur les côtés est idéal. Évitez le contact direct avec le sol en utilisant des palettes ou des supports.",
       },
       {
         q: 'Combien de temps puis-je conserver le bois ?',
-        a: 'Correctement stocké, le bois peut se conserver plusieurs années. Veillez simplement à le protéger de l'humidité et à maintenir une bonne ventilation.',
+        a: "Correctement stocké, le bois peut se conserver plusieurs années. Veillez simplement à le protéger de l'humidité et à maintenir une bonne ventilation.",
       },
       {
         q: 'Le bois est-il prêt à brûler à la réception ?',
-        a: 'Oui, notre bois est séché et prêt à l'emploi immédiatement. Vous pouvez l'utiliser dès la livraison.',
+        a: "Oui, notre bois est séché et prêt à l'emploi immédiatement. Vous pouvez l'utiliser dès la livraison.",
       },
     ],
   },
