@@ -6,6 +6,18 @@ import Logo from './Logo'
 import CartDrawer from './CartDrawer'
 import { useCart } from '@/lib/cart-context'
 
+function LanguageFlag({ code, label }: { code: string; label: string }) {
+  return (
+    <img
+      src={`https://flagcdn.com/w40/${code}.png`}
+      alt={`Drapeau ${label}`}
+      width="20"
+      height="14"
+      className="h-[14px] w-20 rounded-[2px] object-cover"
+    />
+  )
+}
+
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
@@ -14,9 +26,9 @@ export default function Header() {
   const { totalItems } = useCart()
 
   const languages = [
-    { code: 'fr', label: 'Français', flag: '🇫🇷' },
-    { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
-    { code: 'it', label: 'Italiano', flag: '🇮🇹' },
+    { code: 'fr', label: 'Français' },
+    { code: 'de', label: 'Deutsch' },
+    { code: 'it', label: 'Italiano' },
   ]
   const activeLanguage = languages.find((item) => item.code === language) ?? languages[0]
 
@@ -73,7 +85,7 @@ export default function Header() {
                   onClick={() => setLanguageOpen(!languageOpen)}
                   className="flex items-center gap-8 rounded-pill px-12 py-8 text-body-sm text-charcoal transition-colors hover:bg-mist focus:outline-none focus:ring-2 focus:ring-braise"
                 >
-                  <span aria-hidden="true" className="text-[18px] leading-none">{activeLanguage.flag}</span>
+                  <LanguageFlag code={activeLanguage.code} label={activeLanguage.label} />
                   <span>{activeLanguage.label}</span>
                   <span aria-hidden="true" className={`text-smoke transition-transform ${languageOpen ? 'rotate-180' : ''}`}>⌄</span>
                 </button>
@@ -91,7 +103,7 @@ export default function Header() {
                         }}
                         className="flex w-full items-center gap-8 rounded-[4px] px-12 py-8 text-left text-body-sm text-charcoal transition-colors hover:bg-mist"
                       >
-                        <span aria-hidden="true" className="text-[18px] leading-none">{item.flag}</span>
+                        <LanguageFlag code={item.code} label={item.label} />
                         <span>{item.label}</span>
                       </button>
                     ))}
@@ -232,7 +244,7 @@ export default function Header() {
                   className="flex items-center gap-8 text-body-sm text-smoke"
                   aria-expanded={languageOpen}
                 >
-                  <span aria-hidden="true">{activeLanguage.flag}</span>
+                  <LanguageFlag code={activeLanguage.code} label={activeLanguage.label} />
                   {activeLanguage.label}
                   <span aria-hidden="true">⌄</span>
                 </button>
