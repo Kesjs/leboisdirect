@@ -88,7 +88,7 @@ export default function StorytellingSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[100dvh] h-[100dvh] w-full overflow-hidden bg-ivory isolate"
+      className="storytelling-pin relative min-h-[100dvh] h-[100dvh] w-full overflow-hidden bg-[#d8d0c6] isolate"
     >
       {/* Scene 01 */}
       <div className="story-scene absolute inset-0 flex items-center justify-center">

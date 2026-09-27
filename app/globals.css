@@ -67,6 +67,11 @@
     display: none;
   }
 
+  /* Keep the GSAP pin spacer visually continuous during scene crossfades. */
+  .pin-spacer:has(.storytelling-pin) {
+    background: #d8d0c6;
+  }
+
   .reveal-up {
     animation: reveal-up linear both;
     animation-timeline: view();
