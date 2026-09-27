@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ivory: #FAF9F6;
+    --charcoal: #1D1D1D;
+    --braise: #B85C3A;
+    --braise-dark: #8F432C;
+    --forest: #34483A;
+    --smoke: #737373;
+    --ash: #A3A3A3;
+    --hairline: #E5E2DC;
+    --mist: #F3F4F6;
+  }
+  
+  * {
+    @apply border-hairline;
+  }
+  
+  body {
+    @apply bg-ivory text-charcoal antialiased;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-editorial {
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  
+  .container-custom {
+    @apply mx-auto px-20 sm:px-32 md:px-48 lg:px-64 max-w-container;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .scroll-fade {
+        animation: fade-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 30%;
+      }
+    }
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
