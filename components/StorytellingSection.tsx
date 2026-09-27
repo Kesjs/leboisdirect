@@ -1,119 +1,35 @@
-'use client'
-
 import Image from 'next/image'
+
+const stories = [
+  ['01', 'Bois', 'Tout commence par le bois', 'Sélectionné avec soin pour sa qualité et son pouvoir calorifique.', '/images/fireplace-with-burning-logs-close-up-stony-fireplace-with-burning-smoldering-logs-fire.jpg'],
+  ['02', 'Format', 'Le bon format pour votre foyer', "Bûches de 33 cm ou 50 cm, prêtes à l'emploi.", '/images/decorative-metallic-holder-with-heap-wooden-logs-stony-fireplace-with-burning-logs.jpg'],
+  ['03', 'Livraison', 'Le bois arrive chez vous', 'Livraison rapide partout en France, déchargement inclus.', '/images/man-room-with-solid-fuel-boiler-working-biofuel-economical-heating.jpg'],
+  ['04', 'Chaleur', "Et l'hiver devient plus simple", "Profitez de la chaleur et du confort d'un feu de bois de qualité.", '/images/scandinavian-interior-with-fireplace-stump-table-pile-logs-fire.jpg'],
+]
 
 export default function StorytellingSection() {
   return (
-    <section className="relative w-full overflow-hidden bg-[#d8d0c6]">
-      {/* Scene 01 */}
-      <div className="story-scene relative min-h-[calc(100dvh-72px)] flex items-center justify-center scroll-mt-[72px]">
-        <div className="absolute inset-0 scene-image">
-          <Image
-            src="/images/fireplace-with-burning-logs-close-up-stony-fireplace-with-burning-smoldering-logs-fire.jpg"
-            alt="Texture du bois"
-            fill
-            className="object-cover"
-            sizes="100vw"
-            quality={75}
-          />
-          <div className="absolute inset-0 bg-charcoal/30" />
-        </div>
-        <div className="relative z-10 text-center text-white max-w-[700px] px-20">
-          <div className="flex items-center justify-center gap-12 mb-20">
-            <div className="w-24 h-1 bg-braise" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider">01 / BOIS</span>
-            <div className="w-24 h-1 bg-braise" />
+    <section className="bg-[#e8e1d8] py-96 md:py-128">
+      <div className="container-custom">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-24 mb-48 md:mb-64">
+          <div className="max-w-[560px]">
+            <p className="text-[11px] font-semibold text-braise uppercase tracking-[0.18em] mb-16">Notre façon de faire</p>
+            <h2 className="text-heading-lg md:text-display font-semibold text-charcoal tracking-tight leading-[0.98]">Un bon feu commence bien avant l’allumette.</h2>
           </div>
-          <h2 className="text-[44px] md:text-[56px] font-semibold tracking-tight leading-none mb-16">
-            Tout commence<br />par le bois
-          </h2>
-          <p className="text-[16px] text-white/75 max-w-[450px] mx-auto">
-            Sélectionné avec soin pour sa qualité et son pouvoir calorifique.
-          </p>
+          <p className="text-body-lg text-smoke max-w-[360px] leading-relaxed">Du choix de l’essence jusqu’au déchargement, chaque détail compte.</p>
         </div>
-      </div>
-
-      {/* Scene 02 */}
-      <div className="story-scene relative min-h-[calc(100dvh-72px)] flex items-center justify-center scroll-mt-[72px]">
-        <div className="absolute inset-0">
-          <Image
-            src="/images/decorative-metallic-holder-with-heap-wooden-logs-stony-fireplace-with-burning-logs.jpg"
-            alt="Bûches empilées"
-            fill
-            className="object-cover"
-            sizes="100vw"
-            quality={75}
-          />
-          <div className="absolute inset-0 bg-charcoal/30" />
-        </div>
-        <div className="relative z-10 text-center text-white max-w-[700px] px-20">
-          <div className="flex items-center justify-center gap-12 mb-20">
-            <div className="w-24 h-1 bg-braise" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider">02 / FORMAT</span>
-            <div className="w-24 h-1 bg-braise" />
-          </div>
-          <h2 className="text-[44px] md:text-[56px] font-semibold tracking-tight leading-none mb-16">
-            Le bon format<br />pour votre foyer
-          </h2>
-          <p className="text-[16px] text-white/75 max-w-[450px] mx-auto">
-            Bûches de 33 cm ou 50 cm, prêtes à l'emploi.
-          </p>
-        </div>
-      </div>
-
-      {/* Scene 03 */}
-      <div className="story-scene relative min-h-[calc(100dvh-72px)] flex items-center justify-center scroll-mt-[72px]">
-        <div className="absolute inset-0">
-          <Image
-            src="/images/man-room-with-solid-fuel-boiler-working-biofuel-economical-heating.jpg"
-            alt="Livraison"
-            fill
-            className="object-cover"
-            sizes="100vw"
-            quality={75}
-          />
-          <div className="absolute inset-0 bg-charcoal/30" />
-        </div>
-        <div className="relative z-10 text-center text-white max-w-[700px] px-20">
-          <div className="flex items-center justify-center gap-12 mb-20">
-            <div className="w-24 h-1 bg-braise" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider">03 / LIVRAISON</span>
-            <div className="w-24 h-1 bg-braise" />
-          </div>
-          <h2 className="text-[44px] md:text-[56px] font-semibold tracking-tight leading-none mb-16">
-            Le bois arrive<br />chez vous
-          </h2>
-          <p className="text-[16px] text-white/75 max-w-[450px] mx-auto">
-            Livraison rapide partout en France, déchargement inclus.
-          </p>
-        </div>
-      </div>
-
-      {/* Scene 04 */}
-      <div className="story-scene relative min-h-[calc(100dvh-72px)] flex items-center justify-center scroll-mt-[72px]">
-        <div className="absolute inset-0 scene-image">
-          <Image
-            src="/images/scandinavian-interior-with-fireplace-stump-table-pile-logs-fire.jpg"
-            alt="Chaleur"
-            fill
-            className="object-cover"
-            sizes="100vw"
-            quality={75}
-          />
-          <div className="absolute inset-0 bg-charcoal/30" />
-        </div>
-        <div className="relative z-10 text-center text-white max-w-[700px] px-20">
-          <div className="flex items-center justify-center gap-12 mb-20">
-            <div className="w-24 h-1 bg-braise" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider">04 / CHALEUR</span>
-            <div className="w-24 h-1 bg-braise" />
-          </div>
-          <h2 className="text-[44px] md:text-[56px] font-semibold tracking-tight leading-none mb-16">
-            Et l'hiver devient<br />plus simple
-          </h2>
-          <p className="text-[16px] text-white/75 max-w-[450px] mx-auto">
-            Profitez de la chaleur et du confort d'un feu de bois de qualité.
-          </p>
+        <div className="grid md:grid-cols-2 gap-16 md:gap-24">
+          {stories.map(([number, label, title, description, image], index) => (
+            <article key={number} className={`group relative overflow-hidden min-h-[420px] md:min-h-[520px] rounded-[20px] bg-charcoal reveal-up ${index === 0 ? 'md:translate-y-24' : ''}`}>
+              <Image src={image} alt={title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/85 via-charcoal/20 to-transparent" />
+              <div className="absolute inset-x-24 bottom-24 md:inset-x-32 md:bottom-32 text-white">
+                <div className="flex items-center gap-12 mb-16"><span className="text-[11px] font-semibold tracking-[0.16em] text-white/70">{number}</span><span className="h-px w-24 bg-braise" /><span className="text-[11px] uppercase tracking-[0.16em] text-white/80">{label}</span></div>
+                <h3 className="text-[30px] md:text-[42px] font-semibold tracking-tight leading-[1.02] mb-12 max-w-[480px]">{title}</h3>
+                <p className="text-body-sm text-white/75 max-w-[400px] leading-relaxed">{description}</p>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
