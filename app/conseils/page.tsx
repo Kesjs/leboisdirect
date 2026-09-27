@@ -7,16 +7,34 @@ export default function TipsPage() {
     <>
       <Header />
       <main className="min-h-screen bg-ivory">
-        <div className="bg-white border-b border-hairline">
-          <div className="container-custom py-64">
-            <h1 className="text-heading-lg md:text-display font-semibold text-charcoal mb-20 tracking-tight">
+        <section className="relative h-[42vh] min-h-[340px] flex items-center justify-center overflow-hidden bg-charcoal">
+          <div className="absolute inset-0">
+            <Image
+              src="/images/view-fireplace-with-burning-logs-natural-fur-skin-floor-holder-with-logs-cozy-room.jpg"
+              alt="Conseils bois de chauffage"
+              fill
+              priority
+              className="object-cover"
+              sizes="100vw"
+              quality={75}
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-charcoal/50 via-charcoal/30 to-charcoal/70" />
+          </div>
+          <div className="relative z-10 container-custom text-center text-white">
+            <div className="inline-flex items-center gap-8 px-16 py-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-full mb-24">
+              <div className="w-6 h-6 rounded-full bg-braise" />
+              <span className="text-[11px] font-semibold uppercase tracking-wide">
+                Guides
+              </span>
+            </div>
+            <h1 className="text-[40px] sm:text-[48px] md:text-[60px] font-semibold tracking-tight leading-none mb-16">
               Conseils pratiques
             </h1>
-            <p className="text-body-lg text-smoke max-w-[700px]">
+            <p className="text-body-lg text-white/85 max-w-[600px] mx-auto">
               Tout ce qu'il faut savoir pour bien choisir, stocker et utiliser votre bois de chauffage.
             </p>
           </div>
-        </div>
+        </section>
 
         <section className="py-120">
           <div className="container-custom max-w-[1200px]">

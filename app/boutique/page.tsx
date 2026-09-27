@@ -53,7 +53,7 @@ export default function ShopPage() {
       <Header />
       <main className="min-h-screen bg-ivory">
         {/* Hero Section */}
-        <section className="relative h-[50vh] min-h-[400px] flex items-center justify-center overflow-hidden">
+        <section className="relative h-[50vh] min-h-[400px] flex items-center justify-center overflow-hidden bg-charcoal">
           <div className="absolute inset-0 w-full h-full">
             <Image
               src="/images/photorealistic-perspective-wood-logs.jpg"
@@ -108,35 +108,40 @@ export default function ShopPage() {
             {/* Desktop Filters */}
             <aside className="hidden md:block md:col-span-3">
               <div className="sticky top-[120px]">
-                <div className="bg-white rounded-card border border-hairline p-24">
-                  <h2 className="text-heading-sm font-semibold text-charcoal mb-20">Filtres</h2>
+                <div className="bg-white rounded-card border border-hairline p-24 shadow-sm">
+                  <div className="flex items-center justify-between mb-20">
+                    <h2 className="text-heading-sm font-semibold text-charcoal">Filtres</h2>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-ash">
+                      <path d="M2 4h12M4.5 8h7M6.5 12h3" strokeLinecap="round" />
+                    </svg>
+                  </div>
 
                   {/* Category Filter */}
-                  <div className="mb-32 pb-32 border-b border-hairline">
-                    <h3 className="text-body font-semibold text-charcoal mb-16">Catégorie</h3>
-                    <div className="space-y-12">
-                      <label className="flex items-center gap-12 cursor-pointer">
+                  <div className="mb-28 pb-28 border-b border-hairline">
+                    <h3 className="text-[11px] font-semibold text-ash uppercase tracking-wide mb-14">Catégorie</h3>
+                    <div className="space-y-4">
+                      <label className="flex items-center gap-12 cursor-pointer group rounded-md px-8 py-8 -mx-8 hover:bg-mist transition-colors">
                         <input
                           type="radio"
                           name="category"
                           value="all"
                           checked={selectedCategory === 'all'}
                           onChange={() => setSelectedCategory('all')}
-                          className="w-16 h-16"
+                          className="w-16 h-16 accent-braise cursor-pointer"
                         />
-                        <span className="text-body-sm text-smoke">Tous</span>
+                        <span className={`text-body-sm transition-colors ${selectedCategory === 'all' ? 'text-charcoal font-medium' : 'text-smoke group-hover:text-charcoal'}`}>Tous</span>
                       </label>
                       {categories.map((cat) => (
-                        <label key={cat.id} className="flex items-center gap-12 cursor-pointer">
+                        <label key={cat.id} className="flex items-center gap-12 cursor-pointer group rounded-md px-8 py-8 -mx-8 hover:bg-mist transition-colors">
                           <input
                             type="radio"
                             name="category"
                             value={cat.id}
                             checked={selectedCategory === cat.id}
                             onChange={() => setSelectedCategory(cat.id)}
-                            className="w-16 h-16"
+                            className="w-16 h-16 accent-braise cursor-pointer"
                           />
-                          <span className="text-body-sm text-smoke">{cat.name}</span>
+                          <span className={`text-body-sm transition-colors ${selectedCategory === cat.id ? 'text-charcoal font-medium' : 'text-smoke group-hover:text-charcoal'}`}>{cat.name}</span>
                         </label>
                       ))}
                     </div>
@@ -144,51 +149,51 @@ export default function ShopPage() {
 
                   {/* Species Filter */}
                   <div>
-                    <h3 className="text-body font-semibold text-charcoal mb-16">Essence</h3>
-                    <div className="space-y-12">
-                      <label className="flex items-center gap-12 cursor-pointer">
+                    <h3 className="text-[11px] font-semibold text-ash uppercase tracking-wide mb-14">Essence</h3>
+                    <div className="space-y-4">
+                      <label className="flex items-center gap-12 cursor-pointer group rounded-md px-8 py-8 -mx-8 hover:bg-mist transition-colors">
                         <input
                           type="radio"
                           name="species"
                           value="all"
                           checked={selectedSpecies === 'all'}
                           onChange={() => setSelectedSpecies('all')}
-                          className="w-16 h-16"
+                          className="w-16 h-16 accent-braise cursor-pointer"
                         />
-                        <span className="text-body-sm text-smoke">Toutes</span>
+                        <span className={`text-body-sm transition-colors ${selectedSpecies === 'all' ? 'text-charcoal font-medium' : 'text-smoke group-hover:text-charcoal'}`}>Toutes</span>
                       </label>
-                      <label className="flex items-center gap-12 cursor-pointer">
+                      <label className="flex items-center gap-12 cursor-pointer group rounded-md px-8 py-8 -mx-8 hover:bg-mist transition-colors">
                         <input
                           type="radio"
                           name="species"
                           value="chene"
                           checked={selectedSpecies === 'chene'}
                           onChange={() => setSelectedSpecies('chene')}
-                          className="w-16 h-16"
+                          className="w-16 h-16 accent-braise cursor-pointer"
                         />
-                        <span className="text-body-sm text-smoke">Chêne</span>
+                        <span className={`text-body-sm transition-colors ${selectedSpecies === 'chene' ? 'text-charcoal font-medium' : 'text-smoke group-hover:text-charcoal'}`}>Chêne</span>
                       </label>
-                      <label className="flex items-center gap-12 cursor-pointer">
+                      <label className="flex items-center gap-12 cursor-pointer group rounded-md px-8 py-8 -mx-8 hover:bg-mist transition-colors">
                         <input
                           type="radio"
                           name="species"
                           value="hetre"
                           checked={selectedSpecies === 'hetre'}
                           onChange={() => setSelectedSpecies('hetre')}
-                          className="w-16 h-16"
+                          className="w-16 h-16 accent-braise cursor-pointer"
                         />
-                        <span className="text-body-sm text-smoke">Hêtre</span>
+                        <span className={`text-body-sm transition-colors ${selectedSpecies === 'hetre' ? 'text-charcoal font-medium' : 'text-smoke group-hover:text-charcoal'}`}>Hêtre</span>
                       </label>
-                      <label className="flex items-center gap-12 cursor-pointer">
+                      <label className="flex items-center gap-12 cursor-pointer group rounded-md px-8 py-8 -mx-8 hover:bg-mist transition-colors">
                         <input
                           type="radio"
                           name="species"
                           value="charme"
                           checked={selectedSpecies === 'charme'}
                           onChange={() => setSelectedSpecies('charme')}
-                          className="w-16 h-16"
+                          className="w-16 h-16 accent-braise cursor-pointer"
                         />
-                        <span className="text-body-sm text-smoke">Charme</span>
+                        <span className={`text-body-sm transition-colors ${selectedSpecies === 'charme' ? 'text-charcoal font-medium' : 'text-smoke group-hover:text-charcoal'}`}>Charme</span>
                       </label>
                     </div>
                   </div>
@@ -198,7 +203,7 @@ export default function ShopPage() {
                       setSelectedCategory('all')
                       setSelectedSpecies('all')
                     }}
-                    className="mt-32 w-full py-12 text-body-sm text-smoke hover:text-braise transition-colors border-t border-hairline pt-24"
+                    className="mt-28 w-full py-10 text-body-sm text-smoke hover:text-braise transition-colors border-t border-hairline pt-20"
                   >
                     Réinitialiser les filtres
                   </button>

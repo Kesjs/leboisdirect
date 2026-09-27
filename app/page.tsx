@@ -207,15 +207,15 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="mt-48">
+              <div className="mt-40">
                 <a
                   href="/livraison"
-                  className="inline-flex items-center gap-12 px-32 py-12 bg-charcoal text-white rounded-pill hover:bg-charcoal/90 transition-colors font-medium"
+                  className="inline-flex items-center gap-8 text-body-sm font-semibold text-charcoal border-b-2 border-braise pb-2 hover:gap-12 hover:text-braise transition-all"
                 >
                   En savoir plus
                   <svg
-                    width="16"
-                    height="16"
+                    width="14"
+                    height="14"
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"

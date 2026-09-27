@@ -8,7 +8,7 @@ export default function AboutPage() {
       <Header />
       <main className="min-h-screen bg-ivory">
         {/* Hero */}
-        <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
+        <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-charcoal">
           <div className="absolute inset-0">
             <Image
               src="/images/fireplace-with-woods-modern-wooden-house.jpg"
@@ -42,9 +42,24 @@ export default function AboutPage() {
               <p className="text-body-lg text-smoke mb-32 leading-relaxed">
                 Commander du bois de chauffage ne devrait pas être compliqué. Pas de longues recherches, pas de numéros à appeler, pas d'attente. Juste un site simple, des produits clairs et une livraison organisée.
               </p>
-              <p className="text-body-lg text-smoke mb-64 leading-relaxed">
+              <p className="text-body-lg text-smoke mb-48 leading-relaxed">
                 LeBoisDirect est né de cette idée : rendre l'achat de bois de chauffage aussi simple qu'une commande en ligne classique, tout en garantissant la qualité d'un produit naturel essentiel.
               </p>
+
+              <div className="grid grid-cols-3 gap-16 sm:gap-32 py-32 mb-64 border-y border-hairline not-prose">
+                <div className="text-center sm:text-left">
+                  <div className="text-[32px] sm:text-[40px] font-semibold text-braise tracking-tight leading-none mb-8">18-24</div>
+                  <p className="text-body-sm text-smoke">mois de séchage naturel</p>
+                </div>
+                <div className="text-center sm:text-left">
+                  <div className="text-[32px] sm:text-[40px] font-semibold text-braise tracking-tight leading-none mb-8">&lt;20%</div>
+                  <p className="text-body-sm text-smoke">taux d'humidité garanti</p>
+                </div>
+                <div className="text-center sm:text-left">
+                  <div className="text-[32px] sm:text-[40px] font-semibold text-braise tracking-tight leading-none mb-8">100%</div>
+                  <p className="text-body-sm text-smoke">France métropolitaine</p>
+                </div>
+              </div>
 
               <div className="grid md:grid-cols-2 gap-32 my-64">
                 <div className="relative aspect-[4/3] rounded-card overflow-hidden">

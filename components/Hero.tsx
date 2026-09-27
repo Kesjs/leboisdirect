@@ -41,7 +41,7 @@ export default function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative h-[85vh] min-h-[500px] sm:min-h-[600px] flex items-center justify-center overflow-hidden"
+      className="relative h-[85vh] min-h-[500px] sm:min-h-[600px] flex items-center justify-center overflow-hidden bg-charcoal"
       aria-label="Hero section"
     >
       <div ref={imageRef} className="absolute inset-0 w-full h-full">

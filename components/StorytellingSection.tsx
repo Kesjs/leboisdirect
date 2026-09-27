@@ -98,8 +98,7 @@ export default function StorytellingSection() {
             fill
             className="object-cover"
             sizes="100vw"
-            loading="lazy"
-            quality={65}
+            quality={75}
           />
           <div className="absolute inset-0 bg-charcoal/40" />
         </div>
@@ -127,8 +126,7 @@ export default function StorytellingSection() {
             fill
             className="object-cover"
             sizes="100vw"
-            loading="lazy"
-            quality={65}
+            quality={75}
           />
           <div className="absolute inset-0 bg-charcoal/40" />
         </div>
@@ -156,8 +154,7 @@ export default function StorytellingSection() {
             fill
             className="object-cover"
             sizes="100vw"
-            loading="lazy"
-            quality={65}
+            quality={75}
           />
           <div className="absolute inset-0 bg-charcoal/40" />
         </div>
@@ -185,8 +182,7 @@ export default function StorytellingSection() {
             fill
             className="object-cover"
             sizes="100vw"
-            loading="lazy"
-            quality={65}
+            quality={75}
           />
           <div className="absolute inset-0 bg-charcoal/30" />
         </div>
