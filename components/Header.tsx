@@ -9,7 +9,16 @@ import { useCart } from '@/lib/cart-context'
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
+  const [languageOpen, setLanguageOpen] = useState(false)
+  const [language, setLanguage] = useState('fr')
   const { totalItems } = useCart()
+
+  const languages = [
+    { code: 'fr', label: 'Français', flag: '🇫🇷' },
+    { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
+    { code: 'it', label: 'Italiano', flag: '🇮🇹' },
+  ]
+  const activeLanguage = languages.find((item) => item.code === language) ?? languages[0]
 
   return (
     <>
@@ -56,6 +65,39 @@ export default function Header() {
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-20">
+              <div className="relative">
+                <button
+                  type="button"
+                  aria-expanded={languageOpen}
+                  aria-haspopup="listbox"
+                  onClick={() => setLanguageOpen(!languageOpen)}
+                  className="flex items-center gap-8 rounded-pill px-12 py-8 text-body-sm text-charcoal transition-colors hover:bg-mist focus:outline-none focus:ring-2 focus:ring-braise"
+                >
+                  <span aria-hidden="true" className="text-[18px] leading-none">{activeLanguage.flag}</span>
+                  <span>{activeLanguage.label}</span>
+                  <span aria-hidden="true" className={`text-smoke transition-transform ${languageOpen ? 'rotate-180' : ''}`}>⌄</span>
+                </button>
+                {languageOpen && (
+                  <div role="listbox" aria-label="Choisir la langue" className="absolute right-0 top-full z-20 mt-8 min-w-[148px] rounded-card border border-hairline bg-white p-8 shadow-[0_12px_30px_rgba(29,29,29,0.12)]">
+                    {languages.map((item) => (
+                      <button
+                        key={item.code}
+                        type="button"
+                        role="option"
+                        aria-selected={language === item.code}
+                        onClick={() => {
+                          setLanguage(item.code)
+                          setLanguageOpen(false)
+                        }}
+                        className="flex w-full items-center gap-8 rounded-[4px] px-12 py-8 text-left text-body-sm text-charcoal transition-colors hover:bg-mist"
+                      >
+                        <span aria-hidden="true" className="text-[18px] leading-none">{item.flag}</span>
+                        <span>{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button
                 className="p-8 hover:bg-mist rounded-full transition-colors"
                 aria-label="Rechercher"
@@ -184,6 +226,16 @@ export default function Header() {
                 </Link>
               </nav>
               <div className="flex items-center gap-16 mt-24 pt-24 border-t border-hairline">
+                <button
+                  type="button"
+                  onClick={() => setLanguageOpen(!languageOpen)}
+                  className="flex items-center gap-8 text-body-sm text-smoke"
+                  aria-expanded={languageOpen}
+                >
+                  <span aria-hidden="true">{activeLanguage.flag}</span>
+                  {activeLanguage.label}
+                  <span aria-hidden="true">⌄</span>
+                </button>
                 <button className="text-body-sm text-smoke">Rechercher</button>
                 <button className="text-body-sm text-smoke">Compte</button>
                 <button
