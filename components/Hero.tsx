@@ -41,7 +41,7 @@ export default function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative h-[85vh] min-h-[500px] sm:min-h-[600px] flex items-center justify-center overflow-hidden bg-charcoal"
+      className="relative min-h-[85dvh] h-[85dvh] min-h-[500px] sm:min-h-[600px] flex items-center justify-center overflow-hidden bg-charcoal"
       aria-label="Hero section"
     >
       <div ref={imageRef} className="absolute inset-0 w-full h-full">
@@ -89,14 +89,6 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-10 opacity-60 hidden sm:block">
-        <div className="flex flex-col items-center gap-8 text-white/70">
-          <span className="text-[10px] uppercase tracking-wider font-medium">Découvrir</span>
-          <svg width="14" height="20" viewBox="0 0 14 20" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M7 2v14m0 0l-4-4m4 4l4-4" />
-          </svg>
-        </div>
-      </div>
     </section>
   )
 }

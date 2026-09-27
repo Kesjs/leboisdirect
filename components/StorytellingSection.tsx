@@ -47,6 +47,7 @@ export default function StorytellingSection() {
         start: 'top top',
         end: '+=300%',
         pin: true,
+        pinSpacing: true,
         anticipatePin: 1,
       })
 
@@ -87,7 +88,7 @@ export default function StorytellingSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full overflow-hidden bg-charcoal"
+      className="relative min-h-[100dvh] h-[100dvh] w-full overflow-hidden bg-charcoal isolate"
     >
       {/* Scene 01 */}
       <div className="story-scene absolute inset-0 flex items-center justify-center">

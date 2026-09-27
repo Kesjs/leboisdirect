@@ -15,7 +15,7 @@ export default function Home() {
       <Hero />
       
       {/* Categories Strip */}
-      <section className="py-60 bg-white border-y border-hairline">
+      <section className="py-60 bg-white border-y border-hairline reveal-up">
         <div className="container-custom">
           <div className="flex overflow-x-auto gap-16 pb-4 scrollbar-hide">
             {categories.map((category) => (
@@ -32,7 +32,7 @@ export default function Home() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-120">
+      <section className="py-120 reveal-up">
         <div className="container-custom">
           <div className="mb-64 text-center max-w-[700px] mx-auto">
             <h2 className="text-heading-lg md:text-display font-semibold text-charcoal mb-20 tracking-tight leading-tight">
@@ -43,7 +43,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-24 md:gap-32">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-24 md:gap-32 reveal-stagger">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -76,9 +76,9 @@ export default function Home() {
       <StorytellingSection />
 
       {/* Quality Section */}
-      <section className="py-120 bg-white">
+      <section className="py-120 bg-white reveal-up">
         <div className="container-custom">
-          <div className="grid md:grid-cols-4 gap-40 md:gap-32">
+          <div className="grid md:grid-cols-4 gap-40 md:gap-32 reveal-stagger">
             <div className="text-center md:text-left">
               <div className="w-48 h-48 mx-auto md:mx-0 mb-20 rounded-full bg-braise/10 flex items-center justify-center">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B85C3A" strokeWidth="2">
@@ -144,7 +144,7 @@ export default function Home() {
       </section>
 
       {/* Delivery Section */}
-      <section className="py-120 bg-ivory">
+      <section className="py-120 bg-ivory reveal-up">
         <div className="container-custom">
           <div className="grid md:grid-cols-2 gap-64 items-center">
             <div className="relative aspect-[4/3] rounded-card overflow-hidden">
@@ -233,7 +233,7 @@ export default function Home() {
       </section>
 
       {/* Winter Preparation CTA */}
-      <section className="py-120 bg-white">
+      <section className="py-120 bg-white reveal-up">
         <div className="container-custom">
           <div className="relative rounded-card overflow-hidden">
             <div className="absolute inset-0">
