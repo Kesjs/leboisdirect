@@ -1,97 +1,12 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger)
-}
 
 export default function StorytellingSection() {
-  const sectionRef = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    // Only initialize GSAP when section is near viewport
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-          observer.disconnect()
-        }
-      },
-      { rootMargin: '200px' }
-    )
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
-    }
-
-    return () => observer.disconnect()
-  }, [])
-
-  useEffect(() => {
-    if (!isVisible || !sectionRef.current) return
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (prefersReducedMotion) return
-
-    const ctx = gsap.context(() => {
-      const scenes = gsap.utils.toArray('.story-scene') as HTMLElement[]
-
-      // Pin section - faster scrub
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: 'top top',
-        end: '+=300%',
-        pin: true,
-        pinSpacing: true,
-        anticipatePin: 1,
-      })
-
-      // Faster scene transitions
-      scenes.forEach((scene, index) => {
-        if (index < scenes.length - 1) {
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: `+=${index * 100}% top`,
-              end: '+=100%',
-              scrub: 0.3, // Faster scrub (was 1)
-            },
-          })
-            .to(scene, { opacity: 0, duration: 0.3 }) // Simpler - no scale
-            .from(scenes[index + 1], { opacity: 0, duration: 0.3 }, '<')
-        }
-
-        // Subtle parallax only - faster
-        const img = scene.querySelector('.scene-image')
-        if (img) {
-          gsap.to(img, {
-            scale: 1.08, // Reduced from 1.15
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: `+=${index * 100}% top`,
-              end: '+=100%',
-              scrub: 0.5, // Faster (was 1.5)
-            },
-          })
-        }
-      })
-    }, sectionRef)
-
-    return () => ctx.revert()
-  }, [isVisible])
-
   return (
-    <section
-      ref={sectionRef}
-      className="storytelling-pin relative min-h-[100dvh] h-[100dvh] w-full overflow-hidden bg-[#d8d0c6] isolate"
-    >
+    <section className="relative w-full overflow-hidden bg-[#d8d0c6]">
       {/* Scene 01 */}
-      <div className="story-scene absolute inset-0 flex items-center justify-center">
+      <div className="story-scene relative min-h-[78dvh] flex items-center justify-center">
         <div className="absolute inset-0 scene-image">
           <Image
             src="/images/fireplace-with-burning-logs-close-up-stony-fireplace-with-burning-smoldering-logs-fire.jpg"
@@ -119,7 +34,7 @@ export default function StorytellingSection() {
       </div>
 
       {/* Scene 02 */}
-      <div className="story-scene absolute inset-0 flex items-center justify-center opacity-0">
+      <div className="story-scene relative min-h-[78dvh] flex items-center justify-center">
         <div className="absolute inset-0">
           <Image
             src="/images/decorative-metallic-holder-with-heap-wooden-logs-stony-fireplace-with-burning-logs.jpg"
@@ -147,7 +62,7 @@ export default function StorytellingSection() {
       </div>
 
       {/* Scene 03 */}
-      <div className="story-scene absolute inset-0 flex items-center justify-center opacity-0">
+      <div className="story-scene relative min-h-[78dvh] flex items-center justify-center">
         <div className="absolute inset-0">
           <Image
             src="/images/man-room-with-solid-fuel-boiler-working-biofuel-economical-heating.jpg"
@@ -175,7 +90,7 @@ export default function StorytellingSection() {
       </div>
 
       {/* Scene 04 */}
-      <div className="story-scene absolute inset-0 flex items-center justify-center opacity-100">
+      <div className="story-scene relative min-h-[78dvh] flex items-center justify-center">
         <div className="absolute inset-0 scene-image">
           <Image
             src="/images/scandinavian-interior-with-fireplace-stump-table-pile-logs-fire.jpg"
