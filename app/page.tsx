@@ -144,10 +144,10 @@ export default function Home() {
       </section>
 
       {/* Delivery Section */}
-      <section className="py-120 bg-ivory reveal-up">
+      <section className="py-120 md:py-160 bg-ivory reveal-up">
         <div className="container-custom">
-          <div className="grid md:grid-cols-2 gap-64 items-center">
-            <div className="relative aspect-[4/3] rounded-card overflow-hidden">
+          <div className="grid md:grid-cols-[0.92fr_1.08fr] gap-48 lg:gap-80 items-center">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[20px] bg-charcoal">
               <Image
                 src="/images/man-warming-fireplace-energy-crisis.jpg"
                 alt="Livraison de bois de chauffage"
@@ -158,51 +158,47 @@ export default function Home() {
                 quality={65}
               />
             </div>
-            <div>
-              <div className="inline-flex items-center gap-8 px-12 py-6 bg-braise/10 rounded-full mb-24">
-                <div className="w-6 h-6 rounded-full bg-braise" />
-                <span className="text-[11px] font-semibold text-braise uppercase tracking-wide">
-                  Livraison
-                </span>
-              </div>
-              <h2 className="text-heading-lg md:text-display font-semibold text-charcoal mb-24 tracking-tight leading-tight">
-                Votre bois,<br />directement chez vous
-              </h2>
-              <p className="text-body-lg text-smoke mb-40 leading-relaxed">
-                Nous livrons votre bois de chauffage partout en France. 
-                Commandez en ligne, nous nous occupons du reste.
+            <div className="max-w-[620px]">
+              <p className="text-[11px] font-semibold text-braise uppercase tracking-[0.18em] mb-20">
+                Du choix à la chaleur
               </p>
-              <div className="space-y-32">
-                <div className="flex gap-20">
-                  <div className="flex-shrink-0 w-48 h-48 rounded-full bg-white border border-hairline flex items-center justify-center text-heading-sm font-semibold text-charcoal">
+              <h2 className="text-heading-lg md:text-display font-semibold text-charcoal mb-24 tracking-tight leading-[0.98]">
+                Le bois, simplement<br className="hidden md:inline" /> livré chez vous
+              </h2>
+              <p className="text-body-lg text-smoke mb-48 leading-relaxed max-w-[560px]">
+                Vous choisissez le bon format. Nous préparons votre commande et nous la livrons avec déchargement inclus.
+              </p>
+              <div className="relative ml-4 space-y-28 before:absolute before:left-[19px] before:top-20 before:bottom-20 before:w-px before:bg-braise/30">
+                <div className="relative flex gap-20 reveal-up">
+                  <div className="relative z-10 flex-shrink-0 w-40 h-40 rounded-full bg-ivory border border-braise flex items-center justify-center text-[13px] font-semibold text-braise">
                     01
                   </div>
                   <div>
-                    <h3 className="text-heading-sm font-semibold text-charcoal mb-8">Choisissez</h3>
+                    <h3 className="text-[20px] font-semibold text-charcoal mb-6">Choisissez</h3>
                     <p className="text-body-sm text-smoke leading-relaxed">
-                      Sélectionnez votre bois, format et quantité en quelques clics.
+                      Sélectionnez l’essence, le format et la quantité adaptés à votre foyer.
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-20">
-                  <div className="flex-shrink-0 w-48 h-48 rounded-full bg-white border border-hairline flex items-center justify-center text-heading-sm font-semibold text-charcoal">
+                <div className="relative flex gap-20 reveal-up">
+                  <div className="relative z-10 flex-shrink-0 w-40 h-40 rounded-full bg-ivory border border-braise flex items-center justify-center text-[13px] font-semibold text-braise">
                     02
                   </div>
                   <div>
-                    <h3 className="text-heading-sm font-semibold text-charcoal mb-8">Commandez</h3>
+                    <h3 className="text-[20px] font-semibold text-charcoal mb-6">Commandez</h3>
                     <p className="text-body-sm text-smoke leading-relaxed">
-                      Paiement sécurisé et confirmation immédiate de votre commande.
+                      Votre commande est confirmée immédiatement, avec un suivi clair.
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-20">
-                  <div className="flex-shrink-0 w-48 h-48 rounded-full bg-white border border-hairline flex items-center justify-center text-heading-sm font-semibold text-charcoal">
+                <div className="relative flex gap-20 reveal-up">
+                  <div className="relative z-10 flex-shrink-0 w-40 h-40 rounded-full bg-braise border border-braise flex items-center justify-center text-[13px] font-semibold text-white">
                     03
                   </div>
                   <div>
-                    <h3 className="text-heading-sm font-semibold text-charcoal mb-8">Recevez</h3>
+                    <h3 className="text-[20px] font-semibold text-charcoal mb-6">Recevez</h3>
                     <p className="text-body-sm text-smoke leading-relaxed">
-                      Livraison rapide avec déchargement à l'emplacement de votre choix.
+                      Livraison rapide avec déchargement à l’emplacement de votre choix.
                     </p>
                   </div>
                 </div>
