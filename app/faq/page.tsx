@@ -95,81 +95,67 @@ export default function FAQPage() {
     <>
       <Header />
       <main className="min-h-screen bg-ivory">
-        <div className="bg-white border-b border-hairline">
-          <div className="container-custom py-64">
-            <h1 className="text-heading-lg md:text-display font-semibold text-charcoal mb-20 tracking-tight">
-              Questions fréquentes
+        <section className="border-b border-hairline bg-white px-20 py-80 sm:px-32 sm:py-120">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="inline-flex items-center rounded-pill border border-braise/20 bg-braise/10 px-16 py-8 text-body-sm font-semibold uppercase tracking-[0.16em] text-braise">
+              FAQ
+            </span>
+            <h1 className="mt-24 text-heading-lg font-semibold tracking-tight text-charcoal md:text-display">
+              Les réponses à vos questions
             </h1>
-            <p className="text-body-lg text-smoke max-w-[700px]">
-              Trouvez rapidement les réponses aux questions les plus courantes sur nos produits et services.
+            <p className="mx-auto mt-20 max-w-2xl text-body-lg leading-relaxed text-smoke">
+              Tout ce qu’il faut savoir sur nos bois, la commande, la livraison et le stockage.
             </p>
           </div>
-        </div>
+        </section>
 
-        <section className="py-120">
-          <div className="container-custom max-w-[900px]">
-            <div className="space-y-48">
+        <section className="px-20 py-80 sm:px-32 sm:py-120">
+          <div className="mx-auto max-w-3xl">
+            <div className="space-y-64">
               {faqs.map((category, categoryIndex) => (
-                <div key={categoryIndex}>
-                  <h2 className="text-heading font-semibold text-charcoal mb-24">
+                <section key={category.category} aria-labelledby={`faq-${categoryIndex}`}>
+                  <h2 id={`faq-${categoryIndex}`} className="mb-20 text-heading font-semibold text-charcoal">
                     {category.category}
                   </h2>
-                  <div className="space-y-16">
+                  <div className="divide-y divide-hairline border-y border-hairline">
                     {category.questions.map((item, questionIndex) => {
                       const key = `${categoryIndex}-${questionIndex}`
                       const isOpen = openIndex === key
 
                       return (
-                        <div
-                          key={questionIndex}
-                          className="bg-white rounded-card border border-hairline overflow-hidden"
-                        >
+                        <div key={item.q}>
                           <button
+                            type="button"
+                            aria-expanded={isOpen}
+                            aria-controls={`answer-${key}`}
                             onClick={() => toggleQuestion(categoryIndex, questionIndex)}
-                            className="w-full px-24 py-20 flex items-center justify-between text-left hover:bg-mist/50 transition-colors"
+                            className="group flex w-full items-center justify-between gap-20 py-24 text-left transition-colors hover:text-braise focus:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-inset"
                           >
-                            <span className="text-body font-semibold text-charcoal pr-16">
+                            <span className="text-body font-semibold text-charcoal group-hover:text-braise">
                               {item.q}
                             </span>
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              className={`flex-shrink-0 transition-transform ${
-                                isOpen ? 'rotate-180' : ''
-                              }`}
-                            >
-                              <path d="M5 7.5l5 5 5-5" />
-                            </svg>
+                            <span aria-hidden="true" className="flex h-32 w-32 shrink-0 items-center justify-center rounded-full border border-hairline text-heading-sm font-normal text-braise transition-transform duration-200 group-hover:border-braise">
+                              {isOpen ? '−' : '+'}
+                            </span>
                           </button>
-                          {isOpen && (
-                            <div className="px-24 pb-24">
-                              <p className="text-body text-smoke leading-relaxed">{item.a}</p>
-                            </div>
-                          )}
+                          <div id={`answer-${key}`} hidden={!isOpen} className="pb-24 pr-48">
+                            <p className="text-body leading-relaxed text-smoke">{item.a}</p>
+                          </div>
                         </div>
                       )
                     })}
                   </div>
-                </div>
+                </section>
               ))}
             </div>
 
-            <div className="mt-64 pt-64 border-t border-hairline bg-white rounded-card border p-32 text-center">
-              <h2 className="text-heading-sm font-semibold text-charcoal mb-16">
-                Vous ne trouvez pas votre réponse ?
-              </h2>
-              <p className="text-body text-smoke mb-24">
-                Notre équipe est là pour vous aider. Contactez-nous directement.
-              </p>
-              <a
-                href="mailto:contact@leboisdirect.fr"
-                className="inline-flex items-center gap-12 px-32 py-12 bg-charcoal text-white rounded-pill hover:bg-charcoal/90 transition-colors font-medium"
-              >
-                Nous contacter
+            <div className="mt-80 flex flex-col items-start justify-between gap-24 rounded-card border border-dashed border-braise/40 bg-white p-24 sm:flex-row sm:items-center sm:p-32">
+              <div>
+                <h2 className="text-heading-sm font-semibold text-charcoal">Une autre question ?</h2>
+                <p className="mt-8 text-body-sm text-smoke">Notre équipe vous répond avec plaisir.</p>
+              </div>
+              <a href="mailto:contact@leboisdirect.fr" className="inline-flex shrink-0 items-center rounded-pill bg-charcoal px-24 py-12 text-body-sm font-medium text-white transition-transform hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-2">
+                Nous contacter <span aria-hidden="true" className="ml-8">→</span>
               </a>
             </div>
           </div>
