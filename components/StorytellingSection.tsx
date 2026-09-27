@@ -6,7 +6,7 @@ export default function StorytellingSection() {
   return (
     <section className="relative w-full overflow-hidden bg-[#d8d0c6]">
       {/* Scene 01 */}
-      <div className="story-scene relative min-h-[78dvh] flex items-center justify-center">
+      <div className="story-scene relative min-h-[calc(100dvh-72px)] flex items-center justify-center scroll-mt-[72px]">
         <div className="absolute inset-0 scene-image">
           <Image
             src="/images/fireplace-with-burning-logs-close-up-stony-fireplace-with-burning-smoldering-logs-fire.jpg"
@@ -34,7 +34,7 @@ export default function StorytellingSection() {
       </div>
 
       {/* Scene 02 */}
-      <div className="story-scene relative min-h-[78dvh] flex items-center justify-center">
+      <div className="story-scene relative min-h-[calc(100dvh-72px)] flex items-center justify-center scroll-mt-[72px]">
         <div className="absolute inset-0">
           <Image
             src="/images/decorative-metallic-holder-with-heap-wooden-logs-stony-fireplace-with-burning-logs.jpg"
@@ -62,7 +62,7 @@ export default function StorytellingSection() {
       </div>
 
       {/* Scene 03 */}
-      <div className="story-scene relative min-h-[78dvh] flex items-center justify-center">
+      <div className="story-scene relative min-h-[calc(100dvh-72px)] flex items-center justify-center scroll-mt-[72px]">
         <div className="absolute inset-0">
           <Image
             src="/images/man-room-with-solid-fuel-boiler-working-biofuel-economical-heating.jpg"
@@ -90,7 +90,7 @@ export default function StorytellingSection() {
       </div>
 
       {/* Scene 04 */}
-      <div className="story-scene relative min-h-[78dvh] flex items-center justify-center">
+      <div className="story-scene relative min-h-[calc(100dvh-72px)] flex items-center justify-center scroll-mt-[72px]">
         <div className="absolute inset-0 scene-image">
           <Image
             src="/images/scandinavian-interior-with-fireplace-stump-table-pile-logs-fire.jpg"
