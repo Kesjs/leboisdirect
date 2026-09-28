@@ -106,12 +106,9 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
             {/* Product Info */}
             <div>
-              <div className="inline-flex items-center gap-8 px-12 py-6 bg-braise/10 rounded-full mb-16">
-                <div className="w-6 h-6 rounded-full bg-braise" />
-                <span className="text-[11px] font-semibold text-braise uppercase tracking-wide">
-                  {categoryLabels[locale][product.category]}
-                </span>
-              </div>
+              <p className="bk-eyebrow" style={{ color: 'var(--bk-accent)' }}>
+                {categoryLabels[locale][product.category]}
+              </p>
 
               <h1 className="text-heading-lg md:text-display font-semibold text-charcoal mb-20 tracking-tight leading-tight">
                 {productLabel(product, locale).name}
