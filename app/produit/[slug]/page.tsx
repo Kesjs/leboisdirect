@@ -11,6 +11,9 @@ import Button from '@/components/Button'
 import { products } from '@/data/products'
 import { formatPrice } from '@/lib/utils'
 import { useCart } from '@/lib/cart-context'
+import { useI18n } from '@/lib/i18n-context'
+import { commerceCopy } from '@/data/commerce-copy'
+import { categoryLabels, productLabel } from '@/data/product-labels'
 
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
@@ -19,8 +22,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState(product?.variants?.[0]?.id || '')
   const [quantity, setQuantity] = useState(1)
+  const [added, setAdded] = useState(false)
 
   const { addItem } = useCart()
+  const { locale } = useI18n()
+  const c = commerceCopy[locale]
 
   if (!product) {
     notFound()
@@ -31,12 +37,14 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
   const handleAddToCart = () => {
     addItem(product, quantity, selectedVariant || undefined)
+    setAdded(true)
+    window.setTimeout(() => setAdded(false), 2200)
   }
 
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-ivory">
+      <main id="main-content" className="min-h-screen bg-ivory">
         {/* Breadcrumb */}
         <div className="bg-white border-b border-hairline">
           <div className="container-custom py-20">
@@ -49,7 +57,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 Boutique
               </Link>
               <span className="text-ash">/</span>
-              <span className="text-charcoal font-medium">{product.name}</span>
+              <span className="text-charcoal font-medium">{productLabel(product, locale).name}</span>
             </nav>
           </div>
         </div>
@@ -63,7 +71,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 <div className="relative aspect-[4/3] rounded-card overflow-hidden bg-white border border-hairline mb-20">
                   <Image
                     src={product.images[selectedImageIndex]}
-                    alt={product.name}
+                    alt={productLabel(product, locale).name}
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -84,7 +92,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                       >
                         <Image
                           src={img}
-                          alt={`${product.name} - Image ${idx + 1}`}
+                          alt={`${productLabel(product, locale).name} - ${idx + 1}`}
                           fill
                           className="object-cover"
                           sizes="200px"
@@ -101,16 +109,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               <div className="inline-flex items-center gap-8 px-12 py-6 bg-braise/10 rounded-full mb-16">
                 <div className="w-6 h-6 rounded-full bg-braise" />
                 <span className="text-[11px] font-semibold text-braise uppercase tracking-wide">
-                  {product.category === 'buches' && 'Bûches'}
-                  {product.category === 'bois-compresse' && 'Bois compressé'}
-                  {product.category === 'granules' && 'Granulés'}
-                  {product.category === 'allumage' && 'Allumage'}
-                  {product.category === 'allume-feu' && 'Allume-feu'}
+                  {categoryLabels[locale][product.category]}
                 </span>
               </div>
 
               <h1 className="text-heading-lg md:text-display font-semibold text-charcoal mb-20 tracking-tight leading-tight">
-                {product.name}
+                {productLabel(product, locale).name}
               </h1>
 
               {product.species && (
@@ -121,7 +125,8 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 </p>
               )}
 
-              <p className="text-body-lg text-smoke mb-32 leading-relaxed">{product.description}</p>
+              <p className="text-body-lg text-smoke mb-16 leading-relaxed">{product.description}</p>
+              <p className="text-body-sm text-ash mb-32">{product.conditioning ? `${c.conditioning} : ${productLabel(product, locale).conditioning}` : ''}</p>
 
               <div className="mb-40 pb-40 border-b border-hairline">
                 <div className="text-[48px] font-semibold text-charcoal tracking-tight mb-8">
@@ -133,7 +138,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               {/* Variants */}
               {product.variants && product.variants.length > 1 && (
                 <div className="mb-32">
-                  <label className="block text-body font-semibold text-charcoal mb-16">Volume</label>
+                  <label className="block text-body font-semibold text-charcoal mb-16">{c.volume}</label>
                   <div className="grid grid-cols-3 gap-12">
                     {product.variants.map((variant) => (
                       <button
@@ -156,13 +161,13 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               {/* Quantity */}
               <div className="mb-40">
                 <label htmlFor="quantity" className="block text-body font-semibold text-charcoal mb-16">
-                  Quantité
+                  {c.quantity}
                 </label>
                 <div className="flex items-center gap-16">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="w-48 h-48 rounded-card border border-hairline hover:border-smoke transition-colors flex items-center justify-center text-charcoal font-semibold"
-                    aria-label="Diminuer la quantité"
+                    aria-label={c.decrease}
                   >
                     −
                   </button>
@@ -177,7 +182,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   <button
                     onClick={() => setQuantity(quantity + 1)}
                     className="w-48 h-48 rounded-card border border-hairline hover:border-smoke transition-colors flex items-center justify-center text-charcoal font-semibold"
-                    aria-label="Augmenter la quantité"
+                    aria-label={c.increase}
                   >
                     +
                   </button>
@@ -186,13 +191,14 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
               {/* Add to Cart */}
               <Button size="lg" className="w-full mb-16" onClick={handleAddToCart}>
-                Ajouter au panier — {formatPrice(currentPrice * quantity)}
+                {added ? c.added : `${c.add} — ${formatPrice(currentPrice * quantity)}`}
               </Button>
+              <p className="text-caption text-ash text-center" aria-live="polite">{added ? c.added : ''}</p>
 
               {/* Features */}
               {product.features && product.features.length > 0 && (
                 <div className="mt-48 pt-48 border-t border-hairline">
-                  <h2 className="text-heading-sm font-semibold text-charcoal mb-20">Caractéristiques</h2>
+                  <h2 className="text-heading-sm font-semibold text-charcoal mb-20">{c.details}</h2>
                   <ul className="space-y-12">
                     {product.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-12">
@@ -222,29 +228,29 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               {/* Specs */}
               {(product.humidity || product.calorificValue || product.origin) && (
                 <div className="mt-40 pt-40 border-t border-hairline">
-                  <h2 className="text-heading-sm font-semibold text-charcoal mb-20">Spécifications</h2>
+                  <h2 className="text-heading-sm font-semibold text-charcoal mb-20">{c.specifications}</h2>
                   <dl className="space-y-16">
                     {product.humidity && (
                       <div>
-                        <dt className="text-body-sm font-semibold text-charcoal">Taux d'humidité</dt>
+                        <dt className="text-body-sm font-semibold text-charcoal">{c.humidity}</dt>
                         <dd className="text-body-sm text-smoke mt-4">{product.humidity}</dd>
                       </div>
                     )}
                     {product.calorificValue && (
                       <div>
-                        <dt className="text-body-sm font-semibold text-charcoal">Pouvoir calorifique</dt>
+                        <dt className="text-body-sm font-semibold text-charcoal">{c.calorific}</dt>
                         <dd className="text-body-sm text-smoke mt-4">{product.calorificValue}</dd>
                       </div>
                     )}
                     {product.origin && (
                       <div>
-                        <dt className="text-body-sm font-semibold text-charcoal">Origine</dt>
+                        <dt className="text-body-sm font-semibold text-charcoal">{c.origin}</dt>
                         <dd className="text-body-sm text-smoke mt-4">{product.origin}</dd>
                       </div>
                     )}
                     {product.conditioning && (
                       <div>
-                        <dt className="text-body-sm font-semibold text-charcoal">Conditionnement</dt>
+                        <dt className="text-body-sm font-semibold text-charcoal">{c.conditioning}</dt>
                         <dd className="text-body-sm text-smoke mt-4">{product.conditioning}</dd>
                       </div>
                     )}

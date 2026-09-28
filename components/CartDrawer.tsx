@@ -1,194 +1,55 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useCart } from '@/lib/cart-context'
-import { formatPrice } from '@/lib/utils'
-import Button from './Button'
+import { useI18n } from '@/lib/i18n-context'
+import { bravikoCopy } from '@/data/braviko-copy'
+import { productLabel } from '@/data/product-labels'
 
-interface CartDrawerProps {
-  isOpen: boolean
-  onClose: () => void
-}
-
-export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
-    return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [isOpen])
-
+export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { items, removeItem, updateQuantity, totalItems, totalPrice } = useCart()
-
-  if (!isOpen) return null
-
+  const { locale } = useI18n()
+  const copy = bravikoCopy[locale]
+  const reduced = useReducedMotion()
+  const dialog = useRef<HTMLDialogElement>(null)
+  const closeButton = useRef<HTMLButtonElement>(null)
+  const lastFocus = useRef<HTMLElement | null>(null)
+  const money = (value: number) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(value)
+  useEffect(() => {
+    if (!isOpen) return
+    lastFocus.current = document.activeElement as HTMLElement
+    dialog.current?.showModal()
+    closeButton.current?.focus()
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = previous }
+  }, [isOpen])
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-charcoal/40 backdrop-blur-sm z-50 transition-opacity"
-        onClick={onClose}
-      />
-
-      {/* Drawer */}
-      <div className="fixed right-0 top-0 bottom-0 w-full max-w-[480px] bg-white shadow-2xl z-50 flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-24 border-b border-hairline">
-          <h2 className="text-heading-sm font-semibold text-charcoal">
-            Panier ({totalItems})
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-8 hover:bg-mist rounded-full transition-colors"
-            aria-label="Fermer le panier"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M15 5L5 15M5 5l10 10" />
-            </svg>
-          </button>
+    <dialog ref={dialog} className="bk-cart-dialog" aria-labelledby="cart-heading" onCancel={event => { event.preventDefault(); onClose() }}>
+      <motion.div className="bk-cart-backdrop" aria-hidden="true" initial={false} animate={{ opacity: isOpen ? 1 : 0 }} transition={{ duration: reduced ? 0 : 0.22 }} onClick={onClose} />
+      <motion.div className="bk-cart-panel" initial={false} animate={{ x: isOpen ? '0%' : '100%' }} transition={{ duration: reduced ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] }}
+        onAnimationComplete={() => {
+          if (!isOpen && dialog.current?.open) { dialog.current.close(); lastFocus.current?.focus() }
+        }}>
+        <div className="bk-cart-heading"><h2 id="cart-heading">{copy.cart} <span>({totalItems})</span></h2><button ref={closeButton} className="bk-icon-button" onClick={onClose} aria-label={copy.close}><span aria-hidden="true">×</span></button></div>
+        <div className="bk-cart-items">
+          {items.length === 0 ? <div className="bk-cart-empty"><span aria-hidden="true">B.</span><h3>{copy.empty}</h3><Link href="/boutique" className="bk-button" onClick={onClose}>{copy.discover}<span aria-hidden="true">↗</span></Link></div> : items.map(item => {
+            const variant = item.product.variants?.find(v => v.id === item.variantId)
+            const label = productLabel(item.product, locale)
+            return <article className="bk-cart-item" key={item.product.id + '-' + (item.variantId ?? 'base')}>
+              <Link onClick={onClose} href={'/produit/' + item.product.slug} className="bk-cart-item-photo"><Image src={item.product.image} alt={label.name} fill sizes="88px" className="bk-image" /></Link>
+              <div><Link onClick={onClose} href={'/produit/' + item.product.slug}><h3>{label.name}</h3></Link>
+                <p>{variant?.volume ? variant.volume + ({ fr: ' stère(s)', de: ' Raummeter', it: ' steri' }[locale]) : label.conditioning}</p><strong>{money(variant?.price ?? item.product.price)}</strong>
+                <div className="bk-cart-item-controls"><div className="bk-quantity"><button onClick={() => updateQuantity(item.product.id, item.quantity - 1, item.variantId)} aria-label={copy.decrease + ' : ' + label.name}>−</button><span>{item.quantity}</span><button onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.variantId)} aria-label={copy.increase + ' : ' + label.name}>+</button></div><button className="bk-remove" onClick={() => removeItem(item.product.id, item.variantId)}>{copy.remove}</button></div>
+              </div>
+            </article>
+          })}
         </div>
-
-        {/* Cart Items */}
-        <div className="flex-1 overflow-y-auto p-24">
-          {items.length === 0 ? (
-            <div className="text-center py-64">
-              <svg
-                width="64"
-                height="64"
-                viewBox="0 0 64 64"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="mx-auto mb-20 text-ash"
-              >
-                <path d="M8 8h8l6.72 33.6a8 8 0 008 6.4h25.6a8 8 0 008-6.4L68 20H20" />
-                <circle cx="28" cy="56" r="4" />
-                <circle cx="52" cy="56" r="4" />
-              </svg>
-              <p className="text-body text-smoke mb-24">Votre panier est vide</p>
-              <Button onClick={onClose}>Découvrir les bois</Button>
-            </div>
-          ) : (
-            <div className="space-y-24">
-              {items.map((item) => {
-                const variant = item.product.variants?.find((v) => v.id === item.variantId)
-                const price = variant?.price || item.product.price
-
-                return (
-                  <div
-                    key={`${item.product.id}-${item.variantId || 'default'}`}
-                    className="flex gap-16 bg-ivory/50 rounded-card p-16 border border-hairline"
-                  >
-                    <div className="relative w-80 h-80 flex-shrink-0 rounded-card overflow-hidden bg-white">
-                      <Image
-                        src={item.product.image}
-                        alt={item.product.name}
-                        fill
-                        className="object-cover"
-                        sizes="80px"
-                      />
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-body font-semibold text-charcoal mb-4 truncate">
-                        {item.product.name}
-                      </h3>
-                      {variant && (
-                        <p className="text-body-sm text-smoke mb-8">
-                          {variant.volume} stère{variant.volume && variant.volume > 1 ? 's' : ''}
-                        </p>
-                      )}
-                      <p className="text-body font-semibold text-charcoal mb-12">
-                        {formatPrice(price)}
-                      </p>
-
-                      <div className="flex items-center gap-12">
-                        <div className="flex items-center gap-8 bg-white rounded-card border border-hairline">
-                          <button
-                            onClick={() =>
-                              updateQuantity(
-                                item.product.id,
-                                item.quantity - 1,
-                                item.variantId
-                              )
-                            }
-                            className="w-32 h-32 flex items-center justify-center text-charcoal hover:bg-mist transition-colors"
-                            aria-label="Diminuer"
-                          >
-                            −
-                          </button>
-                          <span className="text-body-sm font-medium text-charcoal w-32 text-center">
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() =>
-                              updateQuantity(
-                                item.product.id,
-                                item.quantity + 1,
-                                item.variantId
-                              )
-                            }
-                            className="w-32 h-32 flex items-center justify-center text-charcoal hover:bg-mist transition-colors"
-                            aria-label="Augmenter"
-                          >
-                            +
-                          </button>
-                        </div>
-
-                        <button
-                          onClick={() => removeItem(item.product.id, item.variantId)}
-                          className="text-body-sm text-smoke hover:text-braise transition-colors"
-                        >
-                          Retirer
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        {items.length > 0 && (
-          <div className="border-t border-hairline p-24 bg-white">
-            <div className="flex items-center justify-between mb-24">
-              <span className="text-body text-smoke">Sous-total</span>
-              <span className="text-heading font-semibold text-charcoal">
-                {formatPrice(totalPrice)}
-              </span>
-            </div>
-            <p className="text-caption text-ash mb-24">
-              Frais de livraison calculés à l'étape suivante
-            </p>
-            <Link href="/panier" onClick={onClose}>
-              <Button size="lg" className="w-full mb-12">
-                Voir le panier
-              </Button>
-            </Link>
-            <button
-              onClick={onClose}
-              className="w-full text-center text-body-sm text-smoke hover:text-braise transition-colors py-8"
-            >
-              Continuer mes achats
-            </button>
-          </div>
-        )}
-      </div>
-    </>
+        {items.length > 0 && <div className="bk-cart-summary"><div><span>{copy.subtotal}</span><strong>{money(totalPrice)}</strong></div><p>{copy.shipping}</p><Link href="/panier" onClick={onClose} className="bk-button">{copy.viewCart}<span aria-hidden="true">↗</span></Link><button onClick={onClose} className="bk-cart-continue">{copy.continue}</button></div>}
+      </motion.div>
+    </dialog>
   )
 }

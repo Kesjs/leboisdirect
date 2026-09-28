@@ -1,97 +1,14 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import Button from '@/components/Button'
+import { readOrderDraft, type OrderDraft } from '@/lib/order'
+import { formatPrice } from '@/lib/utils'
 
 export default function OrderConfirmationPage() {
-  return (
-    <>
-      <Header />
-      <main className="min-h-screen bg-ivory">
-        <div className="container-custom py-120">
-          <div className="max-w-[700px] mx-auto text-center">
-            <div className="w-80 h-80 mx-auto mb-32 rounded-full bg-braise/10 flex items-center justify-center">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="20" r="20" fill="#B85C3A" opacity="0.1" />
-                <path
-                  d="M12 20l6 6 10-12"
-                  stroke="#B85C3A"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-
-            <h1 className="text-heading-lg md:text-display font-semibold text-charcoal mb-20 tracking-tight">
-              Commande confirmée
-            </h1>
-
-            <p className="text-body-lg text-smoke mb-48 leading-relaxed">
-              Merci pour votre commande. Vous allez recevoir un email de confirmation avec tous les détails de votre commande et les informations de livraison.
-            </p>
-
-            <div className="bg-white rounded-card border border-hairline p-32 mb-48 text-left">
-              <h2 className="text-heading-sm font-semibold text-charcoal mb-20">
-                Prochaines étapes
-              </h2>
-              <div className="space-y-20">
-                <div className="flex gap-16">
-                  <div className="flex-shrink-0 w-32 h-32 rounded-full bg-braise/10 flex items-center justify-center text-body-sm font-semibold text-braise">
-                    1
-                  </div>
-                  <div>
-                    <p className="text-body font-semibold text-charcoal mb-4">
-                      Confirmation par email
-                    </p>
-                    <p className="text-body-sm text-smoke">
-                      Vous recevrez un email récapitulatif de votre commande dans quelques instants.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-16">
-                  <div className="flex-shrink-0 w-32 h-32 rounded-full bg-braise/10 flex items-center justify-center text-body-sm font-semibold text-braise">
-                    2
-                  </div>
-                  <div>
-                    <p className="text-body font-semibold text-charcoal mb-4">
-                      Préparation
-                    </p>
-                    <p className="text-body-sm text-smoke">
-                      Votre commande sera préparée sous 24-48h.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-16">
-                  <div className="flex-shrink-0 w-32 h-32 rounded-full bg-braise/10 flex items-center justify-center text-body-sm font-semibold text-braise">
-                    3
-                  </div>
-                  <div>
-                    <p className="text-body font-semibold text-charcoal mb-4">
-                      Livraison
-                    </p>
-                    <p className="text-body-sm text-smoke">
-                      Vous serez contacté pour organiser la livraison à votre convenance.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-16 justify-center">
-              <Link href="/boutique">
-                <Button size="lg">Continuer mes achats</Button>
-              </Link>
-              <Link href="/">
-                <Button size="lg" variant="secondary">
-                  Retour à l'accueil
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </main>
-      <Footer />
-    </>
-  )
+  const [order, setOrder] = useState<OrderDraft | null>(null)
+  useEffect(() => setOrder(readOrderDraft()), [])
+  return <><Header /><main id="main-content" className="bk-home bk-container bk-section"><p className="bk-eyebrow">BRAVIKO / DEMANDE ENREGISTRÉE</p><h1 className="bk-title">Votre demande a été enregistrée.</h1><p className="bk-lead">Aucun paiement n’a été effectué. Le paiement en ligne et les e-mails transactionnels seront disponibles une fois le prestataire de paiement connecté.</p>{order ? <section className="bk-section" aria-labelledby="order-summary"><div className="bk-agriculture-preview"><div><p className="bk-eyebrow">Référence</p><h2 id="order-summary">{order.reference}</h2><p>Créée le {new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(new Date(order.createdAt))} pour {order.customer.firstName} {order.customer.lastName}.</p></div><div><p className="bk-eyebrow">Articles</p>{order.items.map(item => <p key={item.product.id + item.variantId}>{item.quantity} × {item.product.name}</p>)}<p style={{marginTop:'20px'}}><strong>{formatPrice(order.subtotal)}</strong></p></div></div></section> : <p className="bk-lead">Aucun récapitulatif de demande n’est disponible dans ce navigateur.</p>}<div className="flex gap-16"><Link href="/boutique" className="bk-button">Continuer mes achats <span aria-hidden="true">↗</span></Link><Link href="/" className="bk-text-link">Retour à l’accueil <span aria-hidden="true">↗</span></Link></div></main><Footer /></>
 }

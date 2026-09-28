@@ -23,23 +23,27 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
+  const [hydrated, setHydrated] = useState(false)
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('leboisdirect-cart')
-    if (saved) {
-      try {
-        setItems(JSON.parse(saved))
-      } catch (e) {
-        console.error('Failed to parse cart from localStorage', e)
-      }
-    }
+    try {
+      const saved = localStorage.getItem('leboisdirect-cart')
+      const parsed: unknown = saved ? JSON.parse(saved) : []
+      if (Array.isArray(parsed)) setItems(parsed.filter(item =>
+        item?.product && typeof item.product.id === 'string' &&
+        Number.isFinite(item.quantity) && item.quantity > 0 &&
+        Number.isFinite(item.product.price)
+      ))
+    } catch { /* A blocked or corrupt store should not prevent shopping. */ }
+    setHydrated(true)
   }, [])
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('leboisdirect-cart', JSON.stringify(items))
-  }, [items])
+    if (!hydrated) return
+    try { localStorage.setItem('leboisdirect-cart', JSON.stringify(items)) } catch { /* Keep the active cart in memory. */ }
+  }, [items, hydrated])
 
   const addItem = (product: Product, quantity: number, variantId?: string) => {
     setItems((prevItems) => {

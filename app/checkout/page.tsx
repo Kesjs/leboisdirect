@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/Header'
@@ -9,11 +9,19 @@ import Button from '@/components/Button'
 import { useCart } from '@/lib/cart-context'
 import { formatPrice } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import { createOrderDraft, saveOrderDraft } from '@/lib/order'
+import { useI18n } from '@/lib/i18n-context'
+import { commerceCopy } from '@/data/commerce-copy'
+import { productLabel } from '@/data/product-labels'
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, totalPrice, clearCart } = useCart()
+  const { locale } = useI18n()
+  const c = commerceCopy[locale]
   const [step, setStep] = useState(1)
+  const [paymentAcknowledged, setPaymentAcknowledged] = useState(false)
+  const [formError, setFormError] = useState('')
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -24,17 +32,17 @@ export default function CheckoutPage() {
     phone: '',
   })
 
-  if (items.length === 0 && step === 1) {
-    router.push('/panier')
-    return null
-  }
+  useEffect(() => { if (items.length === 0 && step === 1) router.replace('/panier') }, [items.length, router, step])
+  if (items.length === 0 && step === 1) return null
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (step < 3) {
+      setFormError('')
       setStep(step + 1)
     } else {
-      // Simulate order completion
+      if (!paymentAcknowledged) { setFormError(c.acknowledgement); return }
+      saveOrderDraft(createOrderDraft(formData, items, totalPrice))
       clearCart()
       router.push('/commande/confirmation')
     }
@@ -47,7 +55,7 @@ export default function CheckoutPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-ivory">
+      <main id="main-content" className="bk-home bg-ivory">
         <div className="bg-white border-b border-hairline">
           <div className="container-custom py-32">
             <Link
@@ -57,9 +65,9 @@ export default function CheckoutPage() {
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M13 8H3m0 0l4-4m-4 4l4 4" />
               </svg>
-              Retour au panier
+              {c.back}
             </Link>
-            <h1 className="text-heading-lg font-semibold text-charcoal">Paiement</h1>
+            <h1 className="text-heading-lg font-semibold text-charcoal">{c.checkoutTitle}</h1>
           </div>
         </div>
 
@@ -96,7 +104,7 @@ export default function CheckoutPage() {
                 {step === 1 && (
                   <div className="bg-white rounded-card border border-hairline p-32">
                     <h2 className="text-heading-sm font-semibold text-charcoal mb-24">
-                      Informations de contact
+                      {c.contact}
                     </h2>
                     <div className="space-y-20">
                       <div>
@@ -117,7 +125,7 @@ export default function CheckoutPage() {
                       <div className="grid grid-cols-2 gap-20">
                         <div>
                           <label htmlFor="firstName" className="block text-body-sm font-medium text-charcoal mb-8">
-                            Prénom
+                            {c.firstName}
                           </label>
                           <input
                             type="text"
@@ -131,7 +139,7 @@ export default function CheckoutPage() {
                         </div>
                         <div>
                           <label htmlFor="lastName" className="block text-body-sm font-medium text-charcoal mb-8">
-                            Nom
+                            {c.name}
                           </label>
                           <input
                             type="text"
@@ -146,7 +154,7 @@ export default function CheckoutPage() {
                       </div>
                       <div>
                         <label htmlFor="phone" className="block text-body-sm font-medium text-charcoal mb-8">
-                          Téléphone
+                          {c.phone}
                         </label>
                         <input
                           type="tel"
@@ -161,7 +169,7 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                     <Button type="submit" size="lg" className="w-full mt-32">
-                      Continuer vers la livraison
+                      {c.nextDelivery}
                     </Button>
                   </div>
                 )}
@@ -170,12 +178,12 @@ export default function CheckoutPage() {
                 {step === 2 && (
                   <div className="bg-white rounded-card border border-hairline p-32">
                     <h2 className="text-heading-sm font-semibold text-charcoal mb-24">
-                      Adresse de livraison
+                      {c.deliveryAddress}
                     </h2>
                     <div className="space-y-20">
                       <div>
                         <label htmlFor="address" className="block text-body-sm font-medium text-charcoal mb-8">
-                          Adresse
+                          {c.address}
                         </label>
                         <input
                           type="text"
@@ -191,7 +199,7 @@ export default function CheckoutPage() {
                       <div className="grid grid-cols-2 gap-20">
                         <div>
                           <label htmlFor="postalCode" className="block text-body-sm font-medium text-charcoal mb-8">
-                            Code postal
+                            {c.postalCode}
                           </label>
                           <input
                             type="text"
@@ -206,7 +214,7 @@ export default function CheckoutPage() {
                         </div>
                         <div>
                           <label htmlFor="city" className="block text-body-sm font-medium text-charcoal mb-8">
-                            Ville
+                            {c.city}
                           </label>
                           <input
                             type="text"
@@ -229,10 +237,10 @@ export default function CheckoutPage() {
                         className="flex-1"
                         onClick={() => setStep(1)}
                       >
-                        Retour
+                        {c.back}
                       </Button>
                       <Button type="submit" size="lg" className="flex-1">
-                        Continuer vers le paiement
+                        {c.nextPayment}
                       </Button>
                     </div>
                   </div>
@@ -241,12 +249,17 @@ export default function CheckoutPage() {
                 {/* Step 3: Payment */}
                 {step === 3 && (
                   <div className="bg-white rounded-card border border-hairline p-32">
-                    <h2 className="text-heading-sm font-semibold text-charcoal mb-24">Paiement</h2>
+                    <h2 className="text-heading-sm font-semibold text-charcoal mb-24">{c.payment}</h2>
                     <div className="bg-ivory/50 rounded-card border border-hairline p-24 mb-24">
                       <p className="text-body-sm text-smoke">
-                        Dans une version production, le module de paiement Stripe apparaîtrait ici.
+                        {c.pending}
                       </p>
                     </div>
+                    <label className="flex gap-12 items-start text-body-sm text-smoke mb-20">
+                      <input type="checkbox" checked={paymentAcknowledged} onChange={(event) => setPaymentAcknowledged(event.target.checked)} className="mt-4 accent-braise" />
+                      <span>{c.acknowledgement}</span>
+                    </label>
+                    {formError && <p role="alert" className="text-body-sm text-braise mb-16">{formError}</p>}
                     <div className="flex gap-16">
                       <Button
                         type="button"
@@ -255,10 +268,10 @@ export default function CheckoutPage() {
                         className="flex-1"
                         onClick={() => setStep(2)}
                       >
-                        Retour
+                        {c.back}
                       </Button>
                       <Button type="submit" size="lg" className="flex-1">
-                        Finaliser la commande
+                        {c.request}
                       </Button>
                     </div>
                   </div>
@@ -270,7 +283,7 @@ export default function CheckoutPage() {
             <div className="lg:col-span-5">
               <div className="sticky top-[120px] bg-white rounded-card border border-hairline p-32">
                 <h2 className="text-heading-sm font-semibold text-charcoal mb-24">
-                  Récapitulatif
+                  {c.summary}
                 </h2>
 
                 <div className="space-y-20 mb-24 pb-24 border-b border-hairline">
@@ -291,10 +304,10 @@ export default function CheckoutPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-body-sm font-semibold text-charcoal truncate">
-                            {item.product.name}
+                            {productLabel(item.product, locale).name}
                           </p>
                           <p className="text-body-sm text-smoke">
-                            Qté: {item.quantity}
+                            {c.quantity}: {item.quantity}
                           </p>
                           <p className="text-body-sm font-semibold text-charcoal">
                             {formatPrice(price * item.quantity)}
@@ -307,17 +320,17 @@ export default function CheckoutPage() {
 
                 <div className="space-y-12 mb-24">
                   <div className="flex justify-between text-body">
-                    <span className="text-smoke">Sous-total</span>
+                    <span className="text-smoke">{c.subtotal}</span>
                     <span className="font-semibold text-charcoal">{formatPrice(totalPrice)}</span>
                   </div>
                   <div className="flex justify-between text-body">
-                    <span className="text-smoke">Livraison</span>
-                    <span className="font-semibold text-charcoal">Gratuite</span>
+                    <span className="text-smoke">{c.delivery}</span>
+                    <span className="font-semibold text-charcoal">{c.deliveryLater}</span>
                   </div>
                 </div>
 
                 <div className="flex justify-between text-heading-sm pt-24 border-t border-hairline">
-                  <span className="font-semibold text-charcoal">Total</span>
+                  <span className="font-semibold text-charcoal">{c.total}</span>
                   <span className="font-semibold text-charcoal">{formatPrice(totalPrice)}</span>
                 </div>
               </div>

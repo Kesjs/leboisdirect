@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { CartProvider } from '@/lib/cart-context'
+import { I18nProvider } from '@/lib/i18n-context'
 import './globals.css'
+import './braviko.css'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -10,9 +12,9 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'LeBoisDirect — Votre bois de chauffage livré chez vous',
-  description: 'Commandez votre bois de chauffage en ligne. Chêne, hêtre, charme. Livraison rapide partout en France.',
-  keywords: 'bois de chauffage, bûches, granulés, livraison bois, chauffage hiver',
+  title: 'Braviko — Les produits utiles, simplement',
+  description: 'Découvrez les produits Braviko pour votre maison, votre chauffage et vos activités agricoles.',
+  keywords: 'Braviko, chauffage, bois, agriculture, machines agricoles, équipements',
 }
 
 export default function RootLayout({
@@ -23,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={inter.variable}>
       <body>
-        <CartProvider>{children}</CartProvider>
+        <I18nProvider><CartProvider>{children}</CartProvider></I18nProvider>
       </body>
     </html>
   )

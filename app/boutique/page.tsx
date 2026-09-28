@@ -1,28 +1,41 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { Suspense, useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
 import { products, categories } from '@/data/products'
+import { useI18n } from '@/lib/i18n-context'
+import { bravikoCopy } from '@/data/braviko-copy'
+import { productLabel } from '@/data/product-labels'
 
 type SortOption = 'relevance' | 'price-asc' | 'price-desc' | 'name'
 
-export default function ShopPage() {
+function ShopContent() {
+  const searchParams = useSearchParams()
+  const universe = searchParams.get('universe')
+  const query = searchParams.get('q')?.trim().toLocaleLowerCase() ?? ''
+  const { locale } = useI18n()
+  const copy = bravikoCopy[locale]
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedSpecies, setSelectedSpecies] = useState<string>('all')
   const [sortBy, setSortBy] = useState<SortOption>('relevance')
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
   useEffect(() => {
-    const category = new URLSearchParams(window.location.search).get('cat')
-    if (category && categories.some((item) => item.id === category)) setSelectedCategory(category)
-  }, [])
+    const category = searchParams.get('cat')
+    setSelectedCategory(category && categories.some((item) => item.id === category) ? category : 'all')
+    setSelectedSpecies('all')
+  }, [searchParams])
 
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = [...products]
+    if (query) filtered = filtered.filter(product =>
+      (productLabel(product, locale).name + ' ' + product.name + ' ' + product.category).toLocaleLowerCase().includes(query)
+    )
 
     // Filter by category
     if (selectedCategory !== 'all') {
@@ -51,12 +64,26 @@ export default function ShopPage() {
     }
 
     return filtered
-  }, [selectedCategory, selectedSpecies, sortBy])
+  }, [selectedCategory, selectedSpecies, sortBy, query, locale])
+
+  if (universe === 'agriculture') return (
+    <>
+      <Header />
+      <main id="main-content" className="bk-container bk-section">
+        <div className="bk-agriculture-preview">
+          <div className="bk-agriculture-photo"><Image src="/images/braviko-hero.jpg" alt="" fill priority sizes="(max-width: 700px) 100vw, 50vw" className="bk-image bk-agri-image" /></div>
+          <div><p className="bk-eyebrow">{copy.pendingLabel}</p><h1 className="bk-title">{copy.pendingTitle}</h1><p>{copy.pendingBody}</p><a href="mailto:contact@leboisdirect.fr" className="bk-button">{copy.contact}<span aria-hidden="true">↗</span></a></div>
+        </div>
+        <Link href="/boutique?universe=heating" className="bk-text-link mt-32">{copy.heating}<span aria-hidden="true">↗</span></Link>
+      </main>
+      <Footer />
+    </>
+  )
 
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-ivory">
+      <main id="main-content" className="min-h-screen bg-ivory">
         {/* Hero Section */}
         <section className="relative h-[50vh] min-h-[400px] flex items-center justify-center overflow-hidden bg-charcoal">
           <div className="absolute inset-0 w-full h-full">
@@ -300,4 +327,8 @@ export default function ShopPage() {
       <Footer />
     </>
   )
+}
+
+export default function ShopPage() {
+  return <Suspense fallback={<div className="bk-container bk-section" aria-busy="true">Braviko</div>}><ShopContent /></Suspense>
 }

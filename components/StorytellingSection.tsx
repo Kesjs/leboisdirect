@@ -1,36 +1,102 @@
-import Image from 'next/image'
+'use client'
 
-const stories = [
-  ['01', 'Bois', 'Tout commence par le bois', 'Sélectionné avec soin pour sa qualité et son pouvoir calorifique.', '/images/fireplace-with-burning-logs-close-up-stony-fireplace-with-burning-smoldering-logs-fire.jpg'],
-  ['02', 'Format', 'Le bon format pour votre foyer', "Bûches de 33 cm ou 50 cm, prêtes à l'emploi.", '/images/decorative-metallic-holder-with-heap-wooden-logs-stony-fireplace-with-burning-logs.jpg'],
-  ['03', 'Livraison', 'Le bois arrive chez vous', 'Livraison rapide partout en France, déchargement inclus.', '/images/man-room-with-solid-fuel-boiler-working-biofuel-economical-heating.jpg'],
-  ['04', 'Chaleur', "Et l'hiver devient plus simple", "Profitez de la chaleur et du confort d'un feu de bois de qualité.", '/images/scandinavian-interior-with-fireplace-stump-table-pile-logs-fire.jpg'],
+import { useEffect, useRef } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useI18n } from '@/lib/i18n-context'
+import { bravikoCopy } from '@/data/braviko-copy'
+
+const images = [
+  '/images/photorealistic-perspective-wood-logs.jpg',
+  '/images/braviko-hero.jpg',
+  '/images/scandinavian-interior-with-fireplace-stump-table-pile-logs-fire.jpg',
 ]
 
 export default function StorytellingSection() {
+  const { locale } = useI18n()
+  const copy = bravikoCopy[locale]
+  const root = useRef<HTMLElement>(null)
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger)
+    const media = gsap.matchMedia()
+    media.add('(min-width: 1024px) and (min-height: 650px) and (prefers-reduced-motion: no-preference)', () => {
+      const ctx = gsap.context(() => {
+        const stage = root.current?.querySelector<HTMLElement>('.bk-story-stage')
+        if (!stage) return
+        const panels = Array.from(stage.querySelectorAll<HTMLElement>('.bk-story-panel'))
+        const markers = Array.from(stage.querySelectorAll<HTMLElement>('.bk-story-marker'))
+        stage.classList.add('is-pinned')
+        gsap.set(panels.slice(1), { autoAlpha: 0 })
+        let active = -1
+        const update = (index: number) => {
+          if (index === active) return
+          active = index
+          panels.forEach((panel, i) => {
+            panel.setAttribute('aria-hidden', String(i !== index))
+            panel.inert = i !== index
+          })
+          markers.forEach((marker, i) => marker.classList.toggle('is-active', i === index))
+        }
+        update(0)
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: stage, start: 'top 80px', end: () => '+=' + Math.round(window.innerHeight * 1.8),
+            pin: true, scrub: 0.55, invalidateOnRefresh: true,
+            onUpdate: (self) => update(Math.min(2, Math.floor(self.progress * 3))),
+          },
+        })
+        timeline.to({}, { duration: 0.6 })
+        for (let i = 1; i < panels.length; i++) {
+          timeline.to(panels[i - 1], { autoAlpha: 0, duration: 0.35 })
+            .fromTo(panels[i], { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.35 }, '<')
+            .fromTo(panels[i].querySelector('.bk-story-photo'), { scale: 1.06 }, { scale: 1, duration: 0.65 }, '<')
+            .to({}, { duration: 0.45 })
+        }
+        // Resolve fresh font metrics and responsive image geometry before the pin starts.
+        document.fonts.ready.then(() => { if (root.current?.isConnected) ScrollTrigger.refresh() })
+      }, root)
+      return () => {
+        ctx.revert()
+        root.current?.querySelector('.bk-story-stage')?.classList.remove('is-pinned')
+        root.current?.querySelectorAll<HTMLElement>('.bk-story-panel').forEach(panel => {
+          panel.removeAttribute('aria-hidden')
+          panel.inert = false
+        })
+      }
+    })
+    return () => media.revert()
+  }, [locale])
+
   return (
-    <section className="bg-[#e8e1d8] py-96 md:py-128">
-      <div className="container-custom">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-24 mb-48 md:mb-64">
-          <div className="max-w-[560px]">
-            <p className="text-[11px] font-semibold text-braise uppercase tracking-[0.18em] mb-16">Notre façon de faire</p>
-            <h2 className="text-heading-lg md:text-display font-semibold text-charcoal tracking-tight leading-[0.98]">Un bon feu commence bien avant l’allumette.</h2>
-          </div>
-          <p className="text-body-lg text-smoke max-w-[360px] leading-relaxed">Du choix de l’essence jusqu’au déchargement, chaque détail compte.</p>
+    <section ref={root} className="bk-story bk-section" aria-labelledby="story-title">
+      <div className="bk-container bk-section-heading" data-reveal>
+        <p className="bk-eyebrow">BRAVIKO · {copy.story}</p>
+        <h2 id="story-title" className="bk-title">{copy.signature}</h2>
+        <p className="bk-lead">{copy.signatureIntro}</p>
+      </div>
+      <div className="bk-story-stage bk-container">
+        <div className="bk-story-chapters" aria-hidden="true">
+          {copy.chapters.map((chapter, i) => <span className={'bk-story-marker' + (i === 0 ? ' is-active' : '')} key={chapter.label}><span>0{i + 1}</span>{chapter.label}</span>)}
         </div>
-        <div className="grid md:grid-cols-2 gap-16 md:gap-24">
-          {stories.map(([number, label, title, description, image], index) => (
-            <article key={number} className={`group relative overflow-hidden min-h-[420px] md:min-h-[520px] rounded-[20px] bg-charcoal reveal-up ${index === 0 ? 'md:translate-y-24' : ''}`}>
-              <Image src={image} alt={title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/85 via-charcoal/20 to-transparent" />
-              <div className="absolute inset-x-24 bottom-24 md:inset-x-32 md:bottom-32 text-white">
-                <div className="flex items-center gap-12 mb-16"><span className="text-[11px] font-semibold tracking-[0.16em] text-white/70">{number}</span><span className="h-px w-24 bg-braise" /><span className="text-[11px] uppercase tracking-[0.16em] text-white/80">{label}</span></div>
-                <h3 className="text-[30px] md:text-[42px] font-semibold tracking-tight leading-[1.02] mb-12 max-w-[480px]">{title}</h3>
-                <p className="text-body-sm text-white/75 max-w-[400px] leading-relaxed">{description}</p>
+        <div className="bk-story-panels">
+          {copy.chapters.map((chapter, i) => (
+            <article className="bk-story-panel" key={i}>
+              <div className="bk-story-visual">
+                <Image src={images[i]} alt="" fill sizes="(max-width: 1024px) 100vw, 58vw" className="bk-image bk-story-photo" quality={85} />
+                <span className="bk-story-number" aria-hidden="true">0{i + 1}</span>
+              </div>
+              <div className="bk-story-copy">
+                <p className="bk-eyebrow">{chapter.label}</p>
+                <h3>{chapter.title}</h3>
+                <p>{chapter.body}</p>
+                <Link className="bk-text-link" href="/boutique">{copy.discover}<span aria-hidden="true">↗</span></Link>
               </div>
             </article>
           ))}
         </div>
+        <a href="#selection" className="bk-story-skip bk-text-link">{copy.all}<span aria-hidden="true">↓</span></a>
       </div>
     </section>
   )
