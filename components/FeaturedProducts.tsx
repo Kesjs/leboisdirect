@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
@@ -13,6 +13,7 @@ export default function FeaturedProducts() {
   const { locale } = useI18n()
   const copy = bravikoCopy[locale]
   const [tab, setTab] = useState(0)
+  const [catalogProducts, setCatalogProducts] = useState(products)
   const tabs = useRef<Array<HTMLButtonElement | null>>([])
   const reduced = useReducedMotion()
   const changeByKey = (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -22,6 +23,11 @@ export default function FeaturedProducts() {
     setTab(target)
     tabs.current[target]?.focus()
   }
+  useEffect(() => {
+    fetch('/api/catalog').then(response => response.ok ? response.json() : Promise.reject(new Error('catalog unavailable'))).then(payload => {
+      if (payload.products?.length) setCatalogProducts(payload.products)
+    }).catch(() => undefined)
+  }, [])
   return (
     <section id="selection" className="bk-section bk-container" aria-labelledby="selection-title">
       <div className="bk-selection-heading" data-reveal>
@@ -39,10 +45,10 @@ export default function FeaturedProducts() {
       <AnimatePresence mode="wait" initial={false}>
         <motion.div key={tab} role="tabpanel" id={'universe-panel-' + tab} aria-labelledby={'universe-tab-' + tab} tabIndex={0}
           initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: reduced ? 1 : 0 }} transition={{ duration: reduced ? 0 : 0.22 }}>
-          {tab === 0 ? <div className="bk-products-grid">{products.slice(0, 6).map(product => <ProductCard key={product.id} product={product} />)}</div> : (
+          {tab === 0 ? <div className="bk-products-grid">{catalogProducts.filter(product => product.category !== 'machines-agricoles').slice(0, 6).map(product => <ProductCard key={product.id} product={product} />)}</div> : (
             <div className="bk-agriculture-preview">
               <div className="bk-agriculture-photo"><Image src="/images/braviko-hero.jpg" alt="" fill sizes="(max-width: 700px) 100vw, 50vw" className="bk-image bk-agri-image" /></div>
-              <div><p className="bk-eyebrow">{copy.pendingLabel}</p><h3>{copy.pendingTitle}</h3><p>{copy.pendingBody}</p><Link className="bk-button" href="/boutique?universe=agriculture">{copy.agriculture}<span aria-hidden="true">↗</span></Link></div>
+              <div><p className="bk-eyebrow">{copy.agriculture}</p><h3>Machines agricoles</h3><p>Une sélection d’outils et de machines pour préparer et entretenir vos terrains.</p><Link className="bk-button" href="/boutique?universe=agriculture">Voir la sélection<span aria-hidden="true">↗</span></Link></div>
             </div>
           )}
         </motion.div>

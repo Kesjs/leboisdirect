@@ -1,4 +1,4 @@
-export type ProductCategory = 'buches' | 'bois-compresse' | 'granules' | 'allumage' | 'allume-feu'
+export type ProductCategory = 'buches' | 'bois-compresse' | 'granules' | 'allumage' | 'allume-feu' | 'accessoires-chauffage' | 'machines-agricoles'
 
 export type WoodSpecies = 'chene' | 'hetre' | 'charme' | 'mixte'
 
@@ -9,6 +9,7 @@ export type ProductVariant = {
   weight?: number // en kg
   price: number
   stock: number
+  label?: string
 }
 
 export type Product = {
@@ -28,6 +29,12 @@ export type Product = {
   origin?: string
   conditioning?: string
   deliveryInfo: string
+  translations?: {
+    de?: string
+    it?: string
+    conditioning?: { de?: string; it?: string }
+    delivery?: { de?: string; it?: string }
+  }
 }
 
 export const products: Product[] = [
@@ -231,4 +238,6 @@ export const categories = [
   { id: 'granules', name: 'Granulés', slug: 'granules' },
   { id: 'allumage', name: 'Bois d\'allumage', slug: 'allumage' },
   { id: 'allume-feu', name: 'Allume-feu', slug: 'allume-feu' },
+  { id: 'accessoires-chauffage', name: 'Accessoires chauffage', slug: 'accessoires-chauffage' },
+  { id: 'machines-agricoles', name: 'Machines agricoles', slug: 'machines-agricoles' },
 ]

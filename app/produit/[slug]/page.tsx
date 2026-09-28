@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { use } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -17,16 +17,36 @@ import { categoryLabels, productLabel } from '@/data/product-labels'
 
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
-  const product = products.find((p) => p.slug === slug)
+  const [product, setProduct] = useState(() => products.find((p) => p.slug === slug) || null)
+  const [loading, setLoading] = useState(true)
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
-  const [selectedVariant, setSelectedVariant] = useState(product?.variants?.[0]?.id || '')
+  const [selectedVariant, setSelectedVariant] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
 
   const { addItem } = useCart()
   const { locale } = useI18n()
   const c = commerceCopy[locale]
+
+  useEffect(() => {
+    let active = true
+    fetch(`/api/catalog?slug=${encodeURIComponent(slug)}`)
+      .then(response => response.ok ? response.json() : Promise.reject(new Error('product unavailable')))
+      .then(payload => {
+        if (!active) return
+        if (payload.products?.[0]) setProduct(payload.products[0])
+        setLoading(false)
+      })
+      .catch(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [slug])
+
+  useEffect(() => {
+    setSelectedVariant(product?.variants?.[0]?.id || '')
+  }, [product])
+
+  if (loading && !product) return <main className="grid min-h-screen place-items-center bg-ivory text-smoke">Chargement du produit…</main>
 
   if (!product) {
     notFound()

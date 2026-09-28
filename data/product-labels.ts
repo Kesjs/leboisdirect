@@ -2,9 +2,9 @@ import type { Product } from './products'
 import type { Locale } from '@/lib/i18n-context'
 
 export const categoryLabels = {
-  fr: { buches: 'Bûches', 'bois-compresse': 'Bois compressé', granules: 'Granulés', allumage: 'Bois d’allumage', 'allume-feu': 'Allume-feu' },
-  de: { buches: 'Brennholz', 'bois-compresse': 'Holzbriketts', granules: 'Pellets', allumage: 'Anzündholz', 'allume-feu': 'Feueranzünder' },
-  it: { buches: 'Legna', 'bois-compresse': 'Bricchetti', granules: 'Pellet', allumage: 'Legna da accensione', 'allume-feu': 'Accendifuoco' },
+  fr: { buches: 'Bûches', 'bois-compresse': 'Bois compressé', granules: 'Granulés', allumage: 'Bois d’allumage', 'allume-feu': 'Allume-feu', 'accessoires-chauffage': 'Accessoires chauffage', 'machines-agricoles': 'Machines agricoles' },
+  de: { buches: 'Brennholz', 'bois-compresse': 'Holzbriketts', granules: 'Pellets', allumage: 'Anzündholz', 'allume-feu': 'Feueranzünder', 'accessoires-chauffage': 'Heizungszubehör', 'machines-agricoles': 'Landmaschinen' },
+  it: { buches: 'Legna', 'bois-compresse': 'Bricchetti', granules: 'Pellet', allumage: 'Legna da accensione', 'allume-feu': 'Accendifuoco', 'accessoires-chauffage': 'Accessori per il riscaldamento', 'machines-agricoles': 'Macchine agricole' },
 }
 
 const names: Record<string, [string, string]> = {
@@ -20,6 +20,11 @@ const names: Record<string, [string, string]> = {
 
 export function productLabel(product: Product, locale: Locale) {
   if (locale === 'fr') return { name: product.name, conditioning: product.conditioning, delivery: product.deliveryInfo }
+  if (product.translations) return {
+    name: product.translations[locale] || product.name,
+    conditioning: product.translations.conditioning?.[locale] || product.conditioning,
+    delivery: product.translations.delivery?.[locale] || product.deliveryInfo,
+  }
   const index = locale === 'de' ? 0 : 1
   const quantities: Record<string, [string, string]> = {
     'Palette de 1 stère': ['Palette mit 1 Raummeter', 'Bancale da 1 stero'],

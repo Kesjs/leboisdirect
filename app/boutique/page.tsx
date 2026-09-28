@@ -22,6 +22,8 @@ function ShopContent() {
   const copy = bravikoCopy[locale]
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedSpecies, setSelectedSpecies] = useState<string>('all')
+  const [catalogProducts, setCatalogProducts] = useState(products)
+  const [catalogCategories, setCatalogCategories] = useState(categories)
   const [sortBy, setSortBy] = useState<SortOption>('relevance')
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
@@ -31,8 +33,21 @@ function ShopContent() {
     setSelectedSpecies('all')
   }, [searchParams])
 
+  useEffect(() => {
+    let active = true
+    fetch('/api/catalog')
+      .then(response => response.ok ? response.json() : Promise.reject(new Error('catalog unavailable')))
+      .then(payload => {
+        if (!active || !payload.products?.length) return
+        setCatalogProducts(payload.products)
+        if (payload.categories?.length) setCatalogCategories(payload.categories)
+      })
+      .catch(() => undefined)
+    return () => { active = false }
+  }, [])
+
   const filteredAndSortedProducts = useMemo(() => {
-    let filtered = [...products]
+    let filtered = [...catalogProducts]
     if (query) filtered = filtered.filter(product =>
       (productLabel(product, locale).name + ' ' + product.name + ' ' + product.category).toLocaleLowerCase().includes(query)
     )
@@ -64,7 +79,7 @@ function ShopContent() {
     }
 
     return filtered
-  }, [selectedCategory, selectedSpecies, sortBy, query, locale])
+  }, [catalogProducts, selectedCategory, selectedSpecies, sortBy, query, locale])
 
   if (universe === 'agriculture') return (
     <>
@@ -72,8 +87,9 @@ function ShopContent() {
       <main id="main-content" className="bk-container bk-section">
         <div className="bk-agriculture-preview">
           <div className="bk-agriculture-photo"><Image src="/images/braviko-hero.jpg" alt="" fill priority sizes="(max-width: 700px) 100vw, 50vw" className="bk-image bk-agri-image" /></div>
-          <div><p className="bk-eyebrow">{copy.pendingLabel}</p><h1 className="bk-title">{copy.pendingTitle}</h1><p>{copy.pendingBody}</p><a href="mailto:contact@leboisdirect.fr" className="bk-button">{copy.contact}<span aria-hidden="true">↗</span></a></div>
+          <div><p className="bk-eyebrow">{copy.agriculture}</p><h1 className="bk-title">Machines agricoles</h1><p>Des machines robustes pour préparer, entretenir et valoriser vos terrains.</p><Link href="/boutique?cat=machines-agricoles" className="bk-button">Voir les machines<span aria-hidden="true">↗</span></Link></div>
         </div>
+        <div className="bk-products-grid" style={{ marginTop: '48px' }}>{catalogProducts.filter(product => product.category === 'machines-agricoles').slice(0, 10).map(product => <ProductCard key={product.id} product={product} />)}</div>
         <Link href="/boutique?universe=heating" className="bk-text-link mt-32">{copy.heating}<span aria-hidden="true">↗</span></Link>
       </main>
       <Footer />
@@ -163,7 +179,7 @@ function ShopContent() {
                         />
                         <span className={`text-body-sm transition-colors ${selectedCategory === 'all' ? 'text-charcoal font-medium' : 'text-smoke group-hover:text-charcoal'}`}>Tous</span>
                       </label>
-                      {categories.map((cat) => (
+                      {catalogCategories.map((cat) => (
                         <label key={cat.id} className="flex items-center gap-12 cursor-pointer group rounded-md px-8 py-8 -mx-8 hover:bg-mist transition-colors">
                           <input
                             type="radio"
@@ -312,9 +328,9 @@ function ShopContent() {
                 </div>
                 <h3 className="text-[11px] font-semibold text-ash uppercase tracking-wide mb-12">Catégorie</h3>
                 <div className="grid grid-cols-2 gap-8 mb-24">
-                  {(['all', ...categories.map((cat) => cat.id)] as string[]).map((category) => (
+                  {(['all', ...catalogCategories.map((cat) => cat.id)] as string[]).map((category) => (
                     <button key={category} onClick={() => setSelectedCategory(category)} className={`text-left px-12 py-10 rounded-md border ${selectedCategory === category ? 'border-braise bg-braise/10 text-charcoal' : 'border-hairline text-smoke'}`}>
-                      {category === 'all' ? 'Tous' : categories.find((cat) => cat.id === category)?.name}
+                      {category === 'all' ? 'Tous' : catalogCategories.find((cat) => cat.id === category)?.name}
                     </button>
                   ))}
                 </div>
