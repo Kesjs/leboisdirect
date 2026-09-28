@@ -126,6 +126,14 @@
 
 /* Signature scene: stacked readable fallback, desktop pin added only by GSAP. */
 .bk-story { background: var(--bk-surface); }
+.bk-story-steps { display: grid; gap: clamp(56px, 8vw, 112px); }
+.bk-story-step { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .9fr); gap: clamp(32px, 7vw, 112px); align-items: center; }
+.bk-story-step:nth-child(even) .bk-story-step-media { order: 2; }
+.bk-story-step:nth-child(even) .bk-story-step-copy { order: 1; }
+.bk-story-step-media { position: relative; min-height: 360px; aspect-ratio: 1.2; overflow: hidden; border-radius: var(--bk-radius); background: #d9d9d0; }
+.bk-story-step-copy { max-width: 520px; }
+.bk-story-step-copy h2 { font-size: clamp(32px, 4vw, 60px); line-height: 1.03; letter-spacing: -.045em; font-weight: 500; text-wrap: balance; margin-bottom: 20px; }
+.bk-story-step-copy p { max-width: 430px; font-size: 16px; line-height: 1.7; color: var(--bk-muted); }
 .bk-story-chapters { display: none; }
 .bk-story-panels { display: grid; gap: 40px; }
 .bk-story-panel { display: grid; grid-template-columns: 1.18fr 1fr; gap: 7%; align-items: center; }
@@ -244,6 +252,7 @@
   .bk-delivery { gap: 32px; }
   .bk-story-panel { gap: 32px; }
   .bk-story-copy h3 { font-size: 32px; }
+  .bk-story-step { gap: 32px; }
 }
 @media (max-width: 700px) {
   .bk-container { width: calc(100% - 40px); }
@@ -263,6 +272,9 @@
   .bk-world-bottom h2 { font-size: 36px; }
   .bk-hero-foot { gap: 16px; align-items: flex-start; }
   .bk-hero-foot p { text-align: left; font-size: 10px; }
+  .bk-story-step, .bk-story-step:nth-child(even) { grid-template-columns: 1fr; gap: 28px; }
+  .bk-story-step:nth-child(even) .bk-story-step-media, .bk-story-step:nth-child(even) .bk-story-step-copy { order: initial; }
+  .bk-story-step-media { min-height: 260px; }
   .bk-hero-foot > span:last-child { display: none; }
   .bk-selection-heading { display: block; }
   .bk-selection-heading > .bk-text-link { margin-top: 20px; }
