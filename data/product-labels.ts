@@ -19,9 +19,10 @@ const names: Record<string, [string, string]> = {
 }
 
 export function productLabel(product: Product, locale: Locale) {
-  if (locale === 'fr') return { name: product.name, conditioning: product.conditioning, delivery: product.deliveryInfo }
+  if (locale === 'fr') return { name: product.name, description: product.description, conditioning: product.conditioning, delivery: product.deliveryInfo }
   if (product.translations) return {
     name: product.translations[locale] || product.name,
+    description: product.translations.description?.[locale] || product.description,
     conditioning: product.translations.conditioning?.[locale] || product.conditioning,
     delivery: product.translations.delivery?.[locale] || product.deliveryInfo,
   }
@@ -36,6 +37,7 @@ export function productLabel(product: Product, locale: Locale) {
   const days = product.deliveryInfo.match(/\d+-\d+/)?.[0]
   return {
     name: names[product.id]?.[index] ?? product.name,
+    description: product.description,
     conditioning: quantities[product.conditioning ?? '']?.[index] ?? product.conditioning,
     delivery: days ? (locale === 'de' ? `Lieferung in ${days} Tagen` : `Consegna in ${days} giorni`) : '',
   }

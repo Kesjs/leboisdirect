@@ -15,6 +15,7 @@ export type ProductVariant = {
 export type Product = {
   id: string
   slug: string
+  featured?: boolean
   name: string
   category: ProductCategory
   species?: WoodSpecies
@@ -32,6 +33,7 @@ export type Product = {
   translations?: {
     de?: string
     it?: string
+    description?: { de?: string; it?: string }
     conditioning?: { de?: string; it?: string }
     delivery?: { de?: string; it?: string }
   }

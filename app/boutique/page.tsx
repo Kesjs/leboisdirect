@@ -1,348 +1,99 @@
 'use client'
 
-import { Suspense, useState, useMemo, useEffect } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
-import { products, categories } from '@/data/products'
+import type { Product } from '@/data/products'
 import { useI18n } from '@/lib/i18n-context'
-import { bravikoCopy } from '@/data/braviko-copy'
-import { productLabel } from '@/data/product-labels'
+import { categoryLabels, productLabel } from '@/data/product-labels'
+import { uiCopy } from '@/data/ui-copy'
 
 type SortOption = 'relevance' | 'price-asc' | 'price-desc' | 'name'
+type ViewMode = 'grid' | 'list'
+const PRODUCTS_PER_PAGE = 6
 
 function ShopContent() {
   const searchParams = useSearchParams()
   const universe = searchParams.get('universe')
   const query = searchParams.get('q')?.trim().toLocaleLowerCase() ?? ''
   const { locale } = useI18n()
-  const copy = bravikoCopy[locale]
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [selectedSpecies, setSelectedSpecies] = useState<string>('all')
-  const [catalogProducts, setCatalogProducts] = useState(products)
-  const [catalogCategories, setCatalogCategories] = useState(categories)
+  const copy = uiCopy[locale]
+  const [catalogProducts, setCatalogProducts] = useState<Product[]>([])
+  const [catalogError, setCatalogError] = useState(false)
   const [sortBy, setSortBy] = useState<SortOption>('relevance')
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
-
-  useEffect(() => {
-    const category = searchParams.get('cat')
-    setSelectedCategory(category && categories.some((item) => item.id === category) ? category : 'all')
-    setSelectedSpecies('all')
-  }, [searchParams])
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [viewMode, setViewMode] = useState<ViewMode>('grid')
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
     let active = true
     fetch('/api/catalog')
       .then(response => response.ok ? response.json() : Promise.reject(new Error('catalog unavailable')))
-      .then(payload => {
-        if (!active || !payload.products?.length) return
-        setCatalogProducts(payload.products)
-        if (payload.categories?.length) setCatalogCategories(payload.categories)
-      })
-      .catch(() => undefined)
+      .then(payload => { if (active) setCatalogProducts(payload.products || []) })
+      .catch(() => { if (active) setCatalogError(true) })
     return () => { active = false }
   }, [])
 
+  const isAgriculture = universe === 'agriculture'
+  const isHeating = universe === 'heating'
   const filteredAndSortedProducts = useMemo(() => {
-    let filtered = [...catalogProducts]
+    let filtered = catalogProducts.filter(product => {
+      if (isAgriculture) return product.category === 'machines-agricoles'
+      if (isHeating) return product.category !== 'machines-agricoles'
+      return true
+    })
+    if (selectedCategory !== 'all') filtered = filtered.filter(product => product.category === selectedCategory)
     if (query) filtered = filtered.filter(product =>
       (productLabel(product, locale).name + ' ' + product.name + ' ' + product.category).toLocaleLowerCase().includes(query)
     )
-
-    // Filter by category
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter((p) => p.category === selectedCategory)
-    }
-
-    // Filter by species
-    if (selectedSpecies !== 'all') {
-      filtered = filtered.filter((p) => p.species === selectedSpecies)
-    }
-
-    // Sort
     switch (sortBy) {
-      case 'price-asc':
-        filtered.sort((a, b) => a.price - b.price)
-        break
-      case 'price-desc':
-        filtered.sort((a, b) => b.price - a.price)
-        break
-      case 'name':
-        filtered.sort((a, b) => a.name.localeCompare(b.name))
-        break
-      default:
-        // relevance - keep current order
-        break
+      case 'price-asc': filtered.sort((a, b) => a.price - b.price); break
+      case 'price-desc': filtered.sort((a, b) => b.price - a.price); break
+      case 'name': filtered.sort((a, b) => a.name.localeCompare(b.name)); break
     }
-
     return filtered
-  }, [catalogProducts, selectedCategory, selectedSpecies, sortBy, query, locale])
+  }, [catalogProducts, isAgriculture, isHeating, locale, query, selectedCategory, sortBy])
 
-  if (universe === 'agriculture') return (
-    <>
-      <Header />
-      <main id="main-content" className="bk-container bk-section">
-        <div className="bk-agriculture-preview">
-          <div className="bk-agriculture-photo"><Image src="/images/braviko-hero.jpg" alt="" fill priority sizes="(max-width: 700px) 100vw, 50vw" className="bk-image bk-agri-image" /></div>
-          <div><p className="bk-eyebrow">{copy.agriculture}</p><h1 className="bk-title">Machines agricoles</h1><p>Des machines robustes pour préparer, entretenir et valoriser vos terrains.</p><Link href="/boutique?cat=machines-agricoles" className="bk-button">Voir les machines<span aria-hidden="true">↗</span></Link></div>
-        </div>
-        <div className="bk-products-grid" style={{ marginTop: '48px' }}>{catalogProducts.filter(product => product.category === 'machines-agricoles').slice(0, 10).map(product => <ProductCard key={product.id} product={product} />)}</div>
-        <Link href="/boutique?universe=heating" className="bk-text-link mt-32">{copy.heating}<span aria-hidden="true">↗</span></Link>
-      </main>
-      <Footer />
-    </>
-  )
+  const availableCategories = useMemo(() => Array.from(new Set(catalogProducts
+    .filter(product => isAgriculture ? product.category === 'machines-agricoles' : isHeating ? product.category !== 'machines-agricoles' : true)
+    .map(product => product.category))), [catalogProducts, isAgriculture, isHeating])
+  const pageCount = Math.max(1, Math.ceil(filteredAndSortedProducts.length / PRODUCTS_PER_PAGE))
+  const pageProducts = filteredAndSortedProducts.slice((page - 1) * PRODUCTS_PER_PAGE, page * PRODUCTS_PER_PAGE)
 
-  return (
-    <>
-      <Header />
-      <main id="main-content" className="min-h-screen bg-ivory">
-        {/* Hero Section */}
-        <section className="relative h-[50vh] min-h-[400px] flex items-center justify-center overflow-hidden bg-charcoal">
-          <div className="absolute inset-0 w-full h-full">
-            <Image
-              src="/images/photorealistic-perspective-wood-logs.jpg"
-              alt="Bois de chauffage premium"
-              fill
-              priority
-              className="object-cover"
-              sizes="100vw"
-              quality={75}
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-charcoal/40 via-charcoal/20 to-charcoal/60" />
-          </div>
+  useEffect(() => { setPage(1); setSelectedCategory('all') }, [universe])
+  useEffect(() => { if (page > pageCount) setPage(pageCount) }, [page, pageCount])
 
-          <div className="relative z-10 container-custom text-center">
-            <h1 className="text-[48px] sm:text-[56px] md:text-[72px] font-semibold text-white text-balance mb-20 leading-[1.05] tracking-tight">
-              Notre boutique
-            </h1>
-            <p className="text-[16px] sm:text-[18px] text-white/90 text-balance max-w-[520px] mx-auto leading-relaxed">
-              Chêne, hêtre, charme : choisissez votre bois de chauffage premium
-            </p>
-          </div>
-        </section>
+  const title = isAgriculture ? copy.shop.agriculture : isHeating ? copy.shop.heating : copy.shop.all
+  const intro = isAgriculture ? copy.shop.agricultureIntro : isHeating ? copy.shop.heatingIntro : copy.shop.allIntro
 
-        {/* Breadcrumb */}
-        <div className="bg-white border-b border-hairline">
-          <div className="container-custom py-20">
-            <nav className="flex items-center gap-12 text-body-sm">
-              <Link href="/" className="text-smoke hover:text-braise transition-colors">
-                Accueil
-              </Link>
-              <span className="text-ash">/</span>
-              <span className="text-charcoal font-medium">Boutique</span>
-            </nav>
-          </div>
-        </div>
-
-        {/* Header */}
-        <div className="bg-white border-b border-hairline">
-          <div className="container-custom py-48 md:py-64">
-            <h1 className="text-heading-lg md:text-display font-semibold text-charcoal mb-16 tracking-tight">
-              Tous nos produits
-            </h1>
-            <p className="text-body-lg text-smoke max-w-[600px]">
-              Découvrez notre gamme complète de bois de chauffage premium. Livraison rapide partout en France.
-            </p>
-          </div>
-        </div>
-
-        {/* Filters & Products */}
-        <div className="container-custom py-48">
-          <div className="grid md:grid-cols-12 gap-32">
-            {/* Desktop Filters */}
-            <aside className="hidden md:block md:col-span-3">
-              <div className="sticky top-[120px]">
-                <div className="bg-white rounded-card border border-hairline p-24 shadow-sm">
-                  <div className="flex items-center justify-between mb-20">
-                    <h2 className="text-heading-sm font-semibold text-charcoal">Filtres</h2>
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-ash">
-                      <path d="M2 4h12M4.5 8h7M6.5 12h3" strokeLinecap="round" />
-                    </svg>
-                  </div>
-
-                  {/* Category Filter */}
-                  <div className="mb-28 pb-28 border-b border-hairline">
-                    <h3 className="text-[11px] font-semibold text-ash uppercase tracking-wide mb-14">Catégorie</h3>
-                    <div className="space-y-4">
-                      <label className="flex items-center gap-12 cursor-pointer group rounded-md px-8 py-8 -mx-8 hover:bg-mist transition-colors">
-                        <input
-                          type="radio"
-                          name="category"
-                          value="all"
-                          checked={selectedCategory === 'all'}
-                          onChange={() => setSelectedCategory('all')}
-                          className="w-16 h-16 accent-braise cursor-pointer"
-                        />
-                        <span className={`text-body-sm transition-colors ${selectedCategory === 'all' ? 'text-charcoal font-medium' : 'text-smoke group-hover:text-charcoal'}`}>Tous</span>
-                      </label>
-                      {catalogCategories.map((cat) => (
-                        <label key={cat.id} className="flex items-center gap-12 cursor-pointer group rounded-md px-8 py-8 -mx-8 hover:bg-mist transition-colors">
-                          <input
-                            type="radio"
-                            name="category"
-                            value={cat.id}
-                            checked={selectedCategory === cat.id}
-                            onChange={() => setSelectedCategory(cat.id)}
-                            className="w-16 h-16 accent-braise cursor-pointer"
-                          />
-                          <span className={`text-body-sm transition-colors ${selectedCategory === cat.id ? 'text-charcoal font-medium' : 'text-smoke group-hover:text-charcoal'}`}>{cat.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Species Filter */}
-                  <div>
-                    <h3 className="text-[11px] font-semibold text-ash uppercase tracking-wide mb-14">Essence</h3>
-                    <div className="space-y-4">
-                      <label className="flex items-center gap-12 cursor-pointer group rounded-md px-8 py-8 -mx-8 hover:bg-mist transition-colors">
-                        <input
-                          type="radio"
-                          name="species"
-                          value="all"
-                          checked={selectedSpecies === 'all'}
-                          onChange={() => setSelectedSpecies('all')}
-                          className="w-16 h-16 accent-braise cursor-pointer"
-                        />
-                        <span className={`text-body-sm transition-colors ${selectedSpecies === 'all' ? 'text-charcoal font-medium' : 'text-smoke group-hover:text-charcoal'}`}>Toutes</span>
-                      </label>
-                      <label className="flex items-center gap-12 cursor-pointer group rounded-md px-8 py-8 -mx-8 hover:bg-mist transition-colors">
-                        <input
-                          type="radio"
-                          name="species"
-                          value="chene"
-                          checked={selectedSpecies === 'chene'}
-                          onChange={() => setSelectedSpecies('chene')}
-                          className="w-16 h-16 accent-braise cursor-pointer"
-                        />
-                        <span className={`text-body-sm transition-colors ${selectedSpecies === 'chene' ? 'text-charcoal font-medium' : 'text-smoke group-hover:text-charcoal'}`}>Chêne</span>
-                      </label>
-                      <label className="flex items-center gap-12 cursor-pointer group rounded-md px-8 py-8 -mx-8 hover:bg-mist transition-colors">
-                        <input
-                          type="radio"
-                          name="species"
-                          value="hetre"
-                          checked={selectedSpecies === 'hetre'}
-                          onChange={() => setSelectedSpecies('hetre')}
-                          className="w-16 h-16 accent-braise cursor-pointer"
-                        />
-                        <span className={`text-body-sm transition-colors ${selectedSpecies === 'hetre' ? 'text-charcoal font-medium' : 'text-smoke group-hover:text-charcoal'}`}>Hêtre</span>
-                      </label>
-                      <label className="flex items-center gap-12 cursor-pointer group rounded-md px-8 py-8 -mx-8 hover:bg-mist transition-colors">
-                        <input
-                          type="radio"
-                          name="species"
-                          value="charme"
-                          checked={selectedSpecies === 'charme'}
-                          onChange={() => setSelectedSpecies('charme')}
-                          className="w-16 h-16 accent-braise cursor-pointer"
-                        />
-                        <span className={`text-body-sm transition-colors ${selectedSpecies === 'charme' ? 'text-charcoal font-medium' : 'text-smoke group-hover:text-charcoal'}`}>Charme</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setSelectedCategory('all')
-                      setSelectedSpecies('all')
-                    }}
-                    className="mt-28 w-full py-10 text-body-sm text-smoke hover:text-braise transition-colors border-t border-hairline pt-20"
-                  >
-                    Réinitialiser les filtres
-                  </button>
-                </div>
-              </div>
-            </aside>
-
-            {/* Products */}
-            <div className="md:col-span-9">
-              {/* Toolbar */}
-              <div className="flex items-center justify-between mb-32 pb-24 border-b border-hairline">
-                <p className="text-body-sm text-smoke">
-                  {filteredAndSortedProducts.length} produit{filteredAndSortedProducts.length > 1 ? 's' : ''}
-                </p>
-                <div className="flex items-center gap-16">
-                  <label htmlFor="sort" className="text-body-sm text-smoke">
-                    Trier par
-                  </label>
-                  <select
-                    id="sort"
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as SortOption)}
-                    className="px-16 py-8 bg-white border border-hairline rounded-card text-body-sm text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
-                  >
-                    <option value="relevance">Pertinence</option>
-                    <option value="price-asc">Prix croissant</option>
-                    <option value="price-desc">Prix décroissant</option>
-                    <option value="name">Nom</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Product Grid */}
-              {filteredAndSortedProducts.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-24 md:gap-32">
-                  {filteredAndSortedProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-64">
-                  <p className="text-body-lg text-smoke mb-24">Aucun produit ne correspond à vos critères.</p>
-                  <button
-                    onClick={() => {
-                      setSelectedCategory('all')
-                      setSelectedSpecies('all')
-                    }}
-                    className="inline-flex items-center gap-12 px-32 py-12 bg-charcoal text-white rounded-pill hover:bg-charcoal/90 transition-colors font-medium"
-                  >
-                    Réinitialiser les filtres
-                  </button>
-                </div>
-              )}
+  return <>
+    <Header />
+    <main id="main-content" className="min-h-screen bg-ivory">
+      <section className="relative h-[42vh] min-h-[340px] flex items-center justify-center overflow-hidden bg-charcoal">
+        <Image src={isAgriculture ? '/images/braviko-hero.jpg' : '/images/photorealistic-perspective-wood-logs.jpg'} alt={isAgriculture ? copy.shop.agricultureImage : copy.shop.heatingImage} fill priority className="object-cover" sizes="100vw" quality={75} />
+        <div className="absolute inset-0 bg-charcoal/55" />
+        <div className="relative z-10 container-custom text-center text-white"><p className="bk-eyebrow text-white/80">BRAVIKO · {title}</p><h1 className="text-[48px] sm:text-[56px] md:text-[72px] font-semibold text-balance leading-[1.05] tracking-tight">{title}</h1><p className="mt-16 text-[16px] sm:text-[18px] text-white/90 max-w-[560px] mx-auto leading-relaxed">{intro}</p></div>
+      </section>
+      <div className="bg-white border-b border-hairline"><div className="container-custom py-20"><nav className="flex items-center gap-12 text-body-sm"><Link href="/" className="text-smoke hover:text-braise transition-colors">{copy.common.home}</Link><span className="text-ash">/</span><span className="text-charcoal font-medium">{title}</span></nav></div></div>
+      <section className="container-custom py-48">
+        <div className="grid gap-32 lg:grid-cols-[220px_minmax(0,1fr)]">
+          {availableCategories.length > 1 && <aside className="border-t border-hairline pt-20"><p className="bk-eyebrow">{copy.shop.filter}</p><h2 className="text-heading-sm font-semibold text-charcoal mt-8 mb-16">{copy.shop.categories}</h2><div className="grid gap-4"><button type="button" onClick={() => setSelectedCategory('all')} className={'text-left py-8 text-body-sm transition-colors ' + (selectedCategory === 'all' ? 'font-semibold text-charcoal' : 'text-smoke hover:text-charcoal')}>{copy.shop.allProducts}</button>{availableCategories.map(category => <button key={category} type="button" onClick={() => setSelectedCategory(category)} className={'text-left py-8 text-body-sm transition-colors ' + (selectedCategory === category ? 'font-semibold text-charcoal' : 'text-smoke hover:text-charcoal')}>{categoryLabels[locale][category]}</button>)}</div></aside>}
+          <div>
+            <div className="flex flex-wrap items-center justify-between gap-16 mb-32 pb-24 border-b border-hairline">
+              <p className="text-body-sm text-smoke">{filteredAndSortedProducts.length} {copy.shop.product}{filteredAndSortedProducts.length > 1 ? 's' : ''}</p>
+              <div className="flex items-center gap-12"><div className="flex rounded-card border border-hairline" aria-label={copy.shop.display}><button type="button" onClick={() => setViewMode('grid')} aria-pressed={viewMode === 'grid'} className={'px-12 py-8 text-body-sm ' + (viewMode === 'grid' ? 'bg-charcoal text-white' : 'text-smoke')}>{copy.shop.grid}</button><button type="button" onClick={() => setViewMode('list')} aria-pressed={viewMode === 'list'} className={'px-12 py-8 text-body-sm ' + (viewMode === 'list' ? 'bg-charcoal text-white' : 'text-smoke')}>{copy.shop.list}</button></div><label htmlFor="sort" className="text-body-sm text-smoke">{copy.shop.sort}</label><select id="sort" value={sortBy} onChange={(event) => setSortBy(event.target.value as SortOption)} className="px-16 py-8 bg-white border border-hairline rounded-card text-body-sm text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"><option value="relevance">{copy.shop.relevance}</option><option value="price-asc">{copy.shop.lowPrice}</option><option value="price-desc">{copy.shop.highPrice}</option><option value="name">{copy.shop.name}</option></select></div>
             </div>
+            {pageProducts.length > 0 ? <><div className={viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 gap-24 md:gap-32' : 'bk-products-list'}>{pageProducts.map(product => <ProductCard key={product.id} product={product} />)}</div>{pageCount > 1 && <nav className="flex items-center justify-center gap-8 mt-48" aria-label={copy.shop.pagination}><button type="button" onClick={() => setPage(current => Math.max(1, current - 1))} disabled={page === 1} className="px-16 py-10 border border-hairline rounded-card disabled:opacity-40">{copy.shop.previous}</button>{Array.from({ length: pageCount }, (_, index) => index + 1).map(number => <button type="button" key={number} onClick={() => setPage(number)} aria-current={page === number ? 'page' : undefined} className={'w-40 h-40 rounded-card border ' + (page === number ? 'border-charcoal bg-charcoal text-white' : 'border-hairline')}>{number}</button>)}<button type="button" onClick={() => setPage(current => Math.min(pageCount, current + 1))} disabled={page === pageCount} className="px-16 py-10 border border-hairline rounded-card disabled:opacity-40">{copy.shop.next}</button></nav>}</> : <div className="text-center py-64"><p className="text-body-lg text-smoke">{catalogError ? copy.common.unavailable : copy.common.loading}</p></div>}
           </div>
-
-          {/* Mobile Filter Button */}
-          <button
-            onClick={() => setMobileFiltersOpen(true)}
-            className="md:hidden fixed bottom-24 right-24 z-40 px-24 py-16 bg-charcoal text-white rounded-pill shadow-lg flex items-center gap-12 font-medium"
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 6h12M4 10h8M4 14h12" />
-            </svg>
-            Filtres
-          </button>
-
-          {mobileFiltersOpen && (
-            <div className="md:hidden fixed inset-0 z-50 bg-charcoal/40" onClick={() => setMobileFiltersOpen(false)}>
-              <div className="absolute inset-x-0 bottom-0 bg-white rounded-t-3xl p-24" onClick={(event) => event.stopPropagation()}>
-                <div className="flex items-center justify-between mb-24">
-                  <h2 className="text-heading-sm font-semibold text-charcoal">Filtres</h2>
-                  <button onClick={() => setMobileFiltersOpen(false)} className="text-smoke" aria-label="Fermer les filtres">Fermer</button>
-                </div>
-                <h3 className="text-[11px] font-semibold text-ash uppercase tracking-wide mb-12">Catégorie</h3>
-                <div className="grid grid-cols-2 gap-8 mb-24">
-                  {(['all', ...catalogCategories.map((cat) => cat.id)] as string[]).map((category) => (
-                    <button key={category} onClick={() => setSelectedCategory(category)} className={`text-left px-12 py-10 rounded-md border ${selectedCategory === category ? 'border-braise bg-braise/10 text-charcoal' : 'border-hairline text-smoke'}`}>
-                      {category === 'all' ? 'Tous' : catalogCategories.find((cat) => cat.id === category)?.name}
-                    </button>
-                  ))}
-                </div>
-                <button onClick={() => setMobileFiltersOpen(false)} className="w-full py-12 bg-charcoal text-white rounded-pill">Voir les produits</button>
-              </div>
-            </div>
-          )}
         </div>
-      </main>
-      <Footer />
-    </>
-  )
+      </section>
+    </main>
+    <Footer />
+  </>
 }
 
 export default function ShopPage() {

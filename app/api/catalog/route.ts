@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-)
+function getCatalogClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+
+  if (!url || !key) throw new Error('La configuration du catalogue est absente.')
+  return createClient(url, key)
+}
 
 export async function GET(request: NextRequest) {
+  const supabase = getCatalogClient()
   const slug = request.nextUrl.searchParams.get('slug')
   let query = supabase
     .from('braviko_products')
@@ -36,6 +40,7 @@ export async function GET(request: NextRequest) {
     return {
       id: item.id,
       slug: item.slug,
+      featured: Boolean(item.featured),
       name: fr.name || item.slug,
       category: item.braviko_categories?.slug || 'buches',
       description: fr.short_description || '',
@@ -49,6 +54,7 @@ export async function GET(request: NextRequest) {
       translations: {
         de: translations.de?.name || fr.name || item.slug,
         it: translations.it?.name || fr.name || item.slug,
+        description: { de: translations.de?.short_description || '', it: translations.it?.short_description || '' },
         conditioning: { de: translations.de?.conditioning || '', it: translations.it?.conditioning || '' },
         delivery: { de: translations.de?.delivery_info || '', it: translations.it?.delivery_info || '' },
       },
@@ -56,5 +62,7 @@ export async function GET(request: NextRequest) {
   })
 
   const categories = [...new Map(products.map((product: any) => [product.category, { id: product.category, name: product.category }])).values()]
-  return NextResponse.json({ products, categories })
+  return NextResponse.json({ products, categories }, {
+    headers: { 'Cache-Control': 'no-store' },
+  })
 }

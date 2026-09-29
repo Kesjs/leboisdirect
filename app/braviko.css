@@ -97,6 +97,13 @@
 .bk-tabs > button > span:not(.bk-tab-underline) { font-size: 11px; }
 .bk-tab-underline { position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--bk-accent); }
 .bk-products-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px 24px; }
+.bk-products-list { display: grid; gap: 24px; }
+.bk-products-list .bk-product { display: grid; grid-template-columns: minmax(210px, .72fr) minmax(0, 1fr) minmax(180px, .45fr); column-gap: 24px; align-items: end; padding-bottom: 24px; border-bottom: 1px solid var(--bk-line); }
+.bk-products-list .bk-product-link { display: contents; }
+.bk-products-list .bk-product-photo { grid-column: 1; grid-row: 1 / span 4; }
+.bk-products-list .bk-product-category, .bk-products-list .bk-product h3, .bk-products-list .bk-product-excerpt, .bk-products-list .bk-product-conditioning { grid-column: 2; }
+.bk-products-list .bk-product-purchase { grid-column: 3; grid-row: 1 / span 4; }
+.bk-products-list .bk-product-feedback { display: none; }
 .bk-product { min-width: 0; }
 .bk-product-photo { position: relative; aspect-ratio: 1.3; overflow: hidden; border-radius: var(--bk-radius); background: var(--bk-surface); }
 .bk-product-photo img { transition: transform .65s var(--bk-ease), opacity .5s; }
@@ -118,6 +125,24 @@
 .bk-product-add:hover, .bk-product-add.is-added { background: var(--bk-ink); color: white; border-color: var(--bk-ink); }
 .bk-product-add:active { transform: scale(.94); }
 .bk-product-feedback { display: block; min-height: 20px; color: var(--bk-accent); font-size: 11px; padding-top: 4px; }
+.bk-product-faq, .bk-related-products { margin-top: 96px; padding-top: 64px; border-top: 1px solid var(--bk-line); }
+.bk-product-section-heading { max-width: 640px; }
+.bk-product-section-heading h2 { font-size: clamp(30px, 4vw, 48px); line-height: 1.05; letter-spacing: -.045em; font-weight: 500; margin-top: 12px; }
+.bk-product-section-heading > p:last-child { color: var(--bk-muted); line-height: 1.6; margin-top: 16px; max-width: 52ch; }
+.bk-product-faq-list { max-width: 880px; margin-top: 40px; border-top: 1px solid var(--bk-line); }
+.bk-product-faq-list details { border-bottom: 1px solid var(--bk-line); }
+.bk-product-faq-list summary { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 24px 0; list-style: none; cursor: pointer; font-size: 18px; line-height: 1.35; }
+.bk-product-faq-list summary::-webkit-details-marker { display: none; }
+.bk-product-faq-list summary span { color: var(--bk-accent); font-size: 24px; font-weight: 300; transition: transform .2s ease; }
+.bk-product-faq-list details[open] summary span { transform: rotate(45deg); }
+.bk-product-faq-list details p { max-width: 66ch; color: var(--bk-muted); line-height: 1.65; padding: 0 48px 24px 0; }
+.bk-related-heading { display: flex; align-items: end; justify-content: space-between; gap: 32px; max-width: none; }
+.bk-related-scroller { display: flex; gap: 24px; overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory; scrollbar-width: thin; padding: 40px 0 20px; }
+.bk-related-scroller .bk-product { flex: 0 0 min(310px, 72vw); scroll-snap-align: start; }
+.bk-related-scroller .bk-product-photo { aspect-ratio: 1.15; }
+.bk-related-scroller .bk-product h3 { font-size: 18px; }
+.bk-related-scroller::-webkit-scrollbar { height: 6px; }
+.bk-related-scroller::-webkit-scrollbar-thumb { background: var(--bk-line); border-radius: 999px; }
 .bk-agriculture-preview { display: grid; grid-template-columns: 1.1fr 1fr; min-height: 420px; background: var(--bk-surface); border-radius: 8px; overflow: hidden; }
 .bk-agriculture-photo { position: relative; min-height: 340px; }
 .bk-agriculture-preview > div:last-child { padding: clamp(28px, 4vw, 64px); align-self: center; }
@@ -128,8 +153,8 @@
 .bk-story { background: var(--bk-surface); }
 .bk-story-steps { display: grid; gap: clamp(56px, 8vw, 112px); }
 .bk-story-step { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .9fr); gap: clamp(32px, 7vw, 112px); align-items: center; }
-.bk-story-step:nth-child(even) .bk-story-step-media { order: 2; }
-.bk-story-step:nth-child(even) .bk-story-step-copy { order: 1; }
+.bk-story-step--reverse .bk-story-step-media { order: 2; }
+.bk-story-step--reverse .bk-story-step-copy { order: 1; }
 .bk-story-step-media { position: relative; min-height: 360px; aspect-ratio: 1.2; overflow: hidden; border-radius: var(--bk-radius); background: #d9d9d0; }
 .bk-story-step-copy { max-width: 520px; }
 .bk-story-step-copy h2 { font-size: clamp(32px, 4vw, 60px); line-height: 1.03; letter-spacing: -.045em; font-weight: 500; text-wrap: balance; margin-bottom: 20px; }
@@ -255,6 +280,9 @@
   .bk-story-step { gap: 32px; }
 }
 @media (max-width: 700px) {
+  .bk-products-list .bk-product { display: block; padding-bottom: 0; border-bottom: 0; }
+  .bk-products-list .bk-product-link { display: block; }
+  .bk-products-list .bk-product-photo, .bk-products-list .bk-product-category, .bk-products-list .bk-product h3, .bk-products-list .bk-product-excerpt, .bk-products-list .bk-product-conditioning, .bk-products-list .bk-product-purchase { grid-column: auto; grid-row: auto; }
   .bk-container { width: calc(100% - 40px); }
   .bk-nav { min-height: 72px; gap: 12px; }
   .bk-nav { padding-inline: 4px; }
@@ -272,12 +300,18 @@
   .bk-world-bottom h2 { font-size: 36px; }
   .bk-hero-foot { gap: 16px; align-items: flex-start; }
   .bk-hero-foot p { text-align: left; font-size: 10px; }
-  .bk-story-step, .bk-story-step:nth-child(even) { grid-template-columns: 1fr; gap: 28px; }
-  .bk-story-step:nth-child(even) .bk-story-step-media, .bk-story-step:nth-child(even) .bk-story-step-copy { order: initial; }
+  .bk-story-step, .bk-story-step--reverse { grid-template-columns: 1fr; gap: 28px; }
+  .bk-story-step--reverse .bk-story-step-media, .bk-story-step--reverse .bk-story-step-copy { order: initial; }
   .bk-story-step-media { min-height: 260px; }
   .bk-hero-foot > span:last-child { display: none; }
   .bk-selection-heading { display: block; }
   .bk-selection-heading > .bk-text-link { margin-top: 20px; }
+  .bk-related-heading { display: block; }
+  .bk-related-heading > .bk-text-link { display: inline-block; margin-top: 20px; }
+  .bk-product-faq, .bk-related-products { margin-top: 72px; padding-top: 48px; }
+  .bk-product-faq-list { margin-top: 28px; }
+  .bk-product-faq-list summary { font-size: 16px; padding: 20px 0; }
+  .bk-product-faq-list details p { padding-right: 24px; }
   .bk-tabs { gap: 28px; }
   .bk-tabs > button { font-size: 14px; gap: 12px; }
   .bk-story-panel { grid-template-columns: 1fr; gap: 28px; }

@@ -8,16 +8,19 @@ import { notFound } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Button from '@/components/Button'
-import { products } from '@/data/products'
+import ProductCard from '@/components/ProductCard'
+import type { Product } from '@/data/products'
 import { formatPrice } from '@/lib/utils'
 import { useCart } from '@/lib/cart-context'
 import { useI18n } from '@/lib/i18n-context'
 import { commerceCopy } from '@/data/commerce-copy'
 import { categoryLabels, productLabel } from '@/data/product-labels'
+import { uiCopy } from '@/data/ui-copy'
 
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
-  const [product, setProduct] = useState(() => products.find((p) => p.slug === slug) || null)
+  const [product, setProduct] = useState<Product | null>(null)
+  const [catalogProducts, setCatalogProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
@@ -28,14 +31,17 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const { addItem } = useCart()
   const { locale } = useI18n()
   const c = commerceCopy[locale]
+  const ui = uiCopy[locale]
 
   useEffect(() => {
     let active = true
-    fetch(`/api/catalog?slug=${encodeURIComponent(slug)}`)
+    fetch('/api/catalog')
       .then(response => response.ok ? response.json() : Promise.reject(new Error('product unavailable')))
       .then(payload => {
         if (!active) return
-        if (payload.products?.[0]) setProduct(payload.products[0])
+        setCatalogProducts(payload.products || [])
+        const current = payload.products?.find((item: Product) => item.slug === slug)
+        setProduct(current || null)
         setLoading(false)
       })
       .catch(() => { if (active) setLoading(false) })
@@ -46,7 +52,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     setSelectedVariant(product?.variants?.[0]?.id || '')
   }, [product])
 
-  if (loading && !product) return <main className="grid min-h-screen place-items-center bg-ivory text-smoke">Chargement du produit…</main>
+  if (loading && !product) return <main className="grid min-h-screen place-items-center bg-ivory text-smoke">{ui.product.loading}</main>
 
   if (!product) {
     notFound()
@@ -54,6 +60,66 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
   const currentVariant = product.variants?.find((v) => v.id === selectedVariant)
   const currentPrice = currentVariant?.price || product.price
+  const relatedProducts = catalogProducts
+    .filter((item) => item.id !== product.id && item.category === product.category)
+    .slice(0, 6)
+
+  const faqCopy = {
+    fr: {
+      eyebrow: 'Avant de choisir',
+      title: 'Les questions utiles',
+      intro: 'Les réponses essentielles pour choisir sereinement et préparer votre livraison.',
+      questions: product.category === 'machines-agricoles'
+        ? [
+            ['À quel usage ce produit est-il destiné ?', 'Cette référence est sélectionnée pour les travaux courants du terrain. Consultez les caractéristiques de la fiche pour vérifier la puissance, les dimensions et l’usage adapté à votre besoin.'],
+            ['Que comprend le conditionnement ?', `Le conditionnement prévu est : ${productLabel(product, locale).conditioning}.`],
+            ['Comment se passe la livraison ?', `La livraison est généralement organisée sous 5 à 10 jours. ${productLabel(product, locale).delivery}`],
+            ['Besoin d’aide avant de commander ?', 'Contactez-nous avec la surface à travailler et votre usage. Nous vous aiderons à comparer les références disponibles.'],
+          ]
+        : [
+            ['Quel format choisir pour mon installation ?', `Le format proposé pour cette référence est : ${productLabel(product, locale).conditioning}. Vérifiez toujours les dimensions acceptées par votre appareil.`],
+            ['Comment se passe la livraison ?', `La livraison est généralement organisée sous 5 à 10 jours. ${productLabel(product, locale).delivery}`],
+            ['Le produit est-il prêt à être utilisé ?', 'Chaque fiche précise le conditionnement et les caractéristiques utiles. Conservez les produits à l’abri de l’humidité et préparez un accès dégagé pour le déchargement.'],
+            ['Besoin d’un conseil personnalisé ?', 'Contactez-nous avec votre appareil, votre quantité habituelle et votre zone de livraison. Nous vous orienterons vers le bon format.'],
+          ],
+    },
+    de: {
+      eyebrow: 'Vor der Auswahl',
+      title: 'Wichtige Fragen',
+      intro: 'Die wichtigsten Antworten für eine sichere Auswahl und eine gut vorbereitete Lieferung.',
+      questions: product.category === 'machines-agricoles'
+        ? [
+            ['Für welchen Einsatz ist das Produkt gedacht?', 'Diese Referenz eignet sich für typische Arbeiten auf dem Grundstück. Prüfen Sie Leistung, Maße und den vorgesehenen Einsatz in den Produktdetails.'],
+            ['Was ist im Lieferumfang enthalten?', `Die Verpackung ist: ${productLabel(product, locale).conditioning}.`],
+            ['Wie läuft die Lieferung ab?', `Die Lieferung wird normalerweise innerhalb von 5 bis 10 Tagen organisiert. ${productLabel(product, locale).delivery}`],
+            ['Brauchen Sie Hilfe vor der Bestellung?', 'Nennen Sie uns die zu bearbeitende Fläche und Ihren Einsatz. Wir helfen Ihnen beim Vergleich der verfügbaren Produkte.'],
+          ]
+        : [
+            ['Welches Format passt zu meiner Anlage?', `Das Format dieser Referenz ist: ${productLabel(product, locale).conditioning}. Prüfen Sie immer die Maße Ihres Geräts.`],
+            ['Wie läuft die Lieferung ab?', `Die Lieferung wird normalerweise innerhalb von 5 bis 10 Tagen organisiert. ${productLabel(product, locale).delivery}`],
+            ['Ist das Produkt sofort einsatzbereit?', 'Verpackung und Eigenschaften finden Sie auf dieser Produktseite. Lagern Sie die Produkte trocken und halten Sie den Abladeort frei.'],
+            ['Brauchen Sie eine persönliche Beratung?', 'Nennen Sie uns Ihr Gerät, Ihre übliche Menge und Ihren Lieferort. Wir helfen Ihnen beim richtigen Format.'],
+          ],
+    },
+    it: {
+      eyebrow: 'Prima di scegliere',
+      title: 'Le domande utili',
+      intro: 'Le risposte essenziali per scegliere con serenità e preparare la consegna.',
+      questions: product.category === 'machines-agricoles'
+        ? [
+            ['Per quale utilizzo è pensato?', 'Questa referenza è adatta ai lavori più comuni sul terreno. Verifica potenza, dimensioni e uso previsto nella scheda prodotto.'],
+            ['Cosa comprende la confezione?', `Il formato previsto è: ${productLabel(product, locale).conditioning}.`],
+            ['Come funziona la consegna?', `La consegna viene normalmente organizzata in 5-10 giorni. ${productLabel(product, locale).delivery}`],
+            ['Serve aiuto prima dell’ordine?', 'Indicaci la superficie da lavorare e l’uso previsto. Ti aiuteremo a confrontare le referenze disponibili.'],
+          ]
+        : [
+            ['Quale formato scegliere per il mio impianto?', `Il formato di questa referenza è: ${productLabel(product, locale).conditioning}. Verifica sempre le dimensioni ammesse dal tuo apparecchio.`],
+            ['Come funziona la consegna?', `La consegna viene normalmente organizzata in 5-10 giorni. ${productLabel(product, locale).delivery}`],
+            ['Il prodotto è pronto all’uso?', 'La scheda indica confezione e caratteristiche utili. Conserva i prodotti al riparo dall’umidità e prepara un accesso libero per lo scarico.'],
+            ['Serve un consiglio personalizzato?', 'Indicaci il tuo apparecchio, la quantità abituale e la zona di consegna. Ti aiuteremo a scegliere il formato giusto.'],
+          ],
+    },
+  }[locale]
 
   const handleAddToCart = () => {
     addItem(product, quantity, selectedVariant || undefined)
@@ -70,11 +136,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
           <div className="container-custom py-20">
             <nav className="flex items-center gap-12 text-body-sm flex-wrap">
               <Link href="/" className="text-smoke hover:text-braise transition-colors">
-                Accueil
+                {ui.common.home}
               </Link>
               <span className="text-ash">/</span>
               <Link href="/boutique" className="text-smoke hover:text-braise transition-colors">
-                Boutique
+                {ui.common.shop}
               </Link>
               <span className="text-ash">/</span>
               <span className="text-charcoal font-medium">{productLabel(product, locale).name}</span>
@@ -136,20 +202,18 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
               {product.species && (
                 <p className="text-body text-smoke mb-16 capitalize">
-                  Essence : {product.species === 'chene' && 'Chêne'}
-                  {product.species === 'hetre' && 'Hêtre'}
-                  {product.species === 'charme' && 'Charme'}
+                  {ui.product.species} : {ui.product.speciesNames[product.species]}
                 </p>
               )}
 
-              <p className="text-body-lg text-smoke mb-16 leading-relaxed">{product.description}</p>
+              <p className="text-body-lg text-smoke mb-16 leading-relaxed">{productLabel(product, locale).description}</p>
               <p className="text-body-sm text-ash mb-32">{product.conditioning ? `${c.conditioning} : ${productLabel(product, locale).conditioning}` : ''}</p>
 
               <div className="mb-40 pb-40 border-b border-hairline">
                 <div className="text-[48px] font-semibold text-charcoal tracking-tight mb-8">
                   {formatPrice(currentPrice)}
                 </div>
-                <p className="text-body-sm text-ash">{product.deliveryInfo}</p>
+                <p className="text-body-sm text-ash">{productLabel(product, locale).delivery}</p>
               </div>
 
               {/* Variants */}
@@ -167,7 +231,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                             : 'border-hairline hover:border-smoke bg-white text-charcoal'
                         }`}
                       >
-                        <div className="font-semibold">{variant.volume} stère{variant.volume && variant.volume > 1 ? 's' : ''}</div>
+                        <div className="font-semibold">{variant.volume} {variant.volume && variant.volume > 1 ? ui.product.units : ui.product.unit}</div>
                         <div className="text-[13px] mt-4 opacity-80">{formatPrice(variant.price)}</div>
                       </button>
                     ))}
@@ -268,7 +332,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                     {product.conditioning && (
                       <div>
                         <dt className="text-body-sm font-semibold text-charcoal">{c.conditioning}</dt>
-                        <dd className="text-body-sm text-smoke mt-4">{product.conditioning}</dd>
+                        <dd className="text-body-sm text-smoke mt-4">{productLabel(product, locale).conditioning}</dd>
                       </div>
                     )}
                   </dl>
@@ -276,6 +340,39 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               )}
             </div>
           </div>
+
+          <section className="bk-product-faq" aria-labelledby="product-faq-title">
+            <div className="bk-product-section-heading">
+              <p className="bk-eyebrow">{faqCopy.eyebrow}</p>
+              <h2 id="product-faq-title">{faqCopy.title}</h2>
+              <p>{faqCopy.intro}</p>
+            </div>
+            <div className="bk-product-faq-list">
+              {faqCopy.questions.map(([question, answer]) => (
+                <details key={question}>
+                  <summary>{question}<span aria-hidden="true">+</span></summary>
+                  <p>{answer}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+
+          {relatedProducts.length > 0 && (
+            <section className="bk-related-products" aria-labelledby="related-products-title">
+              <div className="bk-product-section-heading bk-related-heading">
+                <div>
+                  <p className="bk-eyebrow">{ui.product.relatedEyebrow}</p>
+                  <h2 id="related-products-title">{ui.product.relatedTitle}</h2>
+                </div>
+                <Link href={`/boutique?cat=${encodeURIComponent(product.category)}`} className="bk-text-link">
+                  {ui.product.viewCategory} <span aria-hidden="true">↗</span>
+                </Link>
+              </div>
+              <div className="bk-related-scroller">
+                {relatedProducts.map((relatedProduct) => <ProductCard key={relatedProduct.id} product={relatedProduct} />)}
+              </div>
+            </section>
+          )}
         </div>
       </main>
       <Footer />
