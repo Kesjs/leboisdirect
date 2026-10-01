@@ -641,6 +641,12 @@ function ProductEditor({
         </button>
       </div>
       <div className="mt-6 grid gap-5">
+        {values.status !== "published" && (
+          <div className="rounded-[14px] border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <p className="font-semibold">Cette fiche n’est pas visible sur la boutique</p>
+            <p className="mt-1 text-xs leading-5">Passe l’état à « Publié » pour l’afficher sur le site. Les brouillons restent visibles uniquement dans l’administration.</p>
+          </div>
+        )}
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="grid gap-2 text-sm font-medium sm:col-span-2">
             Nom du produit
