@@ -594,14 +594,13 @@ function ProductEditor({
       ...current,
       names: { ...current.names, [language]: value },
     }));
-  const submit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const save = async (publish = false) => {
     setSaving(true);
     try {
       const filesToSave = watermark
         ? await Promise.all(files.map(addWatermark))
         : files;
-      const valuesToSave = { ...values, imageUrls };
+      const valuesToSave = { ...values, imageUrls, status: publish ? ("published" as const) : values.status };
       if (product)
         await onSave(
           product.id,
@@ -614,6 +613,10 @@ function ProductEditor({
     } finally {
       setSaving(false);
     }
+  };
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    await save();
   };
   return (
     <form
@@ -809,6 +812,16 @@ function ProductEditor({
               : "Créer le produit"}{" "}
           <span aria-hidden="true">↗</span>
         </button>
+        {product && values.status !== "published" && (
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => void save(true)}
+            className="rounded-full bg-forest px-6 py-3 text-sm font-semibold text-white transition hover:bg-forest/80 disabled:opacity-50"
+          >
+            {saving ? "Publication…" : "Publier et enregistrer"} <span aria-hidden="true">↗</span>
+          </button>
+        )}
       </div>
     </form>
   );
