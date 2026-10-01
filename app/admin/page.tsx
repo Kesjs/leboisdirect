@@ -490,20 +490,20 @@ export default function AdminPage() {
     );
   return (
     <main className="min-h-screen bg-ivory text-charcoal">
-      <header className="border-b border-hairline bg-ivory/95 px-6 py-5 backdrop-blur sm:px-10">
-        <div className="mx-auto flex max-w-container items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
+      <header className="border-b border-hairline bg-ivory/95 px-4 py-4 backdrop-blur sm:px-10 sm:py-5">
+        <div className="mx-auto flex max-w-container items-center justify-between gap-3 sm:gap-6">
+          <div className="flex min-w-0 items-center gap-3 sm:gap-5">
             <Logo />
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[.22em] text-braise">
+              <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-braise sm:text-xs sm:tracking-[.22em]">
                 Braviko / Admin
               </p>
-              <h1 className="mt-2 text-2xl font-semibold tracking-tight">
+              <h1 className="mt-1 truncate text-lg font-semibold tracking-tight sm:mt-2 sm:text-2xl">
                 Votre catalogue, au même endroit
               </h1>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <Link
               href="/"
               className="hidden text-sm text-smoke transition hover:text-charcoal sm:block"
@@ -512,15 +512,15 @@ export default function AdminPage() {
             </Link>
             <button
               onClick={() => supabase.auth.signOut().then(() => checkAccess())}
-              className="rounded-full border border-hairline px-4 py-2 text-sm transition hover:border-charcoal"
+              className="rounded-full border border-hairline px-3 py-2 text-xs transition hover:border-charcoal sm:px-4 sm:text-sm"
             >
               Déconnexion
             </button>
           </div>
         </div>
       </header>
-      <div className="mx-auto max-w-container px-6 pt-8 sm:px-10">
-        <section className="relative isolate overflow-hidden rounded-[24px] bg-charcoal px-7 py-9 text-white sm:px-10 sm:py-12">
+      <div className="mx-auto max-w-container px-4 pt-5 sm:px-10 sm:pt-8">
+        <section className="relative isolate overflow-hidden rounded-[20px] bg-charcoal px-5 py-7 text-white sm:rounded-[24px] sm:px-10 sm:py-12">
           <Image
             src="/images/agriculture-chainsaw.jpg"
             alt="Équipement Braviko au travail"
@@ -531,17 +531,17 @@ export default function AdminPage() {
           />
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-charcoal via-charcoal/80 to-transparent" />
           <div className="relative max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[.22em] text-orange-200">
+            <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-orange-200 sm:text-xs sm:tracking-[.22em]">
               Espace catalogue
             </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:mt-3 sm:text-4xl">
               Préparez une boutique qui vous ressemble.
             </h2>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-white/75">
+            <p className="mt-3 max-w-xl text-sm leading-6 text-white/75 sm:mt-4">
               Une vue claire pour gérer les fiches, les stocks, les statuts et
               les visuels avant leur mise en ligne.
             </p>
-            <div className="mt-7 flex flex-wrap gap-3 text-sm">
+            <div className="mt-5 flex flex-wrap gap-2 text-xs sm:mt-7 sm:gap-3 sm:text-sm">
               <span className="rounded-full border border-white/20 bg-white/10 px-4 py-2">
                 {products.length} produits suivis
               </span>
@@ -555,7 +555,7 @@ export default function AdminPage() {
           </div>
         </section>
       </div>
-      <div className="mx-auto max-w-container px-6 py-10 sm:px-10">
+      <div className="mx-auto max-w-container px-4 py-6 sm:px-10 sm:py-10">
         <CatalogWorkspace
           products={products}
           categories={categories}

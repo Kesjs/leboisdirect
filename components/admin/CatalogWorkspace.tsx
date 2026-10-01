@@ -872,7 +872,7 @@ export default function CatalogWorkspace({
     [products],
   );
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(390px,480px)] lg:items-start">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(390px,480px)] lg:gap-8 lg:items-start">
       <section className="min-w-0">
         <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -887,7 +887,7 @@ export default function CatalogWorkspace({
               setCreating(true);
               setSelectedId(null);
             }}
-            className="inline-flex h-[48px] items-center justify-center gap-2 rounded-full bg-charcoal px-5 text-sm font-semibold text-white transition hover:bg-braise"
+            className="inline-flex h-[48px] w-full items-center justify-center gap-2 rounded-full bg-charcoal px-5 text-sm font-semibold text-white transition hover:bg-braise sm:w-auto"
           >
             <Icon name="plus" /> Nouveau produit
           </button>
@@ -905,7 +905,6 @@ export default function CatalogWorkspace({
         <div className="mb-4 grid gap-3 sm:grid-cols-[1fr_auto]">
           <label className="relative">
             <span className="sr-only">Rechercher un produit</span>
-            <Icon name="search" />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
@@ -916,7 +915,7 @@ export default function CatalogWorkspace({
               <Icon name="search" />
             </span>
           </label>
-          <div className="flex rounded-full border border-hairline bg-white p-1 text-xs font-medium">
+          <div className="flex max-w-full overflow-x-auto rounded-full border border-hairline bg-white p-1 text-xs font-medium">
             {(["all", "published", "draft"] as const).map((item) => (
               <button
                 type="button"
@@ -1034,7 +1033,7 @@ export default function CatalogWorkspace({
           </div>
         </details>
       </section>
-      <aside className="lg:sticky lg:top-6">
+      <aside className="order-first min-w-0 lg:order-none lg:sticky lg:top-6">
         {creating || selected ? (
           <ProductEditor
             key={creating ? "new" : selected?.id}
