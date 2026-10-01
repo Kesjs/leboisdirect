@@ -9,6 +9,12 @@ function getCatalogClient() {
   return createClient(url, key)
 }
 
+function resolveImageUrl(path: string, supabase: ReturnType<typeof getCatalogClient>) {
+  return path.startsWith('http://') || path.startsWith('https://')
+    ? path
+    : supabase.storage.from('braviko-product-media').getPublicUrl(path).data.publicUrl
+}
+
 export async function GET(request: NextRequest) {
   const supabase = getCatalogClient()
   const slug = request.nextUrl.searchParams.get('slug')
@@ -34,7 +40,7 @@ export async function GET(request: NextRequest) {
     const variants = [...(item.braviko_product_variants || [])].sort((a: any, b: any) => Number(a.price) - Number(b.price))
     const images = [...(item.braviko_product_images || [])]
       .sort((a: any, b: any) => Number(b.is_primary) - Number(a.is_primary) || Number(a.sort_order) - Number(b.sort_order))
-      .map((image: any) => image.storage_path)
+      .map((image: any) => resolveImageUrl(image.storage_path, supabase))
       .filter(Boolean)
 
     return {
