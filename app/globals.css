@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .admin-input {
+    @apply min-h-[52px] rounded-[14px] border border-hairline bg-white px-4 font-normal text-charcoal outline-none transition placeholder:text-ash focus:border-braise focus:ring-2 focus:ring-braise/10;
+  }
+}
+
 @layer base {
   :root {
     --ivory: #FAF9F6;
