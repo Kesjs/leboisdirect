@@ -99,6 +99,9 @@
 .bk-tabs > button { position: relative; display: flex; align-items: center; gap: 20px; min-height: 54px; padding: 12px 0 18px; color: var(--bk-muted); font-size: 16px; }
 .bk-tabs > button[aria-selected=true] { color: var(--bk-ink); }
 .bk-tabs > button > span:not(.bk-tab-underline) { font-size: 11px; }
+.bk-selection-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: -8px 0 28px; }
+.bk-selection-filters > button { min-height: 40px; padding: 8px 14px; border: 1px solid var(--bk-line); border-radius: 999px; color: var(--bk-muted); font-size: 12px; transition: color .2s, background .2s, border-color .2s; }
+.bk-selection-filters > button:hover, .bk-selection-filters > button[aria-pressed=true] { border-color: var(--bk-ink); background: var(--bk-ink); color: white; }
 .bk-tab-underline { position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--bk-accent); }
 .bk-products-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px 24px; }
 .bk-products-list { display: grid; gap: 24px; }
