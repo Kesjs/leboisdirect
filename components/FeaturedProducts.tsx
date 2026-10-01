@@ -8,6 +8,7 @@ import { bravikoCopy } from '@/data/braviko-copy'
 import { useI18n } from '@/lib/i18n-context'
 import ProductCard from './ProductCard'
 import { uiCopy } from '@/data/ui-copy'
+import { isAgricultureCategory, isHeatingCategory } from '@/data/catalog-taxonomy'
 
 export default function FeaturedProducts() {
   const { locale } = useI18n()
@@ -18,7 +19,7 @@ export default function FeaturedProducts() {
   const [catalogError, setCatalogError] = useState(false)
   const tabs = useRef<Array<HTMLButtonElement | null>>([])
   const reduced = useReducedMotion()
-  const universeProducts = catalogProducts.filter(product => tab === 0 ? product.category !== 'machines-agricoles' : product.category === 'machines-agricoles')
+  const universeProducts = catalogProducts.filter(product => tab === 0 ? isHeatingCategory(product.category) : isAgricultureCategory(product.category))
   const changeByKey = (event: KeyboardEvent<HTMLButtonElement>) => {
     const target = event.key === 'Home' ? 0 : event.key === 'End' ? 1 : ['ArrowLeft', 'ArrowRight'].includes(event.key) ? 1 - tab : null
     if (target === null) return

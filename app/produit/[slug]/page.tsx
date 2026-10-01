@@ -193,7 +193,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             {/* Product Info */}
             <div>
               <p className="bk-eyebrow" style={{ color: 'var(--bk-accent)' }}>
-                {categoryLabels[locale][product.category]}
+                {categoryLabels[locale][product.category] || product.category.replace(/-/g, ' ')}
               </p>
 
               <h1 className="text-heading-lg md:text-display font-semibold text-charcoal mb-20 tracking-tight leading-tight">

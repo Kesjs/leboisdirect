@@ -33,7 +33,7 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.images[1] && <Image src={product.images[1]} alt="" fill sizes="(max-width: 600px) 100vw, 33vw" className="bk-image bk-product-back" quality={75} />}
           <span className="bk-product-view">{copy.details} <span aria-hidden="true">↗</span></span>
         </div>
-        <p className="bk-product-category">{categoryLabels[locale][product.category]}</p>
+        <p className="bk-product-category">{categoryLabels[locale][product.category] || product.category.replace(/-/g, ' ')}</p>
         <h3>{label.name}</h3>
         <p className="bk-product-excerpt">{label.description.split('. ')[0]}.</p>
         <p className="bk-product-conditioning">{label.conditioning}</p>

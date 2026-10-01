@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     .select(`
       id, slug, status, featured, sort_order,
       braviko_categories ( id, slug, name ),
-      braviko_product_translations ( locale, name, short_description, conditioning, delivery_info ),
+      braviko_product_translations ( locale, name, short_description, description, conditioning, delivery_info ),
       braviko_product_variants ( id, sku, label, price, compare_at_price, stock ),
       braviko_product_images ( storage_path, alt_text, sort_order, is_primary )
     `)
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       featured: Boolean(item.featured),
       name: fr.name || item.slug,
       category: item.braviko_categories?.slug || 'buches',
-      description: fr.short_description || '',
+      description: fr.short_description || fr.description || '',
       features: [],
       price: Number(variants[0]?.price || 0),
       image: images[0] || '/images/photorealistic-perspective-wood-logs.jpg',
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
       translations: {
         de: translations.de?.name || fr.name || item.slug,
         it: translations.it?.name || fr.name || item.slug,
-        description: { de: translations.de?.short_description || '', it: translations.it?.short_description || '' },
+        description: { de: translations.de?.short_description || translations.de?.description || '', it: translations.it?.short_description || translations.it?.description || '' },
         conditioning: { de: translations.de?.conditioning || '', it: translations.it?.conditioning || '' },
         delivery: { de: translations.de?.delivery_info || '', it: translations.it?.delivery_info || '' },
       },
