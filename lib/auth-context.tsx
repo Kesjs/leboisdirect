@@ -19,17 +19,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let active = true
+    const fallback = window.setTimeout(() => {
+      if (active) setLoading(false)
+    }, 5000)
     supabase.auth.getUser().then(({ data }: { data: { user: User | null } }) => {
       if (!active) return
+      window.clearTimeout(fallback)
       setUser(data.user ?? null)
       setLoading(false)
-    })
+    }).catch(() => { if (active) { window.clearTimeout(fallback); setUser(null); setLoading(false) } })
     const { data: listener } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       setUser(session?.user ?? null)
       setLoading(false)
     })
     return () => {
       active = false
+      window.clearTimeout(fallback)
       listener.subscription.unsubscribe()
     }
   }, [supabase])
