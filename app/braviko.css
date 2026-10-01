@@ -306,6 +306,23 @@
 .bk-legal-sections section > span { color: var(--bk-accent); font-size: 11px; }
 .bk-legal-sections h2 { font-size: 24px; font-weight: 500; letter-spacing: -.03em; margin-bottom: 16px; }
 .bk-legal-sections p { color: var(--bk-muted); line-height: 1.75; }
+.bk-contact-page { padding-block: clamp(64px, 8vw, 112px); }
+.bk-contact-page > header { max-width: 760px; margin-inline: auto; padding-bottom: clamp(48px, 7vw, 80px); text-align: center; }
+.bk-contact-page > header .bk-lead { max-width: 560px; margin-inline: auto; }
+.bk-contact-layout { display: grid; grid-template-columns: minmax(220px, .72fr) minmax(0, 1fr); gap: clamp(40px, 9vw, 144px); border-top: 1px solid var(--bk-line); padding-top: clamp(36px, 5vw, 56px); }
+.bk-contact-aside { display: grid; align-content: start; gap: 18px; padding-top: 8px; }
+.bk-contact-aside h2 { max-width: 320px; font-size: clamp(24px, 3vw, 34px); line-height: 1.05; letter-spacing: -.04em; font-weight: 500; overflow-wrap: anywhere; }
+.bk-contact-aside > p:not(.bk-eyebrow) { max-width: 320px; color: var(--bk-muted); font-size: 14px; line-height: 1.7; }
+.bk-contact-aside .bk-text-link { width: fit-content; font-size: 15px; }
+.bk-contact-form { display: grid; gap: 20px; max-width: 680px; padding: clamp(24px, 4vw, 40px); border: 1px solid var(--bk-line); background: white; }
+.bk-contact-form-heading { display: grid; gap: 10px; padding-bottom: 8px; }
+.bk-contact-form-heading h2 { font-size: clamp(28px, 3.6vw, 42px); line-height: 1; letter-spacing: -.045em; font-weight: 500; }
+.bk-contact-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.bk-contact-form label { display: grid; gap: 8px; color: var(--bk-muted); font-size: 13px; }
+.bk-contact-form input, .bk-contact-form textarea { width: 100%; border: 1px solid var(--bk-line); border-radius: 4px; background: white; padding: 13px 14px; color: var(--bk-ink); font: inherit; resize: vertical; }
+.bk-contact-form input { min-height: 50px; }
+.bk-contact-form input:focus, .bk-contact-form textarea:focus { border-color: var(--bk-accent); outline: 1px solid var(--bk-accent); }
+.bk-contact-form .bk-button { justify-self: start; }
 
 @media (max-width: 1100px) {
   .bk-container { width: calc(100% - 64px); }
@@ -406,6 +423,10 @@
   .bk-order-row { grid-template-columns: 1fr auto; }
   .bk-order-row > strong { grid-column: 2; grid-row: 1; }
   .bk-legal-sections section { grid-template-columns: 44px 1fr; gap: 16px; padding: 30px 0; }
+  .bk-contact-layout { grid-template-columns: 1fr; gap: 40px; }
+  .bk-contact-form { max-width: none; }
+  .bk-contact-fields { grid-template-columns: 1fr; }
+  .bk-contact-form .bk-button { width: 100%; }
 }
 @media (max-width: 480px) {
   .bk-products-grid { grid-template-columns: 1fr; gap: 24px; }

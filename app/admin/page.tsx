@@ -2,6 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import Logo from '@/components/Logo'
 
@@ -49,19 +50,28 @@ export default function AdminPage() {
   const [authorized, setAuthorized] = useState<boolean | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [catalogDraft, setCatalogDraft] = useState<CatalogDraft | null>(null)
   const [importing, setImporting] = useState(false)
 
   const checkAccess = useCallback(async () => {
-    const { data: { user: currentUser } } = await supabase.auth.getUser()
-    setUser(currentUser ? { id: currentUser.id, email: currentUser.email } : null)
-    if (!currentUser) { setAuthorized(false); setLoading(false); return }
-    const { data } = await supabase.from('braviko_admins').select('user_id, active').eq('user_id', currentUser.id).maybeSingle()
-    setAuthorized(Boolean(data?.active))
-    setLoading(false)
+    const timeout = new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error('La session admin met trop de temps à répondre.')), 8000))
+    try {
+      const { data: { session } } = await Promise.race([supabase.auth.getSession(), timeout])
+      const currentUser = session?.user ?? null
+      setUser(currentUser ? { id: currentUser.id, email: currentUser.email } : null)
+      if (!currentUser) { setAuthorized(false); return }
+      const { data } = await supabase.from('braviko_admins').select('user_id, active').eq('user_id', currentUser.id).maybeSingle()
+      setAuthorized(Boolean(data?.active))
+    } catch (accessError) {
+      setUser(null)
+      setAuthorized(false)
+      setError(accessError instanceof Error ? accessError.message : 'Connexion admin indisponible.')
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   const loadCatalog = useCallback(async () => {
@@ -192,10 +202,17 @@ export default function AdminPage() {
     <main className="min-h-screen bg-ivory text-charcoal">
       <header className="border-b border-hairline bg-ivory/95 px-6 py-5 backdrop-blur sm:px-10">
         <div className="mx-auto flex max-w-container items-center justify-between gap-6">
-          <div className="flex items-center gap-5"><Logo /><div><p className="text-xs font-semibold uppercase tracking-[0.22em] text-braise">Braviko / Admin</p><h1 className="mt-2 text-2xl font-semibold tracking-tight">Catalogue produits</h1></div></div>
+          <div className="flex items-center gap-5"><Logo /><div><p className="text-xs font-semibold uppercase tracking-[0.22em] text-braise">Braviko / Admin</p><h1 className="mt-2 text-2xl font-semibold tracking-tight">Votre catalogue, au même endroit</h1></div></div>
           <div className="flex items-center gap-3"><Link href="/" className="hidden text-sm text-smoke transition hover:text-charcoal sm:block">Voir le site ↗</Link><button onClick={() => supabase.auth.signOut().then(() => checkAccess())} className="rounded-full border border-hairline px-4 py-2 text-sm transition hover:border-charcoal">Déconnexion</button></div>
         </div>
       </header>
+      <div className="mx-auto max-w-container px-6 pt-8 sm:px-10">
+        <section className="relative isolate overflow-hidden rounded-card bg-charcoal px-7 py-9 text-white sm:px-10 sm:py-12">
+          <Image src="/images/agriculture-chainsaw.jpg" alt="Équipement Braviko au travail" fill priority className="-z-20 object-cover opacity-25" sizes="(max-width: 1200px) 100vw, 1200px" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-charcoal via-charcoal/80 to-transparent" />
+          <div className="relative max-w-2xl"><p className="text-xs font-semibold uppercase tracking-[0.22em] text-orange-200">Espace catalogue</p><h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Préparez une boutique qui vous ressemble.</h2><p className="mt-4 max-w-xl text-sm leading-6 text-white/75">Ajoutez vos produits, ajustez les prix et gardez chaque catégorie claire avant sa mise en ligne.</p><div className="mt-7 flex flex-wrap gap-3 text-sm"><span className="rounded-full border border-white/20 bg-white/10 px-4 py-2">{products.length} produit{products.length > 1 ? 's' : ''} suivi{products.length > 1 ? 's' : ''}</span><span className="rounded-full border border-white/20 bg-white/10 px-4 py-2">{categories.length} catégorie{categories.length > 1 ? 's' : ''}</span><span className="rounded-full border border-white/20 bg-white/10 px-4 py-2">Images et prix éditables</span></div></div>
+        </section>
+      </div>
       <div className="mx-auto grid max-w-container gap-10 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_380px] sm:px-10">
         <section>
           <div className="mb-5 flex items-end justify-between"><div><p className="text-sm text-smoke">Vue d’ensemble</p><h2 className="mt-1 text-3xl font-semibold tracking-tight">{products.length} produit{products.length > 1 ? 's' : ''}</h2></div><span className="rounded-full bg-forest/10 px-3 py-1 text-xs font-medium text-forest">Base Reachly connectée</span></div>
@@ -260,7 +277,7 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
     if (authError) setError(authError.message); else onSuccess()
     setBusy(false)
   }
-  return <main className="grid min-h-screen place-items-center bg-ivory px-6"><form onSubmit={submit} className="w-full max-w-md rounded-card border border-hairline bg-white/70 p-8 shadow-sm"><p className="text-xs font-semibold uppercase tracking-[0.22em] text-braise">Braviko / Admin</p><h1 className="mt-3 text-3xl font-semibold tracking-tight">Espace catalogue</h1><p className="mt-3 text-sm leading-6 text-smoke">Connectez-vous avec votre compte administrateur Supabase.</p><div className="mt-8 grid gap-4"><label className="grid gap-2 text-sm font-medium">Email<input name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" className="h-11 rounded-card border border-hairline bg-ivory px-3 font-normal outline-none transition placeholder:text-ash focus:border-braise focus:ring-2 focus:ring-braise/10" /></label><label className="grid gap-2 text-sm font-medium">Mot de passe<div className="relative"><input name="password" type={showPassword ? 'text' : 'password'} value={password} onChange={event => setPassword(event.target.value)} required autoComplete="current-password" className="h-11 w-full rounded-card border border-hairline bg-ivory px-3 pr-11 font-normal outline-none transition placeholder:text-ash focus:border-braise focus:ring-2 focus:ring-braise/10" /><button type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'} className="absolute inset-y-0 right-0 grid w-11 place-items-center text-smoke transition hover:text-charcoal">{showPassword ? <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M3 3l18 18" /><path d="M10.6 10.7a2 2 0 0 0 2.7 2.7" /><path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5.2 0 8.7 4 10 8a16 16 0 0 1-3.1 5.2M6.2 6.2C3.8 7.8 2.5 10.4 2 12c1.3 4 4.8 8 10 8 1.1 0 2.1-.2 3-.5" /></svg> : <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="2.5" /></svg>}</button></div></label></div>{error && <p className="mt-4 text-sm text-braise-dark">{error}</p>}<button disabled={busy} className="mt-6 w-full rounded-full bg-charcoal px-5 py-3 text-sm font-medium text-white transition hover:bg-braise disabled:opacity-50">{busy ? 'Connexion…' : 'Se connecter'}</button></form></main>
+  return <main className="grid min-h-screen bg-ivory lg:grid-cols-[1.05fr_.95fr]"><section className="relative isolate hidden overflow-hidden bg-charcoal lg:block"><Image src="/images/agriculture-chainsaw.jpg" alt="Équipement agricole Braviko" fill priority className="z-0 object-cover opacity-50" sizes="50vw" /><div className="absolute inset-0 z-10 bg-gradient-to-t from-charcoal via-charcoal/45 to-transparent" /><div className="absolute left-12 top-12 z-20 text-xs font-semibold uppercase tracking-[0.22em] text-orange-200">Braviko / Administration</div><div className="absolute bottom-12 left-12 z-20 max-w-md text-white"><p className="text-sm font-medium text-white/70">Espace privé</p><h1 className="mt-4 text-5xl font-semibold leading-none tracking-tight">Votre catalogue, en ordre.</h1><p className="mt-5 text-sm leading-6 text-white/75">Ajoutez vos produits, ajustez les prix et préparez une boutique claire pour vos clients.</p></div></section><section className="grid place-items-center px-6 py-12 sm:px-10"><form onSubmit={submit} className="w-full max-w-md"><div className="mb-10 flex items-center justify-between gap-4"><Logo /><Link href="/" className="text-sm text-smoke transition hover:text-charcoal">Voir la boutique ↗</Link></div><p className="text-xs font-semibold uppercase tracking-[0.22em] text-braise">Accès administrateur</p><h2 className="mt-3 text-3xl font-semibold tracking-tight">Content de vous revoir.</h2><p className="mt-3 max-w-sm text-sm leading-6 text-smoke">Connectez-vous avec votre compte administrateur Supabase.</p><div className="mt-8 grid gap-4"><label className="grid gap-2 text-sm font-medium">Email<input name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" className="h-12 rounded-card border border-hairline bg-white px-3 font-normal outline-none transition placeholder:text-ash focus:border-braise focus:ring-2 focus:ring-braise/10" /></label><label className="grid gap-2 text-sm font-medium">Mot de passe<div className="relative"><input name="password" type={showPassword ? 'text' : 'password'} value={password} onChange={event => setPassword(event.target.value)} required autoComplete="current-password" className="h-12 w-full rounded-card border border-hairline bg-white px-3 pr-11 font-normal outline-none transition placeholder:text-ash focus:border-braise focus:ring-2 focus:ring-braise/10" /><button type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'} className="absolute inset-y-0 right-0 grid w-11 place-items-center text-smoke transition hover:text-charcoal">{showPassword ? <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M3 3l18 18" /><path d="M10.6 10.7a2 2 0 0 0 2.7 2.7" /><path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5.2 0 8.7 4 10 8a16 16 0 0 1-3.1 5.2M6.2 6.2C3.8 7.8 2.5 10.4 2 12c1.3 4 4.8 8 10 8 1.1 0 2.1-.2 3-.5" /></svg> : <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="2.5" /></svg>}</button></div></label></div>{error && <p className="mt-4 text-sm text-braise-dark">{error}</p>}<button disabled={busy} className="mt-6 w-full rounded-full bg-charcoal px-5 py-3 text-sm font-medium text-white transition hover:bg-braise disabled:opacity-50">{busy ? 'Connexion…' : 'Entrer dans l’espace admin'}</button><p className="mt-5 text-center text-sm text-smoke">Accès réservé à l’équipe Braviko</p></form></section></main>
 }
 
 function AccessDenied({ email, onSignOut }: { email?: string; onSignOut: () => void }) {
