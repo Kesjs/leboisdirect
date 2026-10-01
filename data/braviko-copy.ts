@@ -3,10 +3,11 @@ import type { Locale } from '@/lib/i18n-context'
 // All copy used by the animated storefront lives here, including accessible labels.
 export const bravikoCopy = {
   fr: {
-    hero: ['La chaleur dedans.', 'La force dehors.'],
-    intro: 'Du bois pour votre foyer. Du matériel pour votre terrain. Les essentiels de votre quotidien, réunis chez Braviko.',
-    home: 'Pour la maison', field: 'Pour le terrain', heating: 'Chauffage', agriculture: 'Agriculture',
-    heatingSub: 'Bûches, granulés & allumage', agricultureSub: 'Machines, outils & équipements',
+    heroKicker: 'Bois de chauffage et équipement agricole',
+    hero: ['Du bois pour la maison', 'Du matériel pour le terrain'],
+    intro: 'Bois de chauffage pour votre maison et matériel agricole pour votre terrain',
+    home: 'Pour la maison', field: 'Pour le terrain', heating: 'Bois de chauffage', agriculture: 'Équipement agricole',
+    heatingSub: 'Bois de chauffage, granulés & allumage', agricultureSub: 'Machines, outils & équipements',
     discover: 'Explorer la collection', shop: 'Boutique', advice: 'Conseils', delivery: 'Livraison', story: 'Notre histoire',
     signature: 'La matière fait la différence.', signatureIntro: 'Avant de trouver sa place chez vous, chaque produit a une histoire. Voici celle de nos essentiels.',
     chapters: [
@@ -26,9 +27,10 @@ export const bravikoCopy = {
     footer: 'Pour la maison. Pour le terrain. Et pour tout ce qui compte au quotidien.', universes: 'Nos univers', help: 'À vos côtés', legal: 'Informations légales sur demande', rights: 'Tous droits réservés.', productImage: 'Vue du produit',
   },
   de: {
-    hero: ['Wärme für drinnen.', 'Kraft für draußen.'],
-    intro: 'Holz für Ihren Kamin. Ausrüstung für Ihr Grundstück. Alles für Ihren Alltag, vereint bei Braviko.',
-    home: 'Für Ihr Zuhause', field: 'Für Ihr Grundstück', heating: 'Heizung', agriculture: 'Landwirtschaft',
+    heroKicker: 'Brennholz · landwirtschaftliche Ausrüstung',
+    hero: ['Holz für Ihr Zuhause', 'Ausrüstung für Ihr Grundstück'],
+    intro: 'Brennholz für Ihren Kamin, Ausrüstung für Ihr Grundstück: zwei nützliche Bereiche bei Braviko.',
+    home: 'Für Ihr Zuhause', field: 'Für Ihr Grundstück', heating: 'Brennholz', agriculture: 'Landwirtschaftliche Ausrüstung',
     heatingSub: 'Brennholz, Pellets & Anzünder', agricultureSub: 'Maschinen, Werkzeuge & Ausrüstung',
     discover: 'Sortiment entdecken', shop: 'Shop', advice: 'Ratgeber', delivery: 'Lieferung', story: 'Unsere Geschichte',
     signature: 'Das Material macht den Unterschied.', signatureIntro: 'Bevor ein Produkt bei Ihnen ankommt, hat es bereits eine Geschichte. Entdecken Sie unsere Auswahl.',
@@ -49,9 +51,10 @@ export const bravikoCopy = {
     footer: 'Für Ihr Zuhause. Für Ihr Grundstück. Und für alles, was im Alltag zählt.', universes: 'Unsere Bereiche', help: 'Für Sie da', legal: 'Rechtliche Informationen auf Anfrage', rights: 'Alle Rechte vorbehalten.', productImage: 'Produktansicht',
   },
   it: {
-    hero: ['Calore dentro.', 'Forza fuori.'],
-    intro: 'Legna per il tuo camino. Attrezzature per il tuo terreno. Gli essenziali di ogni giorno, insieme su Braviko.',
-    home: 'Per la casa', field: 'Per il terreno', heating: 'Riscaldamento', agriculture: 'Agricoltura',
+    heroKicker: 'Legna da ardere · attrezzature agricole',
+    hero: ['Legna per la casa', 'Attrezzature per il terreno'],
+    intro: 'Legna da ardere per il camino, attrezzature agricole per il terreno: due mondi utili, insieme su Braviko.',
+    home: 'Per la casa', field: 'Per il terreno', heating: 'Legna da ardere', agriculture: 'Attrezzature agricole',
     heatingSub: 'Legna, pellet e accendifuoco', agricultureSub: 'Macchine, utensili e attrezzature',
     discover: 'Esplora la selezione', shop: 'Negozio', advice: 'Consigli', delivery: 'Consegna', story: 'La nostra storia',
     signature: 'La materia fa la differenza.', signatureIntro: 'Prima di arrivare a casa tua, ogni prodotto ha una storia. Scopri quella dei nostri essenziali.',

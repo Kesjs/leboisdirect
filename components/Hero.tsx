@@ -38,9 +38,12 @@ export default function Hero() {
   return (
     <section ref={root} className="bk-hero bk-container" aria-labelledby="hero-title">
       <div className="bk-hero-heading">
-        <h1 id="hero-title">
+        <div>
+          <p className="bk-hero-kicker" data-hero-enter>{copy.heroKicker}</p>
+          <h1 id="hero-title">
           {copy.hero.map((line, i) => <span className="bk-line-mask" key={i}><span data-hero-line className={i === 1 ? 'bk-accent' : ''}>{line}</span></span>)}
-        </h1>
+          </h1>
+        </div>
         <div className="bk-hero-intro" data-hero-enter>
           <p>{copy.intro}</p>
           <a className="bk-text-link" href="#selection">{copy.discover}<span aria-hidden="true">↗</span></a>

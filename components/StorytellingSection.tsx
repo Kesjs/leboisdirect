@@ -43,19 +43,23 @@ export default function StorytellingSection() {
         const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: stage, start: 'top 80px', end: () => '+=' + Math.round(window.innerHeight * 1.8),
-            pin: true, scrub: 0.55, invalidateOnRefresh: true,
+            pin: true, pinSpacing: true, anticipatePin: 1, scrub: 0.55, invalidateOnRefresh: true,
             onUpdate: (self) => update(Math.min(2, Math.floor(self.progress * 3))),
           },
         })
         timeline.to({}, { duration: 0.6 })
         for (let i = 1; i < panels.length; i++) {
-          timeline.to(panels[i - 1], { autoAlpha: 0, duration: 0.35 })
-            .fromTo(panels[i], { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.35 }, '<')
-            .fromTo(panels[i].querySelector('.bk-story-photo'), { scale: 1.06 }, { scale: 1, duration: 0.65 }, '<')
-            .to({}, { duration: 0.45 })
+          // Switch the scene in two short beats so copy never stacks on top of copy.
+          timeline.to(panels[i - 1], { autoAlpha: 0, duration: 0.18 })
+            .fromTo(panels[i], { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.18 })
+            .fromTo(panels[i].querySelector('.bk-story-photo'), { scale: 1.06 }, { scale: 1, duration: 0.42 }, '<')
+            .to({}, { duration: 0.5 })
         }
         // Resolve fresh font metrics and responsive image geometry before the pin starts.
-        document.fonts.ready.then(() => { if (root.current?.isConnected) ScrollTrigger.refresh() })
+        const refresh = () => { if (root.current?.isConnected) ScrollTrigger.refresh() }
+        document.fonts.ready.then(refresh)
+        window.addEventListener('load', refresh, { once: true })
+        panels.forEach(panel => panel.querySelector('img')?.addEventListener('load', refresh, { once: true }))
       }, root)
       return () => {
         ctx.revert()
