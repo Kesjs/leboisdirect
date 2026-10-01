@@ -13,15 +13,21 @@ import { createOrderDraft, saveOrderDraft } from '@/lib/order'
 import { useI18n } from '@/lib/i18n-context'
 import { commerceCopy } from '@/data/commerce-copy'
 import { productLabel } from '@/data/product-labels'
+import { useAuth } from '@/lib/auth-context'
+import { createClient } from '@/lib/supabase/client'
+import { useMemo } from 'react'
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, totalPrice, clearCart } = useCart()
   const { locale } = useI18n()
   const c = commerceCopy[locale]
+  const { user, loading: authLoading } = useAuth()
+  const supabase = useMemo(() => createClient(), [])
   const [step, setStep] = useState(1)
   const [paymentAcknowledged, setPaymentAcknowledged] = useState(false)
   const [formError, setFormError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -32,17 +38,55 @@ export default function CheckoutPage() {
     phone: '',
   })
 
-  useEffect(() => { if (items.length === 0 && step === 1) router.replace('/panier') }, [items.length, router, step])
-  if (items.length === 0 && step === 1) return null
+  useEffect(() => {
+    if (!authLoading && !user) router.replace('/connexion?next=/checkout&reason=checkout')
+    else if (items.length === 0 && step === 1) router.replace('/panier')
+  }, [authLoading, items.length, router, step, user])
+  useEffect(() => {
+    if (!user) return
+    setFormData(current => ({
+      ...current,
+      email: current.email || user.email || '',
+      firstName: current.firstName || user.user_metadata?.first_name || '',
+      lastName: current.lastName || user.user_metadata?.last_name || '',
+    }))
+  }, [user])
+  if (authLoading || !user || (items.length === 0 && step === 1)) return null
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (step < 3) {
       setFormError('')
       setStep(step + 1)
     } else {
       if (!paymentAcknowledged) { setFormError(c.acknowledgement); return }
-      saveOrderDraft(createOrderDraft(formData, items, totalPrice))
+      setSubmitting(true)
+      const draft = createOrderDraft(formData, items, totalPrice)
+      const orderItems = items.map(item => {
+        const variant = item.product.variants?.find(value => value.id === item.variantId)
+        return {
+          product_id: item.product.id,
+          variant_id: item.variantId ?? null,
+          product_name: productLabel(item.product, locale).name,
+          variant_label: variant?.label ?? (variant?.volume ? `${variant.volume} stère(s)` : null),
+          quantity: item.quantity,
+          unit_price: variant?.price ?? item.product.price,
+        }
+      })
+      const { error } = await supabase.rpc('create_braviko_order', {
+        p_reference: draft.reference,
+        p_customer: {
+          email: formData.email, first_name: formData.firstName, last_name: formData.lastName,
+          phone: formData.phone, address: formData.address, postal_code: formData.postalCode, city: formData.city,
+        },
+        p_items: orderItems,
+      })
+      if (error) {
+        setFormError(error.message)
+        setSubmitting(false)
+        return
+      }
+      saveOrderDraft(draft)
       clearCart()
       router.push('/commande/confirmation')
     }
@@ -270,8 +314,8 @@ export default function CheckoutPage() {
                       >
                         {c.back}
                       </Button>
-                      <Button type="submit" size="lg" className="flex-1">
-                        {c.request}
+                      <Button type="submit" size="lg" className="flex-1" disabled={submitting}>
+                        {submitting ? '…' : c.request}
                       </Button>
                     </div>
                   </div>

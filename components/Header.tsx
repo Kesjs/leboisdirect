@@ -9,6 +9,8 @@ import CartDrawer from './CartDrawer'
 import { useCart } from '@/lib/cart-context'
 import { type Locale, useI18n } from '@/lib/i18n-context'
 import { bravikoCopy } from '@/data/braviko-copy'
+import { accountCopy } from '@/data/account-copy'
+import { useAuth } from '@/lib/auth-context'
 
 const languages: { code: Locale; label: string }[] = [
   { code: 'fr', label: 'Français' }, { code: 'de', label: 'Deutsch' }, { code: 'it', label: 'Italiano' },
@@ -23,6 +25,8 @@ export default function Header() {
   const { totalItems } = useCart()
   const { locale, setLocale } = useI18n()
   const copy = bravikoCopy[locale]
+  const account = accountCopy[locale]
+  const { user, loading: authLoading } = useAuth()
   const pathname = usePathname()
   const reduced = useReducedMotion()
   const sentinel = useRef<HTMLDivElement>(null)
@@ -95,6 +99,17 @@ export default function Header() {
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M3 6h14l-1 12H4L3 6Z" /><path d="M7 6V5a3 3 0 0 1 6 0v1" /></svg>
               <motion.span key={totalItems} initial={false} animate={{ scale: reduced ? 1 : [1, 1.18, 1] }} transition={{ duration: 0.3 }}>{totalItems}</motion.span>
             </button>
+            <Link
+              href={user ? '/compte' : '/connexion'}
+              className={'bk-profile-trigger' + (user ? ' is-authenticated' : '')}
+              aria-label={authLoading ? account.loading as string : user ? account.account as string : account.login as string}
+              title={user ? account.account as string : account.login as string}
+              onClick={collapse}
+            >
+              {user ? <span aria-hidden="true">{(user.user_metadata?.first_name || user.email || 'B').slice(0, 1).toUpperCase()}</span> : (
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg>
+              )}
+            </Link>
             <button ref={menuButton} type="button" className="bk-icon-button bk-menu-trigger" aria-label={mobileOpen ? copy.close : copy.menu} aria-expanded={mobileOpen} aria-controls="mobile-navigation"
               onClick={() => { setMobileOpen(!mobileOpen); setLanguageOpen(false); setSearchOpen(false) }}><span aria-hidden="true">{mobileOpen ? '×' : '☰'}</span></button>
           </div>

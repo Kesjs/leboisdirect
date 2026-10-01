@@ -75,7 +75,7 @@ function ShopContent() {
     <Header />
     <main id="main-content" className="min-h-screen bg-ivory">
       <section className="relative h-[42vh] min-h-[340px] flex items-center justify-center overflow-hidden bg-charcoal">
-        <Image src={isAgriculture ? '/images/braviko-hero.jpg' : '/images/photorealistic-perspective-wood-logs.jpg'} alt={isAgriculture ? copy.shop.agricultureImage : copy.shop.heatingImage} fill priority className="object-cover" sizes="100vw" quality={75} />
+        <Image src={isAgriculture ? '/images/agriculture-chainsaw.jpg' : '/images/photorealistic-perspective-wood-logs.jpg'} alt={isAgriculture ? copy.shop.agricultureImage : copy.shop.heatingImage} fill priority className="object-cover" sizes="100vw" quality={75} />
         <div className="absolute inset-0 bg-charcoal/55" />
         <div className="relative z-10 container-custom text-center text-white"><p className="bk-eyebrow text-white/80">BRAVIKO · {title}</p><h1 className="text-[48px] sm:text-[56px] md:text-[72px] font-semibold text-balance leading-[1.05] tracking-tight">{title}</h1><p className="mt-16 text-[16px] sm:text-[18px] text-white/90 max-w-[560px] mx-auto leading-relaxed">{intro}</p></div>
       </section>

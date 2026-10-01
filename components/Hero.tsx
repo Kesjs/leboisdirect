@@ -63,7 +63,7 @@ export default function Hero() {
         </Link>
         <Link href="/boutique?universe=agriculture" className="bk-world bk-world-agri" data-hero-enter>
           <div className="bk-world-media" data-hero-parallax>
-            <Image src="/images/braviko-hero.jpg" alt="" fill priority sizes="(max-width: 700px) 100vw, 42vw" className="bk-image bk-agri-image" quality={85} />
+          <Image src="/images/agriculture-chainsaw.jpg" alt="" fill priority sizes="(max-width: 700px) 100vw, 42vw" className="bk-image bk-agri-image" quality={85} />
           </div>
           <div className="bk-world-shade" />
           <div className="bk-world-top"><span>{copy.field}</span><span>02</span></div>
