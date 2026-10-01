@@ -270,12 +270,14 @@ export default function AdminPage() {
   ) {
     setError("");
     setMessage("");
+    const currentProduct = products.find((item) => item.id === productId);
+    const statusToSave = currentProduct?.status === "published" ? "published" : values.status;
     const { error: productError } = await supabase
       .from("braviko_products")
       .update({
         slug: slugify(values.slug || values.names.fr),
         category_id: values.categoryId,
-        status: values.status,
+        status: statusToSave,
         featured: values.featured,
       })
       .eq("id", productId);

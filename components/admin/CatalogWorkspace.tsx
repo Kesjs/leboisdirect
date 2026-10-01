@@ -153,7 +153,7 @@ function initialValues(product?: AdminProduct | null): ProductValues {
   return {
     slug: product?.slug || "",
     categoryId: product?.category_id || "",
-    status: product?.status || "draft",
+    status: product?.status || "published",
     featured: product?.featured || false,
     names: {
       fr: translation("fr")?.name || "",
