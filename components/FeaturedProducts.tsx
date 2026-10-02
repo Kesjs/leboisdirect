@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import type { Product } from '@/data/products'
+import type { Product, ProductCategory } from '@/data/products'
 import { bravikoCopy } from '@/data/braviko-copy'
 import { useI18n } from '@/lib/i18n-context'
 import ProductCard from './ProductCard'
@@ -35,8 +35,14 @@ export default function FeaturedProducts() {
   const visibleProducts = selectedCategory === 'all'
     ? universeProducts
     : universeProducts.filter(product => product.category === selectedCategory)
-  const randomizedProducts = useMemo(() => shuffle(visibleProducts).slice(0, 6), [catalogProducts, tab, selectedCategory])
-  const categoryGroups = tab === 0
+  const randomizedProducts = useMemo(() => {
+    const productsForTab = catalogProducts.filter(product => tab === 0 ? isHeatingCategory(product.category) : isAgricultureCategory(product.category))
+    const productsForCategory = selectedCategory === 'all'
+      ? productsForTab
+      : productsForTab.filter(product => product.category === selectedCategory)
+    return shuffle(productsForCategory).slice(0, 6)
+  }, [catalogProducts, tab, selectedCategory])
+  const categoryGroups: Array<[string, ProductCategory[]]> = tab === 0
     ? [['Bois & chauffage', ['buches', 'bois-compresse', 'granules']], ['Allumage & accessoires', ['allumage', 'allume-feu', 'accessoires-chauffage']]]
     : [['Machines & terrain', ['machines-agricoles']]]
   const changeByKey = (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -73,7 +79,7 @@ export default function FeaturedProducts() {
           {ui.shop.allProducts}
         </button>
         {categoryGroups.map(([group, categories]) => {
-          const groupCategories = (categories as string[]).filter(category => availableCategories.includes(category))
+          const groupCategories = categories.filter(category => availableCategories.includes(category))
           if (!groupCategories.length) return null
           return <div className="bk-selection-filter-group" key={group as string}>
             <span>{group as string}</span>
