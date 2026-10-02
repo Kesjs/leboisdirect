@@ -35,6 +35,10 @@
 .bk-header.is-scrolled { background: rgb(250 249 246 / .98); border-color: var(--bk-line); }
 .bk-info-bar { border-bottom: 1px solid var(--bk-line); background: var(--bk-ink); color: rgb(255 255 255 / .86); }
 .bk-info-bar-inner { min-height: 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 10px; letter-spacing: .04em; }
+.bk-info-message { flex: 1; }
+.bk-info-points { display: flex; align-items: center; gap: 18px; }
+.bk-info-points span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.bk-info-points svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .bk-info-bar-inner a { display: inline-flex; align-items: center; gap: 6px; color: white; }
 .bk-info-bar-inner a span { font-size: 14px; transition: transform .2s var(--bk-ease); }
 .bk-info-bar-inner a:hover span { transform: translate(2px, -2px); }
@@ -396,6 +400,7 @@
 @media (max-width: 700px) {
   .bk-info-bar-inner { min-height: 30px; font-size: 9px; }
   .bk-info-bar-inner > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bk-info-message, .bk-info-points { display: none; }
   .bk-info-bar-inner a { flex-shrink: 0; }
   .bk-selection-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .bk-products-list .bk-product { display: block; padding-bottom: 0; border-bottom: 0; }

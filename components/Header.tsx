@@ -74,7 +74,12 @@ export default function Header() {
         <a href="#main-content" className="bk-skip">{copy.skip}</a>
         <div className="bk-info-bar" role="note">
           <div className="bk-container bk-info-bar-inner">
-            <span>{copy.infoBar}</span>
+            <span className="bk-info-message">{copy.infoBar}</span>
+            <div className="bk-info-points" aria-label={copy.delivery}>
+              <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7zM7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" /></svg>{copy.infoDelivery}</span>
+              <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.9 8.2 7 10 4.1-1.8 7-5.4 7-10V6l-7-3Z" /><path d="m9 12 2 2 4-4" /></svg>{copy.infoSelection}</span>
+              <span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 8v5l3 2" /></svg>{copy.infoSupport}</span>
+            </div>
             <Link href="/livraison" onClick={collapse}>{copy.delivery}</Link>
           </div>
         </div>
