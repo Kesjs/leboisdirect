@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { CartProvider } from '@/lib/cart-context'
 import { I18nProvider } from '@/lib/i18n-context'
 import { AuthProvider } from '@/lib/auth-context'
+import NavigationProgress from '@/components/NavigationProgress'
 import './globals.css'
 import './braviko.css'
 
@@ -26,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={inter.variable}>
       <body>
+        <NavigationProgress />
         <I18nProvider><AuthProvider><CartProvider>{children}</CartProvider></AuthProvider></I18nProvider>
       </body>
     </html>
