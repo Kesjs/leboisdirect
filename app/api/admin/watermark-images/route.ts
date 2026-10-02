@@ -44,15 +44,8 @@ async function fetchPublicImage(url: string) {
 }
 
 function watermarkSvg(width: number, height: number) {
-  const size = Math.max(26, Math.round(Math.min(width, height) * 0.065));
-  const diagonal = Math.hypot(width, height);
-  const marks: string[] = [];
-  for (let y = -diagonal; y <= diagonal; y += size * 3.4) {
-    for (let x = -diagonal; x <= diagonal; x += size * 5.2) {
-      marks.push(`<text x="${x}" y="${y}">BRAVIKO</text>`);
-    }
-  }
-  return Buffer.from(`<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-25 ${width / 2} ${height / 2})" text-anchor="middle" dominant-baseline="middle" font-family="Arial,sans-serif" font-size="${size}" font-weight="700" fill="rgba(255,255,255,.5)" stroke="rgba(35,35,35,.42)" stroke-width="${Math.max(2, size * 0.08)}">${marks.join("")}</g></svg>`);
+  const size = Math.max(32, Math.round(Math.min(width, height) * 0.15));
+  return Buffer.from(`<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg"><text x="50%" y="50%" transform="rotate(-25 ${width / 2} ${height / 2})" text-anchor="middle" dominant-baseline="middle" font-family="Arial,sans-serif" font-size="${size}" font-weight="700" letter-spacing="-${Math.round(size * 0.04)}" fill="rgba(255,255,255,.48)">braviko</text></svg>`);
 }
 
 export async function POST(request: Request) {

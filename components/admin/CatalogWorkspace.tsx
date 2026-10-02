@@ -117,23 +117,15 @@ async function addWatermark(file: File) {
     const context = canvas.getContext("2d");
     if (!context) return file;
     context.drawImage(image, 0, 0);
-    const size = Math.max(24, Math.round(Math.min(canvas.width, canvas.height) * 0.065));
-    const diagonal = Math.hypot(canvas.width, canvas.height);
+    const size = Math.max(32, Math.round(Math.min(canvas.width, canvas.height) * 0.15));
     context.save();
     context.translate(canvas.width / 2, canvas.height / 2);
     context.rotate(-Math.PI / 7);
     context.font = `700 ${size}px Arial, sans-serif`;
     context.textAlign = "center";
     context.textBaseline = "middle";
-    context.lineWidth = Math.max(2, size * 0.08);
-    context.strokeStyle = "rgba(35,35,35,.42)";
     context.fillStyle = "rgba(255,255,255,.48)";
-    for (let y = -diagonal; y <= diagonal; y += size * 3.4) {
-      for (let x = -diagonal; x <= diagonal; x += size * 5.2) {
-        context.strokeText("BRAVIKO", x, y);
-        context.fillText("BRAVIKO", x, y);
-      }
-    }
+    context.fillText("braviko", 0, 0);
     context.restore();
     const blob = await new Promise<Blob | null>((resolve) =>
       canvas.toBlob(resolve, file.type || "image/jpeg", 0.92),
@@ -352,12 +344,10 @@ function FileDropzone({
                 className="h-full w-full object-cover"
               />
               {watermark && (
-                <div aria-hidden="true" className="pointer-events-none absolute inset-[-35%] flex rotate-[-24deg] flex-col justify-center gap-5 opacity-70">
-                  {Array.from({ length: 6 }).map((_, watermarkRow) => (
-                    <span key={watermarkRow} className="whitespace-nowrap text-center text-[11px] font-bold tracking-[.16em] text-white [text-shadow:0_1px_2px_rgba(35,35,35,.65)]">
-                      BRAVIKO · BRAVIKO · BRAVIKO
-                    </span>
-                  ))}
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center">
+                  <span className="-rotate-[25deg] whitespace-nowrap text-[clamp(28px,5vw,52px)] font-bold tracking-[-.04em] text-white/50">
+                    braviko
+                  </span>
                 </div>
               )}
               <button
