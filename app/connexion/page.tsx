@@ -13,6 +13,15 @@ import { accountCopy } from '@/data/account-copy'
 
 type Mode = 'login' | 'signup' | 'reset'
 
+const countries = [
+  { code: '+33', short: 'FR', flag: 'fr' },
+  { code: '+49', short: 'DE', flag: 'de' },
+  { code: '+39', short: 'IT', flag: 'it' },
+  { code: '+32', short: 'BE', flag: 'be' },
+  { code: '+41', short: 'CH', flag: 'ch' },
+  { code: '+352', short: 'LU', flag: 'lu' },
+] as const
+
 function ConnectionContent() {
   const router = useRouter()
   const params = useSearchParams()
@@ -84,6 +93,7 @@ function ConnectionContent() {
 
   const switchMode = (next: Mode) => { setMode(next); setError(''); setMessage('') }
   const signup = mode === 'signup'
+  const selectedCountry = countries.find(country => country.code === phoneCountry) || countries[0]
 
   return <>
     <Header />
@@ -102,7 +112,7 @@ function ConnectionContent() {
         <form onSubmit={submit} className="bk-account-form">
           {signup && <>
             <div className="bk-form-row"><label>{c.firstName}<input value={firstName} onChange={event => setFirstName(event.target.value)} required autoComplete="given-name" /></label><label>{c.lastName}<input value={lastName} onChange={event => setLastName(event.target.value)} required autoComplete="family-name" /></label></div>
-            <label>{c.phone}<span className="bk-phone-field"><select value={phoneCountry} onChange={event => setPhoneCountry(event.target.value)} aria-label="Indicatif téléphonique"><option value="+33">🇫🇷 +33</option><option value="+49">🇩🇪 +49</option><option value="+39">🇮🇹 +39</option><option value="+32">🇧🇪 +32</option><option value="+41">🇨🇭 +41</option><option value="+352">🇱🇺 +352</option></select><input value={phone} onChange={event => setPhone(event.target.value.replace(/[^\d ]/g, ''))} required inputMode="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" /></span></label>
+            <label>{c.phone}<span className="bk-phone-field"><span className="bk-country-select"><span className={`bk-country-flag bk-flag-${selectedCountry.flag}`} aria-hidden="true" /><select value={phoneCountry} onChange={event => setPhoneCountry(event.target.value)} aria-label="Indicatif téléphonique">{countries.map(country => <option key={country.code} value={country.code}>{country.short} {country.code}</option>)}</select></span><input value={phone} onChange={event => setPhone(event.target.value.replace(/[^\d ]/g, ''))} required inputMode="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" /></span></label>
             <label>{c.deliveryAddress}<textarea value={deliveryAddress} onChange={event => setDeliveryAddress(event.target.value)} required minLength={8} rows={3} autoComplete="street-address" placeholder={c.deliveryAddressPlaceholder} /></label>
           </>}
           {(!user || mode !== 'reset') && <label>{c.email}<input type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" /></label>}

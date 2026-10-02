@@ -329,6 +329,18 @@
 .bk-account-form input:focus { border-color: var(--bk-accent); outline: 1px solid var(--bk-accent); }
 .bk-account-form textarea:focus, .bk-account-form select:focus { border-color: var(--bk-accent); outline: 1px solid var(--bk-accent); }
 .bk-phone-field { display: grid; grid-template-columns: 132px 1fr; gap: 8px; }
+.bk-country-select { position: relative; display: block; }
+.bk-country-select select { width: 100%; height: 100%; padding-left: 42px; appearance: auto; }
+.bk-country-flag { position: absolute; z-index: 1; left: 12px; top: 50%; width: 22px; height: 15px; border: 1px solid rgb(0 0 0 / .14); border-radius: 2px; transform: translateY(-50%); pointer-events: none; }
+.bk-flag-fr { background: linear-gradient(90deg, #1d4ed8 0 33%, #fff 33% 66%, #ef4444 66%); }
+.bk-flag-de { background: linear-gradient(#111 0 33%, #d22 33% 66%, #f5c542 66%); }
+.bk-flag-it { background: linear-gradient(90deg, #15803d 0 33%, #fff 33% 66%, #dc2626 66%); }
+.bk-flag-be { background: linear-gradient(90deg, #111 0 33%, #facc15 33% 66%, #dc2626 66%); }
+.bk-flag-ch { background: #dc2626; }
+.bk-flag-ch::before, .bk-flag-ch::after { content: ''; position: absolute; background: #fff; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.bk-flag-ch::before { width: 12px; height: 4px; }
+.bk-flag-ch::after { width: 4px; height: 12px; }
+.bk-flag-lu { background: linear-gradient(#ef4444 0 33%, #fff 33% 66%, #60a5fa 66%); }
 .bk-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .bk-account-form .bk-button { width: 100%; margin-top: 8px; }
 .bk-account-form .bk-button:disabled { opacity: .6; cursor: wait; }
