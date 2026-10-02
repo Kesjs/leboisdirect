@@ -21,6 +21,7 @@ const categorySuffixLabels: Record<string, Record<Locale, string>> = {
   'fendeuses': { fr: 'Fendeuses', de: 'Holzspalter', it: 'Spaccalegna' },
   'pulverisateurs': { fr: 'Pulvérisateurs', de: 'Rückenspritzen', it: 'Irroratori' },
   'outils-de-jardin': { fr: 'Outils de jardin', de: 'Gartenwerkzeuge', it: 'Attrezzi da giardino' },
+  'preparation': { fr: 'Préparation du bois', de: 'Holzvorbereitung', it: 'Preparazione della legna' },
 }
 
 export function categoryLabel(category: string, locale: Locale) {
