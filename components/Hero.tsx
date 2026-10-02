@@ -59,7 +59,7 @@ export default function Hero() {
       <div className="bk-hero-worlds bk-hero-worlds--single">
         <Link href="/boutique?universe=heating" className="bk-world bk-world-heat" data-hero-enter>
           <div className="bk-world-media" data-hero-parallax>
-            <Image src="/images/fireplace-with-woods-modern-wooden-house.jpg" alt="" fill priority sizes="(max-width: 700px) 100vw, 58vw" className="bk-image" quality={85} />
+            <Image src="/images/hero-winter-stove.png" alt="" fill priority sizes="(max-width: 700px) 100vw, 58vw" className="bk-image" quality={85} />
           </div>
           <div className="bk-world-shade" />
           <div className="bk-world-top"><span>{copy.home}</span><span>01</span></div>

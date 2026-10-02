@@ -102,12 +102,12 @@
 
 /* Hero: restrained typography, expansive photography, direct commerce paths. */
 .bk-hero { padding-top: clamp(28px, 4vw, 64px); }
-.bk-hero-heading { display: grid; grid-template-columns: 1.8fr 1fr; gap: 32px; align-items: end; margin-bottom: 42px; }
+.bk-hero-heading { display: grid; grid-template-columns: 1.8fr 1fr; gap: 32px; align-items: start; margin-bottom: 42px; }
 .bk-hero-kicker { margin-bottom: 18px; color: var(--bk-accent); font-size: 11px; font-weight: 600; letter-spacing: .14em; line-height: 1.4; text-transform: uppercase; }
 .bk-hero h1 { font-size: clamp(42px, 6.3vw, 96px); font-weight: 500; line-height: 1.03; letter-spacing: -.06em; }
 .bk-line-mask { display: block; overflow: hidden; padding-bottom: .09em; margin-bottom: -.05em; }
 .bk-line-mask > span { display: block; }
-.bk-hero-intro { max-width: 330px; justify-self: end; padding-bottom: 8px; }
+.bk-hero-intro { max-width: 330px; justify-self: end; padding-top: clamp(28px, 4vw, 64px); }
 .bk-hero-intro > p { font-size: 15px; color: var(--bk-muted); line-height: 1.7; margin-bottom: 14px; }
 .bk-hero-search { display: flex; align-items: center; border-bottom: 1px solid var(--bk-ink); margin-bottom: 28px; }
 .bk-hero-search input { width: 100%; min-width: 0; padding: 12px 0; background: transparent; color: var(--bk-ink); font-size: 14px; }
@@ -414,7 +414,7 @@
   .bk-page-loading-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .bk-hero-heading { grid-template-columns: 1fr; gap: 24px; }
   .bk-hero h1 { font-size: clamp(42px, 8.5vw, 72px); }
-  .bk-hero-intro { max-width: 560px; justify-self: start; }
+  .bk-hero-intro { max-width: 560px; justify-self: start; padding-top: 0; }
   .bk-hero-intro p { max-width: 470px; }
   .bk-quality-grid { grid-template-columns: repeat(2, 1fr); }
   .bk-delivery { gap: 32px; }
