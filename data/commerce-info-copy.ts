@@ -72,20 +72,20 @@ export const commerceInfoCopy: Record<'retours-remboursements' | 'expedition' | 
   'informations-produits': {
     fr: { eyebrow: 'BRAVIKO / PRODUITS', title: 'État et détails des produits', intro: 'Comprendre ce que vous achetez avant de confirmer votre demande.', updated: 'Mise à jour : 1 octobre 2026', sections: [
       { title: 'État indiqué', body: 'Un produit publié est proposé comme neuf, sauf indication explicite contraire sur sa fiche. Les produits en brouillon ne sont pas visibles dans la boutique. Un produit archivé n’est plus proposé à la vente.' },
-      { title: 'Fiche produit', body: 'Chaque fiche présente les caractéristiques disponibles : essence, dimensions, conditionnement, quantité, origine, stock indicatif et délai. Les photos servent à illustrer le produit et peuvent présenter de légères différences.' },
-      { title: 'Disponibilité', body: 'Le stock affiché est indicatif jusqu’à la confirmation. Une rupture ou une variation de délai peut nécessiter une proposition équivalente ou un remboursement.' },
+      { title: 'Fiche produit', body: 'Chaque fiche présente les caractéristiques disponibles : essence, dimensions, conditionnement, quantité, origine et délai. Les photos servent à illustrer le produit et peuvent présenter de légères différences.' },
+      { title: 'Disponibilité', body: 'La disponibilité est confirmée lors du traitement de votre commande. Une rupture ou une variation de délai peut nécessiter une proposition équivalente ou un remboursement.' },
       { title: 'Prix et variantes', body: 'Le prix dépend du format ou de la variante sélectionnée. Vérifiez toujours la quantité, le conditionnement et le prix affichés dans le panier avant validation.' },
     ] },
     de: { eyebrow: 'BRAVIKO / PRODUKTE', title: 'Produktzustand und Details', intro: 'Was Sie vor der Bestätigung Ihrer Anfrage wissen sollten.', updated: 'Aktualisiert am 1. Oktober 2026', sections: [
       { title: 'Angegebener Zustand', body: 'Veröffentlichte Produkte gelten als neu, sofern die Produktseite nichts anderes angibt. Entwürfe sind nicht sichtbar, archivierte Produkte werden nicht mehr angeboten.' },
-      { title: 'Produktseite', body: 'Die Seite enthält verfügbare Angaben wie Holzart, Maße, Verpackung, Menge, Herkunft, Richtbestand und Lieferzeit. Bilder dienen der Illustration und können leicht abweichen.' },
-      { title: 'Verfügbarkeit', body: 'Der angezeigte Bestand ist bis zur Bestätigung vorläufig. Bei Engpässen kann eine gleichwertige Lösung oder Erstattung angeboten werden.' },
+      { title: 'Produktseite', body: 'Die Seite enthält verfügbare Angaben wie Holzart, Maße, Verpackung, Menge, Herkunft und Lieferzeit. Bilder dienen der Illustration und können leicht abweichen.' },
+      { title: 'Verfügbarkeit', body: 'Die Verfügbarkeit wird bei der Bearbeitung Ihrer Bestellung bestätigt. Bei Engpässen kann eine gleichwertige Lösung oder Erstattung angeboten werden.' },
       { title: 'Preise und Varianten', body: 'Der Preis hängt von Format oder Variante ab. Prüfen Sie Menge, Verpackung und Preis im Warenkorb vor der Bestätigung.' },
     ] },
     it: { eyebrow: 'BRAVIKO / PRODOTTI', title: 'Stato e dettagli dei prodotti', intro: 'Cosa sapere prima di confermare la richiesta.', updated: 'Aggiornato il 1 ottobre 2026', sections: [
       { title: 'Stato indicato', body: 'Un prodotto pubblicato è nuovo salvo indicazione diversa nella scheda. Le bozze non sono visibili e i prodotti archiviati non vengono più proposti.' },
-      { title: 'Scheda prodotto', body: 'La scheda presenta dati disponibili come essenza, dimensioni, confezione, quantità, origine, stock indicativo e tempi. Le foto sono illustrative e possono differire leggermente.' },
-      { title: 'Disponibilità', body: 'Lo stock è indicativo fino alla conferma. In caso di esaurimento possiamo proporre un equivalente o un rimborso.' },
+      { title: 'Scheda prodotto', body: 'La scheda presenta dati disponibili come essenza, dimensioni, confezione, quantità, origine e tempi. Le foto sono illustrative e possono differire leggermente.' },
+      { title: 'Disponibilità', body: 'La disponibilità viene confermata durante l’elaborazione dell’ordine. In caso di esaurimento possiamo proporre un equivalente o un rimborso.' },
       { title: 'Prezzi e varianti', body: 'Il prezzo dipende dal formato o dalla variante. Controlla sempre quantità, confezione e prezzo nel carrello.' },
     ] },
   },

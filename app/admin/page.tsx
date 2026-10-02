@@ -234,7 +234,8 @@ export default function AdminPage() {
           sku: values.sku || slugify(values.names.fr),
           label: values.label || "Format standard",
           price: values.price,
-          stock: values.stock,
+          // La quantité est gérée hors de cette interface de catalogue.
+          stock: 0,
         }),
       ]);
     if (translationError || variantError) {
@@ -313,7 +314,6 @@ export default function AdminPage() {
           sku: values.sku,
           label: values.label,
           price: values.price,
-          stock: values.stock,
         })
         .eq("id", variantId);
       if (variantError) {

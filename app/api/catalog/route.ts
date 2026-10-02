@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       id, slug, status, featured, sort_order,
       braviko_categories ( id, slug, name ),
       braviko_product_translations ( locale, name, short_description, description, conditioning, delivery_info ),
-      braviko_product_variants ( id, sku, label, price, compare_at_price, stock ),
+      braviko_product_variants ( id, sku, label, price, compare_at_price ),
       braviko_product_images ( storage_path, alt_text, sort_order, is_primary )
     `,
     )
@@ -80,7 +80,6 @@ export async function GET(request: NextRequest) {
       variants: variants.map((variant: any) => ({
         id: variant.id,
         price: Number(variant.price),
-        stock: variant.stock,
         label: variant.label,
       })),
       translations: {

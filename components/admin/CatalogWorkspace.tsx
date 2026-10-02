@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type AdminStatus = "draft" | "published" | "archived";
 
@@ -56,7 +56,6 @@ export type ProductValues = {
   sku: string;
   label: string;
   price: number | "";
-  stock: number | "";
   imageUrls: string[];
 };
 
@@ -161,7 +160,6 @@ function initialValues(product?: AdminProduct | null): ProductValues {
     sku: variant?.sku || "",
     label: variant?.label || "",
     price: Number(variant?.price || 0),
-    stock: Number(variant?.stock || 0),
     imageUrls: [],
   };
 }
@@ -169,7 +167,7 @@ function initialValues(product?: AdminProduct | null): ProductValues {
 function Icon({
   name,
 }: {
-  name: "search" | "plus" | "upload" | "check" | "trash" | "image" | "chevron";
+  name: "search" | "plus" | "upload" | "check" | "trash" | "image" | "chevron" | "close";
 }) {
   const paths = {
     search: (
@@ -204,6 +202,7 @@ function Icon({
       </>
     ),
     chevron: <path d="m7 10 5 5 5-5" />,
+    close: <path d="m6 6 12 12M18 6 6 18" />,
   };
   return (
     <svg
@@ -631,7 +630,6 @@ function ProductEditor({
         ...values,
         imageUrls,
         price: values.price === "" ? 0 : values.price,
-        stock: values.stock === "" ? 0 : values.stock,
         status: publish ? ("published" as const) : values.status,
       };
       const saved = product
@@ -663,7 +661,7 @@ function ProductEditor({
   return (
     <form
       onSubmit={submit}
-      className="flex w-full min-w-0 max-w-full flex-col overflow-hidden rounded-[12px] border border-hairline bg-white p-4 shadow-[0_14px_36px_rgba(22,22,22,.06)] sm:p-5 xl:max-h-[calc(100dvh-3rem)]"
+      className="flex w-full min-w-0 max-w-full flex-col overflow-hidden rounded-[16px] border border-hairline bg-white p-4 shadow-[0_24px_80px_rgba(22,22,22,.18)] sm:p-6"
     >
       <div className="flex min-w-0 items-start justify-between gap-4 border-b border-hairline pb-4">
         <div className="min-w-0">
@@ -680,12 +678,13 @@ function ProductEditor({
         <button
           type="button"
           onClick={onClose}
-          className="shrink-0 rounded-[8px] border border-hairline px-3 py-2 text-xs font-medium text-smoke transition hover:border-charcoal hover:text-charcoal"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-[8px] border border-hairline px-3 py-2 text-xs font-medium text-smoke transition hover:border-charcoal hover:text-charcoal"
         >
+          <Icon name="close" />
           Fermer
         </button>
       </div>
-      <div className="mt-4 grid min-w-0 gap-4 xl:overflow-y-auto xl:pr-1">
+      <div className="mt-4 grid min-w-0 gap-4 overflow-y-auto pr-1">
         {values.status !== "published" && (
           <div className="rounded-[8px] border border-amber-300/60 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
             <p className="font-semibold">Cette fiche n’est pas visible sur la boutique</p>
@@ -754,30 +753,17 @@ function ProductEditor({
             onChange={(value) => update("status", value as AdminStatus)}
           />
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="grid gap-2 text-sm font-medium">
-            Prix (€)
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={values.price}
-              onChange={(event) => update("price", event.target.value === "" ? "" : Number(event.target.value))}
-              className="admin-input"
-            />
-          </label>
-          <label className="grid gap-2 text-sm font-medium">
-            Stock
-            <input
-              type="number"
-              min="0"
-              step="1"
-              value={values.stock}
-              onChange={(event) => update("stock", event.target.value === "" ? "" : Number(event.target.value))}
-              className="admin-input"
-            />
-          </label>
-        </div>
+        <label className="grid gap-2 text-sm font-medium">
+          Prix (€)
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            value={values.price}
+            onChange={(event) => update("price", event.target.value === "" ? "" : Number(event.target.value))}
+            className="admin-input"
+          />
+        </label>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="grid gap-2 text-sm font-medium">
             SKU
@@ -884,6 +870,41 @@ function ProductEditor({
   );
 }
 
+function ProductEditorModal({
+  children,
+  onClose,
+}: {
+  children: React.ReactNode;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-charcoal/45 p-3 backdrop-blur-[2px] sm:items-center sm:p-6"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-label="Éditeur de produit"
+        className="max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl overflow-y-auto rounded-[20px]"
+      >
+        {children}
+      </section>
+    </div>
+  );
+}
+
 export default function CatalogWorkspace({
   products,
   categories,
@@ -897,9 +918,7 @@ export default function CatalogWorkspace({
   importing,
   onImport,
 }: Props) {
-  const [selectedId, setSelectedId] = useState<string | null>(
-    products[0]?.id || null,
-  );
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"all" | AdminStatus>("all");
@@ -928,7 +947,6 @@ export default function CatalogWorkspace({
       all: products.length,
       published: products.filter((item) => item.status === "published").length,
       draft: products.filter((item) => item.status === "draft").length,
-      lowStock: products.filter((item) => Number(item.variants[0]?.stock || 0) < 10).length,
     }),
     [products],
   );
@@ -971,7 +989,7 @@ export default function CatalogWorkspace({
     }
   };
   return (
-    <div className="grid min-w-0 gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(440px,520px)] xl:items-start xl:gap-8">
+    <div className="min-w-0">
       <section className="min-w-0">
         <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -1003,7 +1021,7 @@ export default function CatalogWorkspace({
           </div>
         </div>
         {backfillNotice && <p role="status" className="mb-5 rounded-[12px] border border-forest/20 bg-forest/10 p-4 text-sm text-forest">{backfillNotice}</p>}
-        <div className="mb-6 grid overflow-hidden rounded-[12px] border border-hairline bg-white sm:grid-cols-3">
+        <div className="mb-6 grid overflow-hidden rounded-[12px] border border-hairline bg-white sm:grid-cols-2">
           <div className="border-b border-hairline px-4 py-3.5 sm:border-b-0 sm:border-r">
             <p className="text-xs text-smoke">Visibles en boutique</p>
             <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.published}</p>
@@ -1011,10 +1029,6 @@ export default function CatalogWorkspace({
           <div className="border-b border-hairline px-4 py-3.5 sm:border-b-0 sm:border-r">
             <p className="text-xs text-smoke">À compléter</p>
             <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.draft}</p>
-          </div>
-          <div className={`px-4 py-3.5 ${counts.lowStock ? "bg-braise/5" : ""}`}>
-            <p className="text-xs text-smoke">Stock à surveiller</p>
-            <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.lowStock}</p>
           </div>
         </div>
         {error && (
@@ -1105,7 +1119,7 @@ export default function CatalogWorkspace({
                       </div>
                     )}
                   </div>
-                  <div className="p-4">
+                  <div className="p-4 sm:p-5">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="truncate text-[15px] font-semibold">{name}</p>
@@ -1115,9 +1129,9 @@ export default function CatalogWorkspace({
                         {statusLabels[product.status]}
                       </span>
                     </div>
-                    <div className="mt-4 flex items-end justify-between gap-3 border-t border-hairline pt-3 text-sm">
+                    <div className="mt-5 flex items-center justify-between gap-3 border-t border-hairline pt-3.5 text-sm">
                       <span className="font-semibold tabular-nums">{variant ? `${Number(variant.price).toFixed(2)} €` : "Prix à définir"}</span>
-                      <span className={`${Number(variant?.stock || 0) < 10 ? "text-braise-dark" : "text-smoke"}`}>{variant ? `${variant.stock} en stock` : "Stock à définir"}</span>
+                      <span className="text-xs font-semibold text-smoke transition group-hover:text-charcoal">Ouvrir la fiche <span aria-hidden="true">→</span></span>
                     </div>
                   </div>
                 </button>
@@ -1167,8 +1181,13 @@ export default function CatalogWorkspace({
           </div>
         </details>
       </section>
-      <aside className="order-last min-w-0 max-w-full xl:order-none xl:sticky xl:top-5">
-        {creating || selected ? (
+      {creating || selected ? (
+        <ProductEditorModal
+          onClose={() => {
+            setCreating(false);
+            setSelectedId(null);
+          }}
+        >
           <ProductEditor
             key={creating ? "new" : selected?.id}
             product={creating ? null : selected}
@@ -1178,22 +1197,11 @@ export default function CatalogWorkspace({
             onDelete={onDelete}
             onClose={() => {
               setCreating(false);
-              if (!selectedId && products[0]) setSelectedId(products[0].id);
+              setSelectedId(null);
             }}
           />
-        ) : (
-          <div className="rounded-[24px] border border-dashed border-[#cfc9be] bg-white/50 p-8 text-center">
-            <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-ivory text-smoke">
-              <Icon name="image" />
-            </div>
-            <h2 className="mt-4 text-xl font-semibold">Choisis une fiche</h2>
-            <p className="mt-2 text-sm leading-6 text-smoke">
-              Sélectionne un produit à gauche pour ouvrir son éditeur, ou crée
-              une nouvelle fiche.
-            </p>
-          </div>
-        )}
-      </aside>
+        </ProductEditorModal>
+      ) : null}
     </div>
   );
 }
