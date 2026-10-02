@@ -45,13 +45,6 @@ export default function Hero() {
           </h1>
         </div>
         <div className="bk-hero-intro" data-hero-enter>
-          <form action="/boutique" className="bk-hero-search">
-            <label className="sr-only" htmlFor="hero-search-query">{copy.search}</label>
-            <input id="hero-search-query" name="q" type="search" placeholder={copy.searchPlaceholder} required />
-            <button type="submit" aria-label={copy.search}>
-              <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" /><path d="m13 13 4 4" /></svg>
-            </button>
-          </form>
           <p>{copy.intro}</p>
           <a className="bk-text-link" href="#selection">{copy.discover}<span aria-hidden="true">↗</span></a>
         </div>
