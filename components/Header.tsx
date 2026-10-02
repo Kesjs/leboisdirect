@@ -72,6 +72,12 @@ export default function Header() {
           collapse()
         }}>
         <a href="#main-content" className="bk-skip">{copy.skip}</a>
+        <div className="bk-info-bar" role="note">
+          <div className="bk-container bk-info-bar-inner">
+            <span>{copy.infoBar}</span>
+            <Link href="/livraison" onClick={collapse}>{copy.delivery}<span aria-hidden="true">↗</span></Link>
+          </div>
+        </div>
         <div className="bk-container bk-nav">
           <Link href="/" aria-label="Braviko" onClick={collapse}><Logo /></Link>
           <nav className="bk-desktop-nav" aria-label={copy.menu}>

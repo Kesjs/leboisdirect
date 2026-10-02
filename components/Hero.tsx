@@ -45,6 +45,13 @@ export default function Hero() {
           </h1>
         </div>
         <div className="bk-hero-intro" data-hero-enter>
+          <form action="/boutique" className="bk-hero-search">
+            <label className="sr-only" htmlFor="hero-search-query">{copy.search}</label>
+            <input id="hero-search-query" name="q" type="search" placeholder={copy.searchPlaceholder} required />
+            <button type="submit" aria-label={copy.search}>
+              <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" /><path d="m13 13 4 4" /></svg>
+            </button>
+          </form>
           <p>{copy.intro}</p>
           <a className="bk-text-link" href="#selection">{copy.discover}<span aria-hidden="true">↗</span></a>
         </div>
@@ -53,6 +60,7 @@ export default function Hero() {
         <Link href="/boutique?universe=heating" className="bk-world bk-world-heat" data-hero-enter>
           <div className="bk-world-media" data-hero-parallax>
             <Image src="/images/fireplace-with-woods-modern-wooden-house.jpg" alt="" fill priority sizes="(max-width: 700px) 100vw, 58vw" className="bk-image" quality={85} />
+            <span className="bk-watermark bk-watermark--hero" aria-hidden="true">braviko</span>
           </div>
           <div className="bk-world-shade" />
           <div className="bk-world-top"><span>{copy.home}</span><span>01</span></div>
@@ -64,6 +72,7 @@ export default function Hero() {
         <Link href="/boutique?universe=agriculture" className="bk-world bk-world-agri" data-hero-enter>
           <div className="bk-world-media" data-hero-parallax>
           <Image src="/images/agriculture-chainsaw.jpg" alt="" fill priority sizes="(max-width: 700px) 100vw, 42vw" className="bk-image bk-agri-image" quality={85} />
+          <span className="bk-watermark bk-watermark--hero" aria-hidden="true">braviko</span>
           </div>
           <div className="bk-world-shade" />
           <div className="bk-world-top"><span>{copy.field}</span><span>02</span></div>
