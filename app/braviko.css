@@ -140,6 +140,8 @@
 .bk-tabs > button[aria-selected=true] { color: var(--bk-ink); }
 .bk-tabs > button > span:not(.bk-tab-underline) { font-size: 11px; }
 .bk-selection-filters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: -8px 0 28px; max-width: 760px; }
+.bk-selection-context { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: -8px 0 28px; padding: 12px 0; border-top: 1px solid var(--bk-line); border-bottom: 1px solid var(--bk-line); color: var(--bk-muted); font-size: 12px; letter-spacing: .04em; }
+.bk-selection-context span:first-child { color: var(--bk-accent); font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
 .bk-selection-filter-group { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; grid-column: span 2; }
 .bk-selection-filter-group > span { margin-left: 10px; color: var(--bk-muted); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
 .bk-selection-filter-group > div { display: flex; flex-wrap: wrap; gap: 8px; }

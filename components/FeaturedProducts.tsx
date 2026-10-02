@@ -9,7 +9,6 @@ import { useI18n } from '@/lib/i18n-context'
 import ProductCard from './ProductCard'
 import { uiCopy } from '@/data/ui-copy'
 import { isHeatingCategory } from '@/data/catalog-taxonomy'
-import { categoryLabel } from '@/data/product-labels'
 
 function shuffle<T>(items: T[]) {
   const shuffled = [...items]
@@ -48,15 +47,7 @@ export default function FeaturedProducts() {
         <div><p className="bk-eyebrow">BRAVIKO · {copy.heating}</p><h2 id="selection-title" className="bk-title">{copy.selection}</h2><p className="bk-lead">{copy.selectionIntro}</p></div>
         <Link href="/boutique" className="bk-text-link">{copy.all}<span aria-hidden="true">↗</span></Link>
       </div>
-      {availableCategories.length > 1 && <div className="bk-selection-filters" aria-label={ui.shop.categories}>
-        <button type="button" onClick={() => setSelectedCategory('all')} aria-pressed={selectedCategory === 'all'}>
-          {ui.shop.allProducts}
-        </button>
-        <div className="bk-selection-filter-group"><span>{copy.heating}</span><div>{availableCategories.map(category => <button key={category} type="button" onClick={() => setSelectedCategory(category)} aria-pressed={selectedCategory === category}>
-              {categoryLabel(category, locale)}
-            </button>)}</div>
-        </div>
-      </div>}
+      <div className="bk-selection-context"><span>{copy.heating}</span><span>{universeProducts.length} {ui.shop.product}{universeProducts.length > 1 ? 's' : ''}</span></div>
         <motion.div initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduced ? 0 : 0.22 }}>
           <div className="bk-products-grid">{randomizedProducts.map(product => <ProductCard key={product.id} product={product} />)}{!catalogProducts.length && <p className="bk-lead">{catalogError ? ui.common.unavailable : ui.common.selectionLoading}</p>}{catalogProducts.length > 0 && !visibleProducts.length && <p className="bk-lead">{ui.common.unavailable}</p>}</div>
         </motion.div>

@@ -27,7 +27,25 @@ export function categoryLabel(category: string, locale: Locale) {
   const direct = (categoryLabels[locale] as Record<string, string>)[category]
   if (direct) return direct
   const suffix = category.split('-').slice(category.startsWith('chauffage-au-bois-') ? 3 : category.startsWith('agriculture-terrain-') ? 2 : 0).join('-')
-  return categorySuffixLabels[suffix]?.[locale] || category.replace(/^(chauffage-au-bois|agriculture-terrain)-/, '').replace(/-/g, ' ')
+  if (categorySuffixLabels[suffix]?.[locale]) return categorySuffixLabels[suffix][locale]
+  const readable = category.replace(/^chauffage-au-bois-/, '').replace(/-/g, ' ')
+  const fixes: Record<string, Record<Locale, string>> = {
+    's chage premium': { fr: 'Bûches séchées premium', de: 'Premium-Brennholz', it: 'Legna premium' },
+    'b ches de jour': { fr: 'Bûches de jour', de: 'Tagesbriketts', it: 'Bricchetti da giorno' },
+    'b ches de nuit': { fr: 'Bûches de nuit', de: 'Nachtbriketts', it: 'Bricchetti da notte' },
+    'b ches premium': { fr: 'Bûches premium', de: 'Premium-Briketts', it: 'Bricchetti premium' },
+    'petit foyer': { fr: 'Petit foyer', de: 'Kleiner Ofen', it: 'Piccolo focolare' },
+    'grand foyer': { fr: 'Grand foyer', de: 'Großer Ofen', it: 'Grande focolare' },
+    'sciure compress e': { fr: 'Sciure compressée', de: 'Gepresstes Sägemehl', it: 'Segatura compressa' },
+    'sans corce': { fr: 'Sans écorce', de: 'Rindenfrei', it: 'Senza corteccia' },
+    'ch ne compress': { fr: 'Chêne compressé', de: 'Gepresste Eiche', it: 'Quercia compressa' },
+    'h tre compress': { fr: 'Hêtre compressé', de: 'Gepresste Buche', it: 'Faggio compresso' },
+    'r sineux premium': { fr: 'Résineux premium', de: 'Premium-Nadelholz', it: 'Resinoso premium' },
+    'fendeuses de b ches': { fr: 'Fendeuses de bûches', de: 'Holzspalter', it: 'Spaccalegna' },
+    'scies b ches': { fr: 'Scies à bûches', de: 'Brennholzsägen', it: 'Seghe per legna' },
+    'combin s bois de chauffage': { fr: 'Combinés bois de chauffage', de: 'Kombigeräte Brennholz', it: 'Combinati per legna' },
+  }
+  return fixes[readable]?.[locale] || readable
 }
 
 export function hasMeaningfulConditioning(conditioning?: string | null) {

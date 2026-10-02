@@ -14,6 +14,7 @@ function resolveImageUrl(
   path: string,
   supabase: ReturnType<typeof getCatalogClient>,
 ) {
+  if (path.startsWith('/')) return path;
   return path.startsWith("http://") || path.startsWith("https://")
     ? path
     : supabase.storage.from("braviko-product-media").getPublicUrl(path).data
