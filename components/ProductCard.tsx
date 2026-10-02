@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Product } from '@/data/products'
-import { categoryLabel, hasMeaningfulConditioning, productLabel } from '@/data/product-labels'
+import { categoryLabel, productLabel } from '@/data/product-labels'
 import { bravikoCopy } from '@/data/braviko-copy'
 import { useI18n } from '@/lib/i18n-context'
 import { useCart } from '@/lib/cart-context'
@@ -32,20 +32,25 @@ export default function ProductCard({ product }: { product: Product }) {
     clearTimeout(timer.current)
     timer.current = setTimeout(() => setAdded(false), 2200)
   }
+  const handleImageError = () => {
+    if (displayImage !== product.image) {
+      setDisplayImage(product.image)
+      setImageLoaded(false)
+    }
+  }
   return (
     <article className="bk-product">
       <Link href={'/produit/' + product.slug} className="bk-product-link">
         <div className={'bk-product-photo' + (imageLoaded ? ' is-loaded' : '')}>
           {!imageLoaded && <span className="bk-image-placeholder" aria-hidden="true" />}
-          <Image onLoad={() => setImageLoaded(true)} src={displayImage} alt={label.name} fill sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw" className="bk-image bk-product-front" quality={70} />
+          <Image onLoad={() => setImageLoaded(true)} onError={handleImageError} src={displayImage} alt={label.name} fill sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw" className="bk-image bk-product-front" quality={70} />
           {displayImage.startsWith('/images/') && <span className="bk-watermark" aria-hidden="true">braviko</span>}
           {product.images[1] && <Image src={product.images[1]} alt="" fill sizes="(max-width: 600px) 100vw, 33vw" className="bk-image bk-product-back" quality={75} />}
           <span className="bk-product-view">{copy.details} <span aria-hidden="true">↗</span></span>
         </div>
         <p className="bk-product-category">{categoryLabel(product.category, locale)}</p>
         <h3>{label.name}</h3>
-        <p className="bk-product-excerpt">{label.description.split('. ')[0]}.</p>
-        {hasMeaningfulConditioning(label.conditioning) && <p className="bk-product-conditioning">{label.conditioning}</p>}
+        <p className="bk-product-excerpt">{label.description}</p>
       </Link>
       <div className="bk-product-purchase">
         <div><span className="bk-product-price">{price}</span><p>{label.delivery}</p></div>

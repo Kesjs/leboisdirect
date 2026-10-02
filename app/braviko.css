@@ -176,7 +176,7 @@
 .bk-product-category { font-size: 10px; text-transform: uppercase; letter-spacing: .13em; color: var(--bk-accent); margin-top: 20px; margin-bottom: 8px; }
 .bk-product h3 { font-size: 20px; line-height: 1.3; letter-spacing: -.025em; font-weight: 500; }
 .bk-product-conditioning { color: var(--bk-muted); font-size: 13px; margin-top: 6px; min-height: 22px; }
-.bk-product-excerpt { color: var(--bk-muted); font-size: 13px; line-height: 1.55; margin-top: 8px; max-width: 38ch; }
+.bk-product-excerpt { color: var(--bk-muted); font-size: 13px; line-height: 1.55; margin-top: 8px; max-width: 38ch; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; min-height: calc(2 * 1.55em); }
 .bk-product-purchase { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--bk-line); padding-top: 14px; margin-top: 16px; }
 .bk-product-price { font-size: 24px; font-weight: 500; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
 .bk-product-purchase p { font-size: 11px; color: var(--bk-muted); margin-top: 4px; }

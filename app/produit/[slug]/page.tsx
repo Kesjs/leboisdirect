@@ -162,6 +162,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 50vw"
                     priority
+                    onError={(event) => {
+                      if (product.image && event.currentTarget.src !== product.image) {
+                        event.currentTarget.src = product.image
+                      }
+                    }}
                   />
                   <span className="bk-detail-watermark" aria-hidden="true">BRAVIKO</span>
                 </div>
@@ -183,6 +188,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                           fill
                           className="object-cover"
                           sizes="200px"
+                          onError={(event) => {
+                            if (product.image && event.currentTarget.src !== product.image) {
+                              event.currentTarget.src = product.image
+                            }
+                          }}
                         />
                         <span className="bk-detail-thumb-watermark" aria-hidden="true">B</span>
                       </button>
@@ -307,6 +317,26 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                       </li>
                     ))}
                   </ul>
+                </div>
+              )}
+
+              {(hasMeaningfulConditioning(productLabel(product, locale).conditioning) || productLabel(product, locale).delivery) && (
+                <div className="mt-40 pt-40 border-t border-hairline">
+                  <h2 className="text-heading-sm font-semibold text-charcoal mb-20">{c.details}</h2>
+                  <dl className="grid gap-16 sm:grid-cols-2">
+                    {hasMeaningfulConditioning(productLabel(product, locale).conditioning) && (
+                      <div>
+                        <dt className="text-body-sm font-semibold text-charcoal">{c.conditioning}</dt>
+                        <dd className="text-body-sm text-smoke mt-4">{productLabel(product, locale).conditioning}</dd>
+                      </div>
+                    )}
+                    {productLabel(product, locale).delivery && (
+                      <div>
+                        <dt className="text-body-sm font-semibold text-charcoal">{c.delivery}</dt>
+                        <dd className="text-body-sm text-smoke mt-4">{productLabel(product, locale).delivery}</dd>
+                      </div>
+                    )}
+                  </dl>
                 </div>
               )}
 
