@@ -30,7 +30,7 @@ export default function Home() {
           </section>
           <section className="bk-delivery bk-section bk-container" aria-labelledby="delivery-title">
             <div className="bk-delivery-photo" data-reveal>
-              <Image src="/images/braviko-hero.jpg" alt="" fill sizes="(max-width: 900px) 100vw, 50vw" className="bk-image" quality={85} />
+              <Image src="/images/delivery-firewood-pallet.png" alt="" fill sizes="(max-width: 900px) 100vw, 50vw" className="bk-image" quality={85} />
               <span className="bk-photo-caption">{copy.heating}</span>
             </div>
             <div>
