@@ -11,7 +11,7 @@ import type { Product } from '@/data/products'
 import { useI18n } from '@/lib/i18n-context'
 import { categoryLabel, productLabel } from '@/data/product-labels'
 import { uiCopy } from '@/data/ui-copy'
-import { isAgricultureCategory, isHeatingCategory } from '@/data/catalog-taxonomy'
+import { isHeatingCategory } from '@/data/catalog-taxonomy'
 
 type SortOption = 'relevance' | 'price-asc' | 'price-desc' | 'name'
 type ViewMode = 'grid' | 'list'
@@ -48,13 +48,10 @@ function ShopContent() {
     return () => { active = false }
   }, [])
 
-  const isAgriculture = universe === 'agriculture'
-  const isHeating = universe === 'heating'
+  const isHeating = true
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = catalogProducts.filter(product => {
-      if (isAgriculture) return isAgricultureCategory(product.category)
-      if (isHeating) return isHeatingCategory(product.category)
-      return true
+      return isHeatingCategory(product.category)
     })
     if (selectedCategory !== 'all') filtered = filtered.filter(product => product.category === selectedCategory)
     if (query) filtered = filtered.filter(product =>
@@ -66,32 +63,31 @@ function ShopContent() {
       case 'name': filtered.sort((a, b) => a.name.localeCompare(b.name)); break
     }
     return filtered
-  }, [catalogProducts, isAgriculture, isHeating, locale, query, selectedCategory, sortBy])
+  }, [catalogProducts, locale, query, selectedCategory, sortBy])
 
   const availableCategories = useMemo(() => Array.from(new Set(catalogProducts
-    .filter(product => isAgriculture ? isAgricultureCategory(product.category) : isHeating ? isHeatingCategory(product.category) : true)
-    .map(product => product.category))), [catalogProducts, isAgriculture, isHeating])
+    .filter(product => isHeatingCategory(product.category))
+    .map(product => product.category))), [catalogProducts])
   const groupedCategories = useMemo(() => {
     const groups = [
       { key: 'heating', title: copy.shop.heating, categories: availableCategories.filter(category => isHeatingCategory(category)) },
-      { key: 'agriculture', title: copy.shop.agriculture, categories: availableCategories.filter(category => isAgricultureCategory(category)) },
     ]
     return groups.filter(group => group.categories.length > 0)
-  }, [availableCategories, copy.shop.agriculture, copy.shop.heating])
+  }, [availableCategories, copy.shop.heating])
   const pageCount = Math.max(1, Math.ceil(filteredAndSortedProducts.length / PRODUCTS_PER_PAGE))
   const pageProducts = filteredAndSortedProducts.slice((page - 1) * PRODUCTS_PER_PAGE, page * PRODUCTS_PER_PAGE)
 
   useEffect(() => { setPage(1); setSelectedCategory('all') }, [universe])
   useEffect(() => { if (page > pageCount) setPage(pageCount) }, [page, pageCount])
 
-  const title = isAgriculture ? copy.shop.agriculture : isHeating ? copy.shop.heating : copy.shop.all
-  const intro = isAgriculture ? copy.shop.agricultureIntro : isHeating ? copy.shop.heatingIntro : copy.shop.allIntro
+  const title = copy.shop.heating
+  const intro = copy.shop.heatingIntro
 
   return <>
     <Header />
     <main id="main-content" className="min-h-screen bg-ivory">
       <section className="relative h-[42vh] min-h-[340px] flex items-center justify-center overflow-hidden bg-charcoal">
-        <Image src={isAgriculture ? '/images/agriculture-chainsaw.jpg' : '/images/photorealistic-perspective-wood-logs.jpg'} alt={isAgriculture ? copy.shop.agricultureImage : copy.shop.heatingImage} fill priority className="object-cover" sizes="100vw" quality={75} />
+        <Image src="/images/photorealistic-perspective-wood-logs.jpg" alt={copy.shop.heatingImage} fill priority className="object-cover" sizes="100vw" quality={75} />
         <div className="absolute inset-0 bg-charcoal/55" />
         <div className="relative z-10 container-custom text-center text-white"><p className="bk-eyebrow text-white/80">BRAVIKO · {title}</p><h1 className="text-[48px] sm:text-[56px] md:text-[72px] font-semibold text-balance leading-[1.05] tracking-tight">{title}</h1><p className="mt-16 text-[16px] sm:text-[18px] text-white/90 max-w-[560px] mx-auto leading-relaxed">{intro}</p></div>
       </section>

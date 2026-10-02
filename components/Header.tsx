@@ -56,7 +56,7 @@ export default function Header() {
   }, [])
   const links = [
     ['/boutique', copy.shop], ['/boutique?universe=heating', copy.heating],
-    ['/boutique?universe=agriculture', copy.agriculture], ['/conseils', copy.advice],
+    ['/conseils', copy.advice],
   ]
   const collapse = () => { setMobileOpen(false); setLanguageOpen(false); setSearchOpen(false); setAccountOpen(false) }
   return (

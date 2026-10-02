@@ -17,7 +17,7 @@ export default function Footer() {
       <div className="bk-container">
         <div className="bk-footer-top">
           <div><Link href="/" aria-label="Braviko"><Logo /></Link><p>{copy.footer}</p></div>
-          <nav aria-label={copy.universes}><h2>{copy.universes}</h2><Link href="/boutique?universe=heating">{copy.heating}</Link><Link href="/boutique?universe=agriculture">{copy.agriculture}</Link><Link href="/boutique">{copy.all}</Link></nav>
+        <nav aria-label={copy.universes}><h2>{copy.universes}</h2><Link href="/boutique?universe=heating">{copy.heating}</Link><Link href="/boutique">{copy.all}</Link></nav>
         <nav aria-label={copy.help}><h2>{copy.help}</h2><Link href="/livraison">{copy.delivery}</Link><Link href="/expedition">{commerceLinks.shipping}</Link><Link href="/retours-remboursements">{commerceLinks.returns}</Link><Link href="/assurance">{commerceLinks.assurance}</Link><Link href="/informations-produits">{commerceLinks.details}</Link><Link href="/tva">{commerceLinks.vat}</Link><Link href="/conseils">{copy.advice}</Link><Link href="/faq">FAQ</Link><Link href="/notre-histoire">{copy.story}</Link><Link href="/contact">Contact</Link></nav>
         </div>
         <div className="bk-footer-wordmark" aria-hidden="true">braviko<span>.</span></div>

@@ -15,8 +15,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Braviko — Les produits utiles, simplement',
-  description: 'Découvrez les produits Braviko pour votre maison, votre chauffage et vos activités agricoles.',
-  keywords: 'Braviko, chauffage, bois, agriculture, machines agricoles, équipements',
+  description: 'Préparez votre chauffage au bois avec des bûches, granulés et équipements sélectionnés pour l’hiver.',
+  keywords: 'Braviko, chauffage au bois, bûches, granulés, bois compressé, hiver',
 }
 
 export default function RootLayout({
