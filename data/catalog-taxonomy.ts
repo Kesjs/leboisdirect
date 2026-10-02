@@ -4,7 +4,7 @@ const heatingCategories = new Set([
   'chauffage-au-bois-preparation', 'poeles-a-bois', 'poeles-a-granules', 'braseros-cuisson-exterieure',
   'cheminees-electriques', 'rangement-stockage', 'chauffage-exterieur', 'inserts-cheminees',
   'cuisine-au-feu', 'accessoires-brasero', 'stockage-exterieur', 'accessoires-cuisson-exterieure',
-  'foyers-cheminees', 'barbecues-cuisine-exterieure', 'rangement-transport-bois',
+  'foyers-cheminees', 'barbecues-cuisine-exterieure', 'rangement-transport-bois', 'chauffage-electrique-interieur',
 ])
 
 export function isAgricultureCategory(category: string) {
