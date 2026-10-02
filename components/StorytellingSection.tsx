@@ -10,8 +10,8 @@ import { bravikoCopy } from '@/data/braviko-copy'
 
 const images = [
   '/images/snowy-firewood-sunset.png',
-  '/images/braviko-hero.jpg',
-  '/images/scandinavian-interior-with-fireplace-stump-table-pile-logs-fire.jpg',
+  '/images/snowy-wood-preparation.png',
+  '/images/cozy-stove-comfort.jpg',
 ]
 
 export default function StorytellingSection() {
