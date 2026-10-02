@@ -21,12 +21,13 @@ export default function Header() {
   const [cartOpen, setCartOpen] = useState(false)
   const [languageOpen, setLanguageOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [accountOpen, setAccountOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const { totalItems } = useCart()
   const { locale, setLocale } = useI18n()
   const copy = bravikoCopy[locale]
   const account = accountCopy[locale]
-  const { user, loading: authLoading } = useAuth()
+  const { user, isAdmin, loading: authLoading, signOut } = useAuth()
   const pathname = usePathname()
   const reduced = useReducedMotion()
   const sentinel = useRef<HTMLDivElement>(null)
@@ -34,6 +35,7 @@ export default function Header() {
   const languageButton = useRef<HTMLButtonElement>(null)
   const menuButton = useRef<HTMLButtonElement>(null)
   const searchButton = useRef<HTMLButtonElement>(null)
+  const accountButton = useRef<HTMLButtonElement>(null)
   const searchInput = useRef<HTMLInputElement>(null)
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => setScrolled(!entry.isIntersecting))
@@ -46,7 +48,7 @@ export default function Header() {
   useEffect(() => {
     const dismiss = (event: PointerEvent) => {
       if (!header.current?.contains(event.target as Node)) {
-        setLanguageOpen(false); setSearchOpen(false); setMobileOpen(false)
+        setLanguageOpen(false); setSearchOpen(false); setMobileOpen(false); setAccountOpen(false)
       }
     }
     document.addEventListener('pointerdown', dismiss)
@@ -56,7 +58,7 @@ export default function Header() {
     ['/boutique', copy.shop], ['/boutique?universe=heating', copy.heating],
     ['/boutique?universe=agriculture', copy.agriculture], ['/conseils', copy.advice],
   ]
-  const collapse = () => { setMobileOpen(false); setLanguageOpen(false); setSearchOpen(false) }
+  const collapse = () => { setMobileOpen(false); setLanguageOpen(false); setSearchOpen(false); setAccountOpen(false) }
   return (
     <>
       <div ref={sentinel} className="bk-header-sentinel" aria-hidden="true" />
@@ -65,6 +67,7 @@ export default function Header() {
           if (event.key !== 'Escape') return
           if (languageOpen) languageButton.current?.focus()
           else if (searchOpen) searchButton.current?.focus()
+          else if (accountOpen) accountButton.current?.focus()
           else if (mobileOpen) menuButton.current?.focus()
           collapse()
         }}>
@@ -77,7 +80,7 @@ export default function Header() {
           <div className="bk-nav-actions">
             <div className="bk-language">
               <button ref={languageButton} type="button" className="bk-language-trigger" aria-label={copy.language + ' : ' + languages.find(x => x.code === locale)?.label} aria-expanded={languageOpen} aria-controls="language-options"
-                onClick={() => { setLanguageOpen(!languageOpen); setSearchOpen(false) }}>
+                onClick={() => { setLanguageOpen(!languageOpen); setSearchOpen(false); setAccountOpen(false) }}>
                 <span className={'bk-flag bk-flag-' + locale} aria-hidden="true" />
                 <span className="bk-language-name">{languages.find(x => x.code === locale)?.label}</span>
                 <span className={'bk-chevron' + (languageOpen ? ' is-open' : '')} aria-hidden="true" />
@@ -92,24 +95,51 @@ export default function Header() {
               </AnimatePresence>
             </div>
             <button ref={searchButton} type="button" className="bk-icon-button bk-search-trigger" aria-label={copy.search} aria-expanded={searchOpen} aria-controls="header-search"
-              onClick={() => { setSearchOpen(!searchOpen); setLanguageOpen(false) }}>
+              onClick={() => { setSearchOpen(!searchOpen); setLanguageOpen(false); setAccountOpen(false) }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" /><path d="m13 13 4 4" /></svg>
             </button>
             <button type="button" className="bk-cart-trigger" aria-label={copy.cart + ' (' + totalItems + ')'} onClick={() => { collapse(); setCartOpen(true) }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M3 6h14l-1 12H4L3 6Z" /><path d="M7 6V5a3 3 0 0 1 6 0v1" /></svg>
               <motion.span key={totalItems} initial={false} animate={{ scale: reduced ? 1 : [1, 1.18, 1] }} transition={{ duration: 0.3 }}>{totalItems}</motion.span>
             </button>
-            <Link
-              href={user ? '/compte' : '/connexion'}
-              className={'bk-profile-trigger' + (user ? ' is-authenticated' : '')}
-              aria-label={authLoading ? account.loading as string : user ? account.account as string : account.login as string}
-              title={user ? account.account as string : account.login as string}
+            {authLoading ? <span className="bk-profile-trigger is-loading" aria-label={account.loading as string}>…</span> : isAdmin ? <Link
+              href="/admin"
+              className="bk-profile-trigger is-admin"
+              aria-label={account.adminLink as string}
+              title={account.adminLink as string}
               onClick={collapse}
             >
-              {user ? <span aria-hidden="true">{(user.user_metadata?.first_name || user.email || 'B').slice(0, 1).toUpperCase()}</span> : (
+              <span aria-hidden="true">A</span>
+            </Link> : user ? <div className="bk-account-menu-wrap">
+              <button
+                ref={accountButton}
+                type="button"
+                className="bk-profile-trigger is-authenticated"
+                aria-label={authLoading ? account.loading as string : account.account as string}
+                title={account.account as string}
+                aria-expanded={accountOpen}
+                aria-controls="header-account-menu"
+                onClick={() => { setAccountOpen(!accountOpen); setLanguageOpen(false); setSearchOpen(false) }}
+              >
+                <span aria-hidden="true">{(user.user_metadata?.first_name || user.email || 'B').slice(0, 1).toUpperCase()}</span>
+              </button>
+              <AnimatePresence>
+                {accountOpen && <motion.div id="header-account-menu" className="bk-account-menu" initial={{ opacity: 0, y: reduced ? 0 : -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: reduced ? 0 : 0.16 }}>
+                  <Link href="/compte" onClick={collapse}>{account.dashboardLink as string}<span aria-hidden="true">↗</span></Link>
+                  <button type="button" onClick={async () => { await signOut(); collapse() }}>{account.logout as string}<span aria-hidden="true">↗</span></button>
+                </motion.div>}
+              </AnimatePresence>
+            </div> : (
+              <Link
+                href="/connexion"
+                className="bk-profile-trigger"
+                aria-label={authLoading ? account.loading as string : account.login as string}
+                title={account.login as string}
+                onClick={collapse}
+              >
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg>
-              )}
-            </Link>
+              </Link>
+            )}
             <button ref={menuButton} type="button" className="bk-icon-button bk-menu-trigger" aria-label={mobileOpen ? copy.close : copy.menu} aria-expanded={mobileOpen} aria-controls="mobile-navigation"
               onClick={() => { setMobileOpen(!mobileOpen); setLanguageOpen(false); setSearchOpen(false) }}><span aria-hidden="true">{mobileOpen ? '×' : '☰'}</span></button>
           </div>

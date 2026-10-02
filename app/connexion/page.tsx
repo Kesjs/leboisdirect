@@ -17,7 +17,7 @@ function ConnectionContent() {
   const params = useSearchParams()
   const { locale } = useI18n()
   const c = accountCopy[locale]
-  const { user, loading: authLoading } = useAuth()
+  const { user, isAdmin, loading: authLoading } = useAuth()
   const supabase = useMemo(() => createClient(), [])
   const requestedMode = params.get('mode')
   const [mode, setMode] = useState<Mode>(requestedMode === 'reset' ? 'reset' : 'login')
@@ -31,8 +31,8 @@ function ConnectionContent() {
   const nextPath = params.get('next')?.startsWith('/') ? params.get('next')! : '/compte'
 
   useEffect(() => {
-    if (!authLoading && user && mode !== 'reset') router.replace(nextPath)
-  }, [authLoading, mode, nextPath, router, user])
+    if (!authLoading && user && mode !== 'reset') router.replace(isAdmin ? '/admin' : nextPath)
+  }, [authLoading, isAdmin, mode, nextPath, router, user])
 
   const submit = async (event: FormEvent) => {
     event.preventDefault()

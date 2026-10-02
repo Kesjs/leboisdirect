@@ -520,35 +520,34 @@ export default function AdminPage() {
         </div>
       </header>
       <div className="mx-auto max-w-container px-4 pt-5 sm:px-10 sm:pt-8">
-        <section className="relative isolate overflow-hidden rounded-[20px] bg-charcoal px-5 py-7 text-white sm:rounded-[24px] sm:px-10 sm:py-12">
+        <section className="relative isolate overflow-hidden rounded-[20px] border border-hairline bg-white px-5 py-7 sm:rounded-[24px] sm:px-10 sm:py-10">
           <Image
             src="/images/agriculture-chainsaw.jpg"
             alt="Équipement Braviko au travail"
             fill
             priority
-            className="-z-20 object-cover opacity-25"
+            className="-z-20 object-cover opacity-[0.07]"
             sizes="(max-width: 1200px) 100vw, 1200px"
           />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-charcoal via-charcoal/80 to-transparent" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-white via-white/95 to-white/70" />
           <div className="relative max-w-2xl">
-            <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-orange-200 sm:text-xs sm:tracking-[.22em]">
-              Espace catalogue
+            <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-braise sm:text-xs sm:tracking-[.22em]">
+              Braviko / espace catalogue
             </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:mt-3 sm:text-4xl">
-              Préparez une boutique qui vous ressemble.
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-charcoal sm:mt-3 sm:text-4xl">
+              Gérez vos produits avec calme.
             </h2>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-white/75 sm:mt-4">
-              Une vue claire pour gérer les fiches, les stocks, les statuts et
-              les visuels avant leur mise en ligne.
+            <p className="mt-3 max-w-xl text-sm leading-6 text-smoke sm:mt-4">
+              Retrouvez les fiches, les stocks, les statuts et les visuels au même endroit avant la mise en ligne.
             </p>
-            <div className="mt-5 flex flex-wrap gap-2 text-xs sm:mt-7 sm:gap-3 sm:text-sm">
-              <span className="rounded-full border border-white/20 bg-white/10 px-4 py-2">
+            <div className="mt-5 flex flex-wrap gap-2 text-xs sm:mt-6 sm:gap-3 sm:text-sm">
+              <span className="rounded-full border border-hairline bg-ivory px-4 py-2 text-charcoal">
                 {products.length} produits suivis
               </span>
-              <span className="rounded-full border border-white/20 bg-white/10 px-4 py-2">
+              <span className="rounded-full border border-hairline bg-ivory px-4 py-2 text-charcoal">
                 {categories.length} catégories
               </span>
-              <span className="rounded-full border border-white/20 bg-white/10 px-4 py-2">
+              <span className="rounded-full border border-hairline bg-ivory px-4 py-2 text-charcoal">
                 Images avec aperçu
               </span>
             </div>

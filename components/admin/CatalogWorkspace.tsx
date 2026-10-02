@@ -121,17 +121,17 @@ async function addWatermark(file: File) {
     context.font = `700 ${size}px Arial, sans-serif`;
     context.textAlign = "right";
     context.textBaseline = "bottom";
-    context.fillStyle = "rgba(255,255,255,.82)";
+    context.fillStyle = "rgba(35,35,35,.72)";
+    context.fillText(
+      "BRAVIKO",
+      canvas.width - padding + 1,
+      canvas.height - padding + 1,
+    );
+    context.fillStyle = "rgba(255,255,255,.92)";
     context.fillText(
       "BRAVIKO",
       canvas.width - padding,
       canvas.height - padding,
-    );
-    context.fillStyle = "rgba(35,35,35,.72)";
-    context.fillText(
-      "BRAVIKO",
-      canvas.width - padding - 1,
-      canvas.height - padding - 1,
     );
     const blob = await new Promise<Blob | null>((resolve) =>
       canvas.toBlob(resolve, file.type || "image/jpeg", 0.92),
@@ -249,7 +249,7 @@ function AdminSelect({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className="flex h-[52px] items-center justify-between rounded-[14px] border border-hairline bg-white px-4 text-left font-normal transition hover:border-charcoal focus:border-braise focus:outline-none focus:ring-2 focus:ring-braise/10"
+        className="flex h-[44px] w-full min-w-0 items-center justify-between rounded-[8px] border border-hairline bg-white px-3 text-left font-normal transition hover:border-charcoal focus:border-braise focus:outline-none focus:ring-2 focus:ring-braise/10"
       >
         <span className={value ? "text-charcoal" : "text-ash"}>{selected}</span>
         <Icon name="chevron" />
@@ -257,7 +257,7 @@ function AdminSelect({
       {open && (
         <div
           role="listbox"
-          className="absolute left-0 right-0 top-[78px] z-30 overflow-hidden rounded-[14px] border border-hairline bg-white p-1 shadow-[0_18px_50px_rgba(22,22,22,.14)]"
+          className="absolute left-0 right-0 top-[70px] z-30 overflow-hidden rounded-[10px] border border-hairline bg-white p-1 shadow-[0_18px_50px_rgba(22,22,22,.14)]"
         >
           {options.map((option) => (
             <button
@@ -269,7 +269,7 @@ function AdminSelect({
                 onChange(option.value);
                 setOpen(false);
               }}
-              className="flex w-full items-center justify-between rounded-[10px] px-3 py-3 text-left text-sm hover:bg-ivory"
+              className="flex w-full items-center justify-between rounded-[6px] px-3 py-2.5 text-left text-sm hover:bg-ivory"
             >
               {option.label}
               {option.value === value && <Icon name="check" />}
@@ -296,10 +296,10 @@ function AdminCheckbox({
       role="checkbox"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex items-center gap-3 text-left text-sm text-smoke"
+      className="flex items-center gap-2.5 text-left text-sm text-smoke"
     >
       <span
-        className={`grid h-5 w-5 place-items-center rounded-[6px] border transition ${checked ? "border-charcoal bg-charcoal text-white" : "border-[#c9c4bb] bg-white"}`}
+        className={`grid h-[18px] w-[18px] shrink-0 place-items-center rounded-[4px] border transition ${checked ? "border-charcoal bg-charcoal text-white" : "border-[#c9c4bb] bg-white"}`}
       >
         {checked && <Icon name="check" />}
       </span>
@@ -339,7 +339,7 @@ function FileDropzone({
           setDragging(false);
           accept(Array.from(event.dataTransfer.files));
         }}
-        className={`rounded-[18px] border border-dashed p-5 transition ${dragging ? "border-braise bg-braise/5" : "border-[#cfc9be] bg-ivory"}`}
+        className={`rounded-[10px] border border-dashed p-4 transition ${dragging ? "border-braise bg-braise/5" : "border-[#cfc9be] bg-ivory"}`}
       >
         <input
           ref={inputRef}
@@ -355,14 +355,14 @@ function FileDropzone({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="flex w-full flex-col items-center gap-2 text-center"
+          className="flex w-full items-center gap-3 text-left sm:justify-center"
         >
-          <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-charcoal shadow-sm">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[8px] bg-white text-charcoal shadow-sm">
             <Icon name="upload" />
           </span>
-          <span className="text-sm font-semibold">Déposer les images ici</span>
-          <span className="text-xs text-smoke">
-            PNG, JPG ou WebP · jusqu’à 6 images
+          <span className="grid gap-0.5">
+            <span className="text-sm font-semibold">Ajouter des images</span>
+            <span className="text-xs text-smoke">PNG, JPG ou WebP · 6 maximum</span>
           </span>
         </button>
       </div>
@@ -408,19 +408,26 @@ function ImageLinksPanel({
   productName,
   pendingLinks,
   onPendingLinksChange,
+  availableSlots,
+  onImportedFile,
   watermark,
 }: {
   images: AdminProduct["images"];
   productName: string;
   pendingLinks: string[];
   onPendingLinksChange: (links: string[]) => void;
+  availableSlots: number;
+  onImportedFile: (file: File) => void;
   watermark: boolean;
 }) {
   const [url, setUrl] = useState("");
   const [states, setStates] = useState<Record<string, LinkState>>({});
   const [busy, setBusy] = useState(false);
+  const [linkNotice, setLinkNotice] = useState("");
   const allLinks = [
-    ...images.map((image) => image.storage_path),
+    ...images
+      .map((image) => image.storage_path)
+      .filter((link) => /^https?:\/\//i.test(link)),
     ...pendingLinks,
   ];
   const checkLink = async (link: string) => {
@@ -441,23 +448,67 @@ function ImageLinksPanel({
   };
   const addLink = async () => {
     const link = url.trim();
+    setLinkNotice("");
+    if (!/^https?:\/\//i.test(link)) {
+      setLinkNotice("Collez une adresse complète commençant par http:// ou https://.");
+      return;
+    }
     if (
-      !/^https?:\/\//i.test(link) ||
       pendingLinks.includes(link) ||
       images.some((image) => image.storage_path === link)
-    )
+    ) {
+      setLinkNotice("Ce lien est déjà présent sur la fiche.");
       return;
-    setBusy(true);
-    const works = await checkLink(link);
-    if (works) {
-      onPendingLinksChange([...pendingLinks, link]);
-      setUrl("");
     }
-    setBusy(false);
+    if (availableSlots <= 0) {
+      setLinkNotice("La fiche contient déjà 6 nouvelles images.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const response = await fetch("/api/image-import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: link }),
+      });
+      if (!response.ok) {
+        const result = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        throw new Error(result?.error || "L’image n’a pas pu être importée.");
+      }
+      const blob = await response.blob();
+      const extension =
+        blob.type === "image/png"
+          ? "png"
+          : blob.type === "image/webp"
+            ? "webp"
+            : "jpg";
+      const sourceName = new URL(link).pathname.split("/").pop() || "image";
+      const baseName = sourceName.replace(/\.[a-z0-9]+$/i, "") || "image";
+      onImportedFile(
+        new File([blob], `${baseName}.${extension}`, {
+          type: blob.type,
+          lastModified: Date.now(),
+        }),
+      );
+      setUrl("");
+      setLinkNotice(
+        watermark
+          ? "Image récupérée. Le filigrane Braviko sera intégré automatiquement à l’enregistrement."
+          : "Image récupérée et ajoutée à la fiche.",
+      );
+    } catch (error) {
+      setLinkNotice(
+        error instanceof Error ? error.message : "L’image n’a pas pu être importée.",
+      );
+    } finally {
+      setBusy(false);
+    }
   };
   return (
-    <div className="grid gap-3">
-      <div className="flex items-center justify-between gap-3">
+    <div className="min-w-0 grid gap-3">
+      <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
         <div>
           <p className="text-sm font-semibold">Liens des images</p>
           <p className="mt-1 text-xs text-smoke">
@@ -472,7 +523,7 @@ function ImageLinksPanel({
             await Promise.all(allLinks.map(checkLink));
             setBusy(false);
           }}
-          className="rounded-full border border-hairline px-3 py-2 text-xs font-semibold hover:border-charcoal disabled:opacity-50"
+          className="shrink-0 rounded-[8px] border border-hairline px-3 py-2 text-xs font-semibold transition hover:border-charcoal disabled:opacity-50"
         >
           {busy ? "Vérification…" : "Vérifier les liens"}
         </button>
@@ -487,7 +538,7 @@ function ImageLinksPanel({
             return (
               <div
                 key={link}
-                className="flex items-center gap-2 rounded-[12px] border border-hairline bg-ivory px-3 py-2 text-xs"
+                className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-[8px] border border-hairline bg-ivory px-3 py-2 text-xs"
               >
                 {existingImage && (
                   <img
@@ -503,7 +554,8 @@ function ImageLinksPanel({
                   href={link}
                   target="_blank"
                   rel="noreferrer"
-                  className="min-w-0 flex-1 truncate text-smoke underline decoration-hairline underline-offset-2 hover:text-charcoal"
+                  className="block min-w-0 truncate text-smoke underline decoration-hairline underline-offset-2 hover:text-charcoal"
+                  title={link}
                 >
                   {link}
                 </a>
@@ -511,7 +563,7 @@ function ImageLinksPanel({
                   <span className="shrink-0 text-forest">Répond</span>
                 )}
                 {state === "error" && (
-                  <span className="shrink-0 text-braise">Erreur</span>
+                  <span className="shrink-0 text-braise">À vérifier</span>
                 )}
                 {pendingLinks.includes(link) && (
                   <button
@@ -532,7 +584,7 @@ function ImageLinksPanel({
           })}
         </div>
       )}
-      <div className="flex gap-2">
+      <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
         <input
           value={url}
           onChange={(event) => setUrl(event.target.value)}
@@ -543,21 +595,27 @@ function ImageLinksPanel({
             }
           }}
           placeholder="https://exemple.com/image.jpg"
-          className="admin-input min-w-0 flex-1"
+          className="admin-input min-w-0"
+          aria-describedby={linkNotice ? "image-link-notice" : undefined}
         />
         <button
           type="button"
           onClick={() => void addLink()}
-          disabled={busy || !url.trim()}
-          className="rounded-[14px] bg-charcoal px-4 text-sm font-semibold text-white hover:bg-braise disabled:opacity-50"
+          disabled={busy || !url.trim() || availableSlots <= 0}
+          className="h-[44px] whitespace-nowrap rounded-[8px] bg-charcoal px-4 text-sm font-semibold text-white transition hover:bg-braise disabled:opacity-50"
         >
-          Ajouter le lien
+          {busy ? "Importation…" : "Importer l’image"}
         </button>
       </div>
+      {linkNotice && (
+        <p id="image-link-notice" className="text-xs leading-5 text-braise-dark">
+          {linkNotice}
+        </p>
+      )}
       {watermark && (
         <p className="text-xs text-smoke">
-          Le filigrane sera intégré aux fichiers uploadés. Pour un lien externe,
-          l’aperçu affiche le filigrane sans modifier le fichier distant.
+          Les images fournies par URL sont copiées dans Braviko puis filigranées,
+          sans modifier le fichier du site d’origine.
         </p>
       )}
     </div>
@@ -621,14 +679,14 @@ function ProductEditor({
   return (
     <form
       onSubmit={submit}
-      className="rounded-[24px] border border-hairline bg-white p-5 shadow-[0_18px_50px_rgba(22,22,22,.07)] sm:p-7"
+      className="flex w-full min-w-0 max-w-full flex-col overflow-hidden rounded-[12px] border border-hairline bg-white p-4 shadow-[0_14px_36px_rgba(22,22,22,.06)] sm:p-5 xl:max-h-[calc(100dvh-3rem)]"
     >
-      <div className="flex items-start justify-between gap-4 border-b border-hairline pb-5">
-        <div>
+      <div className="flex min-w-0 items-start justify-between gap-4 border-b border-hairline pb-4">
+        <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[.18em] text-braise">
             {product ? "Modifier le produit" : "Nouveau produit"}
           </p>
-          <h2 className="mt-1 text-2xl font-semibold tracking-tight">
+          <h2 className="mt-1 truncate text-xl font-semibold tracking-tight" title={product ? values.names.fr || product.slug : undefined}>
             {product ? values.names.fr || product.slug : "Ajouter une fiche"}
           </h2>
           <p className="mt-1 text-sm text-smoke">
@@ -638,19 +696,19 @@ function ProductEditor({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border border-hairline px-3 py-2 text-sm text-smoke hover:border-charcoal hover:text-charcoal"
+          className="shrink-0 rounded-[8px] border border-hairline px-3 py-2 text-xs font-medium text-smoke transition hover:border-charcoal hover:text-charcoal"
         >
           Fermer
         </button>
       </div>
-      <div className="mt-6 grid gap-5">
+      <div className="mt-4 grid min-w-0 gap-4 xl:overflow-y-auto xl:pr-1">
         {values.status !== "published" && (
-          <div className="rounded-[14px] border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <div className="rounded-[8px] border border-amber-300/60 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
             <p className="font-semibold">Cette fiche n’est pas visible sur la boutique</p>
             <p className="mt-1 text-xs leading-5">Passe l’état à « Publié » pour l’afficher sur le site. Les brouillons restent visibles uniquement dans l’administration.</p>
           </div>
         )}
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           <label className="grid gap-2 text-sm font-medium sm:col-span-2">
             Nom du produit
             <input
@@ -672,7 +730,7 @@ function ProductEditor({
                   type="button"
                   key={item}
                   onClick={() => setLanguage(item)}
-                  className={`rounded-full px-2.5 py-1 uppercase ${language === item ? "bg-charcoal text-white" : "bg-ivory"}`}
+                  className={`rounded-[6px] px-2.5 py-1 uppercase transition ${language === item ? "bg-charcoal text-white" : "bg-ivory hover:bg-mist"}`}
                 >
                   {item}
                 </button>
@@ -689,7 +747,7 @@ function ProductEditor({
             />
           </label>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           <AdminSelect
             label="Catégorie"
             value={values.categoryId}
@@ -712,7 +770,7 @@ function ProductEditor({
             onChange={(value) => update("status", value as AdminStatus)}
           />
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           <label className="grid gap-2 text-sm font-medium">
             Prix (€)
             <input
@@ -736,7 +794,7 @@ function ProductEditor({
             />
           </label>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           <label className="grid gap-2 text-sm font-medium">
             SKU
             <input
@@ -762,7 +820,7 @@ function ProductEditor({
             value={values.shortDescription}
             onChange={(event) => update("shortDescription", event.target.value)}
             rows={3}
-            className="admin-input min-h-[92px] resize-y py-3"
+            className="admin-input min-h-[78px] resize-y py-2.5"
             placeholder="Une phrase claire pour présenter le produit."
           />
         </label>
@@ -772,7 +830,7 @@ function ProductEditor({
         >
           Mettre ce produit à la une
         </AdminCheckbox>
-        <div className="grid gap-3 border-t border-hairline pt-5">
+        <div className="grid min-w-0 gap-3 border-t border-hairline pt-4">
           <div>
             <p className="text-sm font-semibold">Images du produit</p>
             <p className="mt-1 text-xs text-smoke">
@@ -788,22 +846,26 @@ function ProductEditor({
             productName={values.names.fr}
             pendingLinks={imageUrls}
             onPendingLinksChange={setImageUrls}
+            availableSlots={6 - files.length}
+            onImportedFile={(file) =>
+              setFiles((current) => [...current, file].slice(0, 6))
+            }
             watermark={watermark}
           />
           <FileDropzone files={files} onChange={setFiles} />
         </div>
       </div>
-      <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+      <div className="mt-4 grid shrink-0 gap-2 border-t border-hairline pt-4 sm:grid-cols-[auto_1fr] xl:grid-cols-1 2xl:grid-cols-[auto_1fr]">
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border border-hairline px-5 py-3 text-sm font-medium hover:border-charcoal"
+          className="h-[42px] rounded-[8px] border border-hairline px-4 text-sm font-medium transition hover:border-charcoal"
         >
           Annuler
         </button>
         <button
           disabled={saving}
-          className="rounded-full bg-charcoal px-6 py-3 text-sm font-semibold text-white transition hover:bg-braise disabled:opacity-50"
+          className="h-[42px] min-w-0 rounded-[8px] bg-charcoal px-4 text-sm font-semibold text-white transition hover:bg-braise disabled:opacity-50"
         >
           {saving
             ? "Enregistrement…"
@@ -817,7 +879,7 @@ function ProductEditor({
             type="button"
             disabled={saving}
             onClick={() => void save(true)}
-            className="rounded-full bg-forest px-6 py-3 text-sm font-semibold text-white transition hover:bg-forest/80 disabled:opacity-50"
+            className="h-[42px] min-w-0 rounded-[8px] bg-forest px-4 text-sm font-semibold text-white transition hover:bg-forest/80 disabled:opacity-50 sm:col-span-2 xl:col-span-1 2xl:col-span-2"
           >
             {saving ? "Publication…" : "Publier et enregistrer"} <span aria-hidden="true">↗</span>
           </button>
@@ -868,18 +930,20 @@ export default function CatalogWorkspace({
       all: products.length,
       published: products.filter((item) => item.status === "published").length,
       draft: products.filter((item) => item.status === "draft").length,
+      lowStock: products.filter((item) => Number(item.variants[0]?.stock || 0) < 10).length,
     }),
     [products],
   );
   return (
-    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(390px,480px)] lg:gap-8 lg:items-start">
+    <div className="grid min-w-0 gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(420px,500px)] xl:items-start xl:gap-10">
       <section className="min-w-0">
-        <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm text-smoke">Catalogue produits</p>
-            <h2 className="mt-1 text-3xl font-semibold tracking-tight">
+            <p className="text-xs font-semibold uppercase tracking-[.16em] text-braise">Catalogue produits</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
               {products.length} fiche{products.length > 1 ? "s" : ""}
             </h2>
+            <p className="mt-2 max-w-md text-sm leading-6 text-smoke">Gérez vos produits, leur disponibilité et leur présence dans la boutique.</p>
           </div>
           <button
             type="button"
@@ -887,10 +951,24 @@ export default function CatalogWorkspace({
               setCreating(true);
               setSelectedId(null);
             }}
-            className="inline-flex h-[48px] w-full items-center justify-center gap-2 rounded-full bg-charcoal px-5 text-sm font-semibold text-white transition hover:bg-braise sm:w-auto"
+            className="inline-flex h-[42px] w-full items-center justify-center gap-2 rounded-[8px] bg-charcoal px-4 text-sm font-semibold text-white transition hover:bg-braise sm:w-auto"
           >
             <Icon name="plus" /> Nouveau produit
           </button>
+        </div>
+        <div className="mb-7 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-[14px] border border-hairline bg-white px-4 py-4">
+            <p className="text-xs text-smoke">Visibles en boutique</p>
+            <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.published}</p>
+          </div>
+          <div className="rounded-[14px] border border-hairline bg-white px-4 py-4">
+            <p className="text-xs text-smoke">À compléter</p>
+            <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.draft}</p>
+          </div>
+          <div className={`rounded-[14px] border px-4 py-4 ${counts.lowStock ? "border-braise/30 bg-braise/5" : "border-hairline bg-white"}`}>
+            <p className="text-xs text-smoke">Stock à surveiller</p>
+            <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.lowStock}</p>
+          </div>
         </div>
         {error && (
           <p className="mb-5 rounded-[16px] border border-braise/30 bg-braise/10 p-4 text-sm text-braise-dark">
@@ -902,26 +980,26 @@ export default function CatalogWorkspace({
             {message}
           </p>
         )}
-        <div className="mb-4 grid gap-3 sm:grid-cols-[1fr_auto]">
+        <div className="mb-5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
           <label className="relative">
             <span className="sr-only">Rechercher un produit</span>
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Rechercher un produit, une catégorie…"
-              className="admin-input h-[48px] w-full pl-11"
+              className="admin-input h-[44px] w-full pl-10"
             />
             <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-smoke">
               <Icon name="search" />
             </span>
           </label>
-          <div className="flex max-w-full overflow-x-auto rounded-full border border-hairline bg-white p-1 text-xs font-medium">
+          <div className="flex max-w-full overflow-x-auto rounded-[9px] border border-hairline bg-white p-1 text-xs font-medium">
             {(["all", "published", "draft"] as const).map((item) => (
               <button
                 type="button"
                 key={item}
                 onClick={() => setStatus(item)}
-                className={`rounded-full px-3 py-2 ${status === item ? "bg-charcoal text-white" : "text-smoke hover:text-charcoal"}`}
+                className={`rounded-[6px] px-3 py-2 ${status === item ? "bg-charcoal text-white" : "text-smoke hover:text-charcoal"}`}
               >
                 {item === "all"
                   ? `Tous ${counts.all}`
@@ -932,9 +1010,9 @@ export default function CatalogWorkspace({
             ))}
           </div>
         </div>
-        <div className="overflow-hidden rounded-[20px] border border-hairline bg-white">
+        <div className="grid gap-3 sm:grid-cols-2">
           {filtered.length === 0 ? (
-            <div className="p-12 text-center text-sm text-smoke">
+            <div className="rounded-[16px] border border-dashed border-[#cfc9be] bg-white/60 p-12 text-center text-sm text-smoke sm:col-span-2">
               Aucun produit ne correspond à cette recherche.
             </div>
           ) : (
@@ -954,14 +1032,14 @@ export default function CatalogWorkspace({
                     setCreating(false);
                     setSelectedId(product.id);
                   }}
-                  className={`grid w-full grid-cols-[56px_minmax(0,1fr)_auto] items-center gap-4 border-b border-hairline px-4 py-4 text-left transition last:border-0 sm:grid-cols-[64px_minmax(0,1fr)_130px_100px] sm:px-5 ${selectedId === product.id && !creating ? "bg-ivory" : "hover:bg-ivory/70"}`}
+                  className={`group w-full rounded-[16px] border p-3 text-left transition hover:-translate-y-0.5 hover:border-[#cfc9be] hover:shadow-[0_14px_32px_rgba(29,29,29,.07)] ${selectedId === product.id && !creating ? "border-charcoal bg-white shadow-[0_10px_24px_rgba(29,29,29,.08)]" : "border-hairline bg-white"}`}
                 >
-                  <div className="h-14 w-14 overflow-hidden rounded-[12px] bg-[#e8e3da]">
+                  <div className="relative h-40 w-full overflow-hidden rounded-[11px] bg-[#e8e3da]">
                     {image ? (
                       <img
                         src={image.publicUrl}
                         alt=""
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
                       />
                     ) : (
                       <div className="grid h-full place-items-center text-smoke">
@@ -969,23 +1047,21 @@ export default function CatalogWorkspace({
                       </div>
                     )}
                   </div>
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold">{name}</p>
-                    <p className="mt-1 truncate text-xs text-smoke">
-                      {product.categoryName || "Sans catégorie"} · /
-                      {product.slug}
-                    </p>
+                  <div className="px-1.5 pb-1 pt-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold">{name}</p>
+                        <p className="mt-1 truncate text-xs text-smoke">{product.categoryName || "Sans catégorie"}</p>
+                      </div>
+                      <span className={`shrink-0 rounded-[6px] px-2 py-1 text-[11px] font-medium ${product.status === "published" ? "bg-forest/10 text-forest" : "bg-black/5 text-smoke"}`}>
+                        {statusLabels[product.status]}
+                      </span>
+                    </div>
+                    <div className="mt-4 flex items-end justify-between gap-3 text-sm">
+                      <span className="font-semibold tabular-nums">{variant ? `${Number(variant.price).toFixed(2)} €` : "Prix à définir"}</span>
+                      <span className={`${Number(variant?.stock || 0) < 10 ? "text-braise-dark" : "text-smoke"}`}>{variant ? `${variant.stock} en stock` : "Stock à définir"}</span>
+                    </div>
                   </div>
-                  <p className="hidden text-sm sm:block">
-                    {variant
-                      ? `${Number(variant.price).toFixed(2)} € · ${variant.stock}`
-                      : "—"}
-                  </p>
-                  <span
-                    className={`w-fit rounded-full px-2.5 py-1 text-xs font-medium ${product.status === "published" ? "bg-forest/10 text-forest" : "bg-black/5 text-smoke"}`}
-                  >
-                    {statusLabels[product.status]}
-                  </span>
                 </button>
               );
             })
@@ -1033,7 +1109,7 @@ export default function CatalogWorkspace({
           </div>
         </details>
       </section>
-      <aside className="order-first min-w-0 lg:order-none lg:sticky lg:top-6">
+      <aside className="order-last min-w-0 max-w-full xl:order-none xl:sticky xl:top-6">
         {creating || selected ? (
           <ProductEditor
             key={creating ? "new" : selected?.id}
