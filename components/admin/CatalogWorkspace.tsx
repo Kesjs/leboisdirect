@@ -973,12 +973,12 @@ export default function CatalogWorkspace({
           body: JSON.stringify({ limit: 24 }),
         });
         const result = (await response.json().catch(() => null)) as
-          | { processed?: number; hasMore?: boolean; errors?: Array<{ message: string }> }
+          | { processed?: number; hasMore?: boolean; error?: string; errors?: Array<{ message: string }> }
           | null;
-        if (!response.ok) throw new Error(result?.errors?.[0]?.message || "Le filigranage n’a pas pu démarrer.");
+        if (!response.ok) throw new Error(result?.error || result?.errors?.[0]?.message || "Le filigranage n’a pas pu démarrer.");
         total += result?.processed || 0;
         hasMore = Boolean(result?.hasMore);
-        if (result?.errors?.length) throw new Error(result.errors[0].message);
+        if (result?.errors?.length) throw new Error(`${result.errors[0].message}${result.errors.length > 1 ? ` (+${result.errors.length - 1} autre${result.errors.length > 2 ? "s" : ""})` : ""}`);
         if (!result?.processed && hasMore) throw new Error("Le traitement est bloqué sur une image.");
       }
       setBackfillNotice(total ? `${total} image${total > 1 ? "s" : ""} filigranée${total > 1 ? "s" : ""} et protégée${total > 1 ? "s" : ""}.` : "Toutes les images sont déjà protégées.");

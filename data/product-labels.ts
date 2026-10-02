@@ -7,6 +7,10 @@ export const categoryLabels = {
   it: { buches: 'Legna', 'bois-compresse': 'Bricchetti', granules: 'Pellet', allumage: 'Legna da accensione', 'allume-feu': 'Accendifuoco', 'accessoires-chauffage': 'Accessori per il riscaldamento', 'machines-agricoles': 'Macchine agricole' },
 }
 
+export function hasMeaningfulConditioning(conditioning?: string | null) {
+  return Boolean(conditioning && !/^1\s*(unité|unités|stück|st\.?|pezzo|pezzi)$/i.test(conditioning.trim()))
+}
+
 const names: Record<string, [string, string]> = {
   '1': ['Eichenscheite 33 cm', 'Ceppi di quercia 33 cm'],
   '2': ['Buchenscheite 33 cm', 'Ceppi di faggio 33 cm'],

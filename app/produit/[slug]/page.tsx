@@ -14,7 +14,7 @@ import { formatPrice } from '@/lib/utils'
 import { useCart } from '@/lib/cart-context'
 import { useI18n } from '@/lib/i18n-context'
 import { commerceCopy } from '@/data/commerce-copy'
-import { categoryLabels, productLabel } from '@/data/product-labels'
+import { categoryLabels, hasMeaningfulConditioning, productLabel } from '@/data/product-labels'
 import { uiCopy } from '@/data/ui-copy'
 
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -207,7 +207,9 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               )}
 
               <p className="text-body-lg text-smoke mb-16 leading-relaxed">{productLabel(product, locale).description}</p>
-              <p className="text-body-sm text-ash mb-32">{product.conditioning ? `${c.conditioning} : ${productLabel(product, locale).conditioning}` : ''}</p>
+              {hasMeaningfulConditioning(productLabel(product, locale).conditioning) && (
+                <p className="text-body-sm text-ash mb-32">{c.conditioning} : {productLabel(product, locale).conditioning}</p>
+              )}
 
               <div className="mb-40 pb-40 border-b border-hairline">
                 <div className="text-[48px] font-semibold text-charcoal tracking-tight mb-8">
@@ -329,7 +331,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                         <dd className="text-body-sm text-smoke mt-4">{product.origin}</dd>
                       </div>
                     )}
-                    {product.conditioning && (
+                    {hasMeaningfulConditioning(productLabel(product, locale).conditioning) && (
                       <div>
                         <dt className="text-body-sm font-semibold text-charcoal">{c.conditioning}</dt>
                         <dd className="text-body-sm text-smoke mt-4">{productLabel(product, locale).conditioning}</dd>

@@ -17,6 +17,15 @@ type SortOption = 'relevance' | 'price-asc' | 'price-desc' | 'name'
 type ViewMode = 'grid' | 'list'
 const PRODUCTS_PER_PAGE = 6
 
+function shuffle<T>(items: T[]) {
+  const shuffled = [...items]
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1))
+    ;[shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]]
+  }
+  return shuffled
+}
+
 function ShopContent() {
   const searchParams = useSearchParams()
   const universe = searchParams.get('universe')
@@ -34,7 +43,7 @@ function ShopContent() {
     let active = true
     fetch('/api/catalog')
       .then(response => response.ok ? response.json() : Promise.reject(new Error('catalog unavailable')))
-      .then(payload => { if (active) setCatalogProducts(payload.products || []) })
+      .then(payload => { if (active) setCatalogProducts(shuffle(payload.products || [])) })
       .catch(() => { if (active) setCatalogError(true) })
     return () => { active = false }
   }, [])

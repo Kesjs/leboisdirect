@@ -45,7 +45,26 @@ async function fetchPublicImage(url: string) {
 
 function watermarkSvg(width: number, height: number) {
   const size = Math.max(32, Math.round(Math.min(width, height) * 0.15));
-  return Buffer.from(`<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg"><text x="50%" y="50%" transform="rotate(-25 ${width / 2} ${height / 2})" text-anchor="middle" dominant-baseline="middle" font-family="Arial,sans-serif" font-size="${size}" font-weight="700" letter-spacing="-${Math.round(size * 0.04)}" fill="rgba(255,255,255,.48)">braviko</text></svg>`);
+  return Buffer.from(`<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg"><text x="50%" y="50%" transform="rotate(-${(Math.PI / 7) * (180 / Math.PI)} ${width / 2} ${height / 2})" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="${size}px" font-weight="700" fill="rgba(255,255,255,.48)">braviko</text></svg>`);
+}
+
+async function applyWatermark(source: Buffer) {
+  const image = sharp(source);
+  const metadata = await image.metadata();
+  if (!metadata.width || !metadata.height || !metadata.format) {
+    throw new Error("Dimensions ou format d’image introuvables.");
+  }
+  const watermarked = image.composite([{ input: watermarkSvg(metadata.width, metadata.height) }]);
+  switch (metadata.format) {
+    case "jpeg":
+      return watermarked.jpeg({ quality: 92 }).toBuffer();
+    case "webp":
+      return watermarked.webp({ quality: 92 }).toBuffer();
+    case "png":
+      return watermarked.png().toBuffer();
+    default:
+      return watermarked.png().toBuffer();
+  }
 }
 
 export async function POST(request: Request) {
@@ -71,11 +90,12 @@ export async function POST(request: Request) {
         ? image.storage_path
         : `${baseUrl}/storage/v1/object/public/${BUCKET}/${image.storage_path}`;
       const source = await fetchPublicImage(sourceUrl);
-      const metadata = await sharp(source).metadata();
-      if (!metadata.width || !metadata.height) throw new Error("Dimensions d’image introuvables.");
-      const output = await sharp(source).composite([{ input: watermarkSvg(metadata.width, metadata.height) }]).png().toBuffer();
-      const path = `${image.product_id}/watermarked-${image.id}.png`;
-      const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, output, { upsert: true, contentType: "image/png", cacheControl: "31536000" });
+      const output = await applyWatermark(source);
+      const sourceFormat = (await sharp(source).metadata()).format;
+      const extension = sourceFormat === "jpeg" ? "jpg" : sourceFormat === "webp" ? "webp" : "png";
+      const contentType = sourceFormat === "jpeg" ? "image/jpeg" : `image/${extension}`;
+      const path = `${image.product_id}/watermarked-${image.id}.${extension}`;
+      const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, output, { upsert: true, contentType, cacheControl: "31536000" });
       if (uploadError) throw uploadError;
       const { error: updateError } = await supabase.from("braviko_product_images").update({ storage_path: path, watermarked_at: new Date().toISOString() }).eq("id", image.id);
       if (updateError) throw updateError;

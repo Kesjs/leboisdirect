@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Product } from '@/data/products'
-import { categoryLabels, productLabel } from '@/data/product-labels'
+import { categoryLabels, hasMeaningfulConditioning, productLabel } from '@/data/product-labels'
 import { bravikoCopy } from '@/data/braviko-copy'
 import { useI18n } from '@/lib/i18n-context'
 import { useCart } from '@/lib/cart-context'
@@ -36,7 +36,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <p className="bk-product-category">{categoryLabels[locale][product.category] || product.category.replace(/-/g, ' ')}</p>
         <h3>{label.name}</h3>
         <p className="bk-product-excerpt">{label.description.split('. ')[0]}.</p>
-        <p className="bk-product-conditioning">{label.conditioning}</p>
+        {hasMeaningfulConditioning(label.conditioning) && <p className="bk-product-conditioning">{label.conditioning}</p>}
       </Link>
       <div className="bk-product-purchase">
         <div><span className="bk-product-price">{price}</span><p>{label.delivery}</p></div>
