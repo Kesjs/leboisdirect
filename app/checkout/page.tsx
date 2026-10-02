@@ -45,7 +45,7 @@ export default function CheckoutPage() {
   })
 
   useEffect(() => {
-    if (!authLoading && !user) router.replace('/connexion?next=/checkout&reason=checkout')
+    if (!authLoading && !user) router.replace('/connexion?mode=signup&next=/checkout&reason=checkout')
     else if (items.length === 0 && step === 1) router.replace('/panier')
   }, [authLoading, items.length, router, step, user])
   useEffect(() => {

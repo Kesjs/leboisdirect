@@ -44,7 +44,7 @@ export default function AccountPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    if (!loading && !user) router.replace('/connexion?next=/compte')
+    if (!loading && !user) router.replace('/connexion?mode=signup&next=/compte')
     if (!loading && user && isAdmin) router.replace('/admin')
   }, [isAdmin, loading, router, user])
 

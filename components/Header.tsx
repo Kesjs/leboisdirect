@@ -142,7 +142,7 @@ export default function Header() {
               </AnimatePresence>
             </div> : (
               <Link
-                href="/connexion"
+                href="/connexion?mode=signup"
                 className="bk-profile-trigger"
                 aria-label={authLoading ? account.loading as string : account.login as string}
                 title={account.login as string}

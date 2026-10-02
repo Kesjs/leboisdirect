@@ -21,11 +21,14 @@ function ConnectionContent() {
   const { user, isAdmin, loading: authLoading } = useAuth()
   const supabase = useMemo(() => createClient(), [])
   const requestedMode = params.get('mode')
-  const [mode, setMode] = useState<Mode>(requestedMode === 'reset' ? 'reset' : 'login')
+  const [mode, setMode] = useState<Mode>(requestedMode === 'reset' ? 'reset' : 'signup')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+  const [phoneCountry, setPhoneCountry] = useState('+33')
+  const [phone, setPhone] = useState('')
+  const [deliveryAddress, setDeliveryAddress] = useState('')
   const [message, setMessage] = useState(params.get('reason') === 'checkout' ? c.checkoutRequired : '')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -42,10 +45,21 @@ function ConnectionContent() {
     setMessage('')
 
     if (mode === 'signup') {
+      const normalizedPhone = `${phoneCountry}${phone.replace(/\D/g, '').replace(/^0/, '')}`
+      if (!/^\+\d{8,15}$/.test(normalizedPhone)) {
+        setError('Saisissez un numéro de téléphone valide avec son indicatif.')
+        setSubmitting(false)
+        return
+      }
+      if (deliveryAddress.trim().length < 8) {
+        setError('Saisissez une adresse de livraison complète.')
+        setSubmitting(false)
+        return
+      }
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { first_name: firstName.trim(), last_name: lastName.trim() } },
+        options: { data: { first_name: firstName.trim(), last_name: lastName.trim(), phone: normalizedPhone, delivery_address: deliveryAddress.trim() } },
       })
       if (signUpError) setError(signUpError.message)
       else if (data.session) router.replace(nextPath)
@@ -86,7 +100,11 @@ function ConnectionContent() {
         <p className="bk-eyebrow">{mode === 'reset' ? c.forgot : signup ? c.create : c.login}</p>
         <h2 id="auth-form-title">{mode === 'reset' ? c.forgot : signup ? c.signupTitle : c.login}</h2>
         <form onSubmit={submit} className="bk-account-form">
-          {signup && <div className="bk-form-row"><label>{c.firstName}<input value={firstName} onChange={event => setFirstName(event.target.value)} required autoComplete="given-name" /></label><label>{c.lastName}<input value={lastName} onChange={event => setLastName(event.target.value)} required autoComplete="family-name" /></label></div>}
+          {signup && <>
+            <div className="bk-form-row"><label>{c.firstName}<input value={firstName} onChange={event => setFirstName(event.target.value)} required autoComplete="given-name" /></label><label>{c.lastName}<input value={lastName} onChange={event => setLastName(event.target.value)} required autoComplete="family-name" /></label></div>
+            <label>{c.phone}<span className="bk-phone-field"><select value={phoneCountry} onChange={event => setPhoneCountry(event.target.value)} aria-label="Indicatif téléphonique"><option value="+33">🇫🇷 +33</option><option value="+49">🇩🇪 +49</option><option value="+39">🇮🇹 +39</option><option value="+32">🇧🇪 +32</option><option value="+41">🇨🇭 +41</option><option value="+352">🇱🇺 +352</option></select><input value={phone} onChange={event => setPhone(event.target.value.replace(/[^\d ]/g, ''))} required inputMode="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" /></span></label>
+            <label>{c.deliveryAddress}<textarea value={deliveryAddress} onChange={event => setDeliveryAddress(event.target.value)} required minLength={8} rows={3} autoComplete="street-address" placeholder={c.deliveryAddressPlaceholder} /></label>
+          </>}
           {(!user || mode !== 'reset') && <label>{c.email}<input type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" /></label>}
           {mode !== 'reset' || user ? <label>{c.password}<input type="password" value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete={signup || mode === 'reset' ? 'new-password' : 'current-password'} /></label> : null}
           {message && <p className="bk-form-message" role="status">{message}</p>}
