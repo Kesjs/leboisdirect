@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { use } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
@@ -29,6 +30,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [added, setAdded] = useState(false)
 
   const { addItem } = useCart()
+  const router = useRouter()
   const { locale } = useI18n()
   const c = commerceCopy[locale]
   const ui = uiCopy[locale]
@@ -127,6 +129,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     window.setTimeout(() => setAdded(false), 2200)
   }
 
+  const handleBuyNow = () => {
+    addItem(product, quantity, selectedVariant || undefined)
+    router.push('/checkout')
+  }
+
   return (
     <>
       <Header />
@@ -168,7 +175,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                       }
                     }}
                   />
-                  <span className="bk-detail-watermark" aria-hidden="true">BRAVIKO</span>
+                  {product.images[selectedImageIndex].startsWith('/images/') && <span className="bk-detail-watermark" aria-hidden="true">BRAVIKO</span>}
                 </div>
                 {product.images.length > 1 && (
                   <div className="grid grid-cols-4 gap-12">
@@ -194,7 +201,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                             }
                           }}
                         />
-                        <span className="bk-detail-thumb-watermark" aria-hidden="true">B</span>
+                        {img.startsWith('/images/') && <span className="bk-detail-thumb-watermark" aria-hidden="true">B</span>}
                       </button>
                     ))}
                   </div>
@@ -218,7 +225,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 </p>
               )}
 
-              <p className="text-body-lg text-smoke mb-16 leading-relaxed">{productLabel(product, locale).description}</p>
+              <p className="text-body-lg text-smoke mb-16 leading-relaxed">{product.longDescription || productLabel(product, locale).description}</p>
               {hasMeaningfulConditioning(productLabel(product, locale).conditioning) && (
                 <p className="text-body-sm text-ash mb-32">{c.conditioning} : {productLabel(product, locale).conditioning}</p>
               )}
@@ -285,9 +292,14 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               </div>
 
               {/* Add to Cart */}
-              <Button size="lg" className="w-full mb-16" onClick={handleAddToCart}>
-                {added ? c.added : `${c.add} — ${formatPrice(currentPrice * quantity)}`}
-              </Button>
+              <div className="flex flex-col gap-12 mb-16">
+                <Button size="lg" className="w-full" onClick={handleBuyNow}>
+                  Acheter maintenant — {formatPrice(currentPrice * quantity)}
+                </Button>
+                <button type="button" className="w-full rounded-card border border-hairline px-20 py-14 text-body font-semibold text-charcoal transition-colors hover:border-smoke" onClick={handleAddToCart}>
+                  {added ? c.added : `${c.add} au panier`}
+                </button>
+              </div>
               <p className="text-caption text-ash text-center" aria-live="polite">{added ? c.added : ''}</p>
 
               {/* Features */}

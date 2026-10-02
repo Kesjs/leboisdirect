@@ -21,6 +21,14 @@ function resolveImageUrl(
         .publicUrl;
 }
 
+function parseFeatures(description: string) {
+  return description
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => /^[^:]{2,40}:\s*\S+/.test(line))
+    .map((line) => line.replace(/^[*-]\s*/, ""));
+}
+
 export async function GET(request: NextRequest) {
   const supabase = getCatalogClient();
   const slug = request.nextUrl.searchParams.get("slug");
@@ -70,7 +78,8 @@ export async function GET(request: NextRequest) {
       name: fr.name || item.slug,
       category: item.braviko_categories?.slug || "buches",
       description: fr.short_description || fr.description || "",
-      features: [],
+      features: parseFeatures(fr.description || ""),
+      longDescription: fr.description || fr.short_description || "",
       price: Number(variants[0]?.price || 0),
       image: images[0] || "/images/photorealistic-perspective-wood-logs.jpg",
       images: images.length

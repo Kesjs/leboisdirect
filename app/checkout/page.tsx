@@ -22,7 +22,7 @@ export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart()
   const { locale } = useI18n()
   const c = commerceCopy[locale]
-  const { user, isAdmin, loading: authLoading } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const supabase = useMemo(() => createClient(), [])
   const [step, setStep] = useState(1)
   const [paymentAcknowledged, setPaymentAcknowledged] = useState(false)
@@ -45,10 +45,9 @@ export default function CheckoutPage() {
   })
 
   useEffect(() => {
-    if (!authLoading && isAdmin) router.replace('/admin')
-    else if (!authLoading && !user) router.replace('/connexion?next=/checkout&reason=checkout')
+    if (!authLoading && !user) router.replace('/connexion?next=/checkout&reason=checkout')
     else if (items.length === 0 && step === 1) router.replace('/panier')
-  }, [authLoading, isAdmin, items.length, router, step, user])
+  }, [authLoading, items.length, router, step, user])
   useEffect(() => {
     if (!user) return
     setFormData(current => ({
@@ -58,7 +57,7 @@ export default function CheckoutPage() {
       lastName: current.lastName || user.user_metadata?.last_name || '',
     }))
   }, [user])
-  if (authLoading || !user || isAdmin || (items.length === 0 && step === 1)) return null
+  if (authLoading || !user || (items.length === 0 && step === 1)) return null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

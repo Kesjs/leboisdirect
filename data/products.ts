@@ -20,6 +20,7 @@ export type Product = {
   category: ProductCategory
   species?: WoodSpecies
   description: string
+  longDescription?: string
   features: string[]
   price: number
   image: string
