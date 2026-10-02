@@ -9,7 +9,7 @@ import { useI18n } from '@/lib/i18n-context'
 import { bravikoCopy } from '@/data/braviko-copy'
 
 const images = [
-  '/images/photorealistic-perspective-wood-logs.jpg',
+  '/images/snowy-firewood-sunset.png',
   '/images/braviko-hero.jpg',
   '/images/scandinavian-interior-with-fireplace-stump-table-pile-logs-fire.jpg',
 ]
