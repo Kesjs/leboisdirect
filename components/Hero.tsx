@@ -60,7 +60,6 @@ export default function Hero() {
         <Link href="/boutique?universe=heating" className="bk-world bk-world-heat" data-hero-enter>
           <div className="bk-world-media" data-hero-parallax>
             <Image src="/images/fireplace-with-woods-modern-wooden-house.jpg" alt="" fill priority sizes="(max-width: 700px) 100vw, 58vw" className="bk-image" quality={85} />
-            <span className="bk-watermark bk-watermark--hero" aria-hidden="true">braviko</span>
           </div>
           <div className="bk-world-shade" />
           <div className="bk-world-top"><span>{copy.home}</span><span>01</span></div>
@@ -72,7 +71,6 @@ export default function Hero() {
         <Link href="/boutique?universe=agriculture" className="bk-world bk-world-agri" data-hero-enter>
           <div className="bk-world-media" data-hero-parallax>
           <Image src="/images/agriculture-chainsaw.jpg" alt="" fill priority sizes="(max-width: 700px) 100vw, 42vw" className="bk-image bk-agri-image" quality={85} />
-          <span className="bk-watermark bk-watermark--hero" aria-hidden="true">braviko</span>
           </div>
           <div className="bk-world-shade" />
           <div className="bk-world-top"><span>{copy.field}</span><span>02</span></div>
