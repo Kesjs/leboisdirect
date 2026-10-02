@@ -543,8 +543,8 @@ export default function AdminPage() {
       />
     );
   return (
-    <main className="min-h-screen bg-ivory text-charcoal">
-      <header className="border-b border-hairline bg-ivory/95 px-4 py-4 backdrop-blur sm:px-10 sm:py-5">
+    <main className="admin-shell min-h-screen bg-ivory text-charcoal">
+      <header className="admin-header border-b border-hairline bg-ivory/95 px-4 py-4 backdrop-blur sm:px-10 sm:py-5">
         <div className="mx-auto flex max-w-container items-center justify-between gap-3 sm:gap-6">
           <div className="flex min-w-0 items-center gap-3 sm:gap-5">
             <Logo />
@@ -573,7 +573,7 @@ export default function AdminPage() {
           </div>
         </div>
       </header>
-      <div className="mx-auto max-w-container px-4 pt-5 sm:px-10 sm:pt-8">
+      <div className="admin-container mx-auto px-4 pt-5 sm:px-8 sm:pt-8">
         <section className="relative isolate overflow-hidden rounded-[16px] border border-charcoal/10 bg-charcoal px-5 py-6 text-white sm:px-8 sm:py-8">
           <Image
             src="/images/agriculture-chainsaw.jpg"
@@ -608,7 +608,7 @@ export default function AdminPage() {
           </div>
         </section>
       </div>
-      <div className="mx-auto max-w-container px-4 py-6 sm:px-10 sm:py-10">
+      <div className="admin-container mx-auto px-4 py-6 sm:px-8 sm:py-10">
         <CatalogWorkspace
           products={products}
           categories={categories}

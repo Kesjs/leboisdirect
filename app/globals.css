@@ -3,8 +3,64 @@
 @tailwind utilities;
 
 @layer components {
+  .admin-container {
+    width: min(100%, 1360px);
+  }
+
+  .admin-shell {
+    --admin-gap: clamp(16px, 2vw, 24px);
+  }
+
+  .admin-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  .admin-workspace {
+    width: 100%;
+  }
+
+  .admin-workspace > section {
+    width: 100%;
+  }
+
+  .admin-workspace button,
+  .admin-workspace input,
+  .admin-workspace select,
+  .admin-workspace textarea {
+    box-sizing: border-box;
+  }
+
+  .admin-modal {
+    overscroll-behavior: contain;
+  }
+
+  .admin-modal-panel {
+    margin-inline: auto;
+    border: 1px solid var(--hairline);
+    box-shadow: 0 24px 80px rgb(22 22 22 / 18%);
+  }
+
   .admin-input {
     @apply min-h-[44px] w-full max-w-full rounded-[8px] border border-hairline bg-white px-3 text-sm font-normal text-charcoal outline-none transition placeholder:text-ash focus:border-braise focus:ring-2 focus:ring-braise/10;
+  }
+}
+
+@media (max-width: 639px) {
+  .admin-header {
+    position: relative;
+  }
+
+  .admin-modal {
+    padding: 0;
+  }
+
+  .admin-modal-panel {
+    max-height: 100dvh;
+    border-radius: 16px 16px 0 0;
+    border-inline: 0;
+    border-bottom: 0;
   }
 }
 

@@ -661,7 +661,7 @@ function ProductEditor({
   return (
     <form
       onSubmit={submit}
-      className="flex w-full min-w-0 max-w-full flex-col overflow-hidden rounded-[16px] border border-hairline bg-white p-4 shadow-[0_24px_80px_rgba(22,22,22,.18)] sm:p-6"
+      className="admin-editor flex w-full min-w-0 max-w-full flex-col overflow-hidden rounded-[16px] border border-hairline bg-white p-4 shadow-[0_24px_80px_rgba(22,22,22,.18)] sm:p-6"
     >
       <div className="flex min-w-0 items-start justify-between gap-4 border-b border-hairline pb-4">
         <div className="min-w-0">
@@ -887,7 +887,7 @@ function ProductEditorModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-charcoal/45 p-3 backdrop-blur-[2px] sm:items-center sm:p-6"
+      className="admin-modal fixed inset-0 z-50 flex items-end justify-center bg-charcoal/45 p-3 backdrop-blur-[2px] sm:items-center sm:p-6"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
@@ -897,7 +897,7 @@ function ProductEditorModal({
         role="dialog"
         aria-modal="true"
         aria-label="Éditeur de produit"
-        className="max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl overflow-y-auto rounded-[20px]"
+        className="admin-modal-panel max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl overflow-y-auto rounded-[16px]"
       >
         {children}
       </section>
@@ -989,7 +989,7 @@ export default function CatalogWorkspace({
     }
   };
   return (
-    <div className="min-w-0">
+    <div className="admin-workspace min-w-0">
       <section className="min-w-0">
         <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
