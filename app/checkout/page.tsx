@@ -28,6 +28,12 @@ export default function CheckoutPage() {
   const [paymentAcknowledged, setPaymentAcknowledged] = useState(false)
   const [formError, setFormError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const paymentState = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('payment') : null
+  const paymentCopy = locale === 'de'
+    ? { cancelled: 'Zahlung abgebrochen. Sie können es erneut versuchen.', error: 'Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut.', unavailable: 'Die Zahlung ist derzeit nicht verfügbar.' }
+    : locale === 'it'
+      ? { cancelled: 'Pagamento annullato. Puoi riprovare.', error: 'Impossibile avviare il pagamento. Riprova.', unavailable: 'Il pagamento non è al momento disponibile.' }
+      : { cancelled: 'Paiement annulé. Vous pouvez réessayer.', error: 'Le paiement n’a pas pu être lancé. Réessayez.', unavailable: 'Le paiement est momentanément indisponible.' }
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -88,8 +94,10 @@ export default function CheckoutPage() {
         return
       }
       saveOrderDraft(draft)
-      clearCart()
-      router.push('/commande/confirmation')
+      const checkoutResponse = await fetch('/api/stripe/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: draft.reference, locale, items: items.map(item => ({ productId: item.product.id, variantId: item.variantId, quantity: item.quantity })) }) })
+      const checkoutResult = await checkoutResponse.json().catch(() => ({}))
+      if (!checkoutResponse.ok || !checkoutResult.url) { setFormError(checkoutResult.error === 'STRIPE_NOT_CONFIGURED' ? paymentCopy.unavailable : paymentCopy.error); setSubmitting(false); return }
+      window.location.assign(checkoutResult.url)
     }
   }
 
@@ -295,6 +303,7 @@ export default function CheckoutPage() {
                 {step === 3 && (
                   <div className="bg-white rounded-card border border-hairline p-32">
                     <h2 className="text-heading-sm font-semibold text-charcoal mb-24">{c.payment}</h2>
+                    {paymentState === 'cancelled' && <p role="alert" className="text-body-sm text-braise mb-16">{paymentCopy.cancelled}</p>}
                     <div className="bg-ivory/50 rounded-card border border-hairline p-24 mb-24">
                       <p className="text-body-sm text-smoke">
                         {c.pending}
