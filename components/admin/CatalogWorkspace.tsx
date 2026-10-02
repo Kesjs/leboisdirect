@@ -55,8 +55,8 @@ export type ProductValues = {
   deliveryInfo: string;
   sku: string;
   label: string;
-  price: number;
-  stock: number;
+  price: number | "";
+  stock: number | "";
   imageUrls: string[];
 };
 
@@ -65,13 +65,14 @@ type Props = {
   categories: AdminCategory[];
   error: string;
   message: string;
-  onCreate: (values: ProductValues, files: File[]) => Promise<void>;
+  onCreate: (values: ProductValues, files: File[]) => Promise<boolean>;
   onSave: (
     productId: string,
     variantId: string | undefined,
     values: ProductValues,
     files: File[],
-  ) => Promise<void>;
+  ) => Promise<boolean>;
+  onDelete: (productId: string) => Promise<boolean>;
   onImportFile: (file: File) => void;
   catalogDraft: {
     products?: {
@@ -603,19 +604,21 @@ function ProductEditor({
   categories,
   onCreate,
   onSave,
+  onDelete,
   onClose,
 }: {
   product: AdminProduct | null;
   categories: AdminCategory[];
   onCreate: Props["onCreate"];
   onSave: Props["onSave"];
+  onDelete: Props["onDelete"];
   onClose: () => void;
 }) {
   const [values, setValues] = useState<ProductValues>(() =>
     initialValues(product),
   );
   const [files, setFiles] = useState<File[]>([]);
-  const [saving, setSaving] = useState(false);
+  const [savingAction, setSavingAction] = useState<"save" | "publish" | "delete" | null>(null);
   const [watermark, setWatermark] = useState(true);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [language, setLanguage] = useState<"fr" | "de" | "it">("fr");
@@ -629,23 +632,38 @@ function ProductEditor({
       names: { ...current.names, [language]: value },
     }));
   const save = async (publish = false) => {
-    setSaving(true);
+    setSavingAction(publish ? "publish" : "save");
     try {
       const filesToSave = watermark
         ? await Promise.all(files.map(addWatermark))
         : files;
-      const valuesToSave = { ...values, imageUrls, status: publish ? ("published" as const) : values.status };
-      if (product)
-        await onSave(
+      const valuesToSave = {
+        ...values,
+        imageUrls,
+        price: values.price === "" ? 0 : values.price,
+        stock: values.stock === "" ? 0 : values.stock,
+        status: publish ? ("published" as const) : values.status,
+      };
+      const saved = product
+        ? await onSave(
           product.id,
           product.variants[0]?.id,
           valuesToSave,
           filesToSave,
-        );
-      else await onCreate(valuesToSave, filesToSave);
-      onClose();
+        )
+        : await onCreate(valuesToSave, filesToSave);
+      if (saved) onClose();
     } finally {
-      setSaving(false);
+      setSavingAction(null);
+    }
+  };
+  const remove = async () => {
+    if (!product || !window.confirm(`Supprimer définitivement « ${values.names.fr || product.slug} » ?`)) return;
+    setSavingAction("delete");
+    try {
+      if (await onDelete(product.id)) onClose();
+    } finally {
+      setSavingAction(null);
     }
   };
   const submit = async (event: React.FormEvent) => {
@@ -754,7 +772,7 @@ function ProductEditor({
               min="0"
               step="0.01"
               value={values.price}
-              onChange={(event) => update("price", Number(event.target.value))}
+              onChange={(event) => update("price", event.target.value === "" ? "" : Number(event.target.value))}
               className="admin-input"
             />
           </label>
@@ -765,7 +783,7 @@ function ProductEditor({
               min="0"
               step="1"
               value={values.stock}
-              onChange={(event) => update("stock", Number(event.target.value))}
+              onChange={(event) => update("stock", event.target.value === "" ? "" : Number(event.target.value))}
               className="admin-input"
             />
           </label>
@@ -840,10 +858,11 @@ function ProductEditor({
           Annuler
         </button>
         <button
-          disabled={saving}
+          type="submit"
+          disabled={savingAction !== null}
           className="h-[42px] min-w-0 rounded-[8px] bg-charcoal px-4 text-sm font-semibold text-white transition hover:bg-braise disabled:opacity-50"
         >
-          {saving
+          {savingAction === "save"
             ? "Enregistrement…"
             : product
               ? "Enregistrer les modifications"
@@ -853,11 +872,21 @@ function ProductEditor({
         {product && values.status !== "published" && (
           <button
             type="button"
-            disabled={saving}
+            disabled={savingAction !== null}
             onClick={() => void save(true)}
             className="h-[42px] min-w-0 rounded-[8px] bg-forest px-4 text-sm font-semibold text-white transition hover:bg-forest/80 disabled:opacity-50 sm:col-span-2 xl:col-span-1 2xl:col-span-2"
           >
-            {saving ? "Publication…" : "Publier et enregistrer"} <span aria-hidden="true">↗</span>
+            {savingAction === "publish" ? "Publication…" : "Publier et enregistrer"} <span aria-hidden="true">↗</span>
+          </button>
+        )}
+        {product && (
+          <button
+            type="button"
+            disabled={savingAction !== null}
+            onClick={() => void remove()}
+            className="h-[42px] rounded-[8px] border border-red-200 px-4 text-sm font-semibold text-red-700 transition hover:border-red-400 hover:bg-red-50 disabled:opacity-50 sm:col-span-2 xl:col-span-1 2xl:col-span-2"
+          >
+            {savingAction === "delete" ? "Suppression…" : "Supprimer le produit"}
           </button>
         )}
       </div>
@@ -872,6 +901,7 @@ export default function CatalogWorkspace({
   message,
   onCreate,
   onSave,
+  onDelete,
   onImportFile,
   catalogDraft,
   importing,
@@ -1067,32 +1097,35 @@ export default function CatalogWorkspace({
                     setCreating(false);
                     setSelectedId(product.id);
                   }}
-                  className={`group w-full rounded-[12px] border p-2.5 text-left transition hover:border-[#cfc9be] focus:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 ${selectedId === product.id && !creating ? "border-charcoal bg-white" : "border-hairline bg-white"}`}
+                  className={`group w-full overflow-hidden rounded-[14px] border text-left transition hover:border-charcoal focus:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 ${selectedId === product.id && !creating ? "border-charcoal bg-white" : "border-hairline bg-white"}`}
                 >
-                  <div className="relative h-32 w-full overflow-hidden rounded-[9px] bg-[#e8e3da]">
+                  <div className="relative aspect-[16/8] w-full overflow-hidden bg-[#e8e3da]">
                     {image ? (
                       <img
                         src={image.publicUrl}
                         alt={name}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.025]"
                       />
                     ) : (
-                      <div className="grid h-full place-items-center text-smoke">
-                        <Icon name="image" />
+                      <div className="grid h-full place-items-center bg-ivory text-center text-sm text-smoke">
+                        <span className="grid justify-items-center gap-2 rounded-[10px] border border-dashed border-[#cfc9be] bg-white/70 px-4 py-3">
+                          <Icon name="image" />
+                          <span>Image à ajouter</span>
+                        </span>
                       </div>
                     )}
                   </div>
-                  <div className="px-1.5 pb-1 pt-3">
+                  <div className="p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="truncate font-semibold">{name}</p>
+                        <p className="truncate text-[15px] font-semibold">{name}</p>
                         <p className="mt-1 truncate text-xs text-smoke">{product.categoryName || "Sans catégorie"}</p>
                       </div>
                       <span className={`shrink-0 rounded-full px-2 py-1 text-[11px] font-medium ${product.status === "published" ? "bg-forest/10 text-forest" : "bg-black/5 text-smoke"}`}>
                         {statusLabels[product.status]}
                       </span>
                     </div>
-                    <div className="mt-4 flex items-end justify-between gap-3 text-sm">
+                    <div className="mt-4 flex items-end justify-between gap-3 border-t border-hairline pt-3 text-sm">
                       <span className="font-semibold tabular-nums">{variant ? `${Number(variant.price).toFixed(2)} €` : "Prix à définir"}</span>
                       <span className={`${Number(variant?.stock || 0) < 10 ? "text-braise-dark" : "text-smoke"}`}>{variant ? `${variant.stock} en stock` : "Stock à définir"}</span>
                     </div>
@@ -1152,6 +1185,7 @@ export default function CatalogWorkspace({
             categories={categories}
             onCreate={onCreate}
             onSave={onSave}
+            onDelete={onDelete}
             onClose={() => {
               setCreating(false);
               if (!selectedId && products[0]) setSelectedId(products[0].id);

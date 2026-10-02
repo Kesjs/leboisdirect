@@ -196,12 +196,12 @@ export default function AdminPage() {
       );
     if (imageError) throw imageError;
   }
-  async function createProduct(values: ProductValues, files: File[]) {
+  async function createProduct(values: ProductValues, files: File[]): Promise<boolean> {
     setError("");
     setMessage("");
     if (!values.names.fr.trim() || !values.categoryId) {
       setError("Le nom français et la catégorie sont obligatoires.");
-      return;
+      return false;
     }
     const { data: product, error: productError } = await supabase
       .from("braviko_products")
@@ -215,7 +215,7 @@ export default function AdminPage() {
       .single();
     if (productError || !product) {
       setError(productError?.message || "Création impossible.");
-      return;
+      return false;
     }
     const translations = (["fr", "de", "it"] as const).map((locale) => ({
       product_id: product.id,
@@ -244,7 +244,7 @@ export default function AdminPage() {
           "Le produit a été créé mais ses détails sont incomplets.",
       );
       await loadCatalog();
-      return;
+      return false;
     }
     try {
       await uploadImages(product.id, files, values.names.fr, false);
@@ -258,16 +258,19 @@ export default function AdminPage() {
       setError(
         `Produit créé, mais une image n’a pas pu être enregistrée : ${uploadError instanceof Error ? uploadError.message : "erreur inconnue"}`,
       );
+      await loadCatalog();
+      return false;
     }
     setMessage("Produit créé dans le catalogue Braviko.");
     await loadCatalog();
+    return true;
   }
   async function saveProduct(
     productId: string,
     variantId: string | undefined,
     values: ProductValues,
     files: File[],
-  ) {
+  ): Promise<boolean> {
     setError("");
     setMessage("");
     const currentProduct = products.find((item) => item.id === productId);
@@ -283,7 +286,7 @@ export default function AdminPage() {
       .eq("id", productId);
     if (productError) {
       setError(productError.message);
-      return;
+      return false;
     }
     const { error: translationError } = await supabase
       .from("braviko_product_translations")
@@ -301,7 +304,7 @@ export default function AdminPage() {
       );
     if (translationError) {
       setError(translationError.message);
-      return;
+      return false;
     }
     if (variantId) {
       const { error: variantError } = await supabase
@@ -315,7 +318,7 @@ export default function AdminPage() {
         .eq("id", variantId);
       if (variantError) {
         setError(variantError.message);
-        return;
+        return false;
       }
     }
     try {
@@ -338,12 +341,63 @@ export default function AdminPage() {
         `Produit enregistré, mais une image n’a pas pu être ajoutée : ${uploadError instanceof Error ? uploadError.message : "erreur inconnue"}`,
       );
       await loadCatalog();
-      return;
+      return false;
     }
     setMessage(
       "Produit mis à jour. Les changements sont maintenant visibles dans le catalogue.",
     );
     await loadCatalog();
+    return true;
+  }
+  async function deleteProduct(productId: string): Promise<boolean> {
+    setError("");
+    setMessage("");
+    const product = products.find((item) => item.id === productId);
+    if (!product) {
+      setError("Produit introuvable.");
+      return false;
+    }
+    const storagePaths = product.images
+      .map((image) => image.storage_path)
+      .filter((path) => !/^https?:\/\//i.test(path));
+    if (storagePaths.length) {
+      await supabase.storage.from("braviko-product-media").remove(storagePaths);
+    }
+    const { error: imageError } = await supabase
+      .from("braviko_product_images")
+      .delete()
+      .eq("product_id", productId);
+    if (imageError) {
+      setError(imageError.message);
+      return false;
+    }
+    const { error: translationError } = await supabase
+      .from("braviko_product_translations")
+      .delete()
+      .eq("product_id", productId);
+    if (translationError) {
+      setError(translationError.message);
+      return false;
+    }
+    const { error: variantError } = await supabase
+      .from("braviko_product_variants")
+      .delete()
+      .eq("product_id", productId);
+    if (variantError) {
+      setError(variantError.message);
+      return false;
+    }
+    const { error: productError } = await supabase
+      .from("braviko_products")
+      .delete()
+      .eq("id", productId);
+    if (productError) {
+      setError(productError.message);
+      return false;
+    }
+    setMessage("Produit supprimé du catalogue.");
+    await loadCatalog();
+    return true;
   }
   async function readCatalogFile(file: File) {
     setError("");
@@ -562,6 +616,7 @@ export default function AdminPage() {
           message={message}
           onCreate={createProduct}
           onSave={saveProduct}
+          onDelete={deleteProduct}
           onImportFile={readCatalogFile}
           catalogDraft={catalogDraft}
           importing={importing}
