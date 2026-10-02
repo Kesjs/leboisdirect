@@ -794,6 +794,19 @@ function ProductEditor({
             placeholder="Une phrase claire pour présenter le produit."
           />
         </label>
+        <label className="grid gap-2 text-sm font-medium">
+          Caractéristiques du produit
+          <span className="text-xs font-normal leading-5 text-smoke">
+            Ajoutez les détails techniques, un par ligne, au format « Nom : valeur ».
+          </span>
+          <textarea
+            value={values.description}
+            onChange={(event) => update("description", event.target.value)}
+            rows={12}
+            className="admin-input min-h-[220px] resize-y py-2.5 leading-6"
+            placeholder={'Type : Bois de chauffage / feuillus durs\nEssences : Chêne, charme et hêtre\nQuantité : 2 stères'}
+          />
+        </label>
         <AdminCheckbox
           checked={values.featured}
           onChange={(value) => update("featured", value)}
