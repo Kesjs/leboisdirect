@@ -34,7 +34,7 @@ export default function FeaturedProducts() {
     : universeProducts.filter(product => product.category === selectedCategory)
   const randomizedProducts = useMemo(() => {
     const productsForCategory = selectedCategory === 'all' ? universeProducts : universeProducts.filter(product => product.category === selectedCategory)
-    return shuffle(productsForCategory).slice(0, 6)
+    return shuffle(productsForCategory).slice(0, 9)
   }, [universeProducts, selectedCategory])
   useEffect(() => {
     fetch('/api/catalog').then(response => response.ok ? response.json() : Promise.reject(new Error('catalog unavailable'))).then(payload => {
