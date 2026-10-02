@@ -520,7 +520,7 @@ export default function AdminPage() {
         </div>
       </header>
       <div className="mx-auto max-w-container px-4 pt-5 sm:px-10 sm:pt-8">
-        <section className="relative isolate overflow-hidden rounded-[20px] border border-hairline bg-white px-5 py-7 sm:rounded-[24px] sm:px-10 sm:py-10">
+        <section className="relative isolate overflow-hidden rounded-[16px] border border-charcoal/10 bg-charcoal px-5 py-6 text-white sm:px-8 sm:py-8">
           <Image
             src="/images/agriculture-chainsaw.jpg"
             alt="Équipement Braviko au travail"
@@ -529,25 +529,25 @@ export default function AdminPage() {
             className="-z-20 object-cover opacity-[0.07]"
             sizes="(max-width: 1200px) 100vw, 1200px"
           />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-white via-white/95 to-white/70" />
-          <div className="relative max-w-2xl">
-            <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-braise sm:text-xs sm:tracking-[.22em]">
-              Braviko / espace catalogue
+          <div className="absolute inset-0 -z-10 bg-charcoal/80" />
+          <div className="relative max-w-3xl">
+            <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-orange-200 sm:text-xs sm:tracking-[.22em]">
+              Braviko / espace opérations
             </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-charcoal sm:mt-3 sm:text-4xl">
-              Gérez vos produits avec calme.
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:mt-3 sm:text-3xl">
+              Catalogue opérationnel
             </h2>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-smoke sm:mt-4">
-              Retrouvez les fiches, les stocks, les statuts et les visuels au même endroit avant la mise en ligne.
+            <p className="mt-2 max-w-xl text-sm leading-6 text-white/70 sm:mt-3">
+              Contrôlez les fiches, les stocks et les publications depuis un seul poste de travail.
             </p>
-            <div className="mt-5 flex flex-wrap gap-2 text-xs sm:mt-6 sm:gap-3 sm:text-sm">
-              <span className="rounded-full border border-hairline bg-ivory px-4 py-2 text-charcoal">
+            <div className="mt-5 grid max-w-xl grid-cols-3 divide-x divide-white/15 overflow-hidden rounded-[10px] border border-white/15 bg-white/5 text-xs sm:mt-6 sm:text-sm">
+              <span className="px-3 py-2.5 text-white/80 sm:px-4">
                 {products.length} produits suivis
               </span>
-              <span className="rounded-full border border-hairline bg-ivory px-4 py-2 text-charcoal">
+              <span className="px-3 py-2.5 text-white/80 sm:px-4">
                 {categories.length} catégories
               </span>
-              <span className="rounded-full border border-hairline bg-ivory px-4 py-2 text-charcoal">
+              <span className="px-3 py-2.5 text-white/80 sm:px-4">
                 Images avec aperçu
               </span>
             </div>

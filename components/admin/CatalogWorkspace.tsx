@@ -116,23 +116,24 @@ async function addWatermark(file: File) {
     const context = canvas.getContext("2d");
     if (!context) return file;
     context.drawImage(image, 0, 0);
-    const size = Math.max(18, Math.round(canvas.width * 0.035));
-    const padding = Math.round(size * 0.8);
+    const size = Math.max(24, Math.round(Math.min(canvas.width, canvas.height) * 0.065));
+    const diagonal = Math.hypot(canvas.width, canvas.height);
+    context.save();
+    context.translate(canvas.width / 2, canvas.height / 2);
+    context.rotate(-Math.PI / 7);
     context.font = `700 ${size}px Arial, sans-serif`;
-    context.textAlign = "right";
-    context.textBaseline = "bottom";
-    context.fillStyle = "rgba(35,35,35,.72)";
-    context.fillText(
-      "BRAVIKO",
-      canvas.width - padding + 1,
-      canvas.height - padding + 1,
-    );
-    context.fillStyle = "rgba(255,255,255,.92)";
-    context.fillText(
-      "BRAVIKO",
-      canvas.width - padding,
-      canvas.height - padding,
-    );
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.lineWidth = Math.max(2, size * 0.08);
+    context.strokeStyle = "rgba(35,35,35,.42)";
+    context.fillStyle = "rgba(255,255,255,.48)";
+    for (let y = -diagonal; y <= diagonal; y += size * 3.4) {
+      for (let x = -diagonal; x <= diagonal; x += size * 5.2) {
+        context.strokeText("BRAVIKO", x, y);
+        context.fillText("BRAVIKO", x, y);
+      }
+    }
+    context.restore();
     const blob = await new Promise<Blob | null>((resolve) =>
       canvas.toBlob(resolve, file.type || "image/jpeg", 0.92),
     );
@@ -238,46 +239,17 @@ function AdminSelect({
   options: { value: string; label: string }[];
   onChange: (value: string) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const selected =
-    options.find((option) => option.value === value)?.label || "Choisir…";
   return (
-    <div className="relative grid gap-2 text-sm font-medium">
+    <label className="grid gap-2 text-sm font-medium">
       <span>{label}</span>
-      <button
-        type="button"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        onClick={() => setOpen((current) => !current)}
-        className="flex h-[44px] w-full min-w-0 items-center justify-between rounded-[8px] border border-hairline bg-white px-3 text-left font-normal transition hover:border-charcoal focus:border-braise focus:outline-none focus:ring-2 focus:ring-braise/10"
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="admin-input"
       >
-        <span className={value ? "text-charcoal" : "text-ash"}>{selected}</span>
-        <Icon name="chevron" />
-      </button>
-      {open && (
-        <div
-          role="listbox"
-          className="absolute left-0 right-0 top-[70px] z-30 overflow-hidden rounded-[10px] border border-hairline bg-white p-1 shadow-[0_18px_50px_rgba(22,22,22,.14)]"
-        >
-          {options.map((option) => (
-            <button
-              type="button"
-              role="option"
-              aria-selected={option.value === value}
-              key={option.value}
-              onClick={() => {
-                onChange(option.value);
-                setOpen(false);
-              }}
-              className="flex w-full items-center justify-between rounded-[6px] px-3 py-2.5 text-left text-sm hover:bg-ivory"
-            >
-              {option.label}
-              {option.value === value && <Icon name="check" />}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+        {options.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}
+      </select>
+    </label>
   );
 }
 
@@ -379,9 +351,13 @@ function FileDropzone({
                 className="h-full w-full object-cover"
               />
               {watermark && (
-                <span className="absolute bottom-1 right-1 rounded bg-black/45 px-1.5 py-1 text-[8px] font-bold tracking-[.12em] text-white">
-                  BRAVIKO
-                </span>
+                <div aria-hidden="true" className="pointer-events-none absolute inset-[-35%] flex rotate-[-24deg] flex-col justify-center gap-5 opacity-70">
+                  {Array.from({ length: 6 }).map((_, watermarkRow) => (
+                    <span key={watermarkRow} className="whitespace-nowrap text-center text-[11px] font-bold tracking-[.16em] text-white [text-shadow:0_1px_2px_rgba(35,35,35,.65)]">
+                      BRAVIKO · BRAVIKO · BRAVIKO
+                    </span>
+                  ))}
+                </div>
               )}
               <button
                 type="button"
@@ -834,12 +810,12 @@ function ProductEditor({
           <div>
             <p className="text-sm font-semibold">Images du produit</p>
             <p className="mt-1 text-xs text-smoke">
-              Le filigrane sera intégré aux nouvelles images au moment de
-              l’enregistrement.
+              Le filigrane est intégré dans le fichier final de chaque nouvelle
+              image au moment de l’enregistrement.
             </p>
           </div>
           <AdminCheckbox checked={watermark} onChange={setWatermark}>
-            Ajouter le filigrane Braviko
+            Appliquer le filigrane Braviko aux nouvelles images
           </AdminCheckbox>
           <ImageLinksPanel
             images={product?.images || []}
@@ -907,6 +883,8 @@ export default function CatalogWorkspace({
   const [creating, setCreating] = useState(false);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"all" | AdminStatus>("all");
+  const [backfilling, setBackfilling] = useState(false);
+  const [backfillNotice, setBackfillNotice] = useState("");
   const selected =
     products.find((product) => product.id === selectedId) || null;
   const filtered = useMemo(
@@ -934,8 +912,46 @@ export default function CatalogWorkspace({
     }),
     [products],
   );
+  const filterImage = (filter: "all" | AdminStatus) =>
+    products.find((product) => {
+      if (filter !== "all" && product.status !== filter) return false;
+      return product.images.some((image) => Boolean(image.publicUrl));
+    })?.images.find((image) => Boolean(image.publicUrl))?.publicUrl;
+  const filterItems = [
+    { value: "all" as const, label: "Tout le catalogue", count: counts.all },
+    { value: "published" as const, label: "Publié", count: counts.published },
+    { value: "draft" as const, label: "À compléter", count: counts.draft },
+  ];
+  const backfillImages = async () => {
+    setBackfilling(true);
+    setBackfillNotice("");
+    let total = 0;
+    let hasMore = true;
+    try {
+      while (hasMore) {
+        const response = await fetch("/api/admin/watermark-images", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ limit: 24 }),
+        });
+        const result = (await response.json().catch(() => null)) as
+          | { processed?: number; hasMore?: boolean; errors?: Array<{ message: string }> }
+          | null;
+        if (!response.ok) throw new Error(result?.errors?.[0]?.message || "Le filigranage n’a pas pu démarrer.");
+        total += result?.processed || 0;
+        hasMore = Boolean(result?.hasMore);
+        if (result?.errors?.length) throw new Error(result.errors[0].message);
+        if (!result?.processed && hasMore) throw new Error("Le traitement est bloqué sur une image.");
+      }
+      setBackfillNotice(total ? `${total} image${total > 1 ? "s" : ""} filigranée${total > 1 ? "s" : ""} et protégée${total > 1 ? "s" : ""}.` : "Toutes les images sont déjà protégées.");
+    } catch (backfillError) {
+      setBackfillNotice(backfillError instanceof Error ? backfillError.message : "Le filigranage a échoué.");
+    } finally {
+      setBackfilling(false);
+    }
+  };
   return (
-    <div className="grid min-w-0 gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(420px,500px)] xl:items-start xl:gap-10">
+    <div className="grid min-w-0 gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(440px,520px)] xl:items-start xl:gap-8">
       <section className="min-w-0">
         <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -945,42 +961,53 @@ export default function CatalogWorkspace({
             </h2>
             <p className="mt-2 max-w-md text-sm leading-6 text-smoke">Gérez vos produits, leur disponibilité et leur présence dans la boutique.</p>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              setCreating(true);
-              setSelectedId(null);
-            }}
-            className="inline-flex h-[42px] w-full items-center justify-center gap-2 rounded-[8px] bg-charcoal px-4 text-sm font-semibold text-white transition hover:bg-braise sm:w-auto"
-          >
-            <Icon name="plus" /> Nouveau produit
-          </button>
+          <div className="grid w-full gap-2 sm:w-auto sm:grid-cols-[auto_auto]">
+            <button
+              type="button"
+              onClick={backfillImages}
+              disabled={backfilling}
+              className="inline-flex h-[42px] items-center justify-center gap-2 rounded-[8px] border border-hairline bg-white px-4 text-sm font-semibold text-charcoal transition hover:border-charcoal disabled:opacity-50"
+            >
+              {backfilling ? "Protection…" : "Protéger les images existantes"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setCreating(true);
+                setSelectedId(null);
+              }}
+              className="inline-flex h-[42px] items-center justify-center gap-2 rounded-[8px] bg-charcoal px-4 text-sm font-semibold text-white transition hover:bg-braise"
+            >
+              <Icon name="plus" /> Nouveau produit
+            </button>
+          </div>
         </div>
-        <div className="mb-7 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-[14px] border border-hairline bg-white px-4 py-4">
+        {backfillNotice && <p role="status" className="mb-5 rounded-[12px] border border-forest/20 bg-forest/10 p-4 text-sm text-forest">{backfillNotice}</p>}
+        <div className="mb-6 grid overflow-hidden rounded-[12px] border border-hairline bg-white sm:grid-cols-3">
+          <div className="border-b border-hairline px-4 py-3.5 sm:border-b-0 sm:border-r">
             <p className="text-xs text-smoke">Visibles en boutique</p>
             <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.published}</p>
           </div>
-          <div className="rounded-[14px] border border-hairline bg-white px-4 py-4">
+          <div className="border-b border-hairline px-4 py-3.5 sm:border-b-0 sm:border-r">
             <p className="text-xs text-smoke">À compléter</p>
             <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.draft}</p>
           </div>
-          <div className={`rounded-[14px] border px-4 py-4 ${counts.lowStock ? "border-braise/30 bg-braise/5" : "border-hairline bg-white"}`}>
+          <div className={`px-4 py-3.5 ${counts.lowStock ? "bg-braise/5" : ""}`}>
             <p className="text-xs text-smoke">Stock à surveiller</p>
             <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.lowStock}</p>
           </div>
         </div>
         {error && (
-          <p className="mb-5 rounded-[16px] border border-braise/30 bg-braise/10 p-4 text-sm text-braise-dark">
+          <p role="alert" className="mb-5 rounded-[12px] border border-braise/30 bg-braise/10 p-4 text-sm text-braise-dark">
             {error}
           </p>
         )}
         {message && (
-          <p className="mb-5 rounded-[16px] border border-forest/20 bg-forest/10 p-4 text-sm text-forest">
+          <p role="status" className="mb-5 rounded-[12px] border border-forest/20 bg-forest/10 p-4 text-sm text-forest">
             {message}
           </p>
         )}
-        <div className="mb-5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="mb-4">
           <label className="relative">
             <span className="sr-only">Rechercher un produit</span>
             <input
@@ -993,21 +1020,29 @@ export default function CatalogWorkspace({
               <Icon name="search" />
             </span>
           </label>
-          <div className="flex max-w-full overflow-x-auto rounded-[9px] border border-hairline bg-white p-1 text-xs font-medium">
-            {(["all", "published", "draft"] as const).map((item) => (
-              <button
-                type="button"
-                key={item}
-                onClick={() => setStatus(item)}
-                className={`rounded-[6px] px-3 py-2 ${status === item ? "bg-charcoal text-white" : "text-smoke hover:text-charcoal"}`}
-              >
-                {item === "all"
-                  ? `Tous ${counts.all}`
-                  : item === "published"
-                    ? `Publiés ${counts.published}`
-                    : `Brouillons ${counts.draft}`}
-              </button>
-            ))}
+        </div>
+        <div className="mb-6 -mx-1 overflow-x-auto px-1 pb-2">
+          <div className="flex min-w-max items-stretch gap-2.5" role="group" aria-label="Filtrer le catalogue">
+            {filterItems.map((item, index) => {
+              const image = filterImage(item.value);
+              const active = status === item.value;
+              return (
+                <button
+                  type="button"
+                  key={item.value}
+                  aria-pressed={active}
+                  onClick={() => setStatus(item.value)}
+                  className={`group relative h-[76px] w-[152px] overflow-hidden rounded-[12px] border text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 ${index === 1 ? "-skew-x-2" : index === 2 ? "skew-x-2" : ""} ${active ? "border-charcoal" : "border-hairline"}`}
+                >
+                  {image ? <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-70 transition duration-300 group-hover:scale-105" /> : null}
+                  <span className={`absolute inset-0 ${active ? "bg-charcoal/75" : "bg-charcoal/55"}`} />
+                  <span className={`relative flex h-full skew-x-0 flex-col justify-between p-3 text-white ${index === 1 ? "transform skew-x-2" : index === 2 ? "transform -skew-x-2" : ""}`}>
+                    <span className="text-[11px] font-medium uppercase tracking-[.12em]">{item.label}</span>
+                    <span className="flex items-end justify-between gap-2"><strong className="text-xl font-semibold leading-none tabular-nums">{item.count}</strong><span className="text-[11px] text-white/75">fiches</span></span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -1032,14 +1067,14 @@ export default function CatalogWorkspace({
                     setCreating(false);
                     setSelectedId(product.id);
                   }}
-                  className={`group w-full rounded-[16px] border p-3 text-left transition hover:-translate-y-0.5 hover:border-[#cfc9be] hover:shadow-[0_14px_32px_rgba(29,29,29,.07)] ${selectedId === product.id && !creating ? "border-charcoal bg-white shadow-[0_10px_24px_rgba(29,29,29,.08)]" : "border-hairline bg-white"}`}
+                  className={`group w-full rounded-[12px] border p-2.5 text-left transition hover:border-[#cfc9be] focus:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 ${selectedId === product.id && !creating ? "border-charcoal bg-white" : "border-hairline bg-white"}`}
                 >
-                  <div className="relative h-40 w-full overflow-hidden rounded-[11px] bg-[#e8e3da]">
+                  <div className="relative h-32 w-full overflow-hidden rounded-[9px] bg-[#e8e3da]">
                     {image ? (
                       <img
                         src={image.publicUrl}
-                        alt=""
-                        className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                        alt={name}
+                        className="h-full w-full object-cover"
                       />
                     ) : (
                       <div className="grid h-full place-items-center text-smoke">
@@ -1053,7 +1088,7 @@ export default function CatalogWorkspace({
                         <p className="truncate font-semibold">{name}</p>
                         <p className="mt-1 truncate text-xs text-smoke">{product.categoryName || "Sans catégorie"}</p>
                       </div>
-                      <span className={`shrink-0 rounded-[6px] px-2 py-1 text-[11px] font-medium ${product.status === "published" ? "bg-forest/10 text-forest" : "bg-black/5 text-smoke"}`}>
+                      <span className={`shrink-0 rounded-full px-2 py-1 text-[11px] font-medium ${product.status === "published" ? "bg-forest/10 text-forest" : "bg-black/5 text-smoke"}`}>
                         {statusLabels[product.status]}
                       </span>
                     </div>
@@ -1067,7 +1102,7 @@ export default function CatalogWorkspace({
             })
           )}
         </div>
-        <details className="mt-6 rounded-[20px] border border-braise/30 bg-braise/5 p-5">
+        <details className="mt-6 rounded-[12px] border border-braise/30 bg-braise/5 p-4">
           <summary className="cursor-pointer list-none">
             <p className="text-xs font-semibold uppercase tracking-[.16em] text-braise">
               Import rapide
@@ -1109,7 +1144,7 @@ export default function CatalogWorkspace({
           </div>
         </details>
       </section>
-      <aside className="order-last min-w-0 max-w-full xl:order-none xl:sticky xl:top-6">
+      <aside className="order-last min-w-0 max-w-full xl:order-none xl:sticky xl:top-5">
         {creating || selected ? (
           <ProductEditor
             key={creating ? "new" : selected?.id}
