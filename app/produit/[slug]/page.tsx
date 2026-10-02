@@ -163,6 +163,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                     sizes="(max-width: 768px) 100vw, 50vw"
                     priority
                   />
+                  <span className="bk-detail-watermark" aria-hidden="true">BRAVIKO</span>
                 </div>
                 {product.images.length > 1 && (
                   <div className="grid grid-cols-4 gap-12">
@@ -183,6 +184,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                           className="object-cover"
                           sizes="200px"
                         />
+                        <span className="bk-detail-thumb-watermark" aria-hidden="true">B</span>
                       </button>
                     ))}
                   </div>

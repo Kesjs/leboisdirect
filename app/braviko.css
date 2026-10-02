@@ -161,6 +161,8 @@
 .bk-product-photo.is-loaded .bk-image-placeholder { opacity: 0; pointer-events: none; }
 .bk-watermark { position: absolute; z-index: 2; inset: 50% auto auto 50%; color: rgb(255 255 255 / .48); font-family: Arial, sans-serif; font-size: clamp(28px, 5vw, 72px); font-weight: 700; letter-spacing: -.04em; pointer-events: none; text-transform: lowercase; transform: translate(-50%, -50%) rotate(-25.7deg); text-shadow: 0 1px 4px rgb(0 0 0 / .08); }
 .bk-watermark--hero { font-size: clamp(44px, 7vw, 110px); }
+.bk-detail-watermark { position: absolute; z-index: 2; inset: 50% auto auto 50%; color: rgb(255 255 255 / .38); font-family: Arial, sans-serif; font-size: clamp(42px, 6vw, 92px); font-weight: 700; letter-spacing: .08em; pointer-events: none; text-shadow: 0 1px 5px rgb(0 0 0 / .18); transform: translate(-50%, -50%) rotate(-24deg); }
+.bk-detail-thumb-watermark { position: absolute; z-index: 2; inset: auto 7px 5px auto; color: rgb(255 255 255 / .8); font-family: Arial, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .08em; pointer-events: none; text-shadow: 0 1px 3px rgb(0 0 0 / .45); }
 .bk-product-photo img { transition: transform .65s var(--bk-ease), opacity .5s; }
 .bk-product-back { opacity: 0; }
 .bk-product-link:hover .bk-product-front, .bk-product-link:focus-visible .bk-product-front { transform: scale(1.045); }
