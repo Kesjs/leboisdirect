@@ -75,7 +75,7 @@ export default function Header() {
         <div className="bk-info-bar" role="note">
           <div className="bk-container bk-info-bar-inner">
             <span>{copy.infoBar}</span>
-            <Link href="/livraison" onClick={collapse}>{copy.delivery}<span aria-hidden="true">↗</span></Link>
+            <Link href="/livraison" onClick={collapse}>{copy.delivery}</Link>
           </div>
         </div>
         <div className="bk-container bk-nav">
