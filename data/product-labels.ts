@@ -7,6 +7,29 @@ export const categoryLabels = {
   it: { buches: 'Legna', 'bois-compresse': 'Bricchetti', granules: 'Pellet', allumage: 'Legna da accensione', 'allume-feu': 'Accendifuoco', 'accessoires-chauffage': 'Accessori per il riscaldamento', 'machines-agricoles': 'Macchine agricole' },
 }
 
+const categorySuffixLabels: Record<string, Record<Locale, string>> = {
+  'buches': { fr: 'Bûches', de: 'Brennholz', it: 'Legna' },
+  'bois-compresse': { fr: 'Bois compressé', de: 'Holzbriketts', it: 'Bricchetti' },
+  'granules': { fr: 'Granulés', de: 'Pellets', it: 'Pellet' },
+  'bois-d-allumage': { fr: 'Bois d’allumage', de: 'Anzündholz', it: 'Legna da accensione' },
+  'allume-feu': { fr: 'Allume-feu', de: 'Feueranzünder', it: 'Accendifuoco' },
+  'accessoires-chauffage': { fr: 'Accessoires chauffage', de: 'Heizungszubehör', it: 'Accessori per il riscaldamento' },
+  'motoculteurs': { fr: 'Motoculteurs', de: 'Motorhacken', it: 'Motozappe' },
+  'tronconneuses': { fr: 'Tronçonneuses', de: 'Kettensägen', it: 'Motoseghe' },
+  'debroussailleuses': { fr: 'Débroussailleuses', de: 'Freischneider', it: 'Decespugliatori' },
+  'broyeurs': { fr: 'Broyeurs', de: 'Häcksler', it: 'Biotrituratori' },
+  'fendeuses': { fr: 'Fendeuses', de: 'Holzspalter', it: 'Spaccalegna' },
+  'pulverisateurs': { fr: 'Pulvérisateurs', de: 'Rückenspritzen', it: 'Irroratori' },
+  'outils-de-jardin': { fr: 'Outils de jardin', de: 'Gartenwerkzeuge', it: 'Attrezzi da giardino' },
+}
+
+export function categoryLabel(category: string, locale: Locale) {
+  const direct = (categoryLabels[locale] as Record<string, string>)[category]
+  if (direct) return direct
+  const suffix = category.split('-').slice(category.startsWith('chauffage-au-bois-') ? 3 : category.startsWith('agriculture-terrain-') ? 2 : 0).join('-')
+  return categorySuffixLabels[suffix]?.[locale] || category.replace(/^(chauffage-au-bois|agriculture-terrain)-/, '').replace(/-/g, ' ')
+}
+
 export function hasMeaningfulConditioning(conditioning?: string | null) {
   return Boolean(conditioning && !/^1\s*(unité|unités|stück|st\.?|pezzo|pezzi)$/i.test(conditioning.trim()))
 }

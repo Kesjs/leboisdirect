@@ -9,7 +9,7 @@ import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
 import type { Product } from '@/data/products'
 import { useI18n } from '@/lib/i18n-context'
-import { categoryLabels, productLabel } from '@/data/product-labels'
+import { categoryLabel, productLabel } from '@/data/product-labels'
 import { uiCopy } from '@/data/ui-copy'
 import { isAgricultureCategory, isHeatingCategory } from '@/data/catalog-taxonomy'
 
@@ -71,6 +71,13 @@ function ShopContent() {
   const availableCategories = useMemo(() => Array.from(new Set(catalogProducts
     .filter(product => isAgriculture ? isAgricultureCategory(product.category) : isHeating ? isHeatingCategory(product.category) : true)
     .map(product => product.category))), [catalogProducts, isAgriculture, isHeating])
+  const groupedCategories = useMemo(() => {
+    const groups = [
+      { key: 'heating', title: copy.shop.heating, categories: availableCategories.filter(category => isHeatingCategory(category)) },
+      { key: 'agriculture', title: copy.shop.agriculture, categories: availableCategories.filter(category => isAgricultureCategory(category)) },
+    ]
+    return groups.filter(group => group.categories.length > 0)
+  }, [availableCategories, copy.shop.agriculture, copy.shop.heating])
   const pageCount = Math.max(1, Math.ceil(filteredAndSortedProducts.length / PRODUCTS_PER_PAGE))
   const pageProducts = filteredAndSortedProducts.slice((page - 1) * PRODUCTS_PER_PAGE, page * PRODUCTS_PER_PAGE)
 
@@ -91,7 +98,7 @@ function ShopContent() {
       <div className="bg-white border-b border-hairline"><div className="container-custom py-20"><nav className="flex items-center gap-12 text-body-sm"><Link href="/" className="text-smoke hover:text-braise transition-colors">{copy.common.home}</Link><span className="text-ash">/</span><span className="text-charcoal font-medium">{title}</span></nav></div></div>
       <section className="container-custom py-48">
         <div className="grid gap-32 lg:grid-cols-[220px_minmax(0,1fr)]">
-          {availableCategories.length > 1 && <aside className="border-t border-hairline pt-20"><p className="bk-eyebrow">{copy.shop.filter}</p><h2 className="text-heading-sm font-semibold text-charcoal mt-8 mb-16">{copy.shop.categories}</h2><div className="grid gap-4"><button type="button" onClick={() => setSelectedCategory('all')} className={'text-left py-8 text-body-sm transition-colors ' + (selectedCategory === 'all' ? 'font-semibold text-charcoal' : 'text-smoke hover:text-charcoal')}>{copy.shop.allProducts}</button>{availableCategories.map(category => <button key={category} type="button" onClick={() => setSelectedCategory(category)} className={'text-left py-8 text-body-sm transition-colors ' + (selectedCategory === category ? 'font-semibold text-charcoal' : 'text-smoke hover:text-charcoal')}>{categoryLabels[locale][category] || category.replace(/-/g, ' ')}</button>)}</div></aside>}
+          {availableCategories.length > 1 && <aside className="bk-category-filter border-t border-hairline pt-20"><p className="bk-eyebrow">{copy.shop.filter}</p><h2 className="text-heading-sm font-semibold text-charcoal mt-8 mb-16">{copy.shop.categories}</h2><div className="grid gap-20"><button type="button" onClick={() => setSelectedCategory('all')} className={'text-left py-8 text-body-sm transition-colors ' + (selectedCategory === 'all' ? 'font-semibold text-charcoal' : 'text-smoke hover:text-charcoal')}>{copy.shop.allProducts}</button>{groupedCategories.map(group => <details key={group.key} open className="bk-category-group"><summary>{group.title}<span aria-hidden="true">⌄</span></summary><div className="grid gap-4 pt-8">{group.categories.map(category => <button key={category} type="button" onClick={() => setSelectedCategory(category)} className={'text-left py-8 text-body-sm transition-colors ' + (selectedCategory === category ? 'font-semibold text-charcoal text-charcoal' : 'text-smoke hover:text-charcoal')}>{categoryLabel(category, locale)}</button>)}</div></details>)}</div></aside>}
           <div>
             <div className="flex flex-wrap items-center justify-between gap-16 mb-32 pb-24 border-b border-hairline">
               <p className="text-body-sm text-smoke">{filteredAndSortedProducts.length} {copy.shop.product}{filteredAndSortedProducts.length > 1 ? 's' : ''}</p>

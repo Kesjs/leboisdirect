@@ -68,6 +68,10 @@
 .bk-icon-button > span { font-size: 26px; line-height: 1; }
 .bk-cart-trigger { display: flex; align-items: center; gap: 8px; min-width: 48px; min-height: 44px; }
 .bk-cart-trigger > span { font-size: 12px; min-width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; background: var(--bk-ink); color: white; }
+.bk-category-group summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
+.bk-category-group summary::marker { content: ''; }
+.bk-category-group summary span { color: var(--bk-accent); font-size: 18px; transition: transform .2s; }
+.bk-category-group[open] summary span { transform: rotate(180deg); }
 .bk-profile-trigger { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid var(--bk-line); border-radius: 50%; transition: background .2s, color .2s, border-color .2s; }
 .bk-profile-trigger:hover, .bk-profile-trigger.is-authenticated { background: var(--bk-ink); color: white; border-color: var(--bk-ink); }
 .bk-profile-trigger > span { font-size: 13px; font-weight: 600; text-transform: uppercase; }
@@ -421,6 +425,12 @@
   .bk-info-bar-inner > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bk-info-message, .bk-info-points { display: none; }
   .bk-info-bar-inner a { flex-shrink: 0; }
+  .bk-cart-trigger > span { min-width: 20px; width: 20px; height: 20px; font-size: 10px; }
+  .bk-category-filter { border-top: 0; padding-top: 0; }
+  .bk-category-filter > .bk-eyebrow { margin-bottom: 12px; }
+  .bk-category-filter > h2 { margin-top: 0; margin-bottom: 20px; }
+  .bk-category-group { padding: 14px 0; border-top: 1px solid var(--bk-line); }
+  .bk-category-group summary { min-height: 48px; font-size: 16px; }
   .bk-selection-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .bk-products-list .bk-product { display: block; padding-bottom: 0; border-bottom: 0; }
   .bk-products-list .bk-product-link { display: block; }
