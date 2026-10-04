@@ -66,6 +66,57 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     .filter((item) => item.id !== product.id && item.category === product.category)
     .slice(0, 6)
 
+  const productReviewCopy = {
+    fr: {
+      eyebrow: 'Le regard Braviko',
+      title: 'Ce qu’il faut retenir',
+      intro: 'Une lecture claire de cette référence à partir de ses caractéristiques, de son conditionnement et de son usage prévu.',
+      items: product.category === 'machines-agricoles'
+        ? [
+            ['Pour quel besoin ?', 'Une référence pensée pour les travaux courants du terrain et les utilisateurs qui recherchent un équipement adapté à un usage régulier.'],
+            ['Le point à vérifier', 'Avant de commander, comparez la puissance, les dimensions et les accessoires inclus avec votre installation.'],
+            ['Notre conseil', 'Préparez la surface à travailler et l’accès de livraison afin de choisir la configuration la plus pratique.'],
+          ]
+        : [
+            ['Le format', `Cette référence est proposée en ${productLabel(product, locale).conditioning || 'conditionnement indiqué sur la fiche produit'}.`],
+            ['L’usage', productLabel(product, locale).description || 'Une solution de chauffage à choisir selon votre appareil, votre espace de stockage et votre besoin de combustion.'],
+            ['La livraison', productLabel(product, locale).delivery || 'La livraison est organisée selon la zone et le conditionnement sélectionné.'],
+          ],
+    },
+    de: {
+      eyebrow: 'Braviko Einschätzung',
+      title: 'Das Wichtigste auf einen Blick',
+      intro: 'Eine klare Einordnung dieser Referenz anhand ihrer Eigenschaften, Verpackung und vorgesehenen Nutzung.',
+      items: product.category === 'machines-agricoles'
+        ? [
+            ['Für welchen Bedarf?', 'Eine Referenz für typische Arbeiten auf dem Grundstück und einen regelmäßigen Einsatz.'],
+            ['Was ist zu prüfen?', 'Vergleichen Sie vor der Bestellung Leistung, Maße und enthaltenes Zubehör mit Ihrer Ausstattung.'],
+            ['Unser Tipp', 'Planen Sie die zu bearbeitende Fläche und den Lieferzugang vorab.'],
+          ]
+        : [
+            ['Das Format', `Diese Referenz wird in ${productLabel(product, locale).conditioning || 'der auf der Produktseite angegebenen Verpackung'} angeboten.`],
+            ['Der Einsatz', productLabel(product, locale).description || 'Eine Heizlösung, die passend zu Ofen, Lagerplatz und gewünschter Brenndauer ausgewählt wird.'],
+            ['Die Lieferung', productLabel(product, locale).delivery || 'Die Lieferung richtet sich nach Lieferzone und gewählter Verpackung.'],
+          ],
+    },
+    it: {
+      eyebrow: 'Il punto di vista Braviko',
+      title: 'Cosa sapere prima di scegliere',
+      intro: 'Una lettura chiara della referenza a partire da caratteristiche, confezione e utilizzo previsto.',
+      items: product.category === 'machines-agricoles'
+        ? [
+            ['Per quale esigenza?', 'Una referenza pensata per i lavori più comuni sul terreno e per un uso regolare.'],
+            ['Cosa verificare?', 'Prima dell’ordine, confronta potenza, dimensioni e accessori inclusi con la tua attrezzatura.'],
+            ['Il nostro consiglio', 'Prepara la superficie da lavorare e l’accesso per la consegna.'],
+          ]
+        : [
+            ['Il formato', `Questa referenza è proposta in ${productLabel(product, locale).conditioning || 'la confezione indicata nella scheda prodotto'}.`],
+            ['L’utilizzo', productLabel(product, locale).description || 'Una soluzione da scegliere in base al proprio apparecchio, allo spazio disponibile e alla durata desiderata.'],
+            ['La consegna', productLabel(product, locale).delivery || 'La consegna dipende dalla zona e dalla confezione selezionata.'],
+          ],
+    },
+  }[locale]
+
   const faqCopy = {
     fr: {
       eyebrow: 'Avant de choisir',
@@ -386,6 +437,25 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               )}
             </div>
           </div>
+
+          <section className="bk-product-insight" aria-labelledby="product-insight-title">
+            <div className="bk-product-section-heading">
+              <p className="bk-eyebrow">{productReviewCopy.eyebrow}</p>
+              <h2 id="product-insight-title">{productReviewCopy.title}</h2>
+              <p>{productReviewCopy.intro}</p>
+            </div>
+            <div className="bk-product-insight-grid">
+              {productReviewCopy.items.map(([title, text]) => (
+                <article key={title} className="bk-product-insight-card">
+                  <span aria-hidden="true">•</span>
+                  <div>
+                    <h3>{title}</h3>
+                    <p>{text}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
 
           <section className="bk-product-faq" aria-labelledby="product-faq-title">
             <div className="bk-product-section-heading">
