@@ -320,6 +320,13 @@
 .bk-cart-heading h2 > span { font-size: 16px; color: var(--bk-muted); }
 .bk-cart-heading-actions { display: flex; align-items: center; gap: 8px; }
 .bk-cart-clear { min-height: 40px; padding: 8px 10px; color: var(--bk-muted); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+.bk-cart-confirm { position: absolute; inset: 0; z-index: 3; display: grid; place-items: center; padding: 24px; background: rgb(30 33 27 / .28); backdrop-filter: blur(3px); }
+.bk-cart-confirm-card { width: min(100%, 360px); padding: 24px; background: var(--bk-canvas); border: 1px solid var(--bk-line); box-shadow: 0 18px 50px rgb(30 33 27 / .18); }
+.bk-cart-confirm-card h3 { font-size: 18px; line-height: 1.35; }
+.bk-cart-confirm-card > div { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+.bk-cart-confirm-cancel, .bk-cart-confirm-action { min-height: 40px; padding: 8px 14px; font-size: 13px; }
+.bk-cart-confirm-cancel { color: var(--bk-muted); }
+.bk-cart-confirm-action { background: var(--bk-ink); color: white; }
 .bk-cart-items { overflow-y: auto; flex: 1; padding: 24px; }
 .bk-cart-item { display: grid; grid-template-columns: 88px 1fr; gap: 20px; padding-block: 20px; border-bottom: 1px solid var(--bk-line); }
 .bk-cart-item-photo { position: relative; height: 104px; border-radius: 4px; overflow: hidden; }

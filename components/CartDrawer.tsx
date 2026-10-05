@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
@@ -14,6 +14,7 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
   const { locale } = useI18n()
   const copy = bravikoCopy[locale]
   const reduced = useReducedMotion()
+  const [confirmClear, setConfirmClear] = useState(false)
   const dialog = useRef<HTMLDialogElement>(null)
   const closeButton = useRef<HTMLButtonElement>(null)
   const lastFocus = useRef<HTMLElement | null>(null)
@@ -34,7 +35,7 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
         onAnimationComplete={() => {
           if (!isOpen && dialog.current?.open) { dialog.current.close(); lastFocus.current?.focus() }
         }}>
-        <div className="bk-cart-heading"><h2 id="cart-heading">{copy.cart} <span>({totalItems})</span></h2><div className="bk-cart-heading-actions">{items.length > 0 && <button className="bk-cart-clear" type="button" onClick={() => { if (window.confirm(copy.clearConfirm)) clearCart() }}>{copy.clear}</button>}<button ref={closeButton} className="bk-icon-button" onClick={onClose} aria-label={copy.close}><span aria-hidden="true">×</span></button></div></div>
+        <div className="bk-cart-heading"><h2 id="cart-heading">{copy.cart} <span>({totalItems})</span></h2><div className="bk-cart-heading-actions">{items.length > 0 && <button className="bk-cart-clear" type="button" onClick={() => setConfirmClear(true)}>{copy.clear}</button>}<button ref={closeButton} className="bk-icon-button" onClick={onClose} aria-label={copy.close}><span aria-hidden="true">×</span></button></div></div>
         <div className="bk-cart-items">
           {items.length === 0 ? <div className="bk-cart-empty"><span aria-hidden="true">B.</span><h3>{copy.empty}</h3><Link href="/boutique" className="bk-button" onClick={onClose}>{copy.discover}<span aria-hidden="true">↗</span></Link></div> : items.map(item => {
             const variant = item.product.variants?.find(v => v.id === item.variantId)
@@ -49,6 +50,7 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
           })}
         </div>
         {items.length > 0 && <div className="bk-cart-summary"><div><span>{copy.subtotal}</span><strong>{money(totalPrice)}</strong></div><p>{copy.shipping}</p><Link href="/panier" onClick={onClose} className="bk-button">{copy.viewCart}<span aria-hidden="true">↗</span></Link><button onClick={onClose} className="bk-cart-continue">{copy.continue}</button></div>}
+        {confirmClear && <div className="bk-cart-confirm" role="dialog" aria-modal="true" aria-labelledby="clear-cart-title"><div className="bk-cart-confirm-card"><h3 id="clear-cart-title">{copy.clearConfirm}</h3><div><button type="button" className="bk-cart-confirm-cancel" onClick={() => setConfirmClear(false)}>{copy.cancel}</button><button type="button" className="bk-cart-confirm-action" onClick={() => { clearCart(); setConfirmClear(false) }}>{copy.confirm}</button></div></div></div>}
       </motion.div>
     </dialog>
   )
