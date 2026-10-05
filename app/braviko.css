@@ -67,7 +67,7 @@
 .bk-icon-button:hover { background: var(--bk-surface); }
 .bk-icon-button > span { font-size: 26px; line-height: 1; }
 .bk-cart-trigger { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; }
-.bk-cart-trigger > span { position: absolute; top: -5px; right: -5px; min-width: 20px; height: 20px; padding: 0 5px; display: grid; place-items: center; border: 2px solid var(--bk-canvas); border-radius: 999px; background: var(--bk-accent); color: white; font-size: 10px; font-weight: 700; line-height: 1; }
+.bk-cart-trigger > span { position: absolute; z-index: 2; top: -7px; right: -8px; min-width: 20px; height: 20px; padding: 0 5px; display: grid; place-items: center; border: 2px solid var(--bk-canvas); border-radius: 999px; background: var(--bk-accent); color: white; font-size: 10px; font-weight: 700; line-height: 1; pointer-events: none; }
 .bk-category-group summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
 .bk-category-group summary::marker { content: ''; }
 .bk-category-group summary span { color: var(--bk-accent); font-size: 18px; transition: transform .2s; }
@@ -233,12 +233,12 @@
 .bk-product-faq-list details[open] summary span { transform: rotate(45deg); }
 .bk-product-faq-list details p { max-width: 66ch; color: var(--bk-muted); line-height: 1.65; padding: 0 48px 24px 0; }
 .bk-related-heading { display: flex; align-items: end; justify-content: space-between; gap: 32px; max-width: none; }
-.bk-related-scroller { display: flex; gap: 24px; overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory; scrollbar-width: thin; padding: 40px 0 20px; }
+.bk-related-scroller { display: flex; gap: 24px; overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory; scrollbar-width: auto; scrollbar-color: var(--bk-muted) var(--bk-surface); padding: 40px 0 20px; }
 .bk-related-scroller .bk-product { flex: 0 0 min(310px, 72vw); scroll-snap-align: start; }
 .bk-related-scroller .bk-product-photo { aspect-ratio: 1.15; }
 .bk-related-scroller .bk-product h3 { font-size: 18px; }
 .bk-related-scroller::-webkit-scrollbar { height: 6px; }
-.bk-related-scroller::-webkit-scrollbar-thumb { background: var(--bk-line); border-radius: 999px; }
+.bk-related-scroller::-webkit-scrollbar-thumb { background: var(--bk-muted); border-radius: 999px; }
 .bk-agriculture-preview { display: grid; grid-template-columns: 1.1fr 1fr; min-height: 420px; background: var(--bk-surface); border-radius: 8px; overflow: hidden; }
 .bk-agriculture-photo { position: relative; min-height: 340px; }
 .bk-agriculture-preview > div:last-child { padding: clamp(28px, 4vw, 64px); align-self: center; }
@@ -314,7 +314,7 @@
 .bk-cart-dialog { position: fixed; inset: 0; width: 100%; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0; background: transparent; border: 0; color: var(--bk-ink); overflow: hidden; }
 .bk-cart-dialog::backdrop { background: transparent; }
 .bk-cart-backdrop { position: absolute; inset: 0; background: rgb(30 33 27 / .42); backdrop-filter: blur(4px); }
-.bk-cart-panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(100%, 480px); background: var(--bk-canvas); display: flex; flex-direction: column; }
+.bk-cart-panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(100%, 480px); background: var(--bk-canvas); display: flex; flex-direction: column; will-change: transform; }
 .bk-cart-heading { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--bk-line); }
 .bk-cart-heading h2 { font-size: 26px; font-weight: 500; letter-spacing: -.03em; }
 .bk-cart-heading h2 > span { font-size: 16px; color: var(--bk-muted); }

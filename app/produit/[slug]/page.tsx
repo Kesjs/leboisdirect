@@ -63,9 +63,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
   const currentVariant = product.variants?.find((v) => v.id === selectedVariant)
   const currentPrice = currentVariant?.price || product.price
-  const relatedProducts = catalogProducts
+  const sameCategoryProducts = catalogProducts
     .filter((item) => item.id !== product.id && item.category === product.category)
-    .slice(0, 6)
+  const relatedProducts = (sameCategoryProducts.length > 0
+    ? sameCategoryProducts
+    : catalogProducts.filter((item) => item.id !== product.id)
+  ).slice(0, 6)
   const productReviews = getProductReviews(product.name)
 
   const reviewsCopy = {
@@ -138,10 +141,10 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             ['Besoin d’aide avant de commander ?', 'Contactez-nous avec la surface à travailler et votre usage. Nous vous aiderons à comparer les références disponibles.'],
           ]
         : [
-            ['Quel format choisir pour mon installation ?', `Le format proposé pour cette référence est : ${productLabel(product, locale).conditioning}. Vérifiez toujours les dimensions acceptées par votre appareil.`],
-            ['Comment se passe la livraison ?', `La livraison est généralement organisée sous 5 à 10 jours. ${productLabel(product, locale).delivery}`],
-            ['Le produit est-il prêt à être utilisé ?', 'Chaque fiche précise le conditionnement et les caractéristiques utiles. Conservez les produits à l’abri de l’humidité et préparez un accès dégagé pour le déchargement.'],
-            ['Besoin d’un conseil personnalisé ?', 'Contactez-nous avec votre appareil, votre quantité habituelle et votre zone de livraison. Nous vous orienterons vers le bon format.'],
+            [`Quel format choisir pour ${productLabel(product, locale).name} ?`, `${productLabel(product, locale).name} est proposé en ${productLabel(product, locale).conditioning || 'format indiqué sur cette fiche'}. Vérifiez les dimensions acceptées par votre appareil avant de commander.`],
+            [`Comment se passe la livraison de ${productLabel(product, locale).name} ?`, `La livraison de cette référence est généralement organisée sous 5 à 10 jours. ${productLabel(product, locale).delivery}`],
+            [`${productLabel(product, locale).name} est-il prêt à être utilisé ?`, `La fiche indique les caractéristiques et le conditionnement de cette référence. Conservez le produit à l’abri de l’humidité et préparez un accès dégagé pour le déchargement.`],
+            [`Cette référence convient-elle à mon installation ?`, `Comparez les caractéristiques affichées pour ${productLabel(product, locale).name} avec votre appareil. Contactez-nous avec votre modèle, votre quantité habituelle et votre zone de livraison si vous avez un doute.`],
           ],
     },
     de: {

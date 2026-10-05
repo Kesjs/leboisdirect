@@ -30,7 +30,7 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
   return (
     <dialog ref={dialog} className="bk-cart-dialog" aria-labelledby="cart-heading" onCancel={event => { event.preventDefault(); onClose() }}>
       <motion.div className="bk-cart-backdrop" aria-hidden="true" initial={false} animate={{ opacity: isOpen ? 1 : 0 }} transition={{ duration: reduced ? 0 : 0.22 }} onClick={onClose} />
-      <motion.div className="bk-cart-panel" initial={false} animate={{ x: isOpen ? '0%' : '100%' }} transition={{ duration: reduced ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] }}
+      <motion.div className="bk-cart-panel" initial={{ x: '100%' }} animate={{ x: isOpen ? '0%' : '100%' }} transition={{ duration: reduced ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] }}
         onAnimationComplete={() => {
           if (!isOpen && dialog.current?.open) { dialog.current.close(); lastFocus.current?.focus() }
         }}>
