@@ -13,6 +13,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const { locale } = useI18n()
   const { addItem } = useCart()
   const [added, setAdded] = useState(false)
+  const [animating, setAnimating] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [displayImage, setDisplayImage] = useState(product.image)
   const timer = useRef<ReturnType<typeof setTimeout>>()
@@ -29,8 +30,10 @@ export default function ProductCard({ product }: { product: Product }) {
   const add = () => {
     addItem(product, 1, variant?.id)
     setAdded(true)
+    setAnimating(true)
     clearTimeout(timer.current)
     timer.current = setTimeout(() => setAdded(false), 2200)
+    window.setTimeout(() => setAnimating(false), 650)
   }
   const handleImageError = () => {
     if (displayImage !== product.image) {
@@ -54,8 +57,8 @@ export default function ProductCard({ product }: { product: Product }) {
       </Link>
       <div className="bk-product-purchase">
         <div><span className="bk-product-price">{price}</span><p>{label.delivery}</p></div>
-        <button className={'bk-product-add' + (added ? ' is-added' : '')} type="button" onClick={add} aria-label={copy.add + ' : ' + label.name}>
-          <span aria-hidden="true">{added ? '✓' : '+'}</span>
+        <button className={'bk-product-add' + (added ? ' is-added' : '') + (animating ? ' is-animating' : '')} type="button" onClick={add} aria-label={copy.add + ' : ' + label.name} title={copy.add}>
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M3 5h2l2.1 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6" /><circle cx="10" cy="20" r="1.2" /><circle cx="18" cy="20" r="1.2" />{added && <path className="bk-cart-check" d="m9 11 2 2 4-4" strokeWidth="2" />}</svg>
         </button>
       </div>
       <span className="bk-product-feedback" role="status">{added ? copy.added : ''}</span>

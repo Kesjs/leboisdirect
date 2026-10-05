@@ -356,7 +356,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   Acheter maintenant — {formatPrice(currentPrice * quantity)}
                 </Button>
                 <button type="button" className="bk-product-cart" onClick={handleAddToCart}>
-                  {added ? c.added : `${c.add} au panier`}
+                  {added ? c.added : c.add}
                 </button>
               </div>
               <p className="text-caption text-ash text-center" aria-live="polite">{added ? c.added : ''}</p>
@@ -368,22 +368,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   <ul className="space-y-12">
                     {product.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-12">
-                        <svg
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          className="flex-shrink-0 mt-2"
-                        >
-                          <circle cx="10" cy="10" r="10" fill="#B85C3A" opacity="0.1" />
-                          <path
-                            d="M6 10l2.5 2.5L14 7"
-                            stroke="#B85C3A"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        <span className="bk-feature-marker" aria-hidden="true" />
                         <span className="text-body-sm text-smoke">{feature}</span>
                       </li>
                     ))}

@@ -10,7 +10,7 @@ import { bravikoCopy } from '@/data/braviko-copy'
 import { productLabel } from '@/data/product-labels'
 
 export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const { items, removeItem, updateQuantity, totalItems, totalPrice } = useCart()
+  const { items, removeItem, updateQuantity, clearCart, totalItems, totalPrice } = useCart()
   const { locale } = useI18n()
   const copy = bravikoCopy[locale]
   const reduced = useReducedMotion()
@@ -34,7 +34,7 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
         onAnimationComplete={() => {
           if (!isOpen && dialog.current?.open) { dialog.current.close(); lastFocus.current?.focus() }
         }}>
-        <div className="bk-cart-heading"><h2 id="cart-heading">{copy.cart} <span>({totalItems})</span></h2><button ref={closeButton} className="bk-icon-button" onClick={onClose} aria-label={copy.close}><span aria-hidden="true">×</span></button></div>
+        <div className="bk-cart-heading"><h2 id="cart-heading">{copy.cart} <span>({totalItems})</span></h2><div className="bk-cart-heading-actions">{items.length > 0 && <button className="bk-cart-clear" type="button" onClick={() => { if (window.confirm(copy.clearConfirm)) clearCart() }}>{copy.clear}</button>}<button ref={closeButton} className="bk-icon-button" onClick={onClose} aria-label={copy.close}><span aria-hidden="true">×</span></button></div></div>
         <div className="bk-cart-items">
           {items.length === 0 ? <div className="bk-cart-empty"><span aria-hidden="true">B.</span><h3>{copy.empty}</h3><Link href="/boutique" className="bk-button" onClick={onClose}>{copy.discover}<span aria-hidden="true">↗</span></Link></div> : items.map(item => {
             const variant = item.product.variants?.find(v => v.id === item.variantId)
