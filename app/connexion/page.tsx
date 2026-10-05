@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react'
+import { FormEvent, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -38,15 +38,30 @@ function ConnectionContent() {
   const [lastName, setLastName] = useState('')
   const [phoneCountry, setPhoneCountry] = useState('+33')
   const [phone, setPhone] = useState('')
-  const [deliveryAddress, setDeliveryAddress] = useState('')
   const [message, setMessage] = useState(params.get('reason') === 'checkout' ? c.checkoutRequired : '')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const errorRef = useRef<HTMLParagraphElement>(null)
   const nextPath = params.get('next')?.startsWith('/') ? params.get('next')! : '/compte'
 
   useEffect(() => {
     if (!authLoading && user && mode !== 'reset') router.replace(isAdmin ? '/admin' : nextPath)
   }, [authLoading, isAdmin, mode, nextPath, router, user])
+
+  useEffect(() => {
+    if (error) errorRef.current?.focus()
+  }, [error])
+
+  const authError = (raw: string) => {
+    const normalized = raw.toLowerCase()
+    if (normalized.includes('invalid login credentials')) return c.invalidCredentials
+    if (normalized.includes('email not confirmed')) return c.emailNotConfirmed
+    if (normalized.includes('already registered') || normalized.includes('user already exists')) return c.emailExists
+    if (normalized.includes('password') && (normalized.includes('weak') || normalized.includes('breach') || normalized.includes('strength'))) return c.passwordWeak
+    if (normalized.includes('rate limit') || normalized.includes('too many') || normalized.includes('over_email_send_rate_limit')) return c.rateLimited
+    return c.genericError
+  }
 
   const submit = async (event: FormEvent) => {
     event.preventDefault()
@@ -54,42 +69,55 @@ function ConnectionContent() {
     setError('')
     setMessage('')
 
-    if (mode === 'signup') {
-      const normalizedPhone = `${phoneCountry}${phone.replace(/\D/g, '').replace(/^0/, '')}`
-      if (!/^\+\d{8,15}$/.test(normalizedPhone)) {
-        setError('Saisissez un numéro de téléphone valide avec son indicatif.')
-        setSubmitting(false)
-        return
-      }
-      if (deliveryAddress.trim().length < 8) {
-        setError('Saisissez une adresse de livraison complète.')
-        setSubmitting(false)
-        return
-      }
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { first_name: firstName.trim(), last_name: lastName.trim(), phone: normalizedPhone, delivery_address: deliveryAddress.trim() } },
-      })
-      if (signUpError) setError(signUpError.message)
-      else if (data.session) router.replace(nextPath)
-      else setMessage(c.confirmEmail)
-    } else if (mode === 'reset') {
-      if (user) {
-        const { error: updateError } = await supabase.auth.updateUser({ password })
-        if (updateError) setError(updateError.message)
-        else { setMessage(locale === 'de' ? 'Passwort aktualisiert.' : locale === 'it' ? 'Password aggiornata.' : 'Mot de passe mis à jour.'); setMode('login') }
+    const trimmedEmail = email.trim()
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    try {
+      if (mode === 'signup') {
+        if (!firstName.trim()) { setError(c.requiredFirstName); return }
+        if (!lastName.trim()) { setError(c.requiredLastName); return }
+        const normalizedPhone = `${phoneCountry}${phone.replace(/\D/g, '').replace(/^0/, '')}`
+        if (!/^\+\d{8,15}$/.test(normalizedPhone)) { setError(c.invalidPhone); return }
+        if (!trimmedEmail) { setError(c.requiredEmail); return }
+        if (!emailPattern.test(trimmedEmail)) { setError(c.invalidEmail); return }
+        if (!password) { setError(c.requiredPassword); return }
+        if (password.length < 8) { setError(c.passwordTooShort); return }
+
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email: trimmedEmail,
+          password,
+          options: { data: { first_name: firstName.trim(), last_name: lastName.trim(), phone: normalizedPhone } },
+        })
+        if (signUpError) setError(authError(signUpError.message))
+        else if (data.session) router.replace(nextPath)
+        else setMessage(c.confirmEmail)
+      } else if (mode === 'reset') {
+        if (user) {
+          if (!password) { setError(c.requiredPassword); return }
+          if (password.length < 8) { setError(c.passwordTooShort); return }
+          const { error: updateError } = await supabase.auth.updateUser({ password })
+          if (updateError) setError(authError(updateError.message))
+          else { setMessage(c.passwordUpdated); setMode('login') }
+        } else {
+          if (!trimmedEmail) { setError(c.requiredEmail); return }
+          if (!emailPattern.test(trimmedEmail)) { setError(c.invalidEmail); return }
+          const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmedEmail, { redirectTo: `${window.location.origin}/connexion?mode=reset` })
+          if (resetError) setError(authError(resetError.message))
+          else setMessage(c.resetSent)
+        }
       } else {
-        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/connexion?mode=reset` })
-        if (resetError) setError(resetError.message)
-        else setMessage(c.resetSent)
+        if (!trimmedEmail) { setError(c.requiredEmail); return }
+        if (!emailPattern.test(trimmedEmail)) { setError(c.invalidEmail); return }
+        if (!password) { setError(c.requiredPassword); return }
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email: trimmedEmail, password })
+        if (signInError) setError(authError(signInError.message))
+        else router.replace(nextPath)
       }
-    } else {
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
-      if (signInError) setError(signInError.message)
-      else router.replace(nextPath)
+    } catch {
+      setError(c.genericError)
+    } finally {
+      setSubmitting(false)
     }
-    setSubmitting(false)
   }
 
   const switchMode = (next: Mode) => { setMode(next); setError(''); setMessage('') }
@@ -109,17 +137,17 @@ function ConnectionContent() {
       </section>
       <section className="bk-auth-panel" aria-labelledby="auth-form-title">
         <p className="bk-eyebrow">{mode === 'reset' ? c.forgot : signup ? c.create : c.login}</p>
-        <h2 id="auth-form-title">{mode === 'reset' ? c.forgot : signup ? c.signupTitle : c.login}</h2>
-        <form onSubmit={submit} className="bk-account-form">
+        <h2 id="auth-form-title">{mode === 'reset' ? c.forgot : signup ? c.signupDetails : c.login}</h2>
+        <form onSubmit={submit} className="bk-account-form" noValidate>
           {signup && <>
-            <div className="bk-form-row"><label>{c.firstName}<input value={firstName} onChange={event => setFirstName(event.target.value)} required autoComplete="given-name" /></label><label>{c.lastName}<input value={lastName} onChange={event => setLastName(event.target.value)} required autoComplete="family-name" /></label></div>
-            <label>{c.phone}<span className="bk-phone-field"><span className="bk-country-select"><span className={`bk-country-flag bk-flag-${selectedCountry.flag}`} aria-hidden="true" /><select value={phoneCountry} onChange={event => setPhoneCountry(event.target.value)} aria-label="Indicatif téléphonique">{countries.map(country => <option key={country.code} value={country.code}>{country.short} {country.code}</option>)}</select></span><input value={phone} onChange={event => setPhone(event.target.value.replace(/[^\d ]/g, ''))} required inputMode="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" /></span></label>
-            <label>{c.deliveryAddress}<textarea value={deliveryAddress} onChange={event => setDeliveryAddress(event.target.value)} required minLength={8} rows={3} autoComplete="street-address" placeholder={c.deliveryAddressPlaceholder} /></label>
+            <div className="bk-form-row"><label htmlFor="first-name">{c.firstName}<input id="first-name" name="firstName" value={firstName} onChange={event => setFirstName(event.target.value)} required autoComplete="given-name" /></label><label htmlFor="last-name">{c.lastName}<input id="last-name" name="lastName" value={lastName} onChange={event => setLastName(event.target.value)} required autoComplete="family-name" /></label></div>
+            <div className="bk-field"><label htmlFor="phone">{c.phone}</label><span className="bk-phone-field"><span className="bk-country-select"><span className={`bk-country-flag bk-flag-${selectedCountry.flag}`} aria-hidden="true" /><select id="phone-country" name="phoneCountry" value={phoneCountry} onChange={event => setPhoneCountry(event.target.value)} aria-label={c.phoneCountry}>{countries.map(country => <option key={country.code} value={country.code}>{country.short} {country.code}</option>)}</select></span><input id="phone" name="phone" value={phone} onChange={event => setPhone(event.target.value.replace(/[^\d ]/g, ''))} aria-label={c.phone} required inputMode="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" /></span></div>
           </>}
-          {(!user || mode !== 'reset') && <label>{c.email}<input type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" /></label>}
-          {mode !== 'reset' || user ? <label>{c.password}<input type="password" value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete={signup || mode === 'reset' ? 'new-password' : 'current-password'} /></label> : null}
+          {(!user || mode !== 'reset') && <label htmlFor="email">{c.email}<input id="email" name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" /></label>}
+          {mode !== 'reset' || user ? <div className="bk-field"><label htmlFor="password">{c.password}</label><span className="bk-password-field"><input id="password" name="password" type={showPassword ? 'text' : 'password'} value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete={signup || mode === 'reset' ? 'new-password' : 'current-password'} aria-describedby="password-hint" /><button className="bk-password-toggle" type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? c.hidePassword : c.showPassword}>{showPassword ? c.hidePassword : c.showPassword}</button></span><span id="password-hint" className="bk-form-hint">{c.passwordHint}</span></div> : null}
           {message && <p className="bk-form-message" role="status">{message}</p>}
-          {error && <p className="bk-form-error" role="alert">{error}</p>}
+          {error && <p ref={errorRef} tabIndex={-1} className="bk-form-error" role="alert">{error}</p>}
+          {signup && <p className="bk-auth-legal">{c.signupLegal.before} <Link href="/conditions-generales">{c.signupLegal.terms}</Link> {c.signupLegal.and} <Link href="/confidentialite">{c.signupLegal.privacy}</Link>.</p>}
           <button className="bk-button" type="submit" disabled={submitting}>{submitting ? '…' : mode === 'reset' ? c.forgot : signup ? c.signUp : c.signIn}<span aria-hidden="true">↗</span></button>
         </form>
         <div className="bk-auth-switch">
