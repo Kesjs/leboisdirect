@@ -17,6 +17,7 @@ import { useI18n } from '@/lib/i18n-context'
 import { commerceCopy } from '@/data/commerce-copy'
 import { categoryLabels, hasMeaningfulConditioning, productLabel } from '@/data/product-labels'
 import { uiCopy } from '@/data/ui-copy'
+import { getProductReviews } from '@/data/product-reviews'
 
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
@@ -65,6 +66,13 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const relatedProducts = catalogProducts
     .filter((item) => item.id !== product.id && item.category === product.category)
     .slice(0, 6)
+  const productReviews = getProductReviews(product.name)
+
+  const reviewsCopy = {
+    fr: { eyebrow: 'Avis clients', title: 'Les avis sur ce produit', empty: 'Les premiers avis clients seront affichés ici après les premières commandes.' },
+    de: { eyebrow: 'Kundenbewertungen', title: 'Bewertungen zu diesem Produkt', empty: 'Die ersten Kundenbewertungen werden nach den ersten Bestellungen hier angezeigt.' },
+    it: { eyebrow: 'Recensioni clienti', title: 'Le recensioni di questo prodotto', empty: 'Le prime recensioni saranno mostrate qui dopo i primi ordini.' },
+  }[locale]
 
   const productReviewCopy = {
     fr: {
@@ -343,11 +351,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               </div>
 
               {/* Add to Cart */}
-              <div className="flex flex-col gap-12 mb-16">
-                <Button size="lg" className="w-full" onClick={handleBuyNow}>
+              <div className="bk-product-actions">
+                <Button size="md" className="bk-product-buy" onClick={handleBuyNow}>
                   Acheter maintenant — {formatPrice(currentPrice * quantity)}
                 </Button>
-                <button type="button" className="w-full rounded-card border border-hairline px-20 py-14 text-body font-semibold text-charcoal transition-colors hover:border-smoke" onClick={handleAddToCart}>
+                <button type="button" className="bk-product-cart" onClick={handleAddToCart}>
                   {added ? c.added : `${c.add} au panier`}
                 </button>
               </div>
@@ -385,7 +393,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
               {(hasMeaningfulConditioning(productLabel(product, locale).conditioning) || productLabel(product, locale).delivery) && (
                 <div className="mt-40 pt-40 border-t border-hairline">
-                  <h2 className="text-heading-sm font-semibold text-charcoal mb-20">{c.details}</h2>
+                  <h2 className="sr-only">{c.details}</h2>
                   <dl className="grid gap-16 sm:grid-cols-2">
                     {hasMeaningfulConditioning(productLabel(product, locale).conditioning) && (
                       <div>
@@ -455,6 +463,29 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 </article>
               ))}
             </div>
+          </section>
+
+          <section className="bk-product-reviews" aria-labelledby="product-reviews-title">
+            <div className="bk-product-section-heading">
+              <p className="bk-eyebrow">{reviewsCopy.eyebrow}</p>
+              <h2 id="product-reviews-title">{reviewsCopy.title}</h2>
+            </div>
+            {productReviews.length > 0 ? (
+              <div className="bk-product-review-list">
+                {productReviews.map((review, index) => (
+                  <article key={`${review.author || 'review'}-${index}`} className="bk-product-review-card">
+                    <div className="bk-product-review-meta">
+                      {review.rating !== undefined && <span aria-label={`${review.rating} sur 5`}>{'★'.repeat(Math.floor(review.rating))}{review.rating % 1 ? '½' : ''}</span>}
+                      <span>{review.label}</span>
+                    </div>
+                    {review.text && <p>« {review.text} »</p>}
+                    <footer>{review.author || 'Source externe'}{review.date ? ` · ${review.date}` : ''}</footer>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="bk-product-reviews-empty">{reviewsCopy.empty}</p>
+            )}
           </section>
 
           <section className="bk-product-faq" aria-labelledby="product-faq-title">

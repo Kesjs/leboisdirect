@@ -180,7 +180,20 @@
 .bk-product-add:active { transform: scale(.94); }
 .bk-product-feedback { display: block; min-height: 20px; color: var(--bk-accent); font-size: 11px; padding-top: 4px; }
 .bk-product-faq, .bk-related-products { margin-top: 96px; padding-top: 64px; border-top: 1px solid var(--bk-line); }
+.bk-product-reviews { margin-top: 96px; padding-top: 64px; border-top: 1px solid var(--bk-line); }
+.bk-product-reviews-empty { margin-top: 32px; padding: 24px; border: 1px dashed var(--bk-line); border-radius: 12px; color: var(--bk-muted); line-height: 1.6; max-width: 640px; }
+.bk-product-review-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 32px; max-width: 880px; }
+.bk-product-review-card { padding: 24px; border: 1px solid var(--bk-line); border-radius: 12px; background: var(--bk-paper); }
+.bk-product-review-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; color: var(--bk-muted); font-size: 12px; }
+.bk-product-review-meta > span:first-child { color: var(--bk-accent); letter-spacing: .08em; }
+.bk-product-review-card p { margin-top: 18px; color: var(--bk-ink); line-height: 1.6; }
+.bk-product-review-card footer { margin-top: 18px; color: var(--bk-muted); font-size: 12px; }
 .bk-product-insight { margin-top: 96px; padding: 64px 0 0; border-top: 1px solid var(--bk-line); }
+.bk-product-actions { display: flex; align-items: stretch; gap: 12px; margin-bottom: 16px; max-width: 560px; }
+.bk-product-buy, .bk-product-cart { min-height: 48px; }
+.bk-product-buy { flex: 1.15; }
+.bk-product-cart { flex: .85; padding: 12px 18px; border: 1px solid var(--bk-line); border-radius: 999px; color: var(--bk-ink); font-size: 14px; font-weight: 600; transition: border-color .2s, background .2s; }
+.bk-product-cart:hover { border-color: var(--bk-muted); background: var(--bk-surface); }
 .bk-product-insight-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 40px; }
 .bk-product-insight-card { display: flex; gap: 16px; min-height: 180px; padding: 24px; background: var(--bk-paper); border: 1px solid var(--bk-line); border-radius: 18px; }
 .bk-product-insight-card > span { color: var(--bk-accent); font-size: 28px; line-height: 1; }
@@ -493,8 +506,10 @@
   .bk-selection-heading > .bk-text-link { margin-top: 20px; }
   .bk-related-heading { display: block; }
   .bk-related-heading > .bk-text-link { display: inline-block; margin-top: 20px; }
-  .bk-product-insight, .bk-product-faq, .bk-related-products { margin-top: 72px; padding-top: 48px; }
+  .bk-product-insight, .bk-product-reviews, .bk-product-faq, .bk-related-products { margin-top: 72px; padding-top: 48px; }
+  .bk-product-actions { max-width: none; }
   .bk-product-insight-grid { grid-template-columns: 1fr; margin-top: 28px; }
+  .bk-product-review-list { grid-template-columns: 1fr; }
   .bk-product-faq-list { margin-top: 28px; }
   .bk-product-faq-list summary { font-size: 16px; padding: 20px 0; }
   .bk-product-faq-list details p { padding-right: 24px; }
