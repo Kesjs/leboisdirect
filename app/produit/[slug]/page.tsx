@@ -55,7 +55,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     setSelectedVariant(product?.variants?.[0]?.id || '')
   }, [product])
 
-  if (loading && !product) return <main className="grid min-h-screen place-items-center bg-ivory text-smoke">{ui.product.loading}</main>
+  if (loading && !product) return <main className="bk-product-loading" aria-busy="true" aria-label={ui.product.loading}><div className="bk-product-loading-media" /><div className="bk-product-loading-copy"><span /><span /><span /><span /></div></main>
 
   if (!product) {
     notFound()
