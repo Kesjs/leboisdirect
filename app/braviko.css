@@ -215,10 +215,13 @@
 .bk-product-cart:hover { border-color: var(--bk-muted); background: var(--bk-surface); }
 .bk-feature-marker { flex: 0 0 18px; width: 18px; height: 1px; margin-top: 11px; background: var(--bk-accent); }
 .bk-product-insight-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 40px; }
-.bk-product-insight-card { display: flex; gap: 16px; min-height: 180px; padding: 24px; background: var(--bk-paper); border: 1px solid var(--bk-line); border-radius: 10px; }
-.bk-product-insight-card > span { color: var(--bk-accent); font-size: 28px; line-height: 1; }
-.bk-product-insight-card h3 { font-size: 17px; font-weight: 600; letter-spacing: -.02em; }
-.bk-product-insight-card p { margin-top: 12px; color: var(--bk-muted); line-height: 1.6; }
+.bk-product-insight-card { min-height: 0; padding: 0 24px; background: var(--bk-paper); border: 1px solid var(--bk-line); border-radius: 10px; }
+.bk-product-insight-card summary { min-height: 84px; display: flex; align-items: center; cursor: pointer; list-style: none; }
+.bk-product-insight-card summary::-webkit-details-marker { display: none; }
+.bk-product-insight-card summary h3 { font-size: 17px; font-weight: 600; letter-spacing: -.02em; }
+.bk-product-insight-content { display: grid; grid-template-rows: 0fr; opacity: 0; transform: translateY(-6px); transition: grid-template-rows .34s cubic-bezier(.22, 1, .36, 1), opacity .24s ease, transform .34s cubic-bezier(.22, 1, .36, 1); }
+.bk-product-insight-content > p { min-height: 0; overflow: hidden; color: var(--bk-muted); line-height: 1.6; }
+.bk-product-insight-card[open] .bk-product-insight-content { grid-template-rows: 1fr; opacity: 1; transform: translateY(0); padding-bottom: 24px; }
 .bk-product-section-heading { max-width: 640px; }
 .bk-product-section-heading h2 { font-size: clamp(30px, 4vw, 48px); line-height: 1.05; letter-spacing: -.045em; font-weight: 500; margin-top: 12px; }
 .bk-product-section-heading > p:last-child { color: var(--bk-muted); line-height: 1.6; margin-top: 16px; max-width: 52ch; }

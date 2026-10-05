@@ -439,13 +439,10 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             </div>
             <div className="bk-product-insight-grid">
               {productReviewCopy.items.map(([title, text]) => (
-                <article key={title} className="bk-product-insight-card">
-                  <span aria-hidden="true">•</span>
-                  <div>
-                    <h3>{title}</h3>
-                    <p>{text}</p>
-                  </div>
-                </article>
+                <details key={title} className="bk-product-insight-card">
+                  <summary><h3>{title}</h3></summary>
+                  <div className="bk-product-insight-content"><p>{text}</p></div>
+                </details>
               ))}
             </div>
           </section>
