@@ -19,6 +19,7 @@ import { commerceCopy } from '@/data/commerce-copy'
 import { categoryLabels, hasMeaningfulConditioning, productLabel } from '@/data/product-labels'
 import { uiCopy } from '@/data/ui-copy'
 import { getProductReviews } from '@/data/product-reviews'
+import { getProductVideo, getYouTubeEmbedUrl, getYouTubeThumbnail } from '@/data/product-videos'
 
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
@@ -26,7 +27,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [selectedMediaIndex, setSelectedMediaIndex] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
@@ -70,7 +71,13 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     ? sameCategoryProducts
     : catalogProducts.filter((item) => item.id !== product.id)
   ).slice(0, 6)
-  const productReviews = getProductReviews(product.name)
+  const productVideo = getProductVideo(product.slug)
+  const galleryItems = [
+    ...product.images.map((src) => ({ type: 'image' as const, src })),
+    ...(productVideo ? [{ type: 'video' as const, src: getYouTubeThumbnail(productVideo.youtubeId) }] : []),
+  ]
+  const selectedMedia = galleryItems[selectedMediaIndex] || galleryItems[0]
+  const productReviews = getProductReviews(product.slug)
 
   const reviewsCopy = {
     fr: { eyebrow: 'Avis clients', title: 'Les avis sur ce produit', empty: 'Les premiers avis clients seront affichés ici après les premières commandes.' },
@@ -225,36 +232,49 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             <div>
               <div className="sticky top-[120px]">
                 <div className="relative aspect-[4/3] rounded-card overflow-hidden bg-white border border-hairline mb-20">
-                  <Image
-                    src={product.images[selectedImageIndex]}
-                    alt={productLabel(product, locale).name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    priority
-                    onError={(event) => {
-                      if (product.image && event.currentTarget.src !== product.image) {
-                        event.currentTarget.src = product.image
-                      }
-                    }}
-                  />
-                  {product.images[selectedImageIndex].startsWith('/images/') && <span className="bk-detail-watermark" aria-hidden="true">BRAVIKO</span>}
+                  {selectedMedia?.type === 'video' && productVideo ? (
+                    <iframe
+                      className="bk-product-video"
+                      src={getYouTubeEmbedUrl(productVideo.youtubeId)}
+                      title={productVideo.title}
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  ) : selectedMedia ? (
+                    <Image
+                      src={selectedMedia.src}
+                      alt={productLabel(product, locale).name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      priority
+                      onError={(event) => {
+                        if (product.image && event.currentTarget.src !== product.image) {
+                          event.currentTarget.src = product.image
+                        }
+                      }}
+                    />
+                  ) : null}
+                  {selectedMedia?.type === 'image' && selectedMedia.src.startsWith('/images/') && <span className="bk-detail-watermark" aria-hidden="true">BRAVIKO</span>}
                 </div>
-                {product.images.length > 1 && (
+                {galleryItems.length > 1 && (
                   <div className="grid grid-cols-4 gap-12">
-                    {product.images.map((img, idx) => (
+                    {galleryItems.map((item, idx) => (
                       <button
                         key={idx}
-                        onClick={() => setSelectedImageIndex(idx)}
+                        type="button"
+                        onClick={() => setSelectedMediaIndex(idx)}
+                        aria-label={item.type === 'video' ? ui.product.videoThumb : `${productLabel(product, locale).name} - ${idx + 1}`}
                         className={`relative aspect-square rounded-card overflow-hidden border-2 transition-all ${
-                          selectedImageIndex === idx
+                          selectedMediaIndex === idx
                             ? 'border-braise'
                             : 'border-hairline hover:border-smoke'
                         }`}
                       >
                         <Image
-                          src={img}
-                          alt={`${productLabel(product, locale).name} - ${idx + 1}`}
+                          src={item.src}
+                          alt={item.type === 'video' ? ui.product.video : `${productLabel(product, locale).name} - ${idx + 1}`}
                           fill
                           className="object-cover"
                           sizes="200px"
@@ -264,7 +284,8 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                             }
                           }}
                         />
-                        {img.startsWith('/images/') && <span className="bk-detail-thumb-watermark" aria-hidden="true">B</span>}
+                        {item.type === 'image' && item.src.startsWith('/images/') && <span className="bk-detail-thumb-watermark" aria-hidden="true">B</span>}
+                        {item.type === 'video' && <span className="bk-video-thumb-play" aria-hidden="true">▶</span>}
                       </button>
                     ))}
                   </div>

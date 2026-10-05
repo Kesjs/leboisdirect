@@ -7,6 +7,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'www.mademoisellebuche.com' },
       { protocol: 'https', hostname: 'www.staub-motoculture.fr' },
       { protocol: 'https', hostname: 'm.media-amazon.com' },
+      { protocol: 'https', hostname: 'i.ytimg.com' },
       { protocol: 'https', hostname: '**.supabase.co' },
     ],
     formats: ['image/avif', 'image/webp'],
