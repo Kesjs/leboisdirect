@@ -1,5 +1,7 @@
 export type ProductVideo = {
-  youtubeId: string
+  youtubeId?: string
+  mp4Url?: string
+  posterUrl?: string
   title: string
 }
 
@@ -7,6 +9,10 @@ const videosBySlug: Record<string, ProductVideo> = {
   'four-pizza-ofyr-100-cuisson-feu-bois': {
     youtubeId: 'AY-xZIPpXm8',
     title: 'Four à pizza OFYR 100 – Cuisson au feu de bois',
+  },
+  'fendeur-buches-scheppach-compact-10t-3150w': {
+    mp4Url: '/videos/fendeur-buches-scheppach-compact-10t-3150w.mp4',
+    title: 'Fendeur de bûches Scheppach Compact 10T – 3150 W',
   },
 }
 

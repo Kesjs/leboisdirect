@@ -72,9 +72,10 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     : catalogProducts.filter((item) => item.id !== product.id)
   ).slice(0, 6)
   const productVideo = getProductVideo(product.slug)
+  const videoThumbnail = productVideo?.posterUrl || product.images[0] || product.image
   const galleryItems = [
     ...product.images.map((src) => ({ type: 'image' as const, src })),
-    ...(productVideo ? [{ type: 'video' as const, src: getYouTubeThumbnail(productVideo.youtubeId) }] : []),
+    ...(productVideo ? [{ type: 'video' as const, src: productVideo.youtubeId ? getYouTubeThumbnail(productVideo.youtubeId) : videoThumbnail }] : []),
   ]
   const selectedMedia = galleryItems[selectedMediaIndex] || galleryItems[0]
   const productReviews = getProductReviews(product.slug)
@@ -232,7 +233,9 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             <div>
               <div className="sticky top-[120px]">
                 <div className="relative aspect-[4/3] rounded-card overflow-hidden bg-white border border-hairline mb-20">
-                  {selectedMedia?.type === 'video' && productVideo ? (
+                  {selectedMedia?.type === 'video' && productVideo?.mp4Url ? (
+                    <video className="bk-product-video" src={productVideo.mp4Url} poster={videoThumbnail} controls playsInline preload="metadata" aria-label={productVideo.title} />
+                  ) : selectedMedia?.type === 'video' && productVideo?.youtubeId ? (
                     <iframe
                       className="bk-product-video"
                       src={getYouTubeEmbedUrl(productVideo.youtubeId)}
