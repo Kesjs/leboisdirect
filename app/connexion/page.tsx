@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import PageSkeleton from '@/components/PageSkeleton'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/auth-context'
 import { useI18n } from '@/lib/i18n-context'
@@ -132,5 +133,5 @@ function ConnectionContent() {
 }
 
 export default function ConnectionPage() {
-  return <Suspense fallback={<main className="bk-home bk-container bk-section">Chargement…</main>}><ConnectionContent /></Suspense>
+  return <Suspense fallback={<PageSkeleton variant="auth" label="Chargement de la connexion" />}><ConnectionContent /></Suspense>
 }

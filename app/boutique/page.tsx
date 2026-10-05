@@ -7,6 +7,7 @@ import Image from 'next/image'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
+import PageSkeleton from '@/components/PageSkeleton'
 import type { Product } from '@/data/products'
 import { useI18n } from '@/lib/i18n-context'
 import { categoryLabel, productLabel } from '@/data/product-labels'
@@ -33,6 +34,7 @@ function ShopContent() {
   const { locale } = useI18n()
   const copy = uiCopy[locale]
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([])
+  const [catalogLoading, setCatalogLoading] = useState(true)
   const [catalogError, setCatalogError] = useState(false)
   const [sortBy, setSortBy] = useState<SortOption>('relevance')
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -43,8 +45,8 @@ function ShopContent() {
     let active = true
     fetch('/api/catalog')
       .then(response => response.ok ? response.json() : Promise.reject(new Error('catalog unavailable')))
-      .then(payload => { if (active) setCatalogProducts(shuffle(payload.products || [])) })
-      .catch(() => { if (active) setCatalogError(true) })
+      .then(payload => { if (active) { setCatalogProducts(shuffle(payload.products || [])); setCatalogLoading(false) } })
+      .catch(() => { if (active) { setCatalogError(true); setCatalogLoading(false) } })
     return () => { active = false }
   }, [])
 
@@ -100,7 +102,7 @@ function ShopContent() {
               <p className="text-body-sm text-smoke">{filteredAndSortedProducts.length} {copy.shop.product}{filteredAndSortedProducts.length > 1 ? 's' : ''}</p>
               <div className="flex items-center gap-12"><div className="flex rounded-card border border-hairline" aria-label={copy.shop.display}><button type="button" onClick={() => setViewMode('grid')} aria-pressed={viewMode === 'grid'} className={'px-12 py-8 text-body-sm ' + (viewMode === 'grid' ? 'bg-charcoal text-white' : 'text-smoke')}>{copy.shop.grid}</button><button type="button" onClick={() => setViewMode('list')} aria-pressed={viewMode === 'list'} className={'px-12 py-8 text-body-sm ' + (viewMode === 'list' ? 'bg-charcoal text-white' : 'text-smoke')}>{copy.shop.list}</button></div><label htmlFor="sort" className="text-body-sm text-smoke">{copy.shop.sort}</label><select id="sort" value={sortBy} onChange={(event) => setSortBy(event.target.value as SortOption)} className="px-16 py-8 bg-white border border-hairline rounded-card text-body-sm text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"><option value="relevance">{copy.shop.relevance}</option><option value="price-asc">{copy.shop.lowPrice}</option><option value="price-desc">{copy.shop.highPrice}</option><option value="name">{copy.shop.name}</option></select></div>
             </div>
-            {pageProducts.length > 0 ? <><div className={viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 gap-24 md:gap-32' : 'bk-products-list'}>{pageProducts.map(product => <ProductCard key={product.id} product={product} />)}</div>{pageCount > 1 && <nav className="flex items-center justify-center gap-8 mt-48" aria-label={copy.shop.pagination}><button type="button" onClick={() => setPage(current => Math.max(1, current - 1))} disabled={page === 1} className="px-16 py-10 border border-hairline rounded-card disabled:opacity-40">{copy.shop.previous}</button>{Array.from({ length: pageCount }, (_, index) => index + 1).map(number => <button type="button" key={number} onClick={() => setPage(number)} aria-current={page === number ? 'page' : undefined} className={'w-40 h-40 rounded-card border ' + (page === number ? 'border-charcoal bg-charcoal text-white' : 'border-hairline')}>{number}</button>)}<button type="button" onClick={() => setPage(current => Math.min(pageCount, page + 1))} disabled={page === pageCount} className="px-16 py-10 border border-hairline rounded-card disabled:opacity-40">{copy.shop.next}</button></nav>}</> : catalogError ? <div className="text-center py-64"><p className="text-body-lg text-smoke">{copy.common.unavailable}</p></div> : <div className="bk-product-skeleton-grid" aria-label={copy.common.loading} aria-busy="true">{Array.from({ length: 6 }, (_, index) => <div className="bk-product-skeleton" key={index}><span className="bk-skeleton-media" /><span className="bk-skeleton-line bk-skeleton-line-short" /><span className="bk-skeleton-line" /><span className="bk-skeleton-line bk-skeleton-line-price" /></div>)}</div>}
+            {catalogLoading ? <div className="bk-product-skeleton-grid" aria-label={copy.common.loading} aria-busy="true">{Array.from({ length: 6 }, (_, index) => <div className="bk-product-skeleton" key={index}><span className="bk-skeleton-media" /><span className="bk-skeleton-line bk-skeleton-line-short" /><span className="bk-skeleton-line" /><span className="bk-skeleton-line bk-skeleton-line-price" /></div>)}</div> : pageProducts.length > 0 ? <><div className={viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 gap-24 md:gap-32' : 'bk-products-list'}>{pageProducts.map(product => <ProductCard key={product.id} product={product} />)}</div>{pageCount > 1 && <nav className="flex items-center justify-center gap-8 mt-48" aria-label={copy.shop.pagination}><button type="button" onClick={() => setPage(current => Math.max(1, current - 1))} disabled={page === 1} className="px-16 py-10 border border-hairline rounded-card disabled:opacity-40">{copy.shop.previous}</button>{Array.from({ length: pageCount }, (_, index) => index + 1).map(number => <button type="button" key={number} onClick={() => setPage(number)} aria-current={page === number ? 'page' : undefined} className={'w-40 h-40 rounded-card border ' + (page === number ? 'border-charcoal bg-charcoal text-white' : 'border-hairline')}>{number}</button>)}<button type="button" onClick={() => setPage(current => Math.min(pageCount, page + 1))} disabled={page === pageCount} className="px-16 py-10 border border-hairline rounded-card disabled:opacity-40">{copy.shop.next}</button></nav>}</> : catalogError ? <div className="text-center py-64"><p className="text-body-lg text-smoke">{copy.common.unavailable}</p></div> : <div className="text-center py-64"><p className="text-body-lg text-smoke">Aucun produit ne correspond à votre recherche.</p></div>}
           </div>
         </div>
       </section>
@@ -110,5 +112,5 @@ function ShopContent() {
 }
 
 export default function ShopPage() {
-  return <Suspense fallback={<div className="bk-container bk-section" aria-busy="true">Braviko</div>}><ShopContent /></Suspense>
+  return <Suspense fallback={<PageSkeleton variant="products" label="Chargement des produits" />}><ShopContent /></Suspense>
 }

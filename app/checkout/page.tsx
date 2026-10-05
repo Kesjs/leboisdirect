@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import PageSkeleton from '@/components/PageSkeleton'
 import Button from '@/components/Button'
 import { useCart } from '@/lib/cart-context'
 import { formatPrice } from '@/lib/utils'
@@ -57,7 +58,8 @@ export default function CheckoutPage() {
       lastName: current.lastName || user.user_metadata?.last_name || '',
     }))
   }, [user])
-  if (authLoading || !user || (items.length === 0 && step === 1)) return null
+  if (authLoading) return <PageSkeleton variant="checkout" label="Chargement de la commande" />
+  if (!user || (items.length === 0 && step === 1)) return null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

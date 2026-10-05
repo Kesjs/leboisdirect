@@ -10,6 +10,7 @@ import CatalogWorkspace, {
   AdminProduct,
   ProductValues,
 } from "@/components/admin/CatalogWorkspace";
+import PageSkeleton from "@/components/PageSkeleton";
 
 type CatalogDraft = {
   products?: Array<{
@@ -528,12 +529,7 @@ export default function AdminPage() {
       setImporting(false);
     }
   }
-  if (loading)
-    return (
-      <div className="min-h-screen bg-ivory p-8 text-sm text-smoke">
-        Chargement de l’espace admin…
-      </div>
-    );
+  if (loading) return <PageSkeleton variant="admin" withHeader={false} label="Chargement de l’espace admin" />;
   if (!user) return <Login onSuccess={checkAccess} />;
   if (!authorized)
     return (

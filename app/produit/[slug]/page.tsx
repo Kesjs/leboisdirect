@@ -10,6 +10,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Button from '@/components/Button'
 import ProductCard from '@/components/ProductCard'
+import PageSkeleton from '@/components/PageSkeleton'
 import type { Product } from '@/data/products'
 import { formatPrice } from '@/lib/utils'
 import { useCart } from '@/lib/cart-context'
@@ -55,7 +56,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     setSelectedVariant(product?.variants?.[0]?.id || '')
   }, [product])
 
-  if (loading && !product) return <main className="bk-product-loading" aria-busy="true" aria-label={ui.product.loading}><div className="bk-product-loading-media" /><div className="bk-product-loading-copy"><span /><span /><span /><span /></div></main>
+  if (loading && !product) return <PageSkeleton variant="product" label={ui.product.loading} />
 
   if (!product) {
     notFound()

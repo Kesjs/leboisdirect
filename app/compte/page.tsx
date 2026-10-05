@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import PageSkeleton, { OrderListSkeleton } from '@/components/PageSkeleton'
 import { useAuth } from '@/lib/auth-context'
 import { createClient } from '@/lib/supabase/client'
 import { useI18n } from '@/lib/i18n-context'
@@ -64,7 +65,7 @@ export default function AccountPage() {
       .then(({ data }: { data: CustomerProfile | null }) => setProfile(data))
   }, [supabase, user])
 
-  if (loading || !user || isAdmin) return <><Header /><main id="main-content" className="bk-home bk-container bk-section"><p className="bk-lead">{c.loading}</p></main></>
+  if (loading || !user || isAdmin) return <PageSkeleton variant="account" label={c.loading as string} />
 
   const money = (value: number, currency: string) => new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value)
   const displayName = [profile?.first_name || user.user_metadata?.first_name, profile?.last_name || user.user_metadata?.last_name].filter(Boolean).join(' ') || (c.defaultName as string)
@@ -93,7 +94,7 @@ export default function AccountPage() {
             <div><strong>{deliveredOrders}</strong><span>{c.delivered}</span></div>
           </div>
           <div className="bk-orders-heading"><div><h2 id="orders-title">{c.orders}</h2><p>{c.ordersIntro}</p></div><Link className="bk-button" href="/boutique">{c.shop}<span aria-hidden="true">↗</span></Link></div>
-          {fetching && <p className="bk-lead">{c.loading}</p>}
+          {fetching && <OrderListSkeleton />}
           {error && <p className="bk-form-error" role="alert">{error}</p>}
           {!fetching && !error && orders.length === 0 && <div className="bk-orders-empty"><p>{c.noOrders}</p><Link className="bk-text-link" href="/boutique">{c.shop}<span aria-hidden="true">↗</span></Link></div>}
           {orders.map(order => <article className="bk-order-row" key={order.id}>
