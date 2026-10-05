@@ -7,6 +7,7 @@ import Hero from '@/components/Hero'
 import Footer from '@/components/Footer'
 import FeaturedProducts from '@/components/FeaturedProducts'
 import StorytellingSection from '@/components/StorytellingSection'
+import TrustSignals from '@/components/TrustSignals'
 import LandingMotion from '@/components/motion/LandingMotion'
 import { useI18n } from '@/lib/i18n-context'
 import { bravikoCopy } from '@/data/braviko-copy'
@@ -20,6 +21,7 @@ export default function Home() {
       <main id="main-content" className="bk-home">
         <Hero />
         <LandingMotion>
+          <TrustSignals />
           <FeaturedProducts />
           <StorytellingSection />
           <section className="bk-quality bk-section bk-container" aria-labelledby="quality-title">

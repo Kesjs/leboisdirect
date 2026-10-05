@@ -182,6 +182,7 @@
 .bk-line-mask > span { display: block; }
 .bk-hero-intro { max-width: 330px; justify-self: end; padding-top: clamp(28px, 4vw, 64px); }
 .bk-hero-intro > p { font-size: 15px; color: var(--bk-muted); line-height: 1.7; margin-bottom: 14px; }
+.bk-hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; }
 .bk-hero-worlds { display: grid; grid-template-columns: 1.22fr 1fr; gap: 16px; }
 .bk-world { position: relative; display: flex; flex-direction: column; justify-content: space-between; isolation: isolate; height: clamp(310px, 30vw, 460px); overflow: hidden; border-radius: var(--bk-radius); background: #34483a; color: #fff; }
 .bk-world-media { position: absolute; inset: -6% 0; z-index: -2; }
@@ -198,6 +199,21 @@
 .bk-hero-foot { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding-block: 24px; border-bottom: 1px solid var(--bk-line); font-size: 11px; color: var(--bk-muted); }
 .bk-hero-foot > span { letter-spacing: .1em; flex-shrink: 0; }
 .bk-hero-foot p { text-align: center; }
+
+/* Trust signals: concrete proof before the product selection. */
+.bk-trust-signals { display: grid; grid-template-columns: minmax(260px, .8fr) minmax(0, 1.7fr); gap: 32px 64px; padding-block: clamp(56px, 7vw, 96px); border-bottom: 1px solid var(--bk-line); }
+.bk-trust-heading { max-width: 410px; }
+.bk-trust-heading h2 { margin-top: 12px; font-size: clamp(30px, 4vw, 48px); line-height: 1.05; letter-spacing: -.045em; font-weight: 500; text-wrap: balance; }
+.bk-trust-heading > p:last-child { margin-top: 16px; color: var(--bk-muted); line-height: 1.7; max-width: 48ch; }
+.bk-trust-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-self: end; border-top: 1px solid var(--bk-line); border-bottom: 1px solid var(--bk-line); }
+.bk-trust-metric { display: grid; align-content: start; gap: 10px; min-height: 128px; padding: 22px 18px 20px 0; border-right: 1px solid var(--bk-line); }
+.bk-trust-metric + .bk-trust-metric { padding-left: 18px; }
+.bk-trust-metric:last-child { border-right: 0; }
+.bk-trust-metric strong { color: var(--bk-ink); font-size: clamp(25px, 3vw, 42px); font-weight: 500; letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
+.bk-trust-metric span { color: var(--bk-muted); font-size: 11px; line-height: 1.45; }
+.bk-trust-source { grid-column: 2; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 4px; }
+.bk-trust-source p { max-width: 62ch; color: var(--bk-muted); font-size: 12px; line-height: 1.6; }
+.bk-trust-source .bk-text-link { flex-shrink: 0; }
 
 /* Selection and real product cards. */
 #selection { scroll-margin-top: 100px; }
@@ -565,6 +581,9 @@
   .bk-hero h1 { font-size: clamp(42px, 8.5vw, 72px); }
   .bk-hero-intro { max-width: 560px; justify-self: start; padding-top: 0; }
   .bk-hero-intro p { max-width: 470px; }
+  .bk-trust-signals { grid-template-columns: 1fr; gap: 32px; }
+  .bk-trust-heading { max-width: 600px; }
+  .bk-trust-source { grid-column: 1; }
   .bk-quality-grid { grid-template-columns: repeat(2, 1fr); }
   .bk-delivery { gap: 32px; }
   .bk-story-panel { gap: 32px; }
@@ -614,6 +633,7 @@
   .bk-hero-heading { margin-bottom: 28px; }
   .bk-hero-kicker { margin-bottom: 14px; font-size: 10px; letter-spacing: .1em; }
   .bk-hero h1 { font-size: clamp(36px, 9vw, 60px); }
+  .bk-hero-actions { align-items: flex-start; flex-direction: column; gap: 14px; }
   .bk-hero-worlds { grid-template-columns: 1fr; gap: 12px; }
   .bk-world { height: 290px; }
   .bk-world-top, .bk-world-bottom { padding: 22px; }
@@ -625,6 +645,12 @@
   .bk-story-step-media { min-height: 260px; }
   .bk-hero-foot > span:last-child { display: none; }
   .bk-selection-heading { display: block; }
+  .bk-trust-signals { padding-block: 56px; }
+  .bk-trust-metrics { grid-template-columns: 1fr 1fr; }
+  .bk-trust-metric:nth-child(2) { border-right: 0; }
+  .bk-trust-metric:nth-child(n + 3) { border-top: 1px solid var(--bk-line); }
+  .bk-trust-metric:nth-child(3) { padding-left: 0; }
+  .bk-trust-source { display: grid; align-items: start; gap: 16px; }
   .bk-selection-heading > .bk-text-link { margin-top: 20px; }
   .bk-related-heading { display: block; }
   .bk-related-heading > .bk-text-link { display: inline-block; margin-top: 20px; }

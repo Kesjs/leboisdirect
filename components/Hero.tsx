@@ -46,7 +46,10 @@ export default function Hero() {
         </div>
         <div className="bk-hero-intro" data-hero-enter>
           <p>{copy.intro}</p>
-          <a className="bk-text-link" href="#selection">{copy.discover}<span aria-hidden="true">↗</span></a>
+          <div className="bk-hero-actions">
+            <Link className="bk-button" href="/boutique">{copy.heroCta}<span aria-hidden="true">↗</span></Link>
+            <a className="bk-text-link" href="#preuves">{copy.heroProofCta}<span aria-hidden="true">↘</span></a>
+          </div>
         </div>
       </div>
       <div className="bk-hero-worlds bk-hero-worlds--single">
