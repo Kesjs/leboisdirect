@@ -72,6 +72,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     : catalogProducts.filter((item) => item.id !== product.id)
   ).slice(0, 6)
   const productVideo = getProductVideo(product.slug)
+  const hasEmbeddedWatermark = product.slug === 'cheminee-electrique-purline-verre-noir-2000w'
   const videoThumbnail = productVideo?.posterUrl || product.images[0] || product.image
   const galleryItems = [
     ...product.images.map((src) => ({ type: 'image' as const, src })),
@@ -259,7 +260,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                       }}
                     />
                   ) : null}
-                  {selectedMedia?.type === 'image' && selectedMedia.src.startsWith('/images/') && <span className="bk-detail-watermark" aria-hidden="true">BRAVIKO</span>}
+                  {selectedMedia?.type === 'image' && selectedMedia.src.startsWith('/images/') && !hasEmbeddedWatermark && <span className="bk-detail-watermark" aria-hidden="true">BRAVIKO</span>}
                 </div>
                 {galleryItems.length > 1 && (
                   <div className="grid grid-cols-4 gap-12">
@@ -287,7 +288,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                             }
                           }}
                         />
-                        {item.type === 'image' && item.src.startsWith('/images/') && <span className="bk-detail-thumb-watermark" aria-hidden="true">B</span>}
+                        {item.type === 'image' && item.src.startsWith('/images/') && !hasEmbeddedWatermark && <span className="bk-detail-thumb-watermark" aria-hidden="true">B</span>}
                         {item.type === 'video' && <span className="bk-video-thumb-play" aria-hidden="true">▶</span>}
                       </button>
                     ))}
