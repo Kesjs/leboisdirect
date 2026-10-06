@@ -55,8 +55,7 @@ export default function Header() {
     return () => document.removeEventListener('pointerdown', dismiss)
   }, [])
   const links = [
-    ['/boutique', copy.shop], ['/boutique?universe=heating', copy.heating],
-    ['/conseils', copy.advice],
+    ['/boutique', copy.shop], ['/conseils', copy.advice],
   ]
   const collapse = () => { setMobileOpen(false); setLanguageOpen(false); setSearchOpen(false); setAccountOpen(false) }
   return (

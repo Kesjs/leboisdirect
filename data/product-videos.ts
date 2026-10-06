@@ -66,10 +66,6 @@ const videosBySlug: Record<string, ProductVideo> = {
     mp4Url: '/videos/ofyr-cage-100-accessoire-cuisson.mp4',
     title: 'Cage de cuisson OFYR 100 – Accessoire brasero premium',
   },
-  'radiateur-electrique-connecte-sauter-ipala-1500w': {
-    mp4Url: '/videos/radiateur-electrique-connecte-sauter-ipala-1500w.mp4',
-    title: 'Radiateur électrique connecté Sauter Ipala – 1500 W',
-  },
 }
 
 export function getProductVideo(slug: string): ProductVideo | null {
