@@ -38,6 +38,10 @@ const videosBySlug: Record<string, ProductVideo> = {
     mp4Url: '/videos/foyer-bois-panoramique-acaminetti-flat-150x50.mp4',
     title: 'Foyer à bois panoramique A.Caminetti Flat 150 × 50',
   },
+  'cheminee-electrique-purline-verre-noir-2000w': {
+    mp4Url: '/videos/cheminee-electrique-purline-verre-noir-2000w.mp4',
+    title: 'Cheminée électrique Purline – Verre trempé noir 2000 W',
+  },
 }
 
 export function getProductVideo(slug: string): ProductVideo | null {
