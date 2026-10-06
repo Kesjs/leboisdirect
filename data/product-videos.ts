@@ -42,6 +42,34 @@ const videosBySlug: Record<string, ProductVideo> = {
     mp4Url: '/videos/cheminee-electrique-purline-verre-noir-2000w.mp4',
     title: 'Cheminée électrique Purline – Verre trempé noir 2000 W',
   },
+  'bois-de-chauffage-premium-chene-charme-hetre-2-steres-33-cm': {
+    mp4Url: '/videos/bois-de-chauffage-premium-chene-charme-hetre-2-steres.mp4',
+    title: 'Bois de chauffage Premium – Chêne, Charme & Hêtre – Palette 2 stères',
+  },
+  'buches-densifiees-premium-palette-1000-kg': {
+    mp4Url: '/videos/buches-densifiees-premium-palette-1000-kg.mp4',
+    title: 'Bûches densifiées Premium – Palette 1 000 kg',
+  },
+  'poele-bois-fonte-bronpi-karen-8-kw': {
+    mp4Url: '/videos/poele-bois-fonte-bronpi-karen-8-kw.mp4',
+    title: 'Poêle à bois en fonte Bronpi KAREN – 8 kW',
+  },
+  'abri-buches-timbela-m985-414m2': {
+    mp4Url: '/videos/abri-buches-timbela-m985-414m2.mp4',
+    title: 'Abri à bûches avec remise TIMBELA M985 – 4,14 m²',
+  },
+  'radiateur-electrique-connecte-sauter-hekla-1500w': {
+    mp4Url: '/videos/radiateur-electrique-connecte-sauter-hekla-1500w.mp4',
+    title: 'Radiateur électrique connecté Sauter Hekla – 1500 W',
+  },
+  'ofyr-cage-100-accessoire-cuisson': {
+    mp4Url: '/videos/ofyr-cage-100-accessoire-cuisson.mp4',
+    title: 'Cage de cuisson OFYR 100 – Accessoire brasero premium',
+  },
+  'radiateur-electrique-connecte-sauter-ipala-1500w': {
+    mp4Url: '/videos/radiateur-electrique-connecte-sauter-ipala-1500w.mp4',
+    title: 'Radiateur électrique connecté Sauter Ipala – 1500 W',
+  },
 }
 
 export function getProductVideo(slug: string): ProductVideo | null {
