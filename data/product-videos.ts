@@ -22,6 +22,14 @@ const videosBySlug: Record<string, ProductVideo> = {
     mp4Url: '/videos/chauffage-exterieur-gaz-planika-faro-8-kw.mp4',
     title: 'Chauffage extérieur à gaz Planika Faro – 8 kW',
   },
+  'insert-bois-invicta-p947044-10-kw': {
+    mp4Url: '/videos/insert-bois-invicta-p947044-10-kw.mp4',
+    title: 'Insert à bois Invicta P947044 – 10 kW',
+  },
+  'chauffage-infrarouge-exterieur-frico-term-ip67-2000w': {
+    mp4Url: '/videos/chauffage-infrarouge-exterieur-frico-term-ip67-2000w.mp4',
+    title: 'Chauffage infrarouge extérieur FRICO Term IP67 – 2000 W',
+  },
 }
 
 export function getProductVideo(slug: string): ProductVideo | null {
