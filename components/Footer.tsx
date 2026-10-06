@@ -6,6 +6,7 @@ import { useI18n } from '@/lib/i18n-context'
 import { bravikoCopy } from '@/data/braviko-copy'
 import { legalNavigation } from '@/data/legal-copy'
 import { commerceInfoLinks } from '@/data/commerce-info-copy'
+import NewsletterSignup from './NewsletterSignup'
 
 export default function Footer() {
   const { locale } = useI18n()
@@ -15,6 +16,7 @@ export default function Footer() {
   return (
     <footer className="bk-footer">
       <div className="bk-container">
+        <NewsletterSignup />
         <div className="bk-footer-top">
           <div><Link href="/" aria-label="Braviko"><Logo /></Link><p>{copy.footer}</p></div>
         <nav aria-label={copy.universes}><h2>{copy.universes}</h2><Link href="/boutique?universe=heating">{copy.heating}</Link><Link href="/boutique">{copy.all}</Link></nav>
