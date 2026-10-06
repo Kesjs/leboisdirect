@@ -30,6 +30,14 @@ const videosBySlug: Record<string, ProductVideo> = {
     mp4Url: '/videos/chauffage-infrarouge-exterieur-frico-term-ip67-2000w.mp4',
     title: 'Chauffage infrarouge extérieur FRICO Term IP67 – 2000 W',
   },
+  'chariot-buches-le-marquier-fjord-noir': {
+    mp4Url: '/videos/chariot-buches-le-marquier-fjord-noir.mp4',
+    title: 'Chariot à bûches Le Marquier Fjord – Noir',
+  },
+  'foyer-bois-panoramique-acaminetti-flat-150x50': {
+    mp4Url: '/videos/foyer-bois-panoramique-acaminetti-flat-150x50.mp4',
+    title: 'Foyer à bois panoramique A.Caminetti Flat 150 × 50',
+  },
 }
 
 export function getProductVideo(slug: string): ProductVideo | null {
