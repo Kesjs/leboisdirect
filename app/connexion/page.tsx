@@ -131,7 +131,7 @@ function ConnectionContent() {
         <Image className="bk-auth-intro-image" src="/images/login-wood-fired-heater.jpg" alt="Poêle à bois dans une maison chaleureuse" fill priority sizes="(max-width: 900px) 100vw, 52vw" />
         <div className="bk-auth-intro-shade" aria-hidden="true" />
         <p className="bk-eyebrow">BRAVIKO / {c.account}</p>
-        <h1>{signup ? c.signupTitle : c.loginTitle}</h1>
+        <h1 className="sr-only">{signup ? c.signupTitle : c.loginTitle}</h1>
         <p>{signup ? c.signupIntro : c.loginIntro}</p>
         <Link href="/boutique" className="bk-text-link">{c.shop}<span aria-hidden="true">↗</span></Link>
       </section>

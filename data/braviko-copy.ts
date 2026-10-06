@@ -15,7 +15,7 @@ export const bravikoCopy = {
       { label: 'Le produit', title: 'Le bon format. Pour le bon usage.', body: 'Bûches, granulés, bois compressé ou équipement de préparation : comparez le format et l’usage avant de commander.' },
       { label: 'Le quotidien', title: 'Et la maison retrouve sa chaleur.', body: 'Un stock prêt avant les premiers froids, un feu régulier et les bons outils à portée de main.' },
     ],
-    selection: 'Préparez votre saison de chauffe.', selectionIntro: 'Une sélection de produits à plus de 100 € pour chauffer, stocker et préparer votre bois.', agricultureSelectionIntro: 'Chauffage au bois', all: 'Voir toute la boutique',
+    selection: 'Préparez votre saison de chauffe.', selectionIntro: 'Des références sélectionnées pour chauffer, stocker et travailler le bois au quotidien.', agricultureSelectionIntro: 'Chauffage au bois', all: 'Voir toute la boutique',
     pendingTitle: 'Tout pour préparer l’hiver.', pendingBody: 'Des combustibles et des équipements sélectionnés pour votre foyer.', pendingLabel: 'Sélection hiver', contact: 'Parlons de votre besoin',
     qualityTitle: 'L’essentiel, dans les détails.', qualityIntro: 'De la fiche produit à la réception, les informations dont vous avez besoin pour choisir.',
     qualities: [ ['Bien choisir', 'Essence, dimensions et conditionnement : comparez les caractéristiques sur chaque fiche.'], ['Commander simplement', 'Votre sélection, votre quantité et votre panier restent à portée de main.'], ['Préparer la livraison', 'Retrouvez les modalités de transport et de déchargement avant de commander.'], ['Être accompagné', 'Un doute sur le format ou le stockage ? Consultez nos conseils et notre FAQ.'] ],

@@ -14,6 +14,10 @@ const videosBySlug: Record<string, ProductVideo> = {
     mp4Url: '/videos/fendeur-buches-scheppach-compact-10t-3150w.mp4',
     title: 'Fendeur de bûches Scheppach Compact 10T – 3150 W',
   },
+  'brasero-plancha-le-bigorneau-acier-corten-100-cm': {
+    youtubeId: '37d-6o4cVeo',
+    title: 'Brasero Plancha Le Bigorneau – Acier Corten Ø100 cm',
+  },
 }
 
 export function getProductVideo(slug: string): ProductVideo | null {

@@ -44,7 +44,7 @@ export default function FeaturedProducts() {
   return (
     <section id="selection" className="bk-section bk-container" aria-labelledby="selection-title">
       <div className="bk-selection-heading" data-reveal>
-        <div><p className="bk-eyebrow">BRAVIKO · {copy.heating}</p><h2 id="selection-title" className="bk-title">{copy.selection}</h2><p className="bk-lead">{copy.selectionIntro}</p></div>
+        <div><p className="bk-eyebrow">BRAVIKO · {copy.heating}</p><h2 id="selection-title" className="bk-title">{copy.selection}</h2></div>
         <Link href="/boutique" className="bk-text-link">{copy.all}<span aria-hidden="true">↗</span></Link>
       </div>
       <div className="bk-selection-context"><span>{copy.heating}</span><span>{universeProducts.length} {ui.shop.product}{universeProducts.length > 1 ? 's' : ''}</span></div>
