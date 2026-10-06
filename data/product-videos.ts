@@ -18,6 +18,10 @@ const videosBySlug: Record<string, ProductVideo> = {
     youtubeId: '37d-6o4cVeo',
     title: 'Brasero Plancha Le Bigorneau – Acier Corten Ø100 cm',
   },
+  'chauffage-exterieur-gaz-planika-faro-8-kw': {
+    mp4Url: '/videos/chauffage-exterieur-gaz-planika-faro-8-kw.mp4',
+    title: 'Chauffage extérieur à gaz Planika Faro – 8 kW',
+  },
 }
 
 export function getProductVideo(slug: string): ProductVideo | null {
