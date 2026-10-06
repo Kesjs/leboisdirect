@@ -291,6 +291,7 @@
 .bk-product-feedback { display: block; min-height: 20px; color: var(--bk-accent); font-size: 11px; padding-top: 4px; }
 .bk-product-faq, .bk-related-products { margin-top: 96px; padding-top: 64px; border-top: 1px solid var(--bk-line); }
 .bk-product-reviews { margin-top: 96px; padding-top: 64px; border-top: 1px solid var(--bk-line); }
+.bk-product-review-preview-note { margin-top: 16px; color: var(--bk-accent); font-size: 12px; letter-spacing: .04em; }
 .bk-product-reviews-empty { margin-top: 32px; padding: 24px; border: 1px dashed var(--bk-line); border-radius: 12px; color: var(--bk-muted); line-height: 1.6; max-width: 640px; }
 .bk-product-review-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 32px; max-width: 880px; }
 .bk-product-review-card { padding: 24px; border: 1px solid var(--bk-line); border-radius: 12px; background: var(--bk-paper); }
