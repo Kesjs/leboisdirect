@@ -82,9 +82,9 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const productReviews = getProductReviews(product.slug)
 
   const reviewsCopy = {
-    fr: { eyebrow: 'Avis clients', title: 'Les avis sur ce produit', empty: 'Les premiers avis clients seront affichés ici après les premières commandes.' },
-    de: { eyebrow: 'Kundenbewertungen', title: 'Bewertungen zu diesem Produkt', empty: 'Die ersten Kundenbewertungen werden nach den ersten Bestellungen hier angezeigt.' },
-    it: { eyebrow: 'Recensioni clienti', title: 'Le recensioni di questo prodotto', empty: 'Le prime recensioni saranno mostrate qui dopo i primi ordini.' },
+    fr: { eyebrow: 'Avis clients', title: 'Les avis sur ce produit', empty: 'Les premiers avis clients seront affichés ici après les premières commandes.', editorialLabel: 'Le regard Braviko', editorialText: 'Cette lecture éditoriale s’appuie sur les caractéristiques, le conditionnement et l’usage prévu de la référence. Elle ne constitue pas un avis client.' },
+    de: { eyebrow: 'Kundenbewertungen', title: 'Bewertungen zu diesem Produkt', empty: 'Die ersten Kundenbewertungen werden nach den ersten Bestellungen hier angezeigt.', editorialLabel: 'Braviko Einschätzung', editorialText: 'Diese redaktionelle Einordnung basiert auf Eigenschaften, Verpackung und vorgesehener Nutzung. Sie ist keine Kundenbewertung.' },
+    it: { eyebrow: 'Recensioni clienti', title: 'Le recensioni di questo prodotto', empty: 'Le prime recensioni saranno mostrate qui dopo i primi ordini.', editorialLabel: 'Il punto di vista Braviko', editorialText: 'Questa lettura editoriale si basa su caratteristiche, confezionamento e uso previsto. Non è una recensione cliente.' },
   }[locale]
 
   const productReviewCopy = {
@@ -495,7 +495,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 ))}
               </div>
             ) : (
-              <p className="bk-product-reviews-empty">{reviewsCopy.empty}</p>
+              <article className="bk-product-review-card bk-product-editorial-card">
+                <div className="bk-product-review-meta"><span>{reviewsCopy.editorialLabel}</span></div>
+                <p>{reviewsCopy.editorialText}</p>
+                <footer>{reviewsCopy.empty}</footer>
+              </article>
             )}
           </section>
 
