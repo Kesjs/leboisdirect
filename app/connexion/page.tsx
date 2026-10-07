@@ -136,8 +136,8 @@ function ConnectionContent() {
         <Link href="/boutique" className="bk-text-link">{c.shop}<span aria-hidden="true">↗</span></Link>
       </section>
       <section className="bk-auth-panel" aria-labelledby="auth-form-title">
-        <p className="bk-eyebrow">{mode === 'reset' ? c.forgot : signup ? c.create : c.login}</p>
-        <h2 id="auth-form-title">{mode === 'reset' ? c.forgot : signup ? c.signupDetails : c.login}</h2>
+        <p className="bk-eyebrow">{mode === 'reset' ? c.resetTitle : signup ? c.create : c.login}</p>
+        <h2 id="auth-form-title">{mode === 'reset' ? c.resetTitle : signup ? c.signupDetails : c.login}</h2>
         <form onSubmit={submit} className="bk-account-form" noValidate>
           {signup && <>
             <div className="bk-form-row"><label htmlFor="first-name">{c.firstName}<input id="first-name" name="firstName" value={firstName} onChange={event => setFirstName(event.target.value)} required autoComplete="given-name" /></label><label htmlFor="last-name">{c.lastName}<input id="last-name" name="lastName" value={lastName} onChange={event => setLastName(event.target.value)} required autoComplete="family-name" /></label></div>
@@ -148,7 +148,7 @@ function ConnectionContent() {
           {message && <p className="bk-form-message" role="status">{message}</p>}
           {error && <p ref={errorRef} tabIndex={-1} className="bk-form-error" role="alert">{error}</p>}
           {signup && <p className="bk-auth-legal">{c.signupLegal.before} <Link href="/conditions-generales">{c.signupLegal.terms}</Link> {c.signupLegal.and} <Link href="/confidentialite">{c.signupLegal.privacy}</Link>.</p>}
-          <button className="bk-button" type="submit" disabled={submitting}>{submitting ? '…' : mode === 'reset' ? c.forgot : signup ? c.signUp : c.signIn}<span aria-hidden="true">↗</span></button>
+          <button className="bk-button" type="submit" disabled={submitting}>{submitting ? '…' : mode === 'reset' ? user ? c.updatePassword : c.sendResetLink : signup ? c.signUp : c.signIn}<span aria-hidden="true">↗</span></button>
         </form>
         <div className="bk-auth-switch">
           {mode === 'login' && <><button type="button" onClick={() => switchMode('reset')}>{c.forgot}</button><p>{c.noAccount} <button type="button" onClick={() => switchMode('signup')}>{c.create}</button></p></>}
