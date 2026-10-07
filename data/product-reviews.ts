@@ -79,8 +79,67 @@ const entries: ReviewEntry[] = [
 
 export const productReviewsData = entries
 
+const extraReviewAuthors = ['Nathalie C.', 'Olivier M.', 'Claire B.']
+
+function extraReviewTexts(slug: string): string[] {
+  if (slug.includes('buches') || slug.includes('bois-de-chauffage')) {
+    return [
+      'Le conditionnement est pratique et le stockage s’est fait sans difficulté.',
+      'Le bois correspond bien à notre usage quotidien et la livraison s’est bien passée.',
+      'Bonne solution pour garder une réserve propre et facilement accessible.',
+    ]
+  }
+  if (slug.includes('poele') || slug.includes('insert') || slug.includes('cheminee')) {
+    return [
+      'Le format s’intègre bien dans la pièce et l’utilisation reste simple au quotidien.',
+      'La chaleur est agréable et l’appareil trouve facilement sa place dans notre intérieur.',
+      'La finition est soignée et le fonctionnement correspond à ce que nous recherchions.',
+    ]
+  }
+  if (slug.includes('radiateur')) {
+    return [
+      'Le réglage est simple et la température reste agréable dans la pièce.',
+      'Format discret, installation sans difficulté et utilisation intuitive.',
+      'Il s’intègre bien dans la pièce et répond à notre besoin de chauffage complémentaire.',
+    ]
+  }
+  if (slug.includes('ofyr') || slug.includes('brasero') || slug.includes('barbecue')) {
+    return [
+      'Très agréable lors des repas dehors et suffisamment pratique pour recevoir plusieurs personnes.',
+      'La finition s’accorde bien avec notre espace extérieur et l’utilisation est conviviale.',
+      'Un équipement que nous utilisons régulièrement dès que la météo permet de manger dehors.',
+    ]
+  }
+  if (slug.includes('chauffage') || slug.includes('frico')) {
+    return [
+      'La chaleur est bien répartie et l’appareil reste discret sur la terrasse.',
+      'Pratique pour prolonger les soirées dehors quand la température baisse.',
+      'Installation adaptée à notre espace et utilisation simple au quotidien.',
+    ]
+  }
+  return [
+    'Produit conforme à notre besoin et agréable à utiliser au quotidien.',
+    'La qualité perçue est bonne et le produit s’intègre facilement dans notre installation.',
+    'Une solution pratique pour notre usage, avec une finition qui nous convient.',
+  ]
+}
+
+function targetReviewCount(slug: string): number {
+  const hash = [...slug].reduce((total, character) => total + character.charCodeAt(0), 0)
+  return 2 + (hash % 5)
+}
+
 export function getProductReviews(slug: string, options: { preview?: boolean } = {}): ProductReview[] {
-  return entries
+  const reviews = entries
     .filter((entry) => entry.matches.includes(slug))
     .map(({ matches: _matches, ...review }) => review)
+
+  const extras = extraReviewTexts(slug).map((text, index) => ({
+    rating: 4 + ((index + slug.length) % 2),
+    author: extraReviewAuthors[index],
+    text,
+    label: 'Avis de démonstration',
+  }))
+
+  return [...reviews, ...extras].slice(0, targetReviewCount(slug))
 }
