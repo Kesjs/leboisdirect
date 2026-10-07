@@ -112,12 +112,17 @@ export default function CheckoutPage() {
       saveOrderDraft(draft)
       const checkoutResponse = await fetch('/api/stripe/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: draft.reference, locale, items: items.map(item => ({ productId: item.product.id, variantId: item.variantId, quantity: item.quantity })) }) })
       const checkoutResult = await checkoutResponse.json().catch(() => ({}))
-      if (!checkoutResponse.ok || !checkoutResult.url) throw new Error(checkoutResult.error || 'CHECKOUT_UNAVAILABLE')
+        if (!checkoutResponse.ok || !checkoutResult.url) {
+          const checkoutError = new Error(checkoutResult.error || 'CHECKOUT_UNAVAILABLE')
+          ;(checkoutError as Error & { userMessage?: string }).userMessage = checkoutResult.message
+          throw checkoutError
+        }
       try { window.localStorage.removeItem('braviko-checkout-step') } catch { /* Ignore unavailable storage. */ }
       window.location.assign(checkoutResult.url)
       } catch (error) {
         const code = error instanceof Error ? error.message : 'CHECKOUT_UNAVAILABLE'
-        setFormError(code === 'STRIPE_NOT_CONFIGURED' ? paymentCopy.unavailable : code === 'AUTH_REQUIRED' ? 'Votre session a expiré. Veuillez vous reconnecter.' : paymentCopy.error)
+        const userMessage = error instanceof Error && 'userMessage' in error ? (error as Error & { userMessage?: string }).userMessage : undefined
+        setFormError(userMessage || (code === 'STRIPE_NOT_CONFIGURED' ? paymentCopy.unavailable : code === 'AUTH_REQUIRED' ? 'Votre session a expiré. Veuillez vous reconnecter.' : code === 'PRODUCT_UNAVAILABLE' ? 'Un des produits du panier n’est plus disponible.' : paymentCopy.error))
         setSubmitting(false)
       }
     }

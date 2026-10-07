@@ -48,6 +48,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ url: session.url })
   } catch (error) {
     const code = error instanceof Error ? error.message : 'CHECKOUT_UNAVAILABLE'
-    return NextResponse.json({ error: code }, { status: code === 'STRIPE_NOT_CONFIGURED' ? 503 : 400 })
+    if (error instanceof Error && 'type' in error) console.error('Stripe checkout error:', error.message)
+    const message = code === 'PRODUCT_UNAVAILABLE'
+      ? 'Un des produits du panier n’est plus disponible.'
+      : code === 'STRIPE_NOT_CONFIGURED'
+        ? 'Le paiement Stripe n’est pas encore configuré sur le serveur.'
+        : code
+    return NextResponse.json({ error: code, message }, { status: code === 'STRIPE_NOT_CONFIGURED' ? 503 : 400 })
   }
 }
