@@ -43,6 +43,8 @@ export default function CheckoutPage() {
     city: '',
     postalCode: '',
     phone: '',
+    phoneCountry: 'FR',
+    phoneCode: '+33',
   })
 
   useEffect(() => {
@@ -85,7 +87,7 @@ export default function CheckoutPage() {
         p_reference: draft.reference,
         p_customer: {
           email: formData.email, first_name: formData.firstName, last_name: formData.lastName,
-          phone: formData.phone, address: formData.address, postal_code: formData.postalCode, city: formData.city,
+          phone: `${formData.phoneCode} ${formData.phone}`.trim(), address: formData.address, postal_code: formData.postalCode, city: formData.city,
         },
         p_items: orderItems,
       })
@@ -210,19 +212,42 @@ export default function CheckoutPage() {
                         <label htmlFor="phone" className="block text-body-sm font-medium text-charcoal mb-8">
                           {c.phone}
                         </label>
-                        <input
-                          type="tel"
-                          id="phone"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
-                          placeholder="06 12 34 56 78"
-                        />
+                        <div className="grid grid-cols-[150px_minmax(0,1fr)] gap-12">
+                          <select
+                            id="phoneCountry"
+                            name="phoneCountry"
+                            value={formData.phoneCountry}
+                            onChange={(event) => {
+                              const codes: Record<string, string> = { FR: '+33', BE: '+32', CH: '+41', LU: '+352', DE: '+49', IT: '+39' }
+                              setFormData({ ...formData, phoneCountry: event.target.value, phoneCode: codes[event.target.value] ?? '+33' })
+                            }}
+                            aria-label="Pays du téléphone"
+                            className="w-full px-12 py-12 border border-hairline rounded-card bg-white text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
+                          >
+                            <option value="FR">🇫🇷 France (+33)</option>
+                            <option value="BE">🇧🇪 Belgique (+32)</option>
+                            <option value="CH">🇨🇭 Suisse (+41)</option>
+                            <option value="LU">🇱🇺 Luxembourg (+352)</option>
+                            <option value="DE">🇩🇪 Allemagne (+49)</option>
+                            <option value="IT">🇮🇹 Italie (+39)</option>
+                          </select>
+                          <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleInputChange}
+                            required
+                            inputMode="tel"
+                            autoComplete="tel-national"
+                            className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
+                            placeholder="06 12 34 56 78"
+                          />
+                        </div>
+                        <p className="mt-8 text-body-sm text-smoke">Choisissez votre pays, puis indiquez votre numéro de téléphone.</p>
                       </div>
                     </div>
-                    <Button type="submit" size="lg" className="w-full mt-32">
+                    <Button type="submit" size="lg" className="w-full mt-32 rounded-card">
                       {c.nextDelivery}
                     </Button>
                   </div>
@@ -231,13 +256,14 @@ export default function CheckoutPage() {
                 {/* Step 2: Delivery */}
                 {step === 2 && (
                   <div className="bg-white rounded-card border border-hairline p-32">
-                    <h2 className="text-heading-sm font-semibold text-charcoal mb-24">
+                      <h2 className="text-heading-sm font-semibold text-charcoal mb-8">
                       {c.deliveryAddress}
                     </h2>
+                    <p className="text-body-sm text-smoke mb-24">Indiquez l’adresse complète où votre commande doit être livrée.</p>
                     <div className="space-y-20">
                       <div>
-                        <label htmlFor="address" className="block text-body-sm font-medium text-charcoal mb-8">
-                          {c.address}
+                          <label htmlFor="address" className="block text-body-sm font-medium text-charcoal mb-8">
+                          {c.deliveryAddress}
                         </label>
                         <input
                           type="text"
@@ -288,12 +314,12 @@ export default function CheckoutPage() {
                         type="button"
                         variant="secondary"
                         size="lg"
-                        className="flex-1"
+                        className="flex-1 rounded-card"
                         onClick={() => setStep(1)}
                       >
                         {c.back}
                       </Button>
-                      <Button type="submit" size="lg" className="flex-1">
+                      <Button type="submit" size="lg" className="flex-1 rounded-card">
                         {c.nextPayment}
                       </Button>
                     </div>
@@ -320,12 +346,12 @@ export default function CheckoutPage() {
                         type="button"
                         variant="secondary"
                         size="lg"
-                        className="flex-1"
+                        className="flex-1 rounded-card"
                         onClick={() => setStep(2)}
                       >
                         {c.back}
                       </Button>
-                      <Button type="submit" size="lg" className="flex-1" disabled={submitting}>
+                      <Button type="submit" size="lg" className="flex-1 rounded-card" disabled={submitting}>
                         {submitting ? '…' : c.request}
                       </Button>
                     </div>
