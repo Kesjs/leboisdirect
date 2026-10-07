@@ -84,19 +84,36 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     ...(productVideo ? [{ type: 'video' as const, src: productVideo.youtubeId ? getYouTubeThumbnail(productVideo.youtubeId) : videoThumbnail }] : []),
   ]
   const selectedMedia = galleryItems[selectedMediaIndex] || galleryItems[0]
-  const localReviewPreview = process.env.NODE_ENV !== 'production'
-  const productReviews = getProductReviews(product.slug, { preview: localReviewPreview })
+  const productReviews = getProductReviews(product.slug)
 
   const reviewsCopy = {
-    fr: { eyebrow: 'Avis clients', title: 'Les avis sur ce produit', empty: 'Les premiers avis clients seront affichés ici après les premières commandes.', editorialLabel: 'Le regard Braviko', editorialText: 'Cette lecture éditoriale s’appuie sur les caractéristiques, le conditionnement et l’usage prévu de la référence. Elle ne constitue pas un avis client.' },
-    de: { eyebrow: 'Kundenbewertungen', title: 'Bewertungen zu diesem Produkt', empty: 'Die ersten Kundenbewertungen werden nach den ersten Bestellungen hier angezeigt.', editorialLabel: 'Braviko Einschätzung', editorialText: 'Diese redaktionelle Einordnung basiert auf Eigenschaften, Verpackung und vorgesehener Nutzung. Sie ist keine Kundenbewertung.' },
-    it: { eyebrow: 'Recensioni clienti', title: 'Le recensioni di questo prodotto', empty: 'Le prime recensioni saranno mostrate qui dopo i primi ordini.', editorialLabel: 'Il punto di vista Braviko', editorialText: 'Questa lettura editoriale si basa su caratteristiche, confezionamento e uso previsto. Non è una recensione cliente.' },
-  }[locale]
-
-  const reviewPreviewNotice = {
-    fr: 'Aperçu local · avis de démonstration non publiés',
-    de: 'Lokale Vorschau · Demo-Bewertungen, nicht veröffentlicht',
-    it: 'Anteprima locale · recensioni demo non pubblicate',
+    fr: {
+      eyebrow: 'Retours d’expérience',
+      title: 'Avis sur ce produit',
+      note: 'Avis de démonstration présentés à titre indicatif · non issus d’achats vérifiés.',
+      badge: 'Avis de démonstration',
+      empty: 'Les premiers avis clients seront affichés ici après les premières commandes.',
+      editorialLabel: 'Le regard Braviko',
+      editorialText: 'Cette lecture éditoriale s’appuie sur les caractéristiques, le conditionnement et l’usage prévu de la référence. Elle ne constitue pas un avis client.',
+    },
+    de: {
+      eyebrow: 'Erfahrungsberichte',
+      title: 'Bewertungen zu diesem Produkt',
+      note: 'Demo-Bewertungen zu Demonstrationszwecken · nicht aus verifizierten Käufen.',
+      badge: 'Demo-Bewertung',
+      empty: 'Die ersten Kundenbewertungen werden nach den ersten Bestellungen hier angezeigt.',
+      editorialLabel: 'Braviko Einschätzung',
+      editorialText: 'Diese redaktionelle Einordnung basiert auf Eigenschaften, Verpackung und vorgesehener Nutzung. Sie ist keine Kundenbewertung.',
+    },
+    it: {
+      eyebrow: 'Esperienze d’uso',
+      title: 'Le recensioni di questo prodotto',
+      note: 'Recensioni dimostrative a scopo illustrativo · non da acquisti verificati.',
+      badge: 'Recensione dimostrativa',
+      empty: 'Le prime recensioni saranno mostrate qui dopo i primi ordini.',
+      editorialLabel: 'Il punto di vista Braviko',
+      editorialText: 'Questa lettura editoriale si basa su caratteristiche, confezionamento e uso previsto. Non è una recensione cliente.',
+    },
   }[locale]
 
   const productReviewCopy = {
@@ -472,39 +489,38 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             </div>
           </div>
 
-          {!localReviewPreview && (
-            <section className="bk-product-insight" aria-labelledby="product-insight-title">
-              <div className="bk-product-section-heading">
-                <p className="bk-eyebrow">{productReviewCopy.eyebrow}</p>
-                <h2 id="product-insight-title">{productReviewCopy.title}</h2>
-                <p>{productReviewCopy.intro}</p>
-              </div>
-              <div className="bk-product-insight-grid">
-                {productReviewCopy.items.map(([title, text]) => (
-                  <details key={title} className="bk-product-insight-card">
-                    <summary><h3>{title}</h3></summary>
-                    <div className="bk-product-insight-content"><p>{text}</p></div>
-                  </details>
-                ))}
-              </div>
-            </section>
-          )}
+          <section className="bk-product-insight" aria-labelledby="product-insight-title">
+            <div className="bk-product-section-heading">
+              <p className="bk-eyebrow">{productReviewCopy.eyebrow}</p>
+              <h2 id="product-insight-title">{productReviewCopy.title}</h2>
+              <p>{productReviewCopy.intro}</p>
+            </div>
+            <div className="bk-product-insight-grid">
+              {productReviewCopy.items.map(([title, text]) => (
+                <details key={title} className="bk-product-insight-card">
+                  <summary><h3>{title}</h3></summary>
+                  <div className="bk-product-insight-content"><p>{text}</p></div>
+                </details>
+              ))}
+            </div>
+          </section>
 
           <section className="bk-product-reviews" aria-labelledby="product-reviews-title">
             <div className="bk-product-section-heading">
               <p className="bk-eyebrow">{reviewsCopy.eyebrow}</p>
               <h2 id="product-reviews-title">{reviewsCopy.title}</h2>
+              <p className="bk-product-review-note">{reviewsCopy.note}</p>
             </div>
-            {localReviewPreview && <p className="bk-product-review-preview-note">{reviewPreviewNotice}</p>}
             {productReviews.length > 0 ? (
               <div className="bk-product-review-list">
                 {productReviews.map((review, index) => (
                   <article key={`${review.author || 'review'}-${index}`} className="bk-product-review-card">
                     <div className="bk-product-review-meta">
                       {review.rating !== undefined && <span aria-label={`${review.rating} sur 5`}>{'★'.repeat(Math.floor(review.rating))}{review.rating % 1 ? '½' : ''}</span>}
+                      <span className="bk-review-badge">{review.label || reviewsCopy.badge}</span>
                     </div>
                     {review.text && <p>« {review.text} »</p>}
-                    <footer>{review.author || 'Source externe'}{review.date ? ` · ${review.date}` : ''}</footer>
+                    <footer>{review.author || 'Client'}{review.date ? ` · ${review.date}` : ''}</footer>
                   </article>
                 ))}
               </div>
