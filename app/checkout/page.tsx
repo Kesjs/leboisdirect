@@ -23,7 +23,7 @@ export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart()
   const { locale } = useI18n()
   const c = commerceCopy[locale]
-  const payLabel = locale === 'de' ? 'Jetzt bezahlen' : locale === 'it' ? 'Paga ora' : 'Payer maintenant'
+  const payLabel = locale === 'de' ? 'Weiter zur Zahlung' : locale === 'it' ? 'Vai al pagamento' : 'Passer au paiement'
   const { user, loading: authLoading } = useAuth()
   const supabase = useMemo(() => createClient(), [])
   const [step, setStep] = useState(1)
