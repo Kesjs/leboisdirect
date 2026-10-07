@@ -86,6 +86,8 @@ export default function CheckoutPage() {
       setStep(step + 1)
     } else {
       setSubmitting(true)
+      setFormError('')
+      try {
       const draft = createOrderDraft(formData, items, totalPrice)
       const orderItems = items.map(item => {
         const variant = item.product.variants?.find(value => value.id === item.variantId)
@@ -106,17 +108,18 @@ export default function CheckoutPage() {
         },
         p_items: orderItems,
       })
-      if (error) {
-        setFormError(error.message)
-        setSubmitting(false)
-        return
-      }
+      if (error) throw new Error(error.message)
       saveOrderDraft(draft)
       const checkoutResponse = await fetch('/api/stripe/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: draft.reference, locale, items: items.map(item => ({ productId: item.product.id, variantId: item.variantId, quantity: item.quantity })) }) })
       const checkoutResult = await checkoutResponse.json().catch(() => ({}))
-      if (!checkoutResponse.ok || !checkoutResult.url) { setFormError(checkoutResult.error === 'STRIPE_NOT_CONFIGURED' ? paymentCopy.unavailable : paymentCopy.error); setSubmitting(false); return }
+      if (!checkoutResponse.ok || !checkoutResult.url) throw new Error(checkoutResult.error || 'CHECKOUT_UNAVAILABLE')
       try { window.localStorage.removeItem('braviko-checkout-step') } catch { /* Ignore unavailable storage. */ }
       window.location.assign(checkoutResult.url)
+      } catch (error) {
+        const code = error instanceof Error ? error.message : 'CHECKOUT_UNAVAILABLE'
+        setFormError(code === 'STRIPE_NOT_CONFIGURED' ? paymentCopy.unavailable : code === 'AUTH_REQUIRED' ? 'Votre session a expiré. Veuillez vous reconnecter.' : paymentCopy.error)
+        setSubmitting(false)
+      }
     }
   }
 
@@ -341,6 +344,7 @@ export default function CheckoutPage() {
                         </div>
                       </div>
                     </div>
+                    {formError && <p role="alert" className="mt-24 rounded-card border border-red-200 bg-red-50 px-16 py-12 text-body-sm text-red-700">{formError}</p>}
                     <div className="flex gap-16 mt-32">
                       <Button
                         type="button"
