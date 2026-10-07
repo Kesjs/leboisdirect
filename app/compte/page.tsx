@@ -24,6 +24,9 @@ type Order = {
   address: string
   postal_code: string
   city: string
+  payment_status: 'unpaid' | 'pending' | 'paid' | 'failed' | 'refunded'
+  payment_method: string | null
+  paid_at: string | null
   braviko_order_items: { id: string; product_name: string; variant_label: string | null; quantity: number; unit_price: number; line_total: number }[] | null
 }
 
@@ -52,7 +55,7 @@ export default function AccountPage() {
   useEffect(() => {
     if (!user) return
     supabase.from('braviko_orders')
-      .select('id, reference, status, total, currency, created_at, first_name, last_name, phone, address, postal_code, city, braviko_order_items(id, product_name, variant_label, quantity, unit_price, line_total)')
+      .select('id, reference, status, total, currency, created_at, first_name, last_name, phone, address, postal_code, city, payment_status, payment_method, paid_at, braviko_order_items(id, product_name, variant_label, quantity, unit_price, line_total)')
       .order('created_at', { ascending: false })
       .then(({ data, error: queryError }: { data: Order[] | null; error: { message: string } | null }) => {
         if (queryError) setError(queryError.message)
@@ -105,7 +108,7 @@ export default function AccountPage() {
               <summary>{c.details}<span aria-hidden="true">↘</span></summary>
               <div className="bk-order-details-grid">
                 <div><p className="bk-eyebrow">{c.orderedItems}</p>{order.braviko_order_items?.map(item => <p key={item.id}>{item.quantity} × {item.product_name}{item.variant_label ? ` — ${item.variant_label}` : ''}</p>)}</div>
-                <div><p className="bk-eyebrow">{c.delivery}</p><p>{order.address}<br />{order.postal_code} {order.city}</p>{order.phone && <p>{order.phone}</p>}</div>
+                <div><p className="bk-eyebrow">{c.delivery}</p><p>{order.address}<br />{order.postal_code} {order.city}</p>{order.phone && <p>{order.phone}</p>}<p className="bk-eyebrow" style={{ marginTop: '18px' }}>Paiement</p><p>{order.payment_status === 'paid' ? 'Payé' : order.payment_status === 'failed' ? 'Échec du paiement' : 'En attente'}{order.payment_method ? ` · ${order.payment_method === 'card' ? 'Carte bancaire' : order.payment_method}` : ''}{order.paid_at ? ` · ${new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(order.paid_at))}` : ''}</p></div>
               </div>
             </details>
           </article>)}

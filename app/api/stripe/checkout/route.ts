@@ -36,6 +36,7 @@ export async function POST(request: Request) {
           bank_transfer: { type: 'eu_bank_transfer' },
         },
       },
+      payment_intent_data: { metadata: { reference: body.reference, user_id: user.id } },
       customer_email: user.email,
       metadata: { reference: body.reference, user_id: user.id },
       success_url: `${origin}/commande/confirmation?payment=success&session_id={CHECKOUT_SESSION_ID}`,
@@ -43,6 +44,7 @@ export async function POST(request: Request) {
       locale: locale === 'fr' ? 'fr' : locale === 'de' ? 'de' : 'it',
     } as unknown as Parameters<typeof stripe.checkout.sessions.create>[0]
     const session = await stripe.checkout.sessions.create(sessionParams)
+    await supabase.from('braviko_orders').update({ payment_status: 'pending', stripe_session_id: session.id }).eq('reference', body.reference).eq('user_id', user.id)
     return NextResponse.json({ url: session.url })
   } catch (error) {
     const code = error instanceof Error ? error.message : 'CHECKOUT_UNAVAILABLE'
