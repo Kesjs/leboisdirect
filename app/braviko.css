@@ -243,6 +243,11 @@
 .bk-product { min-width: 0; }
 .bk-product-skeleton-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px 24px; }
 .bk-product-skeleton { display: grid; gap: 12px; }
+.bk-product-skeleton-purchase { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.bk-skeleton-line-category { width: 34%; height: 10px; }
+.bk-skeleton-line-title { width: 86%; height: 18px; }
+.bk-skeleton-line-description { width: 100%; height: 14px; }
+.bk-skeleton-add { width: 40px; height: 40px; border-radius: 999px; background: var(--bk-surface); }
 .bk-skeleton-media, .bk-skeleton-line, .bk-product-loading-media, .bk-product-loading-copy span { display: block; background: linear-gradient(100deg, var(--bk-surface) 20%, #fff 40%, var(--bk-surface) 60%); background-size: 220% 100%; animation: bk-skeleton-shimmer 1.6s ease-in-out infinite; }
 .bk-skeleton-media { aspect-ratio: 1.3; border-radius: var(--bk-radius); }
 .bk-skeleton-line { width: 72%; height: 14px; }
