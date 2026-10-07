@@ -29,6 +29,7 @@ export async function POST(request: Request) {
     const sessionParams = {
       mode: 'payment' as const,
       line_items: lineItems,
+      adaptive_pricing: { enabled: false },
       payment_intent_data: { metadata: { reference: body.reference, user_id: user.id } },
       customer_email: user.email,
       metadata: { reference: body.reference, user_id: user.id },
