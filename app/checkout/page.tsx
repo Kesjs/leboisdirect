@@ -360,8 +360,8 @@ export default function CheckoutPage() {
                       >
                         {c.back}
                       </Button>
-                      <Button type="submit" size="md" className="flex-1 rounded-card">
-                        {payLabel}
+                      <Button type="submit" size="md" className="flex-1 rounded-card" disabled={submitting} aria-busy={submitting}>
+                        {submitting ? 'Redirection vers Stripe…' : payLabel}
                       </Button>
                     </div>
                   </div>

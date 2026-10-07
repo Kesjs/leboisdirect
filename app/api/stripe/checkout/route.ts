@@ -29,13 +29,6 @@ export async function POST(request: Request) {
     const sessionParams = {
       mode: 'payment' as const,
       line_items: lineItems,
-      payment_method_types: ['card', 'customer_balance'] as const,
-      payment_method_options: {
-        customer_balance: {
-          funding_type: 'bank_transfer',
-          bank_transfer: { type: 'eu_bank_transfer' },
-        },
-      },
       payment_intent_data: { metadata: { reference: body.reference, user_id: user.id } },
       customer_email: user.email,
       metadata: { reference: body.reference, user_id: user.id },
