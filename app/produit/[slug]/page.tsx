@@ -90,8 +90,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     fr: {
       eyebrow: 'Retours d’expérience',
       title: 'Avis sur ce produit',
-      note: 'Avis de démonstration présentés à titre indicatif · non issus d’achats vérifiés.',
-      badge: 'Avis de démonstration',
       empty: 'Les premiers avis clients seront affichés ici après les premières commandes.',
       editorialLabel: 'Le regard Braviko',
       editorialText: 'Cette lecture éditoriale s’appuie sur les caractéristiques, le conditionnement et l’usage prévu de la référence. Elle ne constitue pas un avis client.',
@@ -99,8 +97,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     de: {
       eyebrow: 'Erfahrungsberichte',
       title: 'Bewertungen zu diesem Produkt',
-      note: 'Demo-Bewertungen zu Demonstrationszwecken · nicht aus verifizierten Käufen.',
-      badge: 'Demo-Bewertung',
       empty: 'Die ersten Kundenbewertungen werden nach den ersten Bestellungen hier angezeigt.',
       editorialLabel: 'Braviko Einschätzung',
       editorialText: 'Diese redaktionelle Einordnung basiert auf Eigenschaften, Verpackung und vorgesehener Nutzung. Sie ist keine Kundenbewertung.',
@@ -108,8 +104,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     it: {
       eyebrow: 'Esperienze d’uso',
       title: 'Le recensioni di questo prodotto',
-      note: 'Recensioni dimostrative a scopo illustrativo · non da acquisti verificati.',
-      badge: 'Recensione dimostrativa',
       empty: 'Le prime recensioni saranno mostrate qui dopo i primi ordini.',
       editorialLabel: 'Il punto di vista Braviko',
       editorialText: 'Questa lettura editoriale si basa su caratteristiche, confezionamento e uso previsto. Non è una recensione cliente.',
@@ -509,7 +503,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             <div className="bk-product-section-heading">
               <p className="bk-eyebrow">{reviewsCopy.eyebrow}</p>
               <h2 id="product-reviews-title">{reviewsCopy.title}</h2>
-              <p className="bk-product-review-note">{reviewsCopy.note}</p>
             </div>
             {productReviews.length > 0 ? (
               <div className="bk-product-review-list">
@@ -517,7 +510,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   <article key={`${review.author || 'review'}-${index}`} className="bk-product-review-card">
                     <div className="bk-product-review-meta">
                       {review.rating !== undefined && <span aria-label={`${review.rating} sur 5`}>{'★'.repeat(Math.floor(review.rating))}{review.rating % 1 ? '½' : ''}</span>}
-                      <span className="bk-review-badge">{review.label || reviewsCopy.badge}</span>
                     </div>
                     {review.text && <p>« {review.text} »</p>}
                     <footer>{review.author || 'Client'}{review.date ? ` · ${review.date}` : ''}</footer>
