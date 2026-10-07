@@ -14,6 +14,7 @@ import PageSkeleton from '@/components/PageSkeleton'
 import type { Product } from '@/data/products'
 import { formatPrice } from '@/lib/utils'
 import { useCart } from '@/lib/cart-context'
+import { useToast } from '@/components/Toast'
 import { useI18n } from '@/lib/i18n-context'
 import { commerceCopy } from '@/data/commerce-copy'
 import { categoryLabels, hasMeaningfulConditioning, productLabel } from '@/data/product-labels'
@@ -33,6 +34,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [added, setAdded] = useState(false)
 
   const { addItem } = useCart()
+  const { showToast } = useToast()
   const router = useRouter()
   const { locale } = useI18n()
   const c = commerceCopy[locale]
@@ -170,12 +172,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
         ? [
             ['À quel usage ce produit est-il destiné ?', 'Cette référence est sélectionnée pour les travaux courants du terrain. Consultez les caractéristiques de la fiche pour vérifier la puissance, les dimensions et l’usage adapté à votre besoin.'],
             ['Que comprend le conditionnement ?', `Le conditionnement prévu est : ${productLabel(product, locale).conditioning}.`],
-            ['Comment se passe la livraison ?', `La livraison est généralement organisée sous 5 à 10 jours. ${productLabel(product, locale).delivery}`],
+            ['Comment se passe la livraison ?', `La livraison est généralement organisée sous 3 jours. ${productLabel(product, locale).delivery}`],
             ['Besoin d’aide avant de commander ?', 'Contactez-nous avec la surface à travailler et votre usage. Nous vous aiderons à comparer les références disponibles.'],
           ]
         : [
             [`Quel format choisir pour ${productLabel(product, locale).name} ?`, `${productLabel(product, locale).name} est proposé en ${productLabel(product, locale).conditioning || 'format indiqué sur cette fiche'}. Vérifiez les dimensions acceptées par votre appareil avant de commander.`],
-            [`Comment se passe la livraison de ${productLabel(product, locale).name} ?`, `La livraison de cette référence est généralement organisée sous 5 à 10 jours. ${productLabel(product, locale).delivery}`],
+            [`Comment se passe la livraison de ${productLabel(product, locale).name} ?`, `La livraison de cette référence est généralement organisée sous 3 jours. ${productLabel(product, locale).delivery}`],
             [`${productLabel(product, locale).name} est-il prêt à être utilisé ?`, `La fiche indique les caractéristiques et le conditionnement de cette référence. Conservez le produit à l’abri de l’humidité et préparez un accès dégagé pour le déchargement.`],
             [`Cette référence convient-elle à mon installation ?`, `Comparez les caractéristiques affichées pour ${productLabel(product, locale).name} avec votre appareil. Contactez-nous avec votre modèle, votre quantité habituelle et votre zone de livraison si vous avez un doute.`],
           ],
@@ -206,12 +208,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
         ? [
             ['Per quale utilizzo è pensato?', 'Questa referenza è adatta ai lavori più comuni sul terreno. Verifica potenza, dimensioni e uso previsto nella scheda prodotto.'],
             ['Cosa comprende la confezione?', `Il formato previsto è: ${productLabel(product, locale).conditioning}.`],
-            ['Come funziona la consegna?', `La consegna viene normalmente organizzata in 5-10 giorni. ${productLabel(product, locale).delivery}`],
+            ['Come funziona la consegna?', `La consegna viene normalmente organizzata entro 3 giorni. ${productLabel(product, locale).delivery}`],
             ['Serve aiuto prima dell’ordine?', 'Indicaci la superficie da lavorare e l’uso previsto. Ti aiuteremo a confrontare le referenze disponibili.'],
           ]
         : [
             ['Quale formato scegliere per il mio impianto?', `Il formato di questa referenza è: ${productLabel(product, locale).conditioning}. Verifica sempre le dimensioni ammesse dal tuo apparecchio.`],
-            ['Come funziona la consegna?', `La consegna viene normalmente organizzata in 5-10 giorni. ${productLabel(product, locale).delivery}`],
+            ['Come funziona la consegna?', `La consegna viene normalmente organizzata entro 3 giorni. ${productLabel(product, locale).delivery}`],
             ['Il prodotto è pronto all’uso?', 'La scheda indica confezione e caratteristiche utili. Conserva i prodotti al riparo dall’umidità e prepara un accesso libero per lo scarico.'],
             ['Serve un consiglio personalizzato?', 'Indicaci il tuo apparecchio, la quantità abituale e la zona di consegna. Ti aiuteremo a scegliere il formato giusto.'],
           ],
@@ -220,6 +222,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
   const handleAddToCart = () => {
     addItem(product, quantity, selectedVariant || undefined)
+    showToast({ title: c.added, description: `${productLabel(product, locale).name} a été ajouté à votre panier.` })
     setAdded(true)
     window.setTimeout(() => setAdded(false), 2200)
   }
@@ -412,6 +415,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 </button>
               </div>
               <p className="text-caption text-ash text-center" aria-live="polite">{added ? c.added : ''}</p>
+
+              <div className="bk-product-trust" aria-label="Engagements Braviko">
+                <div><span aria-hidden="true">⌁</span><p><strong>Livraison claire</strong><small>Conditions précisées avant validation</small></p></div>
+                <div><span aria-hidden="true">◌</span><p><strong>Sélection contrôlée</strong><small>Des produits choisis avec attention</small></p></div>
+                <div><span aria-hidden="true">↺</span><p><strong>Service attentif</strong><small>Une équipe disponible pour votre demande</small></p></div>
+              </div>
 
               {/* Features */}
               {product.features && product.features.length > 0 && (

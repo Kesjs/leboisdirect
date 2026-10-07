@@ -76,8 +76,9 @@ function ConnectionContent() {
       if (mode === 'signup') {
         if (!firstName.trim()) { setError(c.requiredFirstName); return }
         if (!lastName.trim()) { setError(c.requiredLastName); return }
-        const normalizedPhone = `${phoneCountry}${phone.replace(/\D/g, '').replace(/^0/, '')}`
-        if (!/^\+\d{8,15}$/.test(normalizedPhone)) { setError(c.invalidPhone); return }
+        const cleanedPhone = phone.replace(/\D/g, '').replace(/^0/, '')
+        const normalizedPhone = cleanedPhone ? `${phoneCountry}${cleanedPhone}` : ''
+        if (normalizedPhone && !/^\+\d{8,15}$/.test(normalizedPhone)) { setError(c.invalidPhone); return }
         if (!trimmedEmail) { setError(c.requiredEmail); return }
         if (!emailPattern.test(trimmedEmail)) { setError(c.invalidEmail); return }
         if (!password) { setError(c.requiredPassword); return }
@@ -86,7 +87,7 @@ function ConnectionContent() {
         const { data, error: signUpError } = await supabase.auth.signUp({
           email: trimmedEmail,
           password,
-          options: { data: { first_name: firstName.trim(), last_name: lastName.trim(), phone: normalizedPhone } },
+          options: { data: { first_name: firstName.trim(), last_name: lastName.trim(), ...(normalizedPhone ? { phone: normalizedPhone } : {}) } },
         })
         if (signUpError) setError(authError(signUpError.message))
         else if (data.session) router.replace(nextPath)
@@ -141,7 +142,7 @@ function ConnectionContent() {
         <form onSubmit={submit} className="bk-account-form" noValidate>
           {signup && <>
             <div className="bk-form-row"><label htmlFor="first-name">{c.firstName}<input id="first-name" name="firstName" value={firstName} onChange={event => setFirstName(event.target.value)} required autoComplete="given-name" /></label><label htmlFor="last-name">{c.lastName}<input id="last-name" name="lastName" value={lastName} onChange={event => setLastName(event.target.value)} required autoComplete="family-name" /></label></div>
-            <div className="bk-field"><label htmlFor="phone">{c.phone}</label><span className="bk-phone-field"><span className="bk-country-select"><span className={`bk-country-flag bk-flag-${selectedCountry.flag}`} aria-hidden="true" /><select id="phone-country" name="phoneCountry" value={phoneCountry} onChange={event => setPhoneCountry(event.target.value)} aria-label={c.phoneCountry}>{countries.map(country => <option key={country.code} value={country.code}>{country.short} {country.code}</option>)}</select></span><input id="phone" name="phone" value={phone} onChange={event => setPhone(event.target.value.replace(/[^\d ]/g, ''))} aria-label={c.phone} required inputMode="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" /></span></div>
+            <div className="bk-field"><label htmlFor="phone">{c.phone} <span className="text-smoke">(facultatif)</span></label><span className="bk-phone-field"><span className="bk-country-select"><span className={`bk-country-flag bk-flag-${selectedCountry.flag}`} aria-hidden="true" /><select id="phone-country" name="phoneCountry" value={phoneCountry} onChange={event => setPhoneCountry(event.target.value)} aria-label={c.phoneCountry}>{countries.map(country => <option key={country.code} value={country.code}>{country.short} {country.code}</option>)}</select></span><input id="phone" name="phone" value={phone} onChange={event => setPhone(event.target.value.replace(/[^\d ]/g, ''))} aria-label={c.phone} inputMode="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" /></span></div>
           </>}
           {(!user || mode !== 'reset') && <label htmlFor="email">{c.email}<input id="email" name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" /></label>}
           {mode !== 'reset' || user ? <div className="bk-field"><label htmlFor="password">{c.password}</label><span className="bk-password-field"><input id="password" name="password" type={showPassword ? 'text' : 'password'} value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete={signup || mode === 'reset' ? 'new-password' : 'current-password'} aria-describedby="password-hint" /><button className="bk-password-toggle" type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? c.hidePassword : c.showPassword}>{showPassword ? c.hidePassword : c.showPassword}</button></span><span id="password-hint" className="bk-form-hint">{c.passwordHint}</span></div> : null}

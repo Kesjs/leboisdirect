@@ -192,7 +192,7 @@ export const products: Product[] = [
     calorificValue: '4,9 kWh/kg',
     origin: 'France',
     conditioning: 'Palette de 1 tonne (66 sacs de 15 kg)',
-    deliveryInfo: 'Livraison sous 7-10 jours',
+    deliveryInfo: 'Livraison sous 3 jours',
   },
   {
     id: '7',

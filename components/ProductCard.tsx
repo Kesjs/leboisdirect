@@ -8,10 +8,12 @@ import { categoryLabel, productLabel } from '@/data/product-labels'
 import { bravikoCopy } from '@/data/braviko-copy'
 import { useI18n } from '@/lib/i18n-context'
 import { useCart } from '@/lib/cart-context'
+import { useToast } from '@/components/Toast'
 
 export default function ProductCard({ product }: { product: Product }) {
   const { locale } = useI18n()
   const { addItem } = useCart()
+  const { showToast } = useToast()
   const [added, setAdded] = useState(false)
   const [animating, setAnimating] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
@@ -34,6 +36,7 @@ export default function ProductCard({ product }: { product: Product }) {
   }, [product.image, product.images])
   const add = () => {
     addItem(product, 1, variant?.id)
+    showToast({ title: copy.added, description: `${label.name} a été ajouté à votre panier.` })
     setAdded(true)
     setAnimating(true)
     clearTimeout(timer.current)

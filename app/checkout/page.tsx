@@ -29,6 +29,7 @@ export default function CheckoutPage() {
   const [paymentAcknowledged, setPaymentAcknowledged] = useState(false)
   const [formError, setFormError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [previewItem, setPreviewItem] = useState<typeof items[number] | null>(null)
   const paymentState = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('payment') : null
   const paymentCopy = locale === 'de'
     ? { cancelled: 'Zahlung abgebrochen. Sie können es erneut versuchen.', error: 'Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut.', unavailable: 'Die Zahlung ist derzeit nicht verfügbar.' }
@@ -40,6 +41,8 @@ export default function CheckoutPage() {
     firstName: '',
     lastName: '',
     address: '',
+    addressComplement: '',
+    country: 'France',
     city: '',
     postalCode: '',
     phone: '',
@@ -87,7 +90,7 @@ export default function CheckoutPage() {
         p_reference: draft.reference,
         p_customer: {
           email: formData.email, first_name: formData.firstName, last_name: formData.lastName,
-          phone: `${formData.phoneCode} ${formData.phone}`.trim(), address: formData.address, postal_code: formData.postalCode, city: formData.city,
+          phone: `${formData.phoneCode} ${formData.phone}`.trim(), address: [formData.address, formData.addressComplement, formData.country].filter(Boolean).join(', '), postal_code: formData.postalCode, city: formData.city,
         },
         p_items: orderItems,
       })
@@ -104,7 +107,7 @@ export default function CheckoutPage() {
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
@@ -135,15 +138,18 @@ export default function CheckoutPage() {
               <div className="flex items-center justify-between mb-48">
                 {[1, 2, 3].map((s) => (
                   <div key={s} className="flex items-center flex-1">
-                    <div
+                    <button
+                      type="button"
+                      onClick={() => s < step && setStep(s)}
+                      aria-label={s < step ? `Revenir à l’étape ${s}` : `Étape ${s}`}
                       className={`w-40 h-40 rounded-full flex items-center justify-center text-body-sm font-semibold transition-colors ${
                         s <= step
                           ? 'bg-charcoal text-white'
                           : 'bg-mist text-ash border border-hairline'
-                      }`}
+                      } ${s < step ? 'cursor-pointer hover:bg-braise' : 'cursor-default'}`}
                     >
                       {s}
-                    </div>
+                    </button>
                     {s < 3 && (
                       <div
                         className={`flex-1 h-1 mx-12 transition-colors ${
@@ -164,6 +170,17 @@ export default function CheckoutPage() {
                     </h2>
                     <div className="space-y-20">
                       <div>
+                        <label htmlFor="country" className="block text-body-sm font-medium text-charcoal mb-8">Pays de livraison</label>
+                        <select id="country" name="country" value={formData.country} onChange={handleInputChange} required className="w-full px-16 py-12 border border-hairline rounded-card bg-white text-body text-charcoal focus:border-braise focus:outline-none">
+                          <option>France</option>
+                          <option>Belgique</option>
+                          <option>Luxembourg</option>
+                          <option>Suisse</option>
+                          <option>Allemagne</option>
+                          <option>Italie</option>
+                        </select>
+                      </div>
+                      <div>
                         <label htmlFor="email" className="block text-body-sm font-medium text-charcoal mb-8">
                           Email
                         </label>
@@ -177,6 +194,10 @@ export default function CheckoutPage() {
                           className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
                           placeholder="votre@email.fr"
                         />
+                      </div>
+                      <div>
+                        <label htmlFor="addressComplement" className="block text-body-sm font-medium text-charcoal mb-8">Complément d’adresse <span className="text-smoke">(facultatif)</span></label>
+                        <input type="text" id="addressComplement" name="addressComplement" value={formData.addressComplement} onChange={handleInputChange} className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none" placeholder="Appartement, bâtiment, étage, portail…" />
                       </div>
                       <div className="grid grid-cols-2 gap-20">
                         <div>
@@ -212,25 +233,28 @@ export default function CheckoutPage() {
                         <label htmlFor="phone" className="block text-body-sm font-medium text-charcoal mb-8">
                           {c.phone}
                         </label>
-                        <div className="grid grid-cols-[150px_minmax(0,1fr)] gap-12">
-                          <select
-                            id="phoneCountry"
-                            name="phoneCountry"
-                            value={formData.phoneCountry}
-                            onChange={(event) => {
-                              const codes: Record<string, string> = { FR: '+33', BE: '+32', CH: '+41', LU: '+352', DE: '+49', IT: '+39' }
-                              setFormData({ ...formData, phoneCountry: event.target.value, phoneCode: codes[event.target.value] ?? '+33' })
-                            }}
-                            aria-label="Pays du téléphone"
-                            className="w-full px-12 py-12 border border-hairline rounded-card bg-white text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
-                          >
-                            <option value="FR">🇫🇷 France (+33)</option>
-                            <option value="BE">🇧🇪 Belgique (+32)</option>
-                            <option value="CH">🇨🇭 Suisse (+41)</option>
-                            <option value="LU">🇱🇺 Luxembourg (+352)</option>
-                            <option value="DE">🇩🇪 Allemagne (+49)</option>
-                            <option value="IT">🇮🇹 Italie (+39)</option>
-                          </select>
+                        <div className="bk-phone-field">
+                          <span className="bk-country-select">
+                            <span className={`bk-country-flag bk-flag-${formData.phoneCountry.toLowerCase()}`} aria-hidden="true" />
+                            <select
+                              id="phoneCountry"
+                              name="phoneCountry"
+                              value={formData.phoneCountry}
+                              onChange={(event) => {
+                                const codes: Record<string, string> = { FR: '+33', BE: '+32', CH: '+41', LU: '+352', DE: '+49', IT: '+39' }
+                                setFormData({ ...formData, phoneCountry: event.target.value, phoneCode: codes[event.target.value] ?? '+33' })
+                              }}
+                              aria-label="Pays du téléphone"
+                              className="w-full px-12 py-12 border border-hairline rounded-card bg-white text-body text-charcoal focus:border-braise focus:outline-none"
+                            >
+                            <option value="FR">FR +33</option>
+                            <option value="BE">BE +32</option>
+                            <option value="CH">CH +41</option>
+                            <option value="LU">LU +352</option>
+                            <option value="DE">DE +49</option>
+                            <option value="IT">IT +39</option>
+                            </select>
+                          </span>
                           <input
                             type="tel"
                             id="phone"
@@ -240,7 +264,7 @@ export default function CheckoutPage() {
                             required
                             inputMode="tel"
                             autoComplete="tel-national"
-                            className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
+                            className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none"
                             placeholder="06 12 34 56 78"
                           />
                         </div>
@@ -262,7 +286,7 @@ export default function CheckoutPage() {
                     <p className="text-body-sm text-smoke mb-24">Indiquez l’adresse complète où votre commande doit être livrée.</p>
                     <div className="space-y-20">
                       <div>
-                          <label htmlFor="address" className="block text-body-sm font-medium text-charcoal mb-8">
+                        <label htmlFor="address" className="block text-body-sm font-medium text-charcoal mb-8">
                           {c.deliveryAddress}
                         </label>
                         <input
@@ -272,7 +296,7 @@ export default function CheckoutPage() {
                           value={formData.address}
                           onChange={handleInputChange}
                           required
-                          className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
+                          className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none"
                           placeholder="12 rue de la République"
                         />
                       </div>
@@ -288,7 +312,7 @@ export default function CheckoutPage() {
                             value={formData.postalCode}
                             onChange={handleInputChange}
                             required
-                            className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
+                            className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none"
                             placeholder="75001"
                           />
                         </div>
@@ -303,7 +327,7 @@ export default function CheckoutPage() {
                             value={formData.city}
                             onChange={handleInputChange}
                             required
-                            className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
+                            className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none"
                             placeholder="Paris"
                           />
                         </div>
@@ -313,13 +337,13 @@ export default function CheckoutPage() {
                       <Button
                         type="button"
                         variant="secondary"
-                        size="lg"
+                        size="md"
                         className="flex-1 rounded-card"
                         onClick={() => setStep(1)}
                       >
                         {c.back}
                       </Button>
-                      <Button type="submit" size="lg" className="flex-1 rounded-card">
+                      <Button type="submit" size="md" className="flex-1 rounded-card">
                         {c.nextPayment}
                       </Button>
                     </div>
@@ -374,7 +398,12 @@ export default function CheckoutPage() {
 
                     return (
                       <div key={`${item.product.id}-${item.variantId}`} className="flex gap-16">
-                        <div className="relative w-64 h-64 flex-shrink-0 rounded-card overflow-hidden">
+                        <button
+                          type="button"
+                          className="relative w-64 h-64 flex-shrink-0 rounded-card overflow-hidden cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-braise"
+                          onClick={() => setPreviewItem(item)}
+                          aria-label={`Agrandir ${productLabel(item.product, locale).name}`}
+                        >
                           <Image
                             src={item.product.image}
                             alt={item.product.name}
@@ -382,7 +411,7 @@ export default function CheckoutPage() {
                             className="object-cover"
                             sizes="64px"
                           />
-                        </div>
+                        </button>
                         <div className="flex-1 min-w-0">
                           <p className="text-body-sm font-semibold text-charcoal truncate">
                             {productLabel(item.product, locale).name}
@@ -419,6 +448,23 @@ export default function CheckoutPage() {
           </div>
         </div>
       </main>
+      {previewItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/60 p-20" role="dialog" aria-modal="true" aria-label="Aperçu du produit" onClick={() => setPreviewItem(null)}>
+          <div className="relative grid w-full max-w-2xl gap-24 rounded-card bg-white p-24 md:grid-cols-2 md:p-32" onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="absolute right-16 top-12 text-2xl text-smoke hover:text-charcoal" onClick={() => setPreviewItem(null)} aria-label="Fermer">×</button>
+            <div className="relative aspect-square overflow-hidden rounded-card bg-mist">
+              <Image src={previewItem.product.image} alt={productLabel(previewItem.product, locale).name} fill className="object-cover" sizes="(max-width: 768px) 90vw, 320px" />
+            </div>
+            <div className="flex flex-col justify-center gap-16 pr-8">
+              <h2 className="text-heading-sm font-semibold text-charcoal">{productLabel(previewItem.product, locale).name}</h2>
+              <p className="text-body-sm text-smoke">{c.quantity}: {previewItem.quantity}</p>
+              <p className="text-body font-semibold text-charcoal">{formatPrice((previewItem.product.variants?.find((v) => v.id === previewItem.variantId)?.price ?? previewItem.product.price) * previewItem.quantity)}</p>
+              <Link href="/panier" className="rounded-card bg-charcoal px-20 py-12 text-center text-body-sm font-medium text-white hover:bg-charcoal/90">Modifier dans le panier</Link>
+              <Link href={`/produit/${previewItem.product.slug}`} className="rounded-card border border-charcoal px-20 py-12 text-center text-body-sm font-medium text-charcoal hover:bg-charcoal/5">Voir la fiche produit</Link>
+            </div>
+          </div>
+        </div>
+      )}
       <Footer />
     </>
   )
