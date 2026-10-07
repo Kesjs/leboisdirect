@@ -23,10 +23,10 @@ export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart()
   const { locale } = useI18n()
   const c = commerceCopy[locale]
+  const payLabel = locale === 'de' ? 'Jetzt bezahlen' : locale === 'it' ? 'Paga ora' : 'Payer maintenant'
   const { user, loading: authLoading } = useAuth()
   const supabase = useMemo(() => createClient(), [])
   const [step, setStep] = useState(1)
-  const [paymentAcknowledged, setPaymentAcknowledged] = useState(false)
   const [formError, setFormError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [previewItem, setPreviewItem] = useState<typeof items[number] | null>(null)
@@ -49,6 +49,19 @@ export default function CheckoutPage() {
     phoneCountry: 'FR',
     phoneCode: '+33',
   })
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem('braviko-checkout-form')
+      if (saved) setFormData(current => ({ ...current, ...JSON.parse(saved) }))
+      if (window.localStorage.getItem('braviko-checkout-step') === '2') setStep(2)
+    } catch { /* Continue with an empty form when browser storage is unavailable. */ }
+  }, [])
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('braviko-checkout-form', JSON.stringify(formData))
+      window.localStorage.setItem('braviko-checkout-step', String(step))
+    } catch { /* The active checkout remains usable without browser storage. */ }
+  }, [formData, step])
 
   useEffect(() => {
     if (!authLoading && !user) router.replace('/connexion?mode=signup&next=/checkout&reason=checkout')
@@ -68,11 +81,10 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (step < 3) {
+    if (step === 1) {
       setFormError('')
       setStep(step + 1)
     } else {
-      if (!paymentAcknowledged) { setFormError(c.acknowledgement); return }
       setSubmitting(true)
       const draft = createOrderDraft(formData, items, totalPrice)
       const orderItems = items.map(item => {
@@ -103,6 +115,7 @@ export default function CheckoutPage() {
       const checkoutResponse = await fetch('/api/stripe/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: draft.reference, locale, items: items.map(item => ({ productId: item.product.id, variantId: item.variantId, quantity: item.quantity })) }) })
       const checkoutResult = await checkoutResponse.json().catch(() => ({}))
       if (!checkoutResponse.ok || !checkoutResult.url) { setFormError(checkoutResult.error === 'STRIPE_NOT_CONFIGURED' ? paymentCopy.unavailable : paymentCopy.error); setSubmitting(false); return }
+      try { window.localStorage.removeItem('braviko-checkout-step') } catch { /* Ignore unavailable storage. */ }
       window.location.assign(checkoutResult.url)
     }
   }
@@ -136,7 +149,7 @@ export default function CheckoutPage() {
             <div className="lg:col-span-7">
               {/* Progress */}
               <div className="flex items-center justify-between mb-48">
-                {[1, 2, 3].map((s) => (
+                {[1, 2].map((s) => (
                   <div key={s} className="flex items-center flex-1">
                     <button
                       type="button"
@@ -150,7 +163,7 @@ export default function CheckoutPage() {
                     >
                       {s}
                     </button>
-                    {s < 3 && (
+                    {s < 2 && (
                       <div
                         className={`flex-1 h-1 mx-12 transition-colors ${
                           s < step ? 'bg-charcoal' : 'bg-hairline'
@@ -170,17 +183,6 @@ export default function CheckoutPage() {
                     </h2>
                     <div className="space-y-20">
                       <div>
-                        <label htmlFor="country" className="block text-body-sm font-medium text-charcoal mb-8">Pays de livraison</label>
-                        <select id="country" name="country" value={formData.country} onChange={handleInputChange} required className="w-full px-16 py-12 border border-hairline rounded-card bg-white text-body text-charcoal focus:border-braise focus:outline-none">
-                          <option>France</option>
-                          <option>Belgique</option>
-                          <option>Luxembourg</option>
-                          <option>Suisse</option>
-                          <option>Allemagne</option>
-                          <option>Italie</option>
-                        </select>
-                      </div>
-                      <div>
                         <label htmlFor="email" className="block text-body-sm font-medium text-charcoal mb-8">
                           Email
                         </label>
@@ -194,10 +196,6 @@ export default function CheckoutPage() {
                           className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
                           placeholder="votre@email.fr"
                         />
-                      </div>
-                      <div>
-                        <label htmlFor="addressComplement" className="block text-body-sm font-medium text-charcoal mb-8">Complément d’adresse <span className="text-smoke">(facultatif)</span></label>
-                        <input type="text" id="addressComplement" name="addressComplement" value={formData.addressComplement} onChange={handleInputChange} className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none" placeholder="Appartement, bâtiment, étage, portail…" />
                       </div>
                       <div className="grid grid-cols-2 gap-20">
                         <div>
@@ -286,6 +284,12 @@ export default function CheckoutPage() {
                     <p className="text-body-sm text-smoke mb-24">Indiquez l’adresse complète où votre commande doit être livrée.</p>
                     <div className="space-y-20">
                       <div>
+                        <label htmlFor="country" className="block text-body-sm font-medium text-charcoal mb-8">Pays de livraison</label>
+                        <select id="country" name="country" value={formData.country} onChange={handleInputChange} required className="w-full px-16 py-12 border border-hairline rounded-card bg-white text-body text-charcoal focus:border-braise focus:outline-none">
+                          <option>France</option><option>Belgique</option><option>Luxembourg</option><option>Suisse</option><option>Allemagne</option><option>Italie</option>
+                        </select>
+                      </div>
+                      <div>
                         <label htmlFor="address" className="block text-body-sm font-medium text-charcoal mb-8">
                           {c.deliveryAddress}
                         </label>
@@ -299,6 +303,10 @@ export default function CheckoutPage() {
                           className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none"
                           placeholder="12 rue de la République"
                         />
+                      </div>
+                      <div>
+                        <label htmlFor="addressComplement" className="block text-body-sm font-medium text-charcoal mb-8">Complément d’adresse <span className="text-smoke">(facultatif)</span></label>
+                        <input type="text" id="addressComplement" name="addressComplement" value={formData.addressComplement} onChange={handleInputChange} className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none" placeholder="Appartement, bâtiment, étage, portail…" />
                       </div>
                       <div className="grid grid-cols-2 gap-20">
                         <div>
@@ -344,43 +352,12 @@ export default function CheckoutPage() {
                         {c.back}
                       </Button>
                       <Button type="submit" size="md" className="flex-1 rounded-card">
-                        {c.nextPayment}
+                        {payLabel}
                       </Button>
                     </div>
                   </div>
                 )}
 
-                {/* Step 3: Payment */}
-                {step === 3 && (
-                  <div className="bg-white rounded-card border border-hairline p-32">
-                    <h2 className="text-heading-sm font-semibold text-charcoal mb-24">{c.payment}</h2>
-                    {paymentState === 'cancelled' && <p role="alert" className="text-body-sm text-braise mb-16">{paymentCopy.cancelled}</p>}
-                    <div className="bg-ivory/50 rounded-card border border-hairline p-24 mb-24">
-                      <p className="text-body-sm text-smoke">
-                        {c.pending}
-                      </p>
-                    </div>
-                    <label className="flex gap-12 items-start text-body-sm text-smoke mb-20">
-                      <input type="checkbox" checked={paymentAcknowledged} onChange={(event) => setPaymentAcknowledged(event.target.checked)} className="mt-4 accent-braise" />
-                      <span>{c.acknowledgement}</span>
-                    </label>
-                    {formError && <p role="alert" className="text-body-sm text-braise mb-16">{formError}</p>}
-                    <div className="flex gap-16">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="lg"
-                        className="flex-1 rounded-card"
-                        onClick={() => setStep(2)}
-                      >
-                        {c.back}
-                      </Button>
-                      <Button type="submit" size="lg" className="flex-1 rounded-card" disabled={submitting}>
-                        {submitting ? '…' : c.request}
-                      </Button>
-                    </div>
-                  </div>
-                )}
               </form>
             </div>
 

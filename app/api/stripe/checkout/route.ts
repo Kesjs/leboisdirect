@@ -26,7 +26,23 @@ export async function POST(request: Request) {
     })
     const stripe = stripeClient()
     const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin
-    const session = await stripe.checkout.sessions.create({ mode: 'payment', line_items: lineItems, customer_email: user.email, metadata: { reference: body.reference, user_id: user.id }, success_url: `${origin}/commande/confirmation?payment=success&session_id={CHECKOUT_SESSION_ID}`, cancel_url: `${origin}/checkout?payment=cancelled`, locale: locale === 'fr' ? 'fr' : locale === 'de' ? 'de' : 'it' })
+    const sessionParams = {
+      mode: 'payment' as const,
+      line_items: lineItems,
+      payment_method_types: ['card', 'customer_balance'] as const,
+      payment_method_options: {
+        customer_balance: {
+          funding_type: 'bank_transfer',
+          bank_transfer: { type: 'eu_bank_transfer' },
+        },
+      },
+      customer_email: user.email,
+      metadata: { reference: body.reference, user_id: user.id },
+      success_url: `${origin}/commande/confirmation?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/checkout?payment=cancelled`,
+      locale: locale === 'fr' ? 'fr' : locale === 'de' ? 'de' : 'it',
+    } as unknown as Parameters<typeof stripe.checkout.sessions.create>[0]
+    const session = await stripe.checkout.sessions.create(sessionParams)
     return NextResponse.json({ url: session.url })
   } catch (error) {
     const code = error instanceof Error ? error.message : 'CHECKOUT_UNAVAILABLE'
