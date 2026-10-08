@@ -59,8 +59,8 @@ export default function OrderConfirmationPage() {
   }, [attempt])
 
   if (loading) return <PageSkeleton variant="page" label={c.loading} />
-  const title = receipt?.refunded ? c.refundedTitle : receipt?.paid ? c.paidTitle : receipt?.failed ? c.failedTitle : c.title
-  const body = receipt?.refunded ? c.refundedBody : receipt?.paid ? c.paidBody : receipt?.failed ? c.failedBody : c.body
+  const title = receipt?.refunded ? c.refundedTitle : receipt?.paid ? (receipt.testMode ? c.recordedTitle : c.paidTitle) : receipt?.failed ? c.failedTitle : c.title
+  const body = receipt?.refunded ? c.refundedBody : receipt?.paid ? (receipt.testMode ? c.recordedBody : c.paidBody) : receipt?.failed ? c.failedBody : c.body
   const amount = receipt?.amount != null && receipt.currency
     ? new Intl.NumberFormat(locale, { style: 'currency', currency: receipt.currency }).format(receipt.amount / 100)
     : null
@@ -69,15 +69,12 @@ export default function OrderConfirmationPage() {
     <p className="bk-eyebrow">{c.eyebrow}</p>
     <h1 className="bk-title">{error ? c.errorTitle : missing ? c.missingTitle : title}</h1>
     <p className="bk-lead" role="status">{error ? c.errorBody : missing ? c.missing : body}</p>
-    {receipt?.testMode && <p className="bk-form-message">{c.testMode}</p>}
-    {receipt && <section className="bk-section" aria-labelledby="order-summary">
-      <div className="bk-agriculture-preview">
+    {receipt && <section className="bk-order-receipt" aria-labelledby="order-summary">
         <div><p className="bk-eyebrow">{c.reference}</p><h2 id="order-summary">{receipt.reference}</h2></div>
-        <div><p className="bk-eyebrow">{c.items}</p>
+        <div className="bk-order-receipt-items"><p className="bk-eyebrow">{c.items}</p>
           {receipt.items?.map((item, index) => <p key={`${item.name}-${index}`}>{item.quantity} × {item.name}</p>)}
-          {amount && <p style={{ marginTop: '20px' }}><strong>{amount}</strong></p>}
         </div>
-      </div>
+        {amount && <div className="bk-order-receipt-total"><span>{c.total}</span><strong>{amount}</strong></div>}
     </section>}
     <div className="flex flex-wrap gap-16">
       {(error || (receipt && !receipt.paid && !receipt.failed && !receipt.refunded)) &&

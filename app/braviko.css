@@ -355,6 +355,12 @@
 .bk-related-scroller .bk-product h3 { font-size: 18px; }
 .bk-related-scroller::-webkit-scrollbar { height: 6px; }
 .bk-related-scroller::-webkit-scrollbar-thumb { background: var(--bk-muted); border-radius: 999px; }
+.bk-order-receipt { margin: 32px 0; padding: clamp(20px, 4vw, 32px); background: var(--bk-surface); border-radius: 8px; display: grid; gap: 24px; }
+.bk-order-receipt h2 { font-size: 18px; line-height: 1.4; overflow-wrap: anywhere; }
+.bk-order-receipt .bk-eyebrow { margin-bottom: 8px; }
+.bk-order-receipt-items p:not(.bk-eyebrow) { font-size: 16px; line-height: 1.6; }
+.bk-order-receipt-total { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; border-top: 1px solid var(--bk-line); padding-top: 20px; }
+.bk-order-receipt-total strong { white-space: nowrap; font-size: 20px; }
 .bk-agriculture-preview { display: grid; grid-template-columns: 1.1fr 1fr; min-height: 420px; background: var(--bk-surface); border-radius: 8px; overflow: hidden; }
 .bk-agriculture-photo { position: relative; min-height: 340px; }
 .bk-agriculture-preview > div:last-child { padding: clamp(28px, 4vw, 64px); align-self: center; }
