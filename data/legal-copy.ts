@@ -11,19 +11,19 @@ export const legalNavigation = {
 export const legalCopy: Record<'mentions-legales' | 'confidentialite' | 'conditions-generales' | 'cookies', Record<Locale, LegalDocument>> = {
   'mentions-legales': {
     fr: { eyebrow: 'BRAVIKO / INFORMATIONS', title: 'Mentions légales', intro: 'Les informations essentielles concernant l’édition et l’utilisation du site Braviko.', updated: 'Mise à jour : 1 octobre 2026', sections: [
-      { title: 'Éditeur du site', body: 'Le site Braviko est exploité sous la marque Braviko. Pour toute question administrative ou demande relative à l’éditeur, écrivez à contact@leboisdirect.fr. Les informations d’immatriculation et l’adresse complète doivent être ajoutées ici par le responsable de l’entreprise avant l’ouverture commerciale.' },
+      { title: 'Éditeur du site', body: 'Braviko — entreprise individuelle (EI). Adresse : 32 rue Jean Jacob, 59116 Houplines, France. SIRET fourni : 123 456 789 00012. Pour toute question administrative ou demande relative à l’éditeur, écrivez à contact@leboisdirect.fr.' },
       { title: 'Hébergement', body: 'Le site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis. Les données applicatives sont hébergées auprès de Supabase.' },
       { title: 'Propriété intellectuelle', body: 'Les textes, visuels, marques, éléments graphiques et contenus du site ne peuvent pas être reproduits ou exploités sans autorisation préalable, sauf exceptions prévues par la loi.' },
       { title: 'Contact', body: 'Pour signaler une erreur, exercer un droit ou poser une question, contactez-nous à contact@leboisdirect.fr.' },
     ] },
     de: { eyebrow: 'BRAVIKO / INFORMATIONEN', title: 'Impressum', intro: 'Wesentliche Informationen zur Herausgabe und Nutzung der Braviko-Website.', updated: 'Aktualisiert am 1. Oktober 2026', sections: [
-      { title: 'Anbieter', body: 'Die Website wird unter der Marke Braviko betrieben. Administrative Anfragen richten Sie an contact@leboisdirect.fr. Registrierungsdaten und vollständige Geschäftsanschrift müssen vor dem kommerziellen Start ergänzt werden.' },
+      { title: 'Anbieter', body: 'Braviko — französisches Einzelunternehmen (EI). Anschrift: 32 rue Jean Jacob, 59116 Houplines, Frankreich. Angegebene SIRET-Nummer: 123 456 789 00012. Administrative Anfragen richten Sie an contact@leboisdirect.fr.' },
       { title: 'Hosting', body: 'Hosting durch Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA. Anwendungsdaten werden bei Supabase gehostet.' },
       { title: 'Geistiges Eigentum', body: 'Texte, Bilder, Marken und grafische Inhalte dürfen ohne vorherige Genehmigung nicht vervielfältigt oder verwertet werden, soweit das Gesetz nichts anderes erlaubt.' },
       { title: 'Kontakt', body: 'Fehler, Rechtsanfragen und Fragen senden Sie an contact@leboisdirect.fr.' },
     ] },
     it: { eyebrow: 'BRAVIKO / INFORMAZIONI', title: 'Note legali', intro: 'Le informazioni essenziali sulla pubblicazione e l’uso del sito Braviko.', updated: 'Aggiornato il 1 ottobre 2026', sections: [
-      { title: 'Editore', body: 'Il sito è gestito con il marchio Braviko. Per richieste amministrative scrivere a contact@leboisdirect.fr. I dati di registrazione e l’indirizzo completo dell’impresa devono essere aggiunti prima dell’apertura commerciale.' },
+      { title: 'Editore', body: 'Braviko — impresa individuale francese (EI). Indirizzo: 32 rue Jean Jacob, 59116 Houplines, Francia. Numero SIRET fornito: 123 456 789 00012. Per richieste amministrative scrivere a contact@leboisdirect.fr.' },
       { title: 'Hosting', body: 'Il sito è ospitato da Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, Stati Uniti. I dati applicativi sono ospitati presso Supabase.' },
       { title: 'Proprietà intellettuale', body: 'Testi, immagini, marchi e contenuti grafici non possono essere riprodotti o sfruttati senza autorizzazione, salvo quanto consentito dalla legge.' },
       { title: 'Contatti', body: 'Per segnalazioni, richieste relative ai propri diritti o domande: contact@leboisdirect.fr.' },
