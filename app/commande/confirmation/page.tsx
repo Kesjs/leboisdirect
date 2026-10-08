@@ -5,17 +5,85 @@ import Link from 'next/link'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import PageSkeleton from '@/components/PageSkeleton'
-import { readOrderDraft, type OrderDraft } from '@/lib/order'
-import { formatPrice } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n-context'
 import { uiCopy } from '@/data/ui-copy'
-import { productLabel } from '@/data/product-labels'
+
+type Receipt = {
+  reference: string
+  paid: boolean
+  failed: boolean
+  refunded: boolean
+  testMode: boolean
+  amount: number | null
+  currency: string | null
+  items?: { name: string; quantity: number | null }[]
+}
 
 export default function OrderConfirmationPage() {
-  const [order, setOrder] = useState<OrderDraft | null>(null)
+  const [receipt, setReceipt] = useState<Receipt | null>(null)
   const [loading, setLoading] = useState(true)
-  const { locale } = useI18n(); const c = uiCopy[locale].confirmation
-  useEffect(() => { setOrder(readOrderDraft()); setLoading(false) }, [])
-  if (loading) return <PageSkeleton variant="page" label={c.title} />
-  return <><Header /><main id="main-content" className="bk-home bk-container bk-section"><p className="bk-eyebrow">{c.eyebrow}</p><h1 className="bk-title">{c.title}</h1><p className="bk-lead">{c.body}</p>{order ? <section className="bk-section" aria-labelledby="order-summary"><div className="bk-agriculture-preview"><div><p className="bk-eyebrow">{c.reference}</p><h2 id="order-summary">{order.reference}</h2><p>{c.created} {new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(new Date(order.createdAt))} {c.for} {order.customer.firstName} {order.customer.lastName}.</p></div><div><p className="bk-eyebrow">{c.items}</p>{order.items.map(item => <p key={item.product.id + item.variantId}>{item.quantity} × {productLabel(item.product, locale).name}</p>)}<p style={{marginTop:'20px'}}><strong>{formatPrice(order.subtotal)}</strong></p></div></div></section> : <p className="bk-lead">{c.missing}</p>}<div className="flex gap-16"><Link href="/boutique" className="bk-button">{c.continue} <span aria-hidden="true">↗</span></Link><Link href="/" className="bk-text-link">{c.home} <span aria-hidden="true">↗</span></Link></div></main><Footer /></>
+  const [error, setError] = useState(false)
+  const [missing, setMissing] = useState(false)
+  const [attempt, setAttempt] = useState(0)
+  const { locale } = useI18n()
+  const c = uiCopy[locale].confirmation
+
+  useEffect(() => {
+    const sessionId = new URLSearchParams(window.location.search).get('session_id')
+    if (!sessionId) { setMissing(true); setLoading(false); return }
+    let active = true
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const controller = new AbortController()
+    setLoading(true)
+    setError(false)
+    setReceipt(null)
+    const load = async (remaining: number) => {
+      try {
+        const response = await fetch(`/api/stripe/checkout/status?session_id=${encodeURIComponent(sessionId)}`, {
+          cache: 'no-store', signal: controller.signal,
+        })
+        if (!response.ok) throw new Error('CONFIRMATION_UNAVAILABLE')
+        const result: Receipt = await response.json()
+        if (!active) return
+        setReceipt(result)
+        setLoading(false)
+        if (!result.paid && !result.failed && !result.refunded && remaining > 0) {
+          timer = setTimeout(() => { void load(remaining - 1) }, 1500)
+        }
+      } catch {
+        if (active) { setError(true); setLoading(false) }
+      }
+    }
+    void load(4)
+    return () => { active = false; controller.abort(); if (timer) clearTimeout(timer) }
+  }, [attempt])
+
+  if (loading) return <PageSkeleton variant="page" label={c.loading} />
+  const title = receipt?.refunded ? c.refundedTitle : receipt?.paid ? c.paidTitle : receipt?.failed ? c.failedTitle : c.title
+  const body = receipt?.refunded ? c.refundedBody : receipt?.paid ? c.paidBody : receipt?.failed ? c.failedBody : c.body
+  const amount = receipt?.amount != null && receipt.currency
+    ? new Intl.NumberFormat(locale, { style: 'currency', currency: receipt.currency }).format(receipt.amount / 100)
+    : null
+
+  return <><Header /><main id="main-content" className="bk-home bk-container bk-section">
+    <p className="bk-eyebrow">{c.eyebrow}</p>
+    <h1 className="bk-title">{error ? c.errorTitle : missing ? c.missingTitle : title}</h1>
+    <p className="bk-lead" role="status">{error ? c.errorBody : missing ? c.missing : body}</p>
+    {receipt?.testMode && <p className="bk-form-message">{c.testMode}</p>}
+    {receipt && <section className="bk-section" aria-labelledby="order-summary">
+      <div className="bk-agriculture-preview">
+        <div><p className="bk-eyebrow">{c.reference}</p><h2 id="order-summary">{receipt.reference}</h2></div>
+        <div><p className="bk-eyebrow">{c.items}</p>
+          {receipt.items?.map((item, index) => <p key={`${item.name}-${index}`}>{item.quantity} × {item.name}</p>)}
+          {amount && <p style={{ marginTop: '20px' }}><strong>{amount}</strong></p>}
+        </div>
+      </div>
+    </section>}
+    <div className="flex flex-wrap gap-16">
+      {(error || (receipt && !receipt.paid && !receipt.failed && !receipt.refunded)) &&
+        <button className="bk-button" type="button" onClick={() => setAttempt(value => value + 1)}>{c.retry}</button>}
+      <Link href="/compte" className="bk-button">{c.account}<span aria-hidden="true">↗</span></Link>
+      <Link href="/boutique" className="bk-text-link">{c.continue}</Link>
+    </div>
+  </main><Footer /></>
 }
