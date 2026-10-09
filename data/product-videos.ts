@@ -15,7 +15,7 @@ const videosBySlug: Record<string, ProductVideo> = {
     title: 'Fendeur de bûches Scheppach Compact 10T – 3150 W',
   },
   'brasero-plancha-le-bigorneau-acier-corten-100-cm': {
-    youtubeId: '37d-6o4cVeo',
+    mp4Url: '/videos/brasero-plancha-le-bigorneau-acier-corten-100-cm.mp4',
     title: 'Brasero Plancha Le Bigorneau – Acier Corten Ø100 cm',
   },
   'chauffage-exterieur-gaz-planika-faro-8-kw': {

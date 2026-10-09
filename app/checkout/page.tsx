@@ -17,25 +17,28 @@ import { productLabel } from '@/data/product-labels'
 import { useAuth } from '@/lib/auth-context'
 import { createClient } from '@/lib/supabase/client'
 import { useMemo } from 'react'
+import { bankTransferDetails } from '@/data/bank-transfer'
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, totalPrice, clearCart } = useCart()
   const { locale } = useI18n()
   const c = commerceCopy[locale]
-  const payLabel = locale === 'de' ? 'Weiter zur Zahlung' : locale === 'it' ? 'Vai al pagamento' : 'Passer au paiement'
   const { user, loading: authLoading } = useAuth()
   const supabase = useMemo(() => createClient(), [])
   const [step, setStep] = useState(1)
   const [formError, setFormError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [bankSubmitting, setBankSubmitting] = useState(false)
+  const [bankTransferReference, setBankTransferReference] = useState<string | null>(null)
+  const [copiedField, setCopiedField] = useState<string | null>(null)
   const [previewItem, setPreviewItem] = useState<typeof items[number] | null>(null)
   const paymentState = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('payment') : null
   const paymentCopy = locale === 'de'
-    ? { cancelled: 'Zahlung abgebrochen. Sie können es erneut versuchen.', error: 'Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut.', unavailable: 'Die Zahlung ist derzeit nicht verfügbar.' }
+    ? { cancelled: 'Zahlung abgebrochen. Sie können es erneut versuchen.', error: 'Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut.', unavailable: 'Die Zahlung ist derzeit nicht verfügbar.', card: 'Mit Karte bezahlen', cardBody: 'Sichere Weiterleitung zu Stripe Checkout.', bank: 'SEPA-Überweisung', bankBody: 'Erhalten Sie die Bankverbindung und Ihre Bestellreferenz.', bankTitle: 'Ihre SEPA-Überweisung', bankIntro: 'Überweisen Sie den Gesamtbetrag und geben Sie diese Bestellreferenz im Verwendungszweck an.', holder: 'Kontoinhaber', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Überweisungsreferenz', copy: 'Kopieren', copied: 'Kopiert', close: 'Schließen', backToShop: 'Zurück zum Shop', bankError: 'Die Überweisung konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.' }
     : locale === 'it'
-      ? { cancelled: 'Pagamento annullato. Puoi riprovare.', error: 'Impossibile avviare il pagamento. Riprova.', unavailable: 'Il pagamento non è al momento disponibile.' }
-      : { cancelled: 'Paiement annulé. Vous pouvez réessayer.', error: 'Le paiement n’a pas pu être lancé. Réessayez.', unavailable: 'Le paiement est momentanément indisponible.' }
+      ? { cancelled: 'Pagamento annullato. Puoi riprovare.', error: 'Impossibile avviare il pagamento. Riprova.', unavailable: 'Il pagamento non è al momento disponibile.', card: 'Paga con carta', cardBody: 'Reindirizzamento sicuro a Stripe Checkout.', bank: 'Bonifico SEPA', bankBody: 'Ricevi le coordinate bancarie e il riferimento dell’ordine.', bankTitle: 'Il tuo bonifico SEPA', bankIntro: 'Effettua il bonifico per l’importo totale e indica questo riferimento nella causale.', holder: 'Intestatario', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Riferimento del bonifico', copy: 'Copia', copied: 'Copiato', close: 'Chiudi', backToShop: 'Torna al negozio', bankError: 'Impossibile preparare il bonifico. Riprova.' }
+      : { cancelled: 'Paiement annulé. Vous pouvez réessayer.', error: 'Le paiement n’a pas pu être lancé. Réessayez.', unavailable: 'Le paiement est momentanément indisponible.', card: 'Payer par carte', cardBody: 'Redirection sécurisée vers Stripe Checkout.', bank: 'Virement SEPA', bankBody: 'Recevez les coordonnées bancaires et la référence de commande.', bankTitle: 'Votre virement SEPA', bankIntro: 'Effectuez le virement du montant total et indiquez cette référence dans le libellé.', holder: 'Titulaire du compte', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Référence du virement', copy: 'Copier', copied: 'Copié', close: 'Fermer', backToShop: 'Retour à la boutique', bankError: 'Le virement n’a pas pu être préparé. Réessayez.' }
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -79,53 +82,84 @@ export default function CheckoutPage() {
   if (authLoading) return <PageSkeleton variant="checkout" label="Chargement de la commande" />
   if (!user || (items.length === 0 && step === 1)) return null
 
+  const createPendingOrder = async () => {
+    const draft = createOrderDraft(formData, items, totalPrice)
+    const orderItems = items.map(item => {
+      const variant = item.product.variants?.find(value => value.id === item.variantId)
+      return {
+        product_id: item.product.id,
+        variant_id: item.variantId ?? null,
+        product_name: productLabel(item.product, locale).name,
+        variant_label: variant?.label ?? (variant?.volume ? `${variant.volume} stère(s)` : null),
+        quantity: item.quantity,
+        unit_price: variant?.price ?? item.product.price,
+      }
+    })
+    const { error } = await supabase.rpc('create_braviko_order', {
+      p_reference: draft.reference,
+      p_customer: {
+        email: formData.email, first_name: formData.firstName, last_name: formData.lastName,
+        phone: `${formData.phoneCode} ${formData.phone}`.trim(), address: [formData.address, formData.addressComplement, formData.country].filter(Boolean).join(', '), postal_code: formData.postalCode, city: formData.city,
+      },
+      p_items: orderItems,
+    })
+    if (error) throw new Error(error.message)
+    saveOrderDraft(draft)
+    return draft
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (step === 1) {
       setFormError('')
       setStep(step + 1)
-    } else {
-      setSubmitting(true)
-      setFormError('')
-      try {
-      const draft = createOrderDraft(formData, items, totalPrice)
-      const orderItems = items.map(item => {
-        const variant = item.product.variants?.find(value => value.id === item.variantId)
-        return {
-          product_id: item.product.id,
-          variant_id: item.variantId ?? null,
-          product_name: productLabel(item.product, locale).name,
-          variant_label: variant?.label ?? (variant?.volume ? `${variant.volume} stère(s)` : null),
-          quantity: item.quantity,
-          unit_price: variant?.price ?? item.product.price,
-        }
-      })
-      const { error } = await supabase.rpc('create_braviko_order', {
-        p_reference: draft.reference,
-        p_customer: {
-          email: formData.email, first_name: formData.firstName, last_name: formData.lastName,
-          phone: `${formData.phoneCode} ${formData.phone}`.trim(), address: [formData.address, formData.addressComplement, formData.country].filter(Boolean).join(', '), postal_code: formData.postalCode, city: formData.city,
-        },
-        p_items: orderItems,
-      })
-      if (error) throw new Error(error.message)
-      saveOrderDraft(draft)
+      return
+    }
+
+    setSubmitting(true)
+    setFormError('')
+    try {
+      const draft = await createPendingOrder()
       const checkoutResponse = await fetch('/api/stripe/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: draft.reference, locale, items: items.map(item => ({ productId: item.product.id, variantId: item.variantId, quantity: item.quantity })) }) })
       const checkoutResult = await checkoutResponse.json().catch(() => ({}))
-        if (!checkoutResponse.ok || !checkoutResult.url) {
-          const checkoutError = new Error(checkoutResult.error || 'CHECKOUT_UNAVAILABLE')
-          ;(checkoutError as Error & { userMessage?: string }).userMessage = checkoutResult.message
-          throw checkoutError
-        }
+      if (!checkoutResponse.ok || !checkoutResult.url) {
+        const checkoutError = new Error(checkoutResult.error || 'CHECKOUT_UNAVAILABLE')
+        ;(checkoutError as Error & { userMessage?: string }).userMessage = checkoutResult.message
+        throw checkoutError
+      }
       try { window.localStorage.removeItem('braviko-checkout-step') } catch { /* Ignore unavailable storage. */ }
       window.location.assign(checkoutResult.url)
-      } catch (error) {
-        const code = error instanceof Error ? error.message : 'CHECKOUT_UNAVAILABLE'
-        const userMessage = error instanceof Error && 'userMessage' in error ? (error as Error & { userMessage?: string }).userMessage : undefined
-        setFormError(userMessage || (code === 'STRIPE_NOT_CONFIGURED' ? paymentCopy.unavailable : code === 'AUTH_REQUIRED' ? 'Votre session a expiré. Veuillez vous reconnecter.' : code === 'PRODUCT_UNAVAILABLE' ? 'Un des produits du panier n’est plus disponible.' : paymentCopy.error))
-        setSubmitting(false)
-      }
+    } catch (error) {
+      const code = error instanceof Error ? error.message : 'CHECKOUT_UNAVAILABLE'
+      const userMessage = error instanceof Error && 'userMessage' in error ? (error as Error & { userMessage?: string }).userMessage : undefined
+      setFormError(userMessage || (code === 'STRIPE_NOT_CONFIGURED' ? paymentCopy.unavailable : code === 'AUTH_REQUIRED' ? 'Votre session a expiré. Veuillez vous reconnecter.' : code === 'PRODUCT_UNAVAILABLE' ? 'Un des produits du panier n’est plus disponible.' : paymentCopy.error))
+      setSubmitting(false)
     }
+  }
+
+  const handleBankTransfer = async () => {
+    setBankSubmitting(true)
+    setFormError('')
+    try {
+      const draft = await createPendingOrder()
+      const response = await fetch('/api/bank-transfer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: draft.reference }) })
+      if (!response.ok) throw new Error('BANK_TRANSFER_UNAVAILABLE')
+      setBankTransferReference(draft.reference)
+      try { window.localStorage.removeItem('braviko-checkout-step') } catch { /* Ignore unavailable storage. */ }
+    } catch (error) {
+      const code = error instanceof Error ? error.message : 'BANK_TRANSFER_UNAVAILABLE'
+      setFormError(code === 'AUTH_REQUIRED' ? 'Votre session a expiré. Veuillez vous reconnecter.' : paymentCopy.bankError)
+    } finally {
+      setBankSubmitting(false)
+    }
+  }
+
+  const copyBankValue = async (field: string, value: string) => {
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopiedField(field)
+      window.setTimeout(() => setCopiedField(current => current === field ? null : current), 1800)
+    } catch { setCopiedField(null) }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -350,18 +384,26 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                     {formError && <p role="alert" className="mt-24 rounded-card border border-red-200 bg-red-50 px-16 py-12 text-body-sm text-red-700">{formError}</p>}
-                    <div className="flex gap-16 mt-32">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="md"
-                        className="flex-1 rounded-card"
-                        onClick={() => setStep(1)}
-                      >
-                        {c.back}
+                    <div className="mt-32 space-y-12" aria-label={c.payment}>
+                      <Button type="submit" size="lg" className="w-full rounded-card" disabled={submitting || bankSubmitting} aria-busy={submitting}>
+                        <span className="flex w-full items-center justify-between gap-16">
+                          <span>{submitting ? 'Ouverture du paiement sécurisé…' : paymentCopy.card}</span>
+                          <span aria-hidden="true">→</span>
+                        </span>
                       </Button>
-                      <Button type="submit" size="md" className="flex-1 rounded-card" disabled={submitting} aria-busy={submitting}>
-                        {submitting ? 'Ouverture du paiement sécurisé…' : payLabel}
+                      <p className="text-center text-body-sm text-smoke">{paymentCopy.cardBody}</p>
+                      <div className="flex items-center gap-12 py-4 text-body-sm text-smoke"><span className="h-px flex-1 bg-hairline" /><span>ou</span><span className="h-px flex-1 bg-hairline" /></div>
+                      <button type="button" className="w-full rounded-card border border-charcoal bg-white px-20 py-16 text-left text-charcoal transition-colors hover:bg-mist disabled:cursor-not-allowed disabled:opacity-60" onClick={handleBankTransfer} disabled={submitting || bankSubmitting} aria-busy={bankSubmitting}>
+                        <span className="flex items-center justify-between gap-16">
+                          <span>
+                            <span className="block font-semibold">{bankSubmitting ? 'Préparation du virement…' : paymentCopy.bank}</span>
+                            <span className="mt-4 block text-body-sm text-smoke">{paymentCopy.bankBody}</span>
+                          </span>
+                          <span aria-hidden="true">↗</span>
+                        </span>
+                      </button>
+                      <Button type="button" variant="secondary" size="md" className="w-full rounded-card" onClick={() => setStep(1)}>
+                        {c.back}
                       </Button>
                     </div>
                   </div>
@@ -448,6 +490,36 @@ export default function CheckoutPage() {
               <Link href="/panier" className="rounded-card bg-charcoal px-20 py-12 text-center text-body-sm font-medium text-white hover:bg-charcoal/90">Modifier dans le panier</Link>
               <Link href={`/produit/${previewItem.product.slug}`} className="rounded-card border border-charcoal px-20 py-12 text-center text-body-sm font-medium text-charcoal hover:bg-charcoal/5">Voir la fiche produit</Link>
             </div>
+          </div>
+        </div>
+      )}
+      {bankTransferReference && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-charcoal/60 p-12 sm:items-center sm:p-20" role="dialog" aria-modal="true" aria-labelledby="bank-transfer-title">
+          <div className="relative max-h-[min(92dvh,760px)] w-full max-w-lg overflow-y-auto rounded-card bg-white p-24 shadow-2xl sm:p-32">
+            <button type="button" className="absolute right-20 top-16 rounded-full px-8 py-4 text-2xl leading-none text-smoke hover:text-charcoal" onClick={() => setBankTransferReference(null)} aria-label={paymentCopy.close}>×</button>
+            <div className="mb-24 pr-32">
+              <p className="text-body-sm font-semibold uppercase tracking-[0.16em] text-braise">BRAVIKO / {paymentCopy.bank}</p>
+              <h2 id="bank-transfer-title" className="mt-8 text-heading-sm font-semibold text-charcoal">{paymentCopy.bankTitle}</h2>
+              <p className="mt-8 text-body-sm leading-relaxed text-smoke">{paymentCopy.bankIntro}</p>
+            </div>
+            <div className="mb-20 rounded-card border border-hairline bg-mist p-16">
+              <div className="flex items-center justify-between gap-16 text-body-sm"><span className="text-smoke">{c.total}</span><strong className="text-charcoal">{formatPrice(totalPrice)}</strong></div>
+              <div className="mt-8 flex items-center justify-between gap-16 text-body-sm"><span className="text-smoke">{paymentCopy.reference}</span><strong className="text-charcoal">{bankTransferReference}</strong></div>
+            </div>
+            <div className="space-y-12">
+              {[
+                [paymentCopy.holder, bankTransferDetails.accountHolder, 'holder'],
+                [paymentCopy.iban, bankTransferDetails.iban, 'iban'],
+                [paymentCopy.bic, bankTransferDetails.bic, 'bic'],
+                [paymentCopy.reference, bankTransferReference, 'reference'],
+              ].map(([label, value, field]) => (
+                <div key={field} className="flex items-center justify-between gap-12 rounded-card border border-hairline bg-white px-16 py-12">
+                  <div className="min-w-0"><p className="text-body-sm text-smoke">{label}</p><p className="mt-4 break-all font-medium text-charcoal">{value}</p></div>
+                  <button type="button" className="shrink-0 rounded-card bg-charcoal px-12 py-8 text-body-sm font-medium text-white hover:bg-charcoal/90" onClick={() => copyBankValue(field, value)}>{copiedField === field ? paymentCopy.copied : paymentCopy.copy}</button>
+                </div>
+              ))}
+            </div>
+            <button type="button" className="mt-24 w-full rounded-card bg-charcoal px-20 py-14 text-center text-body-sm font-medium text-white hover:bg-charcoal/90" onClick={() => { clearCart(); router.push('/boutique') }}>{paymentCopy.backToShop}</button>
           </div>
         </div>
       )}
