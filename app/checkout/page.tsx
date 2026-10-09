@@ -535,7 +535,7 @@ export default function CheckoutPage() {
               <p className="font-semibold">◷ {paymentCopy.processingTitle}</p>
               <p className="mt-8">{paymentCopy.processingBody}</p>
             </div>
-            <button type="button" className="mx-auto mt-24 block w-fit rounded-card border border-charcoal bg-white px-20 py-10 text-center text-body-sm font-medium text-charcoal hover:bg-mist" onClick={() => { clearCart(); router.push('/boutique') }}>{paymentCopy.backToShop}</button>
+            <button type="button" className="mx-auto mt-24 block h-40 min-h-0 w-fit whitespace-nowrap rounded-card border border-charcoal bg-white px-16 py-8 text-center text-body-sm font-medium leading-none text-charcoal hover:bg-mist" onClick={() => { clearCart(); router.push('/boutique') }}>{paymentCopy.backToShop}</button>
           </div>
         </div>
       )}
