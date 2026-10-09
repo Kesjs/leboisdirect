@@ -1,5 +1,5 @@
 export const bankTransferDetails = {
-  accountHolder: 'Denis Ledoux',
-  iban: 'FR76 2823 3000 0160 5543 2701 089',
-  bic: 'REVORFRP2',
+  accountHolder: 'ASOGBAVRI Paterne',
+  iban: 'FR76 1744 8000 0200 1161 4461 908',
+  bic: 'SFPEFRP2XXX',
 } as const
