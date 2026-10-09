@@ -384,24 +384,32 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                     {formError && <p role="alert" className="mt-24 rounded-card border border-red-200 bg-red-50 px-16 py-12 text-body-sm text-red-700">{formError}</p>}
-                    <div className="mt-32 space-y-12" aria-label={c.payment}>
-                      <Button type="submit" size="lg" className="w-full rounded-card" disabled={submitting || bankSubmitting} aria-busy={submitting}>
-                        <span className="flex w-full items-center justify-between gap-16">
-                          <span>{submitting ? 'Ouverture du paiement sécurisé…' : paymentCopy.card}</span>
-                          <span aria-hidden="true">→</span>
-                        </span>
-                      </Button>
-                      <p className="text-center text-body-sm text-smoke">{paymentCopy.cardBody}</p>
-                      <div className="flex items-center gap-12 py-4 text-body-sm text-smoke"><span className="h-px flex-1 bg-hairline" /><span>ou</span><span className="h-px flex-1 bg-hairline" /></div>
-                      <button type="button" className="w-full rounded-card border border-charcoal bg-white px-20 py-16 text-left text-charcoal transition-colors hover:bg-mist disabled:cursor-not-allowed disabled:opacity-60" onClick={handleBankTransfer} disabled={submitting || bankSubmitting} aria-busy={bankSubmitting}>
-                        <span className="flex items-center justify-between gap-16">
-                          <span>
-                            <span className="block font-semibold">{bankSubmitting ? 'Préparation du virement…' : paymentCopy.bank}</span>
-                            <span className="mt-4 block text-body-sm text-smoke">{paymentCopy.bankBody}</span>
+                    <div className="bk-checkout-payment mt-32 space-y-12" aria-label={c.payment}>
+                      <div className="bk-checkout-payment-heading">
+                        <p className="text-body-sm font-semibold uppercase tracking-[0.16em] text-braise">BRAVIKO / {c.payment}</p>
+                        <h3 className="mt-8 text-heading-sm font-semibold text-charcoal">Choisissez votre mode de paiement</h3>
+                        <p className="mt-8 text-body-sm leading-relaxed text-smoke">Vous serez redirigé vers un parcours sécurisé ou recevrez les coordonnées nécessaires pour le virement.</p>
+                      </div>
+                      <div className="grid gap-12 sm:grid-cols-2">
+                        <Button type="submit" size="lg" className="min-h-[96px] w-full rounded-card px-20 py-16 text-left" disabled={submitting || bankSubmitting} aria-busy={submitting}>
+                          <span className="flex w-full items-center justify-between gap-16">
+                            <span>
+                              <span className="block font-semibold">{submitting ? 'Ouverture du paiement sécurisé…' : paymentCopy.card}</span>
+                              <span className="mt-4 block text-body-sm text-white/70">{paymentCopy.cardBody}</span>
+                            </span>
+                            <span aria-hidden="true" className="shrink-0 text-xl">→</span>
                           </span>
-                          <span aria-hidden="true">↗</span>
-                        </span>
-                      </button>
+                        </Button>
+                        <button type="button" className="min-h-[96px] w-full rounded-card border border-charcoal bg-white px-20 py-16 text-left text-charcoal transition-colors hover:bg-mist disabled:cursor-not-allowed disabled:opacity-60" onClick={handleBankTransfer} disabled={submitting || bankSubmitting} aria-busy={bankSubmitting}>
+                          <span className="flex items-center justify-between gap-16">
+                            <span>
+                              <span className="block font-semibold">{bankSubmitting ? 'Préparation du virement…' : paymentCopy.bank}</span>
+                              <span className="mt-4 block text-body-sm text-smoke">{paymentCopy.bankBody}</span>
+                            </span>
+                            <span aria-hidden="true" className="shrink-0 text-xl">→</span>
+                          </span>
+                        </button>
+                      </div>
                       <Button type="button" variant="secondary" size="md" className="w-full rounded-card" onClick={() => setStep(1)}>
                         {c.back}
                       </Button>
