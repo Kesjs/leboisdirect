@@ -30,6 +30,7 @@ export async function POST(request: Request) {
       mode: 'payment' as const,
       line_items: lineItems,
       adaptive_pricing: { enabled: false },
+      payment_method_types: ['card'],
       wallet_options: { link: { display: 'never' } },
       payment_intent_data: { metadata: { reference: body.reference, user_id: user.id } },
       customer_email: user.email,
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
     const message = code === 'PRODUCT_UNAVAILABLE'
       ? 'Un des produits du panier n’est plus disponible.'
       : code === 'STRIPE_NOT_CONFIGURED'
-        ? 'Le paiement Stripe n’est pas encore configuré sur le serveur.'
+        ? 'Le paiement par carte n’est pas encore disponible.'
         : code
     return NextResponse.json({ error: code, message }, { status: code === 'STRIPE_NOT_CONFIGURED' ? 503 : 400 })
   }
