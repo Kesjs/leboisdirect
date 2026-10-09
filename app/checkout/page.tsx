@@ -35,10 +35,10 @@ export default function CheckoutPage() {
   const [previewItem, setPreviewItem] = useState<typeof items[number] | null>(null)
   const paymentState = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('payment') : null
   const paymentCopy = locale === 'de'
-    ? { cancelled: 'Zahlung abgebrochen. Sie können es erneut versuchen.', error: 'Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut.', unavailable: 'Die Zahlung ist derzeit nicht verfügbar.', card: 'Mit Karte bezahlen', cardBody: 'Sichere Weiterleitung zu Stripe Checkout.', bank: 'SEPA-Überweisung', bankBody: 'Erhalten Sie die Bankverbindung und Ihre Bestellreferenz.', bankTitle: 'Ihre SEPA-Überweisung', bankIntro: 'Überweisen Sie den Gesamtbetrag und geben Sie diese Bestellreferenz im Verwendungszweck an.', holder: 'Kontoinhaber', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Überweisungsreferenz', copy: 'Kopieren', copied: 'Kopiert', close: 'Schließen', backToShop: 'Zurück zum Shop', bankError: 'Die Überweisung konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.' }
+    ? { cancelled: 'Zahlung abgebrochen. Sie können es erneut versuchen.', error: 'Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut.', unavailable: 'Die Zahlung ist derzeit nicht verfügbar.', card: 'Mit Karte bezahlen', cardBody: 'Sichere Weiterleitung zu Stripe Checkout.', bank: 'SEPA-Überweisung', bankBody: 'Erhalten Sie die Bankverbindung und Ihre Bestellreferenz.', bankTitle: 'Ihre SEPA-Überweisung', bankIntro: 'Überweisen Sie den Gesamtbetrag und geben Sie diese Bestellreferenz im Verwendungszweck an.', holder: 'Kontoinhaber', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Überweisungsreferenz', copy: 'Kopieren', copied: 'Kopiert', close: 'Schließen', backToShop: 'Zurück zum Shop', processingTitle: 'Bearbeitungszeit', processingBody: 'Eine klassische SEPA-Überweisung kann 1 bis 2 Werktage dauern. Für eine schnellere Lieferung nutzen Sie, wenn möglich, eine Echtzeitüberweisung.', bankError: 'Die Überweisung konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.' }
     : locale === 'it'
-      ? { cancelled: 'Pagamento annullato. Puoi riprovare.', error: 'Impossibile avviare il pagamento. Riprova.', unavailable: 'Il pagamento non è al momento disponibile.', card: 'Paga con carta', cardBody: 'Reindirizzamento sicuro a Stripe Checkout.', bank: 'Bonifico SEPA', bankBody: 'Ricevi le coordinate bancarie e il riferimento dell’ordine.', bankTitle: 'Il tuo bonifico SEPA', bankIntro: 'Effettua il bonifico per l’importo totale e indica questo riferimento nella causale.', holder: 'Intestatario', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Riferimento del bonifico', copy: 'Copia', copied: 'Copiato', close: 'Chiudi', backToShop: 'Torna al negozio', bankError: 'Impossibile preparare il bonifico. Riprova.' }
-      : { cancelled: 'Paiement annulé. Vous pouvez réessayer.', error: 'Le paiement n’a pas pu être lancé. Réessayez.', unavailable: 'Le paiement est momentanément indisponible.', card: 'Payer par carte', cardBody: 'Redirection sécurisée vers Stripe Checkout.', bank: 'Virement SEPA', bankBody: 'Recevez les coordonnées bancaires et la référence de commande.', bankTitle: 'Votre virement SEPA', bankIntro: 'Effectuez le virement du montant total et indiquez cette référence dans le libellé.', holder: 'Titulaire du compte', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Référence du virement', copy: 'Copier', copied: 'Copié', close: 'Fermer', backToShop: 'Retour à la boutique', bankError: 'Le virement n’a pas pu être préparé. Réessayez.' }
+      ? { cancelled: 'Pagamento annullato. Puoi riprovare.', error: 'Impossibile avviare il pagamento. Riprova.', unavailable: 'Il pagamento non è al momento disponibile.', card: 'Paga con carta', cardBody: 'Reindirizzamento sicuro a Stripe Checkout.', bank: 'Bonifico SEPA', bankBody: 'Ricevi le coordinate bancarie e il riferimento dell’ordine.', bankTitle: 'Il tuo bonifico SEPA', bankIntro: 'Effettua il bonifico per l’importo totale e indica questo riferimento nella causale.', holder: 'Intestatario', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Riferimento del bonifico', copy: 'Copia', copied: 'Copiato', close: 'Chiudi', backToShop: 'Torna al negozio', processingTitle: 'Tempi di elaborazione', processingBody: 'Un bonifico SEPA classico può richiedere da 1 a 2 giorni lavorativi. Per una consegna più rapida, usa un bonifico istantaneo se la tua banca lo consente.', bankError: 'Impossibile preparare il bonifico. Riprova.' }
+      : { cancelled: 'Paiement annulé. Vous pouvez réessayer.', error: 'Le paiement n’a pas pu être lancé. Réessayez.', unavailable: 'Le paiement est momentanément indisponible.', card: 'Payer par carte', cardBody: 'Redirection sécurisée vers Stripe Checkout.', bank: 'Virement SEPA', bankBody: 'Recevez les coordonnées bancaires et la référence de commande.', bankTitle: 'Votre virement SEPA', bankIntro: 'Effectuez le virement du montant total et indiquez cette référence dans le libellé.', holder: 'Titulaire du compte', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Référence du virement', copy: 'Copier', copied: 'Copié', close: 'Fermer', backToShop: 'Retour à la boutique', processingTitle: 'Délai de traitement', processingBody: 'Un virement SEPA classique peut prendre 1 à 2 jours ouvrés. Pour une livraison plus rapide, privilégiez un virement instantané si votre banque le propose.', bankError: 'Le virement n’a pas pu être préparé. Réessayez.' }
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -494,12 +494,16 @@ export default function CheckoutPage() {
         </div>
       )}
       {bankTransferReference && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-charcoal/60 p-12 sm:items-center sm:p-20" role="dialog" aria-modal="true" aria-labelledby="bank-transfer-title">
-          <div className="relative max-h-[min(92dvh,760px)] w-full max-w-lg overflow-y-auto rounded-card bg-white p-24 shadow-2xl sm:p-32">
+        <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-charcoal/60 sm:items-center sm:p-20" role="dialog" aria-modal="true" aria-labelledby="bank-transfer-title">
+          <div className="relative h-full w-full max-w-lg overflow-y-auto bg-white p-24 shadow-2xl sm:h-auto sm:max-h-[min(92dvh,760px)] sm:rounded-card sm:p-32">
             <button type="button" className="absolute right-20 top-16 rounded-full px-8 py-4 text-2xl leading-none text-smoke hover:text-charcoal" onClick={() => setBankTransferReference(null)} aria-label={paymentCopy.close}>×</button>
+            <div className="mb-24 flex items-center justify-between gap-16 border-b border-hairline pb-16 pr-32">
+              <h2 className="text-heading-sm font-semibold text-charcoal">{c.summary}</h2>
+              <button type="button" className="rounded-card bg-amber-300 px-16 py-10 text-body-sm font-semibold text-charcoal hover:bg-amber-400" onClick={() => setBankTransferReference(null)}>{c.back}</button>
+            </div>
             <div className="mb-24 pr-32">
               <p className="text-body-sm font-semibold uppercase tracking-[0.16em] text-braise">BRAVIKO / {paymentCopy.bank}</p>
-              <h2 id="bank-transfer-title" className="mt-8 text-heading-sm font-semibold text-charcoal">{paymentCopy.bankTitle}</h2>
+              <h3 id="bank-transfer-title" className="mt-8 text-heading-sm font-semibold text-charcoal">{paymentCopy.bankTitle}</h3>
               <p className="mt-8 text-body-sm leading-relaxed text-smoke">{paymentCopy.bankIntro}</p>
             </div>
             <div className="mb-20 rounded-card border border-hairline bg-mist p-16">
@@ -518,6 +522,10 @@ export default function CheckoutPage() {
                   <button type="button" className="shrink-0 rounded-card bg-charcoal px-12 py-8 text-body-sm font-medium text-white hover:bg-charcoal/90" onClick={() => copyBankValue(field, value)}>{copiedField === field ? paymentCopy.copied : paymentCopy.copy}</button>
                 </div>
               ))}
+            </div>
+            <div className="mt-20 rounded-card border border-amber-200 bg-amber-50 p-16 text-body-sm leading-relaxed text-amber-900">
+              <p className="font-semibold">◷ {paymentCopy.processingTitle}</p>
+              <p className="mt-8">{paymentCopy.processingBody}</p>
             </div>
             <button type="button" className="mt-24 w-full rounded-card bg-charcoal px-20 py-14 text-center text-body-sm font-medium text-white hover:bg-charcoal/90" onClick={() => { clearCart(); router.push('/boutique') }}>{paymentCopy.backToShop}</button>
           </div>
