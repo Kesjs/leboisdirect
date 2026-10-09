@@ -32,7 +32,6 @@ export default function CheckoutPage() {
   const [bankSubmitting, setBankSubmitting] = useState(false)
   const [bankTransferReference, setBankTransferReference] = useState<string | null>(null)
   const [copiedField, setCopiedField] = useState<string | null>(null)
-  const [previewItem, setPreviewItem] = useState<typeof items[number] | null>(null)
   const paymentCopy = locale === 'de'
       ? { error: 'Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut.', unavailable: 'Die Zahlung ist derzeit nicht verfügbar.', card: 'Mit Karte bezahlen', cardBody: 'Sichere Zahlung', bank: 'SEPA-Überweisung', bankBody: 'Erhalten Sie die Bankverbindung und Ihre Bestellreferenz.', bankTitle: 'Ihre SEPA-Überweisung', bankIntro: 'Überweisen Sie den Gesamtbetrag und geben Sie diese Bestellreferenz im Verwendungszweck an.', holder: 'Kontoinhaber', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Überweisungsreferenz', copy: 'Kopieren', copied: 'Kopiert', close: 'Schließen', backToShop: 'Zurück zum Shop', processingTitle: 'Bearbeitungszeit', processingBody: 'Eine klassische SEPA-Überweisung kann 1 bis 2 Werktage dauern. Für eine schnellere Lieferung nutzen Sie, wenn möglich, eine Echtzeitüberweisung.', bankError: 'Die Überweisung konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.' }
     : locale === 'it'
@@ -170,7 +169,7 @@ export default function CheckoutPage() {
       <Header />
       <main id="main-content" className="bk-home bg-ivory">
         <div className="bg-white border-b border-hairline">
-          <div className="container-custom py-32">
+          <div className="container-custom py-24">
             <Link
               href="/panier"
               className="inline-flex items-center gap-12 text-body-sm text-smoke hover:text-braise transition-colors mb-24"
@@ -180,16 +179,16 @@ export default function CheckoutPage() {
               </svg>
               {c.back}
             </Link>
-            <h1 className="text-heading-lg font-semibold text-charcoal">{c.checkoutTitle}</h1>
+            <h1 className="text-heading-md font-semibold text-charcoal">{c.checkoutTitle}</h1>
           </div>
         </div>
 
-        <div className="container-custom py-64">
-          <div className="grid lg:grid-cols-12 gap-48">
+        <div className="container-custom py-40">
+          <div className="grid lg:grid-cols-12 gap-32">
             {/* Form */}
             <div className="lg:col-span-7">
               {/* Progress */}
-              <div className="flex items-center justify-between mb-48">
+              <div className="flex items-center justify-between mb-32">
                 {[1, 2].map((s) => (
                   <div key={s} className="flex items-center flex-1">
                     <button
@@ -218,7 +217,7 @@ export default function CheckoutPage() {
               <form onSubmit={handleSubmit}>
                 {/* Step 1: Contact */}
                 {step === 1 && (
-                  <div className="bg-white rounded-card border border-hairline p-32">
+                  <div className="bg-white rounded-card border border-hairline p-24 md:p-32">
                     <h2 className="text-heading-sm font-semibold text-charcoal mb-24">
                       {c.contact}
                     </h2>
@@ -318,7 +317,7 @@ export default function CheckoutPage() {
 
                 {/* Step 2: Delivery */}
                 {step === 2 && (
-                  <div className="bg-white rounded-card border border-hairline p-32">
+                  <div className="bg-white rounded-card border border-hairline p-24 md:p-32">
                       <h2 className="text-heading-sm font-semibold text-charcoal mb-8">
                       {c.deliveryAddress}
                     </h2>
@@ -385,9 +384,8 @@ export default function CheckoutPage() {
                     {formError && <p role="alert" className="mt-24 rounded-card border border-red-200 bg-red-50 px-16 py-12 text-body-sm text-red-700">{formError}</p>}
                     <div className="bk-checkout-payment mt-32 space-y-12" aria-label={c.payment}>
                       <div className="bk-checkout-payment-heading">
-                        <p className="text-body-sm font-semibold uppercase tracking-[0.16em] text-braise">BRAVIKO / {c.payment}</p>
-                        <h3 className="mt-8 text-heading-sm font-semibold text-charcoal">Choisissez votre mode de paiement</h3>
-                        <p className="mt-8 text-body-sm leading-relaxed text-smoke">Choisissez un paiement par carte sécurisé ou recevez les coordonnées nécessaires pour un virement SEPA.</p>
+                        <h3 className="text-heading-sm font-semibold text-charcoal">{c.payment}</h3>
+                        <p className="mt-8 text-body-sm text-smoke">Choisissez une option pour terminer votre commande.</p>
                       </div>
                       <div className="grid gap-12 sm:grid-cols-2">
                         <button type="submit" className="min-h-[72px] w-full rounded-card bg-charcoal px-20 py-12 text-left text-white transition-colors hover:bg-charcoal/90 disabled:cursor-not-allowed disabled:opacity-60" disabled={submitting || bankSubmitting} aria-busy={submitting}>
@@ -419,7 +417,7 @@ export default function CheckoutPage() {
 
             {/* Summary */}
             <div className="lg:col-span-5">
-              <div className="sticky top-[120px] bg-white rounded-card border border-hairline p-32">
+              <div className="sticky top-[120px] bg-white rounded-card border border-hairline p-24 md:p-32">
                 <h2 className="text-heading-sm font-semibold text-charcoal mb-24">
                   {c.summary}
                 </h2>
@@ -431,12 +429,7 @@ export default function CheckoutPage() {
 
                     return (
                       <div key={`${item.product.id}-${item.variantId}`} className="flex gap-16">
-                        <button
-                          type="button"
-                          className="relative w-64 h-64 flex-shrink-0 rounded-card overflow-hidden cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-braise"
-                          onClick={() => setPreviewItem(item)}
-                          aria-label={`Agrandir ${productLabel(item.product, locale).name}`}
-                        >
+                        <div className="relative w-64 h-64 flex-shrink-0 rounded-card overflow-hidden">
                           <Image
                             src={item.product.image}
                             alt={item.product.name}
@@ -444,7 +437,7 @@ export default function CheckoutPage() {
                             className="object-cover"
                             sizes="64px"
                           />
-                        </button>
+                        </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-body-sm font-semibold text-charcoal truncate">
                             {productLabel(item.product, locale).name}
@@ -481,23 +474,6 @@ export default function CheckoutPage() {
           </div>
         </div>
       </main>
-      {previewItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/60 p-20" role="dialog" aria-modal="true" aria-label="Aperçu du produit" onClick={() => setPreviewItem(null)}>
-          <div className="relative grid w-full max-w-2xl gap-24 rounded-card bg-white p-24 md:grid-cols-2 md:p-32" onClick={(event) => event.stopPropagation()}>
-            <button type="button" className="absolute right-16 top-12 text-2xl text-smoke hover:text-charcoal" onClick={() => setPreviewItem(null)} aria-label="Fermer">×</button>
-            <div className="relative aspect-square overflow-hidden rounded-card bg-mist">
-              <Image src={previewItem.product.image} alt={productLabel(previewItem.product, locale).name} fill className="object-cover" sizes="(max-width: 768px) 90vw, 320px" />
-            </div>
-            <div className="flex flex-col justify-center gap-16 pr-8">
-              <h2 className="text-heading-sm font-semibold text-charcoal">{productLabel(previewItem.product, locale).name}</h2>
-              <p className="text-body-sm text-smoke">{c.quantity}: {previewItem.quantity}</p>
-              <p className="text-body font-semibold text-charcoal">{formatPrice((previewItem.product.variants?.find((v) => v.id === previewItem.variantId)?.price ?? previewItem.product.price) * previewItem.quantity)}</p>
-              <Link href="/panier" className="rounded-card bg-charcoal px-20 py-12 text-center text-body-sm font-medium text-white hover:bg-charcoal/90">Modifier dans le panier</Link>
-              <Link href={`/produit/${previewItem.product.slug}`} className="rounded-card border border-charcoal px-20 py-12 text-center text-body-sm font-medium text-charcoal hover:bg-charcoal/5">Voir la fiche produit</Link>
-            </div>
-          </div>
-        </div>
-      )}
       {bankTransferReference && (
         <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-charcoal/60 sm:items-center sm:p-20" role="dialog" aria-modal="true" aria-labelledby="bank-transfer-title">
           <div className="relative h-full w-full max-w-lg overflow-y-auto bg-white p-24 shadow-2xl sm:h-auto sm:max-h-[min(92dvh,760px)] sm:rounded-card sm:p-32">
