@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -19,6 +19,10 @@ type Receipt = {
   items?: { name: string; quantity: number | null }[]
 }
 
+type GoogleTagWindow = Window & {
+  gtag?: (...args: unknown[]) => void
+}
+
 export default function OrderConfirmationPage() {
   const [receipt, setReceipt] = useState<Receipt | null>(null)
   const [loading, setLoading] = useState(true)
@@ -27,6 +31,7 @@ export default function OrderConfirmationPage() {
   const [attempt, setAttempt] = useState(0)
   const { locale } = useI18n()
   const c = uiCopy[locale].confirmation
+  const trackedConversion = useRef<string | null>(null)
 
   useEffect(() => {
     const sessionId = new URLSearchParams(window.location.search).get('session_id')
@@ -57,6 +62,24 @@ export default function OrderConfirmationPage() {
     void load(4)
     return () => { active = false; controller.abort(); if (timer) clearTimeout(timer) }
   }, [attempt])
+
+  useEffect(() => {
+    if (!receipt?.paid || receipt.testMode || receipt.amount == null) return
+    const sessionId = new URLSearchParams(window.location.search).get('session_id')
+    if (!sessionId || trackedConversion.current === sessionId) return
+    const storageKey = `braviko-google-ads-conversion:${sessionId}`
+    if (window.sessionStorage.getItem(storageKey)) return
+    const gtag = (window as GoogleTagWindow).gtag
+    if (!gtag) return
+    gtag('event', 'conversion', {
+      send_to: 'AW-18503582950/lSoBCLCd-ZYdEOaJmfdE',
+      value: receipt.amount / 100,
+      currency: receipt.currency || 'EUR',
+      transaction_id: sessionId,
+    })
+    window.sessionStorage.setItem(storageKey, '1')
+    trackedConversion.current = sessionId
+  }, [receipt])
 
   if (loading) return <PageSkeleton variant="page" label={c.loading} />
   const title = receipt?.refunded ? c.refundedTitle : receipt?.paid ? (receipt.testMode ? c.recordedTitle : c.paidTitle) : receipt?.failed ? c.failedTitle : c.title
