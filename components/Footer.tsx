@@ -24,7 +24,7 @@ export default function Footer() {
         </div>
         <div className="bk-footer-wordmark" aria-hidden="true">braviko<span>.</span></div>
         <nav className="bk-footer-legal" aria-label={legal.legal}><Link href="/mentions-legales">{legal.legal}</Link><Link href="/confidentialite">{legal.privacy}</Link><Link href="/conditions-generales">{legal.terms}</Link><Link href="/cookies">{legal.cookies}</Link></nav>
-        <div className="bk-footer-bottom"><p>© {new Date().getFullYear()} Braviko. {copy.rights}</p><a href="mailto:contact@leboisdirect.fr">contact@leboisdirect.fr</a><span>FR / DE / IT</span></div>
+        <div className="bk-footer-bottom"><p>© {new Date().getFullYear()} Braviko. {copy.rights}</p><a href="mailto:contact@braviko.fr">contact@braviko.fr</a><span>FR / DE / IT</span></div>
       </div>
     </footer>
   )
