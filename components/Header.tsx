@@ -154,6 +154,12 @@ export default function Header() {
               onClick={() => { setMobileOpen(!mobileOpen); setLanguageOpen(false); setSearchOpen(false) }}><span aria-hidden="true">{mobileOpen ? '×' : '☰'}</span></button>
           </div>
         </div>
+        <form id="mobile-search" action="/boutique" className="bk-mobile-search bk-container">
+          <label className="sr-only" htmlFor="mobile-search-query">{copy.search}</label>
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" /><path d="m13 13 4 4" /></svg>
+          <input id="mobile-search-query" name="q" placeholder={copy.searchPlaceholder} type="search" />
+          <button type="submit" aria-label={copy.search}>↗</button>
+        </form>
         {searchOpen && <form id="header-search" action="/boutique" className="bk-search bk-container">
           <label className="sr-only" htmlFor="search-query">{copy.search}</label>
           <input id="search-query" ref={searchInput} name="q" placeholder={copy.searchPlaceholder} type="search" required />
@@ -162,7 +168,8 @@ export default function Header() {
         <AnimatePresence>
           {mobileOpen && <motion.nav id="mobile-navigation" className="bk-mobile-nav bk-container" aria-label={copy.menu}
             initial={{ opacity: 0, y: reduced ? 0 : -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? 0 : 0.2 }}>
-            {[...links, ['/livraison', copy.delivery], ['/notre-histoire', copy.story], ['/contact', 'Contact']].map(([href, title]) => <Link href={href} key={href} onClick={collapse}>{title}<span aria-hidden="true">↗</span></Link>)}
+            <div className="bk-mobile-nav-head"><span>{copy.menu}</span><span aria-hidden="true">BRAVIKO</span></div>
+            {[...links, ['/livraison', copy.delivery], ['/notre-histoire', copy.story], ['/contact', 'Contact']].map(([href, title]) => <Link href={href} key={href} onClick={collapse}>{title}</Link>)}
           </motion.nav>}
         </AnimatePresence>
       </header>
