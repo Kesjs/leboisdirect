@@ -232,8 +232,30 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     router.push('/checkout')
   }
 
+  const localizedProduct = productLabel(product, locale)
+  const productSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: localizedProduct.name,
+    description: product.longDescription || localizedProduct.description,
+    image: product.images?.length ? product.images : [product.image],
+    sku: product.id,
+    brand: { '@type': 'Brand', name: 'Braviko' },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'EUR',
+      price: currentPrice.toFixed(2),
+      availability: 'https://schema.org/InStock',
+      url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://leboisdirect.vercel.app'}/produit/${encodeURIComponent(product.slug)}`,
+    },
+  }
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema).replace(/</g, '\\u003c') }}
+      />
       <Header />
       <main id="main-content" className="min-h-screen bg-ivory">
         {/* Breadcrumb */}

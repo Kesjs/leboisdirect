@@ -15,9 +15,18 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://leboisdirect.vercel.app'),
   title: 'Braviko — Les produits utiles, simplement',
   description: 'Préparez votre chauffage au bois avec des bûches, granulés et équipements sélectionnés pour l’hiver.',
   keywords: 'Braviko, chauffage au bois, bûches, granulés, bois compressé, hiver',
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    siteName: 'Braviko',
+    locale: 'fr_FR',
+    title: 'Braviko — Les produits utiles, simplement',
+    description: 'Préparez votre chauffage au bois avec des bûches, granulés et équipements sélectionnés pour l’hiver.',
+  },
 }
 
 export default function RootLayout({
