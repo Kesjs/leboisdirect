@@ -391,7 +391,7 @@ export default function CheckoutPage() {
                         <p className="mt-8 text-body-sm leading-relaxed text-smoke">Choisissez le paiement sécurisé par Stripe ou recevez les coordonnées nécessaires pour un virement SEPA.</p>
                       </div>
                       <div className="grid gap-12 sm:grid-cols-2">
-                        <Button type="submit" size="md" className="min-h-[72px] w-full rounded-card px-20 py-12 text-left" disabled={submitting || bankSubmitting} aria-busy={submitting}>
+                        <button type="submit" className="min-h-[72px] w-full rounded-card bg-charcoal px-20 py-12 text-left text-white transition-colors hover:bg-charcoal/90 disabled:cursor-not-allowed disabled:opacity-60" disabled={submitting || bankSubmitting} aria-busy={submitting}>
                           <span className="flex w-full items-center justify-between gap-16">
                             <span>
                               <span className="block font-semibold">{submitting ? 'Ouverture de Stripe…' : paymentCopy.card}</span>
@@ -399,7 +399,7 @@ export default function CheckoutPage() {
                             </span>
                             <span aria-hidden="true" className="shrink-0 text-xl">→</span>
                           </span>
-                        </Button>
+                        </button>
                         <button type="button" className="min-h-[72px] w-full rounded-card border border-charcoal bg-white px-20 py-12 text-left text-charcoal transition-colors hover:bg-mist disabled:cursor-not-allowed disabled:opacity-60" onClick={handleBankTransfer} disabled={submitting || bankSubmitting} aria-busy={bankSubmitting}>
                           <span className="flex items-center justify-between gap-16">
                             <span>
