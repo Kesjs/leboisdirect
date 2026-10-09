@@ -17,7 +17,7 @@ import { useCart } from '@/lib/cart-context'
 import { useToast } from '@/components/Toast'
 import { useI18n } from '@/lib/i18n-context'
 import { commerceCopy } from '@/data/commerce-copy'
-import { categoryLabels, hasMeaningfulConditioning, productLabel } from '@/data/product-labels'
+import { hasMeaningfulConditioning, productLabel } from '@/data/product-labels'
 import { uiCopy } from '@/data/ui-copy'
 import { getProductReviews } from '@/data/product-reviews'
 import { getProductVideo, getYouTubeEmbedUrl, getYouTubeThumbnail } from '@/data/product-videos'
@@ -109,57 +109,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       empty: 'Le prime recensioni saranno mostrate qui dopo i primi ordini.',
       editorialLabel: 'Il punto di vista Braviko',
       editorialText: 'Questa lettura editoriale si basa su caratteristiche, confezionamento e uso previsto. Non è una recensione cliente.',
-    },
-  }[locale]
-
-  const productReviewCopy = {
-    fr: {
-      eyebrow: 'Le regard Braviko',
-      title: 'Ce qu’il faut retenir',
-      intro: 'Une lecture claire de cette référence à partir de ses caractéristiques, de son conditionnement et de son usage prévu.',
-      items: product.category === 'machines-agricoles'
-        ? [
-            ['Pour quel besoin ?', 'Une référence pensée pour les travaux courants du terrain et les utilisateurs qui recherchent un équipement adapté à un usage régulier.'],
-            ['Le point à vérifier', 'Avant de commander, comparez la puissance, les dimensions et les accessoires inclus avec votre installation.'],
-            ['Notre conseil', 'Préparez la surface à travailler et l’accès de livraison afin de choisir la configuration la plus pratique.'],
-          ]
-        : [
-            ['Le format', `Cette référence est proposée en ${productLabel(product, locale).conditioning || 'conditionnement indiqué sur la fiche produit'}.`],
-            ['L’usage', productLabel(product, locale).description || 'Une solution de chauffage à choisir selon votre appareil, votre espace de stockage et votre besoin de combustion.'],
-            ['La livraison', productLabel(product, locale).delivery || 'La livraison est organisée selon la zone et le conditionnement sélectionné.'],
-          ],
-    },
-    de: {
-      eyebrow: 'Braviko Einschätzung',
-      title: 'Das Wichtigste auf einen Blick',
-      intro: 'Eine klare Einordnung dieser Referenz anhand ihrer Eigenschaften, Verpackung und vorgesehenen Nutzung.',
-      items: product.category === 'machines-agricoles'
-        ? [
-            ['Für welchen Bedarf?', 'Eine Referenz für typische Arbeiten auf dem Grundstück und einen regelmäßigen Einsatz.'],
-            ['Was ist zu prüfen?', 'Vergleichen Sie vor der Bestellung Leistung, Maße und enthaltenes Zubehör mit Ihrer Ausstattung.'],
-            ['Unser Tipp', 'Planen Sie die zu bearbeitende Fläche und den Lieferzugang vorab.'],
-          ]
-        : [
-            ['Das Format', `Diese Referenz wird in ${productLabel(product, locale).conditioning || 'der auf der Produktseite angegebenen Verpackung'} angeboten.`],
-            ['Der Einsatz', productLabel(product, locale).description || 'Eine Heizlösung, die passend zu Ofen, Lagerplatz und gewünschter Brenndauer ausgewählt wird.'],
-            ['Die Lieferung', productLabel(product, locale).delivery || 'Die Lieferung richtet sich nach Lieferzone und gewählter Verpackung.'],
-          ],
-    },
-    it: {
-      eyebrow: 'Il punto di vista Braviko',
-      title: 'Cosa sapere prima di scegliere',
-      intro: 'Una lettura chiara della referenza a partire da caratteristiche, confezione e utilizzo previsto.',
-      items: product.category === 'machines-agricoles'
-        ? [
-            ['Per quale esigenza?', 'Una referenza pensata per i lavori più comuni sul terreno e per un uso regolare.'],
-            ['Cosa verificare?', 'Prima dell’ordine, confronta potenza, dimensioni e accessori inclusi con la tua attrezzatura.'],
-            ['Il nostro consiglio', 'Prepara la superficie da lavorare e l’accesso per la consegna.'],
-          ]
-        : [
-            ['Il formato', `Questa referenza è proposta in ${productLabel(product, locale).conditioning || 'la confezione indicata nella scheda prodotto'}.`],
-            ['L’utilizzo', productLabel(product, locale).description || 'Una soluzione da scegliere in base al proprio apparecchio, allo spazio disponibile e alla durata desiderata.'],
-            ['La consegna', productLabel(product, locale).delivery || 'La consegna dipende dalla zona e dalla confezione selezionata.'],
-          ],
     },
   }[locale]
 
@@ -276,8 +225,8 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
         </div>
 
         {/* Product Detail */}
-        <div className="container-custom py-64">
-          <div className="grid md:grid-cols-2 gap-48 md:gap-64">
+        <div className="container-custom py-40">
+          <div className="grid md:grid-cols-2 gap-32 md:gap-48">
             {/* Gallery */}
             <div>
               <div className="sticky top-[120px]">
@@ -347,11 +296,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
             {/* Product Info */}
             <div>
-              <p className="bk-eyebrow" style={{ color: 'var(--bk-accent)' }}>
-                {categoryLabels[locale][product.category] || product.category.replace(/-/g, ' ')}
-              </p>
-
-              <h1 className="text-heading-lg md:text-display font-semibold text-charcoal mb-20 tracking-tight leading-tight">
+              <h1 className="text-heading-lg md:text-display font-semibold text-charcoal mb-16 tracking-tight leading-tight">
                 {productLabel(product, locale).name}
               </h1>
 
@@ -362,11 +307,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               )}
 
               <p className="text-body-lg text-smoke mb-16 leading-relaxed">{product.longDescription || productLabel(product, locale).description}</p>
-              {hasMeaningfulConditioning(productLabel(product, locale).conditioning) && (
-                <p className="text-body-sm text-ash mb-32">{c.conditioning} : {productLabel(product, locale).conditioning}</p>
-              )}
-
-              <div className="mb-40 pb-40 border-b border-hairline">
+              <div className="mb-32 pb-32 border-b border-hairline">
                 <div className="text-[48px] font-semibold text-charcoal tracking-tight mb-8">
                   {formatPrice(currentPrice)}
                 </div>
@@ -438,15 +379,9 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               </div>
               <p className="text-caption text-ash text-center" aria-live="polite">{added ? c.added : ''}</p>
 
-              <div className="bk-product-trust" aria-label="Engagements Braviko">
-                <div><span aria-hidden="true">⌁</span><p><strong>Livraison claire</strong><small>Conditions précisées avant validation</small></p></div>
-                <div><span aria-hidden="true">◌</span><p><strong>Sélection contrôlée</strong><small>Des produits choisis avec attention</small></p></div>
-                <div><span aria-hidden="true">↺</span><p><strong>Service attentif</strong><small>Une équipe disponible pour votre demande</small></p></div>
-              </div>
-
               {/* Features */}
               {product.features && product.features.length > 0 && (
-                <div className="mt-48 pt-48 border-t border-hairline">
+                <div className="mt-32 pt-32 border-t border-hairline">
                   <h2 className="text-heading-sm font-semibold text-charcoal mb-20">{c.details}</h2>
                   <ul className="space-y-12">
                     {product.features.map((feature, idx) => (
@@ -460,7 +395,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               )}
 
               {(hasMeaningfulConditioning(productLabel(product, locale).conditioning) || productLabel(product, locale).delivery) && (
-                <div className="mt-40 pt-40 border-t border-hairline">
+                <div className="mt-32 pt-32 border-t border-hairline">
                   <h2 className="sr-only">{c.details}</h2>
                   <dl className="grid gap-16 sm:grid-cols-2">
                     {hasMeaningfulConditioning(productLabel(product, locale).conditioning) && (
@@ -481,7 +416,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
               {/* Specs */}
               {(product.humidity || product.calorificValue || product.origin) && (
-                <div className="mt-40 pt-40 border-t border-hairline">
+                <div className="mt-32 pt-32 border-t border-hairline">
                   <h2 className="text-heading-sm font-semibold text-charcoal mb-20">{c.specifications}</h2>
                   <dl className="space-y-16">
                     {product.humidity && (
@@ -502,33 +437,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                         <dd className="text-body-sm text-smoke mt-4">{product.origin}</dd>
                       </div>
                     )}
-                    {hasMeaningfulConditioning(productLabel(product, locale).conditioning) && (
-                      <div>
-                        <dt className="text-body-sm font-semibold text-charcoal">{c.conditioning}</dt>
-                        <dd className="text-body-sm text-smoke mt-4">{productLabel(product, locale).conditioning}</dd>
-                      </div>
-                    )}
                   </dl>
                 </div>
               )}
             </div>
           </div>
-
-          <section className="bk-product-insight" aria-labelledby="product-insight-title">
-            <div className="bk-product-section-heading">
-              <p className="bk-eyebrow">{productReviewCopy.eyebrow}</p>
-              <h2 id="product-insight-title">{productReviewCopy.title}</h2>
-              <p>{productReviewCopy.intro}</p>
-            </div>
-            <div className="bk-product-insight-grid">
-              {productReviewCopy.items.map(([title, text]) => (
-                <details key={title} className="bk-product-insight-card">
-                  <summary><h3>{title}</h3></summary>
-                  <div className="bk-product-insight-content"><p>{text}</p></div>
-                </details>
-              ))}
-            </div>
-          </section>
 
           <section className="bk-product-reviews" aria-labelledby="product-reviews-title">
             <div className="bk-product-section-heading">

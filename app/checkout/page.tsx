@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/Header'
@@ -19,6 +19,16 @@ import { createClient } from '@/lib/supabase/client'
 import { useMemo } from 'react'
 import { bankTransferDetails } from '@/data/bank-transfer'
 
+async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit, timeoutMs = 15000) {
+  const controller = new AbortController()
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    return await fetch(input, { ...init, signal: controller.signal })
+  } finally {
+    window.clearTimeout(timeout)
+  }
+}
+
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, totalPrice, clearCart } = useCart()
@@ -32,6 +42,7 @@ export default function CheckoutPage() {
   const [bankSubmitting, setBankSubmitting] = useState(false)
   const [bankTransferReference, setBankTransferReference] = useState<string | null>(null)
   const [copiedField, setCopiedField] = useState<string | null>(null)
+  const paymentLock = useRef(false)
   const paymentCopy = locale === 'de'
       ? { error: 'Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut.', unavailable: 'Die Zahlung ist derzeit nicht verfügbar.', card: 'Mit Karte bezahlen', cardBody: 'Sichere Zahlung', bank: 'SEPA-Überweisung', bankBody: 'Erhalten Sie die Bankverbindung und Ihre Bestellreferenz.', bankTitle: 'Ihre SEPA-Überweisung', bankIntro: 'Überweisen Sie den Gesamtbetrag und geben Sie diese Bestellreferenz im Verwendungszweck an.', holder: 'Kontoinhaber', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Überweisungsreferenz', copy: 'Kopieren', copied: 'Kopiert', close: 'Schließen', backToShop: 'Zurück zum Shop', processingTitle: 'Bearbeitungszeit', processingBody: 'Eine klassische SEPA-Überweisung kann 1 bis 2 Werktage dauern. Für eine schnellere Lieferung nutzen Sie, wenn möglich, eine Echtzeitüberweisung.', bankError: 'Die Überweisung konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.' }
     : locale === 'it'
@@ -53,10 +64,15 @@ export default function CheckoutPage() {
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem('braviko-checkout-form')
-      if (saved) setFormData(current => ({ ...current, ...JSON.parse(saved) }))
-      if (window.localStorage.getItem('braviko-checkout-step') === '2') setStep(2)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          setFormData(current => ({ ...current, ...parsed }))
+        }
+      }
+      if (window.localStorage.getItem('braviko-checkout-step') === '2' && items.length > 0) setStep(2)
     } catch { /* Continue with an empty form when browser storage is unavailable. */ }
-  }, [])
+  }, [items.length])
   useEffect(() => {
     try {
       window.localStorage.setItem('braviko-checkout-form', JSON.stringify(formData))
@@ -114,11 +130,13 @@ export default function CheckoutPage() {
       return
     }
 
+    if (paymentLock.current) return
+    paymentLock.current = true
     setSubmitting(true)
     setFormError('')
     try {
       const draft = await createPendingOrder()
-      const checkoutResponse = await fetch('/api/stripe/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: draft.reference, locale, items: items.map(item => ({ productId: item.product.id, variantId: item.variantId, quantity: item.quantity })) }) })
+      const checkoutResponse = await fetchWithTimeout('/api/stripe/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: draft.reference, locale, items: items.map(item => ({ productId: item.product.id, variantId: item.variantId, quantity: item.quantity })) }) })
       const checkoutResult = await checkoutResponse.json().catch(() => ({}))
       if (!checkoutResponse.ok || !checkoutResult.url) {
         const checkoutError = new Error(checkoutResult.error || 'CHECKOUT_UNAVAILABLE')
@@ -132,21 +150,25 @@ export default function CheckoutPage() {
       const userMessage = error instanceof Error && 'userMessage' in error ? (error as Error & { userMessage?: string }).userMessage : undefined
       setFormError(userMessage || (code === 'STRIPE_NOT_CONFIGURED' ? paymentCopy.unavailable : code === 'AUTH_REQUIRED' ? 'Votre session a expiré. Veuillez vous reconnecter.' : code === 'PRODUCT_UNAVAILABLE' ? 'Un des produits du panier n’est plus disponible.' : paymentCopy.error))
       setSubmitting(false)
+      paymentLock.current = false
     }
   }
 
   const handleBankTransfer = async () => {
+    if (paymentLock.current) return
+    paymentLock.current = true
     setBankSubmitting(true)
     setFormError('')
     try {
       const draft = await createPendingOrder()
-      const response = await fetch('/api/bank-transfer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: draft.reference }) })
+      const response = await fetchWithTimeout('/api/bank-transfer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: draft.reference }) })
       if (!response.ok) throw new Error('BANK_TRANSFER_UNAVAILABLE')
       setBankTransferReference(draft.reference)
       try { window.localStorage.removeItem('braviko-checkout-step') } catch { /* Ignore unavailable storage. */ }
     } catch (error) {
       const code = error instanceof Error ? error.message : 'BANK_TRANSFER_UNAVAILABLE'
       setFormError(code === 'AUTH_REQUIRED' ? 'Votre session a expiré. Veuillez vous reconnecter.' : paymentCopy.bankError)
+      paymentLock.current = false
     } finally {
       setBankSubmitting(false)
     }
@@ -172,7 +194,7 @@ export default function CheckoutPage() {
           <div className="container-custom py-24">
             <Link
               href="/panier"
-              className="inline-flex items-center gap-12 text-body-sm text-smoke hover:text-braise transition-colors mb-24"
+              className="inline-flex items-center gap-12 text-body-sm text-smoke hover:text-braise transition-colors mb-24 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M13 8H3m0 0l4-4m-4 4l4 4" />
@@ -188,14 +210,15 @@ export default function CheckoutPage() {
             {/* Form */}
             <div className="lg:col-span-7">
               {/* Progress */}
-              <div className="flex items-center justify-between mb-32">
+              <div className="flex items-center justify-between gap-12 mb-32" aria-label="Progression de la commande">
                 {[1, 2].map((s) => (
-                  <div key={s} className="flex items-center flex-1">
+                  <div key={s} className="flex min-w-0 items-center flex-1">
                     <button
                       type="button"
                       onClick={() => s < step && setStep(s)}
+                      aria-current={s === step ? 'step' : undefined}
                       aria-label={s < step ? `Revenir à l’étape ${s}` : `Étape ${s}`}
-                      className={`w-40 h-40 rounded-full flex items-center justify-center text-body-sm font-semibold transition-colors ${
+                      className={`h-40 w-40 shrink-0 rounded-full flex items-center justify-center text-body-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 ${
                         s <= step
                           ? 'bg-charcoal text-white'
                           : 'bg-mist text-ash border border-hairline'
@@ -203,6 +226,9 @@ export default function CheckoutPage() {
                     >
                       {s}
                     </button>
+                    <span className={`ml-8 hidden text-body-sm sm:block ${s === step ? 'font-semibold text-charcoal' : 'text-smoke'}`}>
+                      {s === 1 ? c.contact : c.deliveryAddress}
+                    </span>
                     {s < 2 && (
                       <div
                         className={`flex-1 h-1 mx-12 transition-colors ${
@@ -233,11 +259,13 @@ export default function CheckoutPage() {
                           value={formData.email}
                           onChange={handleInputChange}
                           required
+                          autoComplete="email"
+                          maxLength={160}
                           className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
                           placeholder="votre@email.fr"
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-20">
+                      <div className="grid grid-cols-1 gap-20 sm:grid-cols-2">
                         <div>
                           <label htmlFor="firstName" className="block text-body-sm font-medium text-charcoal mb-8">
                             {c.firstName}
@@ -249,6 +277,8 @@ export default function CheckoutPage() {
                             value={formData.firstName}
                             onChange={handleInputChange}
                             required
+                            autoComplete="given-name"
+                            maxLength={80}
                             className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
                           />
                         </div>
@@ -263,6 +293,8 @@ export default function CheckoutPage() {
                             value={formData.lastName}
                             onChange={handleInputChange}
                             required
+                            autoComplete="family-name"
+                            maxLength={80}
                             className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
                           />
                         </div>
@@ -302,11 +334,13 @@ export default function CheckoutPage() {
                             required
                             inputMode="tel"
                             autoComplete="tel-national"
+                            maxLength={24}
+                            aria-describedby="phone-hint"
                             className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none"
                             placeholder="06 12 34 56 78"
                           />
                         </div>
-                        <p className="mt-8 text-body-sm text-smoke">Choisissez votre pays, puis indiquez votre numéro de téléphone.</p>
+                        <p id="phone-hint" className="mt-8 text-body-sm text-smoke">Choisissez votre pays, puis indiquez votre numéro de téléphone.</p>
                       </div>
                     </div>
                     <Button type="submit" size="lg" className="w-full mt-32 rounded-card">
@@ -325,7 +359,7 @@ export default function CheckoutPage() {
                     <div className="space-y-20">
                       <div>
                         <label htmlFor="country" className="block text-body-sm font-medium text-charcoal mb-8">Pays de livraison</label>
-                        <select id="country" name="country" value={formData.country} onChange={handleInputChange} required className="w-full px-16 py-12 border border-hairline rounded-card bg-white text-body text-charcoal focus:border-braise focus:outline-none">
+                        <select id="country" name="country" value={formData.country} onChange={handleInputChange} required autoComplete="country-name" className="w-full px-16 py-12 border border-hairline rounded-card bg-white text-body text-charcoal focus:border-braise focus:outline-none">
                           <option>France</option><option>Belgique</option><option>Luxembourg</option><option>Suisse</option><option>Allemagne</option><option>Italie</option>
                         </select>
                       </div>
@@ -340,15 +374,17 @@ export default function CheckoutPage() {
                           value={formData.address}
                           onChange={handleInputChange}
                           required
+                          autoComplete="street-address"
+                          maxLength={160}
                           className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none"
                           placeholder="12 rue de la République"
                         />
                       </div>
                       <div>
                         <label htmlFor="addressComplement" className="block text-body-sm font-medium text-charcoal mb-8">Complément d’adresse <span className="text-smoke">(facultatif)</span></label>
-                        <input type="text" id="addressComplement" name="addressComplement" value={formData.addressComplement} onChange={handleInputChange} className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none" placeholder="Appartement, bâtiment, étage, portail…" />
+                        <input type="text" id="addressComplement" name="addressComplement" value={formData.addressComplement} onChange={handleInputChange} autoComplete="address-line2" maxLength={120} className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none" placeholder="Appartement, bâtiment, étage, portail…" />
                       </div>
-                      <div className="grid grid-cols-2 gap-20">
+                      <div className="grid grid-cols-1 gap-20 sm:grid-cols-2">
                         <div>
                           <label htmlFor="postalCode" className="block text-body-sm font-medium text-charcoal mb-8">
                             {c.postalCode}
@@ -360,6 +396,8 @@ export default function CheckoutPage() {
                             value={formData.postalCode}
                             onChange={handleInputChange}
                             required
+                            autoComplete="postal-code"
+                            maxLength={12}
                             className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none"
                             placeholder="75001"
                           />
@@ -375,6 +413,8 @@ export default function CheckoutPage() {
                             value={formData.city}
                             onChange={handleInputChange}
                             required
+                            autoComplete="address-level2"
+                            maxLength={100}
                             className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none"
                             placeholder="Paris"
                           />
@@ -388,7 +428,7 @@ export default function CheckoutPage() {
                         <p className="mt-8 text-body-sm text-smoke">Choisissez une option pour terminer votre commande.</p>
                       </div>
                       <div className="grid gap-12 sm:grid-cols-2">
-                        <button type="submit" className="min-h-[72px] w-full rounded-card bg-charcoal px-20 py-12 text-left text-white transition-colors hover:bg-charcoal/90 disabled:cursor-not-allowed disabled:opacity-60" disabled={submitting || bankSubmitting} aria-busy={submitting}>
+                        <button type="submit" className="min-h-[72px] w-full rounded-card bg-charcoal px-20 py-12 text-left text-white transition-colors hover:bg-charcoal/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60" disabled={submitting || bankSubmitting} aria-busy={submitting}>
                           <span className="flex w-full items-center justify-between gap-16">
                             <span>
                               <span className="block font-semibold">{submitting ? 'Ouverture du paiement…' : paymentCopy.card}</span>
@@ -396,7 +436,7 @@ export default function CheckoutPage() {
                             </span>
                           </span>
                         </button>
-                        <button type="button" className="min-h-[72px] w-full rounded-card border border-charcoal bg-white px-20 py-12 text-left text-charcoal transition-colors hover:bg-mist disabled:cursor-not-allowed disabled:opacity-60" onClick={handleBankTransfer} disabled={submitting || bankSubmitting} aria-busy={bankSubmitting}>
+                        <button type="button" className="min-h-[72px] w-full rounded-card border border-charcoal bg-white px-20 py-12 text-left text-charcoal transition-colors hover:bg-mist focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleBankTransfer} disabled={submitting || bankSubmitting} aria-busy={bankSubmitting}>
                           <span className="flex items-center gap-16">
                             <span>
                               <span className="block font-semibold">{bankSubmitting ? 'Préparation du virement…' : paymentCopy.bank}</span>
@@ -417,7 +457,7 @@ export default function CheckoutPage() {
 
             {/* Summary */}
             <div className="lg:col-span-5">
-              <div className="sticky top-[120px] bg-white rounded-card border border-hairline p-24 md:p-32">
+              <div className="lg:sticky lg:top-[120px] bg-white rounded-card border border-hairline p-24 md:p-32">
                 <h2 className="text-heading-sm font-semibold text-charcoal mb-24">
                   {c.summary}
                 </h2>
@@ -476,16 +516,15 @@ export default function CheckoutPage() {
       </main>
       {bankTransferReference && (
         <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-charcoal/60 sm:items-center sm:p-20" role="dialog" aria-modal="true" aria-labelledby="bank-transfer-title">
-          <div className="relative h-full w-full max-w-lg overflow-y-auto bg-white p-24 shadow-2xl sm:h-auto sm:max-h-[min(92dvh,760px)] sm:rounded-card sm:p-32">
-            <button type="button" className="absolute right-20 top-16 rounded-full px-8 py-4 text-2xl leading-none text-smoke hover:text-charcoal" onClick={() => setBankTransferReference(null)} aria-label={paymentCopy.close}>×</button>
+          <div className="relative h-full w-full max-w-lg overflow-y-auto bg-white p-24 pb-[max(24px,env(safe-area-inset-bottom))] shadow-2xl sm:h-auto sm:max-h-[min(92dvh,760px)] sm:rounded-card sm:p-32">
+            <button type="button" className="absolute right-16 top-16 flex h-44 w-44 items-center justify-center rounded-card text-smoke hover:bg-mist hover:text-charcoal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise" onClick={() => setBankTransferReference(null)} aria-label={paymentCopy.close}>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" /></svg>
+            </button>
             <div className="mb-24 flex items-center justify-between gap-16 border-b border-hairline pb-16 pr-32">
-              <h2 className="text-heading-sm font-semibold text-charcoal">{c.summary}</h2>
-              <button type="button" className="h-40 min-h-0 w-auto rounded-card bg-amber-300 px-16 py-8 text-body-sm font-semibold leading-none text-charcoal hover:bg-amber-400" onClick={() => setBankTransferReference(null)}>{c.back}</button>
+              <h2 id="bank-transfer-title" className="text-heading-sm font-semibold text-charcoal">{paymentCopy.bankTitle}</h2>
             </div>
             <div className="mb-24 pr-32">
-              <p className="text-body-sm font-semibold uppercase tracking-[0.16em] text-braise">BRAVIKO / {paymentCopy.bank}</p>
-              <h3 id="bank-transfer-title" className="mt-8 text-heading-sm font-semibold text-charcoal">{paymentCopy.bankTitle}</h3>
-              <p className="mt-8 text-body-sm leading-relaxed text-smoke">{paymentCopy.bankIntro}</p>
+              <p className="text-body-sm leading-relaxed text-smoke">{paymentCopy.bankIntro}</p>
             </div>
             <div className="mb-20 rounded-card border border-hairline bg-mist p-16">
               <div className="flex items-center justify-between gap-16 text-body-sm"><span className="text-smoke">{c.total}</span><strong className="text-charcoal">{formatPrice(totalPrice)}</strong></div>
@@ -500,7 +539,7 @@ export default function CheckoutPage() {
               ].map(([label, value, field]) => (
                 <div key={field} className="flex items-center justify-between gap-12 rounded-card border border-hairline bg-white px-16 py-12">
                   <div className="min-w-0"><p className="text-body-sm text-smoke">{label}</p><p className="mt-4 break-all font-medium text-charcoal">{value}</p></div>
-                  <button type="button" className="h-40 shrink-0 rounded-card bg-charcoal px-12 py-8 text-body-sm font-medium text-white hover:bg-charcoal/90" onClick={() => copyBankValue(field, value)}>{copiedField === field ? paymentCopy.copied : paymentCopy.copy}</button>
+                  <button type="button" className="h-44 shrink-0 rounded-card bg-charcoal px-12 py-8 text-body-sm font-medium text-white hover:bg-charcoal/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2" onClick={() => copyBankValue(field, value)}>{copiedField === field ? paymentCopy.copied : paymentCopy.copy}</button>
                 </div>
               ))}
             </div>
@@ -508,7 +547,7 @@ export default function CheckoutPage() {
               <p className="font-semibold">◷ {paymentCopy.processingTitle}</p>
               <p className="mt-8">{paymentCopy.processingBody}</p>
             </div>
-            <button type="button" className="mx-auto mt-24 block h-40 min-h-0 w-fit whitespace-nowrap rounded-card border border-charcoal bg-white px-16 py-8 text-center text-body-sm font-medium leading-none text-charcoal hover:bg-mist" onClick={() => { clearCart(); router.push('/boutique') }}>{paymentCopy.backToShop}</button>
+            <button type="button" className="mx-auto mt-24 block min-h-44 w-fit whitespace-nowrap rounded-card border border-charcoal bg-white px-16 py-8 text-center text-body-sm font-medium leading-none text-charcoal hover:bg-mist focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2" onClick={() => { clearCart(); router.push('/boutique') }}>{paymentCopy.backToShop}</button>
           </div>
         </div>
       )}

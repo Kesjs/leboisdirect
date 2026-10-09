@@ -27,7 +27,7 @@ export default function Header() {
   const { locale, setLocale } = useI18n()
   const copy = bravikoCopy[locale]
   const account = accountCopy[locale]
-  const { user, isAdmin, loading: authLoading, signOut } = useAuth()
+  const { user, isAdmin, loading: authLoading } = useAuth()
   const pathname = usePathname()
   const reduced = useReducedMotion()
   const sentinel = useRef<HTMLDivElement>(null)
@@ -35,7 +35,6 @@ export default function Header() {
   const languageButton = useRef<HTMLButtonElement>(null)
   const menuButton = useRef<HTMLButtonElement>(null)
   const searchButton = useRef<HTMLButtonElement>(null)
-  const accountButton = useRef<HTMLButtonElement>(null)
   const searchInput = useRef<HTMLInputElement>(null)
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => setScrolled(!entry.isIntersecting))
@@ -66,7 +65,6 @@ export default function Header() {
           if (event.key !== 'Escape') return
           if (languageOpen) languageButton.current?.focus()
           else if (searchOpen) searchButton.current?.focus()
-          else if (accountOpen) accountButton.current?.focus()
           else if (mobileOpen) menuButton.current?.focus()
           collapse()
         }}>
@@ -90,7 +88,7 @@ export default function Header() {
           <div className="bk-nav-actions">
             <div className="bk-language">
               <button ref={languageButton} type="button" className="bk-language-trigger" aria-label={copy.language + ' : ' + languages.find(x => x.code === locale)?.label} aria-expanded={languageOpen} aria-controls="language-options"
-                onClick={() => { setLanguageOpen(!languageOpen); setSearchOpen(false); setAccountOpen(false) }}>
+                onClick={() => { setLanguageOpen(!languageOpen); setSearchOpen(false) }}>
                 <span className={'bk-flag bk-flag-' + locale} aria-hidden="true" />
                 <span className="bk-language-name">{languages.find(x => x.code === locale)?.label}</span>
                 <span className={'bk-chevron' + (languageOpen ? ' is-open' : '')} aria-hidden="true" />
@@ -105,7 +103,7 @@ export default function Header() {
               </AnimatePresence>
             </div>
             <button ref={searchButton} type="button" className="bk-icon-button bk-search-trigger" aria-label={copy.search} aria-expanded={searchOpen} aria-controls="header-search"
-              onClick={() => { setSearchOpen(!searchOpen); setLanguageOpen(false); setAccountOpen(false) }}>
+              onClick={() => { setSearchOpen(!searchOpen); setLanguageOpen(false) }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" /><path d="m13 13 4 4" /></svg>
             </button>
             <button type="button" className="bk-cart-trigger" aria-label={copy.cart + ' (' + totalItems + ')'} onClick={() => { collapse(); setCartOpen(true) }}>
@@ -120,26 +118,15 @@ export default function Header() {
               onClick={collapse}
             >
               <span aria-hidden="true">A</span>
-            </Link> : user ? <div className="bk-account-menu-wrap">
-              <button
-                ref={accountButton}
-                type="button"
-                className="bk-profile-trigger is-authenticated"
-                aria-label={authLoading ? account.loading as string : account.account as string}
-                title={account.account as string}
-                aria-expanded={accountOpen}
-                aria-controls="header-account-menu"
-                onClick={() => { setAccountOpen(!accountOpen); setLanguageOpen(false); setSearchOpen(false) }}
-              >
-                <span aria-hidden="true">{(user.user_metadata?.first_name || user.email || 'B').slice(0, 1).toUpperCase()}</span>
-              </button>
-              <AnimatePresence>
-                {accountOpen && <motion.div id="header-account-menu" className="bk-account-menu" initial={{ opacity: 0, y: reduced ? 0 : -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: reduced ? 0 : 0.16 }}>
-                  <Link href="/compte" onClick={collapse}>{account.dashboardLink as string}<span aria-hidden="true">↗</span></Link>
-                  <button type="button" onClick={async () => { await signOut(); collapse() }}>{account.logout as string}<span aria-hidden="true">↗</span></button>
-                </motion.div>}
-              </AnimatePresence>
-            </div> : (
+            </Link> : user ? <Link
+              href="/compte"
+              className="bk-profile-trigger is-authenticated"
+              aria-label={account.dashboardLink as string}
+              title={account.dashboardLink as string}
+              onClick={collapse}
+            >
+              <span aria-hidden="true">{(user.user_metadata?.first_name || user.email || 'B').slice(0, 1).toUpperCase()}</span>
+            </Link> : (
               <Link
                 href="/connexion?mode=signup"
                 className="bk-profile-trigger"
@@ -151,7 +138,9 @@ export default function Header() {
               </Link>
             )}
             <button ref={menuButton} type="button" className="bk-icon-button bk-menu-trigger" aria-label={mobileOpen ? copy.close : copy.menu} aria-expanded={mobileOpen} aria-controls="mobile-navigation"
-              onClick={() => { setMobileOpen(!mobileOpen); setLanguageOpen(false); setSearchOpen(false) }}><span aria-hidden="true">{mobileOpen ? '×' : '☰'}</span></button>
+              onClick={() => { setMobileOpen(!mobileOpen); setLanguageOpen(false); setSearchOpen(false) }}>
+              {mobileOpen ? <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="m4 4 12 12M16 4 4 16" /></svg> : <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" /></svg>}
+            </button>
           </div>
         </div>
         <form id="mobile-search" action="/boutique" className="bk-mobile-search bk-container">

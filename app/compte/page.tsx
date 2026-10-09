@@ -38,7 +38,7 @@ type CustomerProfile = {
 
 export default function AccountPage() {
   const router = useRouter()
-  const { user, isAdmin, loading } = useAuth()
+  const { user, isAdmin, loading, signOut } = useAuth()
   const { locale } = useI18n()
   const c = accountCopy[locale]
   const supabase = useMemo(() => createClient(), [])
@@ -81,7 +81,20 @@ export default function AccountPage() {
     <main id="main-content" className="bk-home bk-container bk-account-page">
       <header className="bk-account-heading">
         <div><p className="bk-eyebrow">BRAVIKO / {c.dashboard}</p><h1>{c.account}</h1><p>{displayName}</p></div>
+        <div className="bk-account-heading-actions">
+          <Link className="bk-text-link" href="/boutique">{c.shop}<span aria-hidden="true">↗</span></Link>
+          <Link className="bk-button" href="/contact">{c.supportLink}<span aria-hidden="true">↗</span></Link>
+          <button className="bk-text-link bk-account-logout" type="button" onClick={async () => { await signOut(); router.replace('/connexion') }}>{c.logout}<span aria-hidden="true">↗</span></button>
+        </div>
       </header>
+      <section className="bk-account-welcome" aria-labelledby="account-welcome-title">
+        <div>
+          <p className="bk-eyebrow">{c.orders}</p>
+          <h2 id="account-welcome-title">{orders.length > 0 ? c.ordersIntro : c.noOrders}</h2>
+          <p>{orders.length > 0 ? `${activeOrders} ${c.inProgress.toLocaleLowerCase()} · ${deliveredOrders} ${c.delivered.toLocaleLowerCase()}` : c.signupIntro}</p>
+        </div>
+        <Link className="bk-account-welcome-link" href={orders.length > 0 ? '#orders-title' : '/boutique'}>{orders.length > 0 ? c.details : c.shop}<span aria-hidden="true">↓</span></Link>
+      </section>
       <div className="bk-account-layout">
         <aside className="bk-account-profile">
           <span className="bk-account-avatar" aria-hidden="true">{(displayName || 'B').slice(0, 1).toUpperCase()}</span>
@@ -92,9 +105,9 @@ export default function AccountPage() {
         </aside>
         <section className="bk-orders" aria-labelledby="orders-title">
           <div className="bk-account-stats" aria-label={c.dashboard}>
-            <div><strong>{orders.length}</strong><span>{c.orders}</span></div>
-            <div><strong>{activeOrders}</strong><span>{c.inProgress}</span></div>
-            <div><strong>{deliveredOrders}</strong><span>{c.delivered}</span></div>
+            <div><strong>{fetching ? '—' : orders.length}</strong><span>{c.orders}</span><small>{c.ordersIntro}</small></div>
+            <div><strong>{fetching ? '—' : activeOrders}</strong><span>{c.inProgress}</span><small>{c.status.pending}</small></div>
+            <div><strong>{fetching ? '—' : deliveredOrders}</strong><span>{c.delivered}</span><small>{c.details}</small></div>
           </div>
           <div className="bk-orders-heading"><div><h2 id="orders-title">{c.orders}</h2><p>{c.ordersIntro}</p></div><Link className="bk-button" href="/boutique">{c.shop}<span aria-hidden="true">↗</span></Link></div>
           {fetching && <OrderListSkeleton />}
