@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       mode: 'payment' as const,
       line_items: lineItems,
       adaptive_pricing: { enabled: false },
-      payment_method_types: ['card'],
+      allowed_payment_method_types: ['card'],
       wallet_options: { link: { display: 'never' } },
       payment_intent_data: { metadata: { reference: body.reference, user_id: user.id } },
       customer_email: user.email,
