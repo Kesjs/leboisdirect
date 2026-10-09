@@ -11,6 +11,7 @@ import { useCart } from '@/lib/cart-context'
 import { useToast } from '@/components/Toast'
 
 export default function ProductCard({ product }: { product: Product }) {
+  const fallbackImage = '/images/photorealistic-perspective-wood-logs.jpg'
   const { locale } = useI18n()
   const { addItem } = useCart()
   const { showToast } = useToast()
@@ -30,10 +31,9 @@ export default function ProductCard({ product }: { product: Product }) {
   ])
   useEffect(() => () => clearTimeout(timer.current), [])
   useEffect(() => {
-    const images = Array.from(new Set([product.image, ...product.images].filter(Boolean)))
-    setDisplayImage(images[Math.floor(Math.random() * images.length)] || product.image)
+    setDisplayImage(product.image || fallbackImage)
     setImageLoaded(false)
-  }, [product.image, product.images])
+  }, [product.image])
   const add = () => {
     addItem(product, 1, variant?.id)
     showToast({ title: copy.added, description: `${label.name} a été ajouté à votre panier.` })
@@ -44,8 +44,8 @@ export default function ProductCard({ product }: { product: Product }) {
     window.setTimeout(() => setAnimating(false), 650)
   }
   const handleImageError = () => {
-    if (displayImage !== product.image) {
-      setDisplayImage(product.image)
+    if (displayImage !== fallbackImage) {
+      setDisplayImage(fallbackImage)
       setImageLoaded(false)
     }
   }
@@ -56,7 +56,6 @@ export default function ProductCard({ product }: { product: Product }) {
           {!imageLoaded && <span className="bk-image-placeholder" aria-hidden="true" />}
           <Image onLoad={() => setImageLoaded(true)} onError={handleImageError} src={displayImage} alt={label.name} fill sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw" className="bk-image bk-product-front" quality={70} />
           {!embeddedWatermarkProducts.has(product.slug) && !displayImage.includes('/watermarked-') && <span className="bk-watermark" aria-hidden="true">braviko</span>}
-          {product.images[1] && <Image src={product.images[1]} alt="" fill sizes="(max-width: 600px) 100vw, 33vw" className="bk-image bk-product-back" quality={75} />}
           <span className="bk-product-view">{copy.details} <span aria-hidden="true">↗</span></span>
         </div>
         <p className="bk-product-category">{categoryLabel(product.category, locale)}</p>
