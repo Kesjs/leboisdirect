@@ -48,6 +48,11 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'AW-18503582950');`}
         </Script>
+        <Script
+          src="https://tryqualio.pro/widget.js"
+          data-key="0nC-GIbzwk3dlT2rKWFvauRpJtdPZD_E"
+          strategy="afterInteractive"
+        />
         <NavigationProgress />
         <I18nProvider><AuthProvider><CartProvider><ToastProvider>{children}</ToastProvider></CartProvider></AuthProvider></I18nProvider>
       </body>
