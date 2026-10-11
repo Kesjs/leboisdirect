@@ -208,7 +208,7 @@ export default function CheckoutPage() {
         <div className="container-custom py-40">
           <div className="grid lg:grid-cols-12 gap-32">
             {/* Form */}
-            <div className="lg:col-span-7">
+            <div className="min-w-0 lg:col-span-7">
               {/* Progress */}
               <div className="flex items-center justify-between gap-12 mb-32" aria-label="Progression de la commande">
                 {[1, 2].map((s) => (
@@ -456,7 +456,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* Summary */}
-            <div className="lg:col-span-5">
+            <div className="min-w-0 lg:col-span-5">
               <div className="lg:sticky lg:top-[120px] bg-white rounded-card border border-hairline p-24 md:p-32">
                 <h2 className="text-heading-sm font-semibold text-charcoal mb-24">
                   {c.summary}
