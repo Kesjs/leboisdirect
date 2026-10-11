@@ -212,7 +212,7 @@ export default function CheckoutPage() {
               {/* Progress */}
               <div className="flex items-center justify-between gap-12 mb-32" aria-label="Progression de la commande">
                 {[1, 2].map((s) => (
-                  <div key={s} className="flex min-w-0 items-center flex-1">
+                  <div key={s} className={`flex items-center ${s === 1 ? 'min-w-0 flex-1' : 'shrink-0'}`}>
                     <button
                       type="button"
                       onClick={() => s < step && setStep(s)}
