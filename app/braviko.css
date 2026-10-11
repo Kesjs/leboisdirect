@@ -771,10 +771,12 @@
   .bk-final { grid-template-columns: 1fr; margin-bottom: 64px; }
   .bk-final-photo { min-height: 280px; }
   .bk-final-copy { padding: 32px 24px; }
-  .bk-footer-top { grid-template-columns: 1fr 1fr; gap: 36px 20px; }
+  .bk-footer-top { grid-template-columns: 1fr; gap: 32px; }
   .bk-newsletter { grid-template-columns: 1fr; gap: 24px; padding-bottom: 40px; margin-bottom: 40px; }
   .bk-newsletter-row { flex-direction: column; }
   .bk-footer-top > div { grid-column: 1 / -1; }
+  .bk-footer-top > nav { grid-column: 1; gap: 14px; }
+  .bk-mobile-nav { padding-inline: 16px; }
   .bk-footer-wordmark { font-size: 20vw; margin-top: 48px; }
   .bk-footer-bottom { flex-direction: column; gap: 12px; }
   .bk-commerce-layout { grid-template-columns: 1fr; margin-top: 36px; }
