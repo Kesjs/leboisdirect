@@ -11,7 +11,7 @@ function csv(value: unknown) {
 function siteUrl(request: NextRequest) {
   return (
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    `${request.nextUrl.protocol}//${request.nextUrl.host}`
+    "https://braviko.fr"
   );
 }
 
