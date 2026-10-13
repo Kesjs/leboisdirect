@@ -54,7 +54,9 @@ export async function GET(request: NextRequest) {
     const image = images[0]?.storage_path
       ? images[0].storage_path.startsWith("http")
         ? images[0].storage_path
-        : supabase.storage.from("braviko-product-media").getPublicUrl(images[0].storage_path).data.publicUrl
+        : images[0].storage_path.startsWith("images/")
+          ? `${baseUrl}/${images[0].storage_path}`
+          : supabase.storage.from("braviko-product-media").getPublicUrl(images[0].storage_path).data.publicUrl
       : "";
     const description = fr.short_description || fr.description || "";
 
