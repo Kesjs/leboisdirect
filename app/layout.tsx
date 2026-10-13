@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   description: 'Préparez votre chauffage au bois avec des bûches, granulés et équipements sélectionnés pour l’hiver.',
   keywords: 'Braviko, chauffage au bois, bûches, granulés, bois compressé, hiver',
   alternates: { canonical: '/' },
+  verification: {
+    google: 'QTU2oN2k4JNkADG259tGdDwK31jtE0WyQvbptMg46QU',
+  },
   openGraph: {
     type: 'website',
     siteName: 'Braviko',
