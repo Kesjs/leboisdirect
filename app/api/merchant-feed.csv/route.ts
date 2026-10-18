@@ -60,12 +60,15 @@ export async function GET(request: NextRequest) {
       : "";
     const description = fr.short_description || fr.description || "";
 
-    for (const variant of variants.length ? variants : [{ id: product.id, price: 0, stock: 0, label: "" }]) {
+    // Merchant Center must never receive a fabricated zero price. Products without
+    // a real purchasable variant are omitted until the catalogue is complete.
+    for (const variant of variants) {
+      if (variant.price == null || Number(variant.price) <= 0) continue;
       const id = variant.sku || `${product.id}-${variant.id}`;
       const title = [fr.name || product.slug, variant.label].filter(Boolean).join(" - ");
       rows.push([
         id, title, description, `${baseUrl}/produit/${product.slug}`, image,
-        `${Number(variant.price || 0).toFixed(2)} EUR`, Number(variant.stock || 0) > 0 ? "in_stock" : "out_of_stock",
+        `${Number(variant.price).toFixed(2)} EUR`, Number(variant.stock || 0) > 0 ? "in_stock" : "out_of_stock",
         "Braviko", "new", (product as any).braviko_categories?.name || "Home & Garden",
       ]);
     }

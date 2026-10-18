@@ -194,8 +194,10 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       '@type': 'Offer',
       priceCurrency: 'EUR',
       price: currentPrice.toFixed(2),
-      availability: 'https://schema.org/InStock',
-      url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://leboisdirect.vercel.app'}/produit/${encodeURIComponent(product.slug)}`,
+    availability: currentVariant && Number(currentVariant.stock ?? 0) > 0
+      ? 'https://schema.org/InStock'
+      : 'https://schema.org/OutOfStock',
+      url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.fr'}/produit/${encodeURIComponent(product.slug)}`,
     },
   }
 
