@@ -105,11 +105,15 @@
 .bk-page-skeleton-admin-layout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 .bk-page-skeleton-admin-layout > span { min-height: 180px; border: 1px solid var(--bk-line); background: white; }
 .bk-container { width: min(100% - 112px, 1440px); margin-inline: auto; }
+.bk-home, .bk-header, .bk-footer, .bk-cart-dialog { font-family: var(--font-suisse), Inter, system-ui, sans-serif; }
 .bk-home { color: var(--bk-ink); }
 .bk-home, .bk-header { overflow-x: clip; }
 .bk-home *, .bk-header *, .bk-footer *, .bk-cart-dialog * { box-sizing: border-box; }
 .bk-home :is(h1, h2, h3, h4), .bk-header :is(h1, h2, h3, h4) { text-wrap: balance; }
 .bk-home :is(input, select, textarea), .bk-header :is(input, select, textarea) { font: inherit; }
+.bk-desktop-nav a, .bk-mobile-nav a, .bk-info-bar-inner a { color: inherit; text-decoration: none; }
+.bk-text-link, .bk-button { text-decoration: none; }
+.bk-button { color: white; }
 .bk-home :is(a, button, input), .bk-header :is(a, button, input), .bk-footer a, .bk-cart-dialog :is(a, button) { -webkit-tap-highlight-color: transparent; }
 :is(.bk-home, .bk-header, .bk-footer, .bk-cart-dialog) :focus-visible { outline: 2px solid var(--bk-accent); outline-offset: 5px; }
 .bk-header ~ main { animation: bk-route-enter .42s var(--bk-ease) both; }

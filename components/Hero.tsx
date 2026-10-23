@@ -65,7 +65,6 @@ export default function Hero() {
           </div>
         </Link>
       </div>
-      <div className="bk-hero-foot" data-hero-enter><span>BRAVIKO</span><span aria-hidden="true">© {new Date().getFullYear()}</span></div>
     </section>
   )
 }
