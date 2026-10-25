@@ -12,7 +12,6 @@ import type { Product } from '@/data/products'
 import { useI18n } from '@/lib/i18n-context'
 import { categoryLabel, productLabel } from '@/data/product-labels'
 import { uiCopy } from '@/data/ui-copy'
-import { isHeatingCategory } from '@/data/catalog-taxonomy'
 
 type SortOption = 'relevance' | 'price-asc' | 'price-desc' | 'name'
 type ViewMode = 'grid' | 'list'
@@ -51,11 +50,8 @@ function ShopContent() {
     return () => { active = false }
   }, [])
 
-  const isHeating = true
   const filteredAndSortedProducts = useMemo(() => {
-    let filtered = catalogProducts.filter(product => {
-      return isHeatingCategory(product.category)
-    })
+    let filtered = [...catalogProducts]
     if (selectedCategory !== 'all') filtered = filtered.filter(product => product.category === selectedCategory)
     if (query) filtered = filtered.filter(product =>
       (productLabel(product, locale).name + ' ' + product.name + ' ' + product.category).toLocaleLowerCase().includes(query)
@@ -68,12 +64,10 @@ function ShopContent() {
     return filtered
   }, [catalogProducts, locale, query, selectedCategory, sortBy])
 
-  const availableCategories = useMemo(() => Array.from(new Set(catalogProducts
-    .filter(product => isHeatingCategory(product.category))
-    .map(product => product.category))), [catalogProducts])
+  const availableCategories = useMemo(() => Array.from(new Set(catalogProducts.map(product => product.category))), [catalogProducts])
   const groupedCategories = useMemo(() => {
     const groups = [
-      { key: 'heating', title: copy.shop.heating, categories: availableCategories.filter(category => isHeatingCategory(category)) },
+      { key: 'animals', title: copy.shop.heating, categories: availableCategories },
     ]
     return groups.filter(group => group.categories.length > 0)
   }, [availableCategories, copy.shop.heating])

@@ -68,13 +68,13 @@
   :root {
     --ivory: #FAF9F6;
     --charcoal: #1D1D1D;
-    --braise: #B85C3A;
-    --braise-dark: #8F432C;
-    --forest: #34483A;
-    --smoke: #737373;
+    --braise: #78A889;
+    --braise-dark: #315C48;
+    --forest: #315C48;
+    --smoke: #66736B;
     --ash: #A3A3A3;
-    --hairline: #E5E2DC;
-    --mist: #F3F4F6;
+    --hairline: #DDE7DF;
+    --mist: #EEF5EF;
   }
   
   * {
