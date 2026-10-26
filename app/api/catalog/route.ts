@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { petCatalog } from "@/data/pet-catalog";
+import { isPetCategory } from "@/data/catalog-taxonomy";
 
 function getCatalogClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -31,8 +32,7 @@ function parseFeatures(description: string) {
 }
 
 export async function GET(request: NextRequest) {
-  const configuredUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  if (process.env.BRAVIKO_PET_PREVIEW === 'true' || configuredUrl.includes('wdvzopitnulgvptsopcj')) {
+  if (process.env.BRAVIKO_PET_PREVIEW === 'true') {
     return NextResponse.json({ products: petCatalog, categories: [...new Set(petCatalog.map((product) => product.category))], source: 'local-preview' });
   }
   const supabase = getCatalogClient();
@@ -56,14 +56,20 @@ export async function GET(request: NextRequest) {
   if (error || !data?.length)
     return NextResponse.json({ products: petCatalog, categories: [...new Set(petCatalog.map((product) => product.category))], source: 'local-preview' });
 
-  const products = (data || []).map((item: any) => {
+  const petItems = (data || []).filter((item: any) =>
+    isPetCategory(item.braviko_categories?.slug || ""),
+  );
+  if (!petItems.length)
+    return NextResponse.json({ products: petCatalog, categories: [...new Set(petCatalog.map((product) => product.category))], source: 'local-preview' });
+
+  const products = petItems.map((item: any) => {
     const translations = Object.fromEntries(
       (item.braviko_product_translations || []).map((translation: any) => [
         translation.locale,
         translation,
       ]),
     );
-    const fr = translations.fr || translations.de || translations.it || {};
+    const it = translations.it || translations.fr || translations.de || {};
     const variants = [...(item.braviko_product_variants || [])].sort(
       (a: any, b: any) => Number(a.price) - Number(b.price),
     );
@@ -80,26 +86,26 @@ export async function GET(request: NextRequest) {
       id: item.id,
       slug: item.slug,
       featured: Boolean(item.featured),
-      name: fr.name || item.slug,
+      name: it.name || item.slug,
       category: item.braviko_categories?.slug || "buches",
-      description: fr.short_description || fr.description || "",
-      features: parseFeatures(fr.description || ""),
-      longDescription: fr.description || fr.short_description || "",
+      description: it.short_description || it.description || "",
+      features: parseFeatures(it.description || ""),
+      longDescription: it.description || it.short_description || "",
       price: Number(variants[0]?.price || 0),
       image: images[0] || "/images/pet-cura.png",
       images: images.length
         ? images
         : ["/images/pet-cura.png"],
-      conditioning: fr.conditioning || variants[0]?.label || "",
-      deliveryInfo: fr.delivery_info || "",
+      conditioning: it.conditioning || variants[0]?.label || "",
+      deliveryInfo: it.delivery_info || "",
       variants: variants.map((variant: any) => ({
         id: variant.id,
         price: Number(variant.price),
         label: variant.label,
       })),
       translations: {
-        de: translations.de?.name || fr.name || item.slug,
-        it: translations.it?.name || fr.name || item.slug,
+        de: translations.de?.name || it.name || item.slug,
+        it: translations.it?.name || it.name || item.slug,
         description: {
           de:
             translations.de?.short_description ||
@@ -131,7 +137,7 @@ export async function GET(request: NextRequest) {
     ).values(),
   ];
   return NextResponse.json(
-    { products, categories },
+    { products, categories, source: "supabase" },
     {
       headers: { "Cache-Control": "no-store" },
     },
