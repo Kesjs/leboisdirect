@@ -3,6 +3,7 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'flagcdn.com' },
+      { protocol: 'https', hostname: 'wsrv.nl' },
       { protocol: 'https', hostname: 'media.adeo.com' },
       { protocol: 'https', hostname: 'www.mademoisellebuche.com' },
       { protocol: 'https', hostname: 'www.staub-motoculture.fr' },
