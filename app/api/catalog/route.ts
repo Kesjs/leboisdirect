@@ -31,6 +31,10 @@ function parseFeatures(description: string) {
 }
 
 export async function GET(request: NextRequest) {
+  const configuredUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  if (process.env.BRAVIKO_PET_PREVIEW === 'true' || configuredUrl.includes('wdvzopitnulgvptsopcj')) {
+    return NextResponse.json({ products: petCatalog, categories: [...new Set(petCatalog.map((product) => product.category))], source: 'local-preview' });
+  }
   const supabase = getCatalogClient();
   const slug = request.nextUrl.searchParams.get("slug");
   let query = supabase
