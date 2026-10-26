@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import Logo from './Logo'
@@ -79,7 +80,9 @@ export default function Header() {
             {links.map(([href, title]) => <Link key={href} href={href} onClick={collapse} aria-current={pathname === href ? 'page' : undefined}>{title}</Link>)}
           </nav>
           <div className="bk-nav-actions">
-            <span className="bk-locale-fixed" lang="it">Italiano</span>
+            <span className="bk-locale-fixed" lang="it" title="Italia" aria-label="Italia">
+              <Image src="https://flagcdn.com/24x18/it.png" alt="Italia" width={24} height={18} />
+            </span>
             <button ref={searchButton} type="button" className="bk-icon-button bk-search-trigger" aria-label={copy.search} aria-expanded={searchOpen} aria-controls="header-search"
               onClick={() => { setSearchOpen(!searchOpen) }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" /><path d="m13 13 4 4" /></svg>
