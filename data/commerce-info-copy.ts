@@ -32,19 +32,19 @@ export const commerceInfoCopy: Record<'retours-remboursements' | 'expedition' | 
   expedition: {
     fr: { eyebrow: 'BRAVIKO / LOGISTIQUE', title: 'Expédition et livraison', intro: 'Les informations pratiques pour recevoir vos produits pour animaux.', updated: 'Mise à jour : 1 octobre 2026', sections: [
       { title: 'Préparation', body: 'Chaque fiche indique un délai indicatif de préparation. Les produits d’une même commande peuvent être expédiés séparément selon leur disponibilité et leur origine.' },
-      { title: 'Accès et déchargement', body: 'Avant la confirmation, vérifiez l’accès du véhicule, la solidité du sol et l’espace disponible pour le déchargement. Signalez toute contrainte particulière dans votre demande.' },
+      { title: 'Réception à domicile', body: 'Avant la confirmation, vérifiez l’adresse, l’accès du véhicule et l’espace disponible pour déposer les colis. Signalez toute contrainte particulière dans votre demande.' },
       { title: 'Réception', body: 'Contrôlez l’état de l’emballage et du produit à la livraison. Notez toute réserve précise sur le bon du transporteur et contactez-nous rapidement en cas d’anomalie.' },
       { title: 'Frais', body: 'Les frais dépendent de la destination, du poids, du volume et des conditions d’accès. Ils sont précisés avant la confirmation définitive de la commande.' },
     ] },
     de: { eyebrow: 'BRAVIKO / LOGISTIK', title: 'Versand und Lieferung', intro: 'Praktische Informationen zur Annahme Ihrer Tierprodukte.', updated: 'Aktualisiert am 1. Oktober 2026', sections: [
       { title: 'Vorbereitung', body: 'Jede Produktseite nennt eine voraussichtliche Vorbereitungszeit. Produkte einer Bestellung können je nach Verfügbarkeit getrennt versendet werden.' },
-      { title: 'Zufahrt und Abladen', body: 'Prüfen Sie vor der Bestätigung Zufahrt, Boden und Platz für das Abladen. Teilen Sie besondere Einschränkungen in Ihrer Anfrage mit.' },
+      { title: 'Annahme zu Hause', body: 'Prüfen Sie vor der Bestätigung Adresse, Zufahrt und Platz für die Pakete. Teilen Sie besondere Einschränkungen in Ihrer Anfrage mit.' },
       { title: 'Annahme', body: 'Prüfen Sie Verpackung und Produkt bei Lieferung. Vermerken Sie konkrete Vorbehalte beim Transporteur und melden Sie Auffälligkeiten schnell.' },
       { title: 'Kosten', body: 'Kosten hängen von Zielort, Gewicht, Volumen und Zufahrt ab und werden vor der endgültigen Bestätigung mitgeteilt.' },
     ] },
     it: { eyebrow: 'BRAVIKO / LOGISTICA', title: 'Spedizione e consegna', intro: 'Informazioni pratiche per ricevere i tuoi prodotti per animali.', updated: 'Aggiornato il 1 ottobre 2026', sections: [
       { title: 'Preparazione', body: 'Ogni scheda indica un tempo indicativo di preparazione. I prodotti dello stesso ordine possono essere spediti separatamente in base alla disponibilità.' },
-      { title: 'Accesso e scarico', body: 'Prima della conferma verifica accesso del veicolo, fondo e spazio per lo scarico. Indica eventuali vincoli nella richiesta.' },
+      { title: 'Ricezione a casa', body: 'Prima della conferma verifica indirizzo, accesso e spazio per i pacchi. Indica eventuali vincoli nella richiesta.' },
       { title: 'Ricezione', body: 'Controlla imballaggio e prodotto alla consegna. Segnala riserve precise al corriere e contattaci rapidamente in caso di problemi.' },
       { title: 'Costi', body: 'I costi dipendono da destinazione, peso, volume e accesso. Saranno indicati prima della conferma definitiva.' },
     ] },
@@ -72,7 +72,7 @@ export const commerceInfoCopy: Record<'retours-remboursements' | 'expedition' | 
   'informations-produits': {
     fr: { eyebrow: 'BRAVIKO / PRODUITS', title: 'État et détails des produits', intro: 'Comprendre ce que vous achetez avant de confirmer votre demande.', updated: 'Mise à jour : 1 octobre 2026', sections: [
       { title: 'État indiqué', body: 'Un produit publié est proposé comme neuf, sauf indication explicite contraire sur sa fiche. Les produits en brouillon ne sont pas visibles dans la boutique. Un produit archivé n’est plus proposé à la vente.' },
-      { title: 'Fiche produit', body: 'Chaque fiche présente les caractéristiques disponibles : essence, dimensions, conditionnement, quantité, origine et délai. Les photos servent à illustrer le produit et peuvent présenter de légères différences.' },
+      { title: 'Fiche produit', body: 'Chaque fiche présente les informations disponibles : espèce concernée, format, conditionnement, usage, quantité et délai. Les photos servent à illustrer le produit et peuvent présenter de légères différences.' },
       { title: 'Disponibilité', body: 'La disponibilité est confirmée lors du traitement de votre commande. Une rupture ou une variation de délai peut nécessiter une proposition équivalente ou un remboursement.' },
       { title: 'Prix et variantes', body: 'Le prix dépend du format ou de la variante sélectionnée. Vérifiez toujours la quantité, le conditionnement et le prix affichés dans le panier avant validation.' },
     ] },
@@ -84,7 +84,7 @@ export const commerceInfoCopy: Record<'retours-remboursements' | 'expedition' | 
     ] },
     it: { eyebrow: 'BRAVIKO / PRODOTTI', title: 'Stato e dettagli dei prodotti', intro: 'Cosa sapere prima di confermare la richiesta.', updated: 'Aggiornato il 1 ottobre 2026', sections: [
       { title: 'Stato indicato', body: 'Un prodotto pubblicato è nuovo salvo indicazione diversa nella scheda. Le bozze non sono visibili e i prodotti archiviati non vengono più proposti.' },
-      { title: 'Scheda prodotto', body: 'La scheda presenta dati disponibili come essenza, dimensioni, confezione, quantità, origine e tempi. Le foto sono illustrative e possono differire leggermente.' },
+      { title: 'Scheda prodotto', body: 'La scheda presenta le informazioni disponibili: animale destinatario, formato, confezione, uso, quantità e tempi. Le foto sono illustrative e possono differire leggermente.' },
       { title: 'Disponibilità', body: 'La disponibilità viene confermata durante l’elaborazione dell’ordine. In caso di esaurimento possiamo proporre un equivalente o un rimborso.' },
       { title: 'Prezzi e varianti', body: 'Il prezzo dipende dal formato o dalla variante. Controlla sempre quantità, confezione e prezzo nel carrello.' },
     ] },

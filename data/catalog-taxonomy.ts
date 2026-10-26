@@ -14,3 +14,7 @@ export function isAgricultureCategory(category: string) {
 export function isHeatingCategory(category: string) {
   return heatingCategories.has(category) || category.startsWith('chauffage-au-bois')
 }
+
+export function isPetCategory(category: string) {
+  return ['alimentazione', 'bisogni', 'cura-igiene', 'passeggiata-trasporto', 'comfort', 'giochi', 'piccoli-animali', 'uccelli'].includes(category)
+}

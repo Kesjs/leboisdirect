@@ -1,45 +1,38 @@
-import type { Product } from './products'
+import type { Product, ProductCategory } from './products'
 
-type PetSeed = { category: string; names: string[]; base: number; description: string }
+type PetSeed = { category: ProductCategory; names: string[]; prices: number[]; description: string; image: string }
 
 const seeds: PetSeed[] = [
-  { category: 'cani', names: ['Crocchette quotidiane pollo e riso', 'Crocchette salmone adulto', 'Paté morbido manzo', 'Bocconcini per passeggiata', 'Snack dentali', 'Ciotola rialzata', 'Guinzaglio in nylon', 'Pettorina regolabile', 'Collare verde salvia', 'Cuccia morbida', 'Tappetino riposo', 'Gioco corda naturale', 'Palla resistente', 'Borsa porta snack', 'Cintura sicurezza auto'], base: 9, description: 'Un essenziale pratico per accompagnare ogni giornata del tuo cane.' },
-  { category: 'gatti', names: ['Crocchette pollo adulto', 'Crocchette salmone sterilizzato', 'Paté tenero tacchino', 'Snack croccanti', 'Fontanella silenziosa', 'Ciotola ceramica', 'Lettiera chiusa', 'Sabbia agglomerante', 'Tiragraffi compatto', 'Tiragraffi alto', 'Canna da gioco', 'Palla con campanello', 'Cuccia finestra', 'Trasportino pieghevole', 'Spazzola pelo corto'], base: 7, description: 'Un prodotto pensato per il comfort e le abitudini quotidiane del tuo gatto.' },
-  { category: 'piccoli-animali', names: ['Fieno naturale conigli', 'Pellet conigli adulti', 'Mix semi criceti', 'Lettiera vegetale', 'Casetta in legno', 'Tunnel gioco', 'Abbeveratoio piccolo', 'Ciotola anti-rovesciamento', 'Recinto modulare', 'Trasportino piccolo'], base: 6, description: 'Un accessorio semplice per un ambiente più ricco e confortevole.' },
-  { category: 'uccelli', names: ['Mix semi pappagallini', 'Mix semi cocorite', 'Bastoncini naturali', 'Altalena in legno', 'Posatoio naturale', 'Abbeveratoio trasparente', 'Mangiatoia sospesa', 'Copertura gabbia notte'], base: 5, description: 'Un essenziale scelto per la routine e l’ambiente degli uccelli domestici.' },
-  { category: 'accessori', names: ['Coperta viaggio impermeabile', 'Ciotola da viaggio', 'Tappetino auto antiscivolo', 'Porta sacchetti', 'Borraccia pieghevole', 'Organizer accessori', 'Luce sicurezza passeggiata'], base: 8, description: 'Un accessorio versatile per rendere più semplici le uscite insieme.' },
-  { category: 'cura-igiene', names: ['Shampoo delicato cane', 'Shampoo delicato gatto', 'Salviette pulizia zampe', 'Spazzola doppia', 'Tagliaunghie compatto'], base: 7, description: 'Un prodotto per una routine di cura semplice e regolare.' },
+  { category: 'alimentazione', names: ['Natural Trainer Sensitive Salmone 12 kg', 'Wolf of Wilderness Junior Soft Pollo 5 kg', 'Wolf of Wilderness Junior Soft Pollo 1 kg', 'Wolf of Wilderness Junior Soft Pollo 12 kg', 'Natural Trainer Sensitive Coniglio 12 kg', 'Natural Trainer Adult Manzo 2 × 12 kg', 'Natural Trainer Sensitive Agnello 12 kg', 'Purina Pro Plan HA Hypoallergenic 11 kg', 'Purina Pro Plan Neurocare 12 kg', "Hill's c/d Multicare Pollo 1,5 kg", 'Farmina N&D Prime Adult Pollo 5 kg', 'Farmina N&D Neutered Pollo 5 kg', 'Farmina N&D Ocean Aringa 1,5 kg', 'Purina Pro Plan Feline EN 1,5 kg', 'Natural Trainer Adult Tonno 10 kg', 'Padovan Grandmix Coniglietti', 'Gimbi Fieno Naturale Roditori', 'Grandmix Cocorite 400 g', 'Wellness Mix Canarini', 'Padovan Natural Mix Parrocchetti'], prices: [49, 59, 49, 119, 79, 129, 79, 99, 109, 49, 89, 89, 59, 59, 99, 69, 49, 49, 49, 89], description: 'Alimento selezionato per la routine quotidiana del tuo animale. I prezzi mostrati corrispondono a formati o pack pensati per una spesa utile, non a piccoli articoli isolati.', image: '/images/pet-alimentazione.png' },
+  { category: 'bisogni', names: ['Lettiera agglomerante per gatti 10 l', 'Lettiera vegetale per piccoli animali', 'Sacchetti igienici compostabili 120 pezzi', 'Borsa porta lettiera e accessori', 'Tappetini assorbenti per cani 30 pezzi', 'Paletta per lettiera con supporto', 'Lettiera per uccelli Ocean Fresh Air', 'Biogrit per uccelli 700 g'], prices: [59, 69, 49, 79, 69, 49, 49, 49], description: 'Soluzioni pratiche per mantenere ordinati gli spazi degli animali, proposte in pack o kit più utili per la routine in casa.', image: '/images/pet-bisogni.png' },
+  { category: 'cura-igiene', names: ['Shampoo delicato per cani', 'Shampoo delicato per gatti', 'Salviette pulizia zampe 40 pezzi', 'Spazzola doppia per pelo', 'Tagliaunghie compatto', 'Balsamo districante per mantello', 'Detergente delicato per superfici pet'], prices: [49, 49, 49, 59, 49, 69, 59], description: 'Kit di prodotti per una cura regolare e semplice, sempre nel rispetto delle istruzioni d’uso.', image: '/images/pet-cura.png' },
+  { category: 'passeggiata-trasporto', names: ['Ciotola pieghevole in silicone', 'Impermeabile per cane Vancouver', 'Trasportino pieghevole per gatto', 'Borraccia da passeggio', 'Pettorina regolabile', 'Cintura sicurezza auto', 'Porta sacchetti da passeggio'], prices: [59, 69, 89, 79, 89, 69, 49], description: 'Kit pensati per uscite più ordinate, spostamenti più sicuri e pause facili da gestire.', image: '/images/pet-passeggiata.png' },
+  { category: 'comfort', names: ['Cuccia Ciambella per cane', 'Amaca per finestra del gatto', 'Ciotola Modern Bianca', 'Ciotola Modern Rosa', 'Bidone porta crocchette Happy Kibble', 'Coperta viaggio impermeabile', 'Tappetino auto antiscivolo', 'Casetta in legno per roditori'], prices: [89, 69, 59, 59, 79, 69, 59, 79], description: 'Elementi e kit utili per creare un angolo più comodo, pulito e adatto alle abitudini di ogni animale.', image: '/images/pet-comfort.png' },
+  { category: 'giochi', names: ['Canna da pesca con pesce per gatti', 'Tiragraffi compatto', 'Gioco corda naturale per cani', 'Palla resistente per cani', 'Tunnel gioco per roditori', 'Altalena in legno per uccelli', 'Posatoio naturale per uccelli'], prices: [49, 79, 59, 59, 59, 59, 49], description: 'Kit di giochi e stimoli semplici per arricchire la giornata senza complicare gli spazi di casa.', image: '/images/pet-giochi.png' },
+  { category: 'piccoli-animali', names: ['Abbeveratoio Ferplast Sippy', 'Gabbia Ferplast Casita', 'Bunny Rabbit Dream Herbs', 'Fieno Bunny da prati non trattati', 'Fieno Real Nature Green Nature', 'Legno da rosicchiare per roditori', 'Padovan Herbal Tarassaco', 'Padovan Herbal Erba medica'], prices: [49, 159, 59, 89, 69, 59, 49, 49], description: 'Kit di fieno, habitat, acqua e piccoli accessori per conigli, roditori e altri piccoli animali domestici.', image: '/images/pet-piccoli-animali.png' },
+  { category: 'uccelli', names: ['Cliffi Morbido Super', 'Grandmix Esotici 400 g', 'Padovan Granpaté Insects', 'Beverino Cristal per uccelli', 'Mangiatoia trasparente', 'Spighe di panico Vitakraft 100 g', 'Snack miglio giallo MultiFit', 'Gabbia per uccelli Rio', 'Gabbia per uccelli Bogotà', 'Cliffi Nutrient Special'], prices: [49, 49, 89, 49, 59, 49, 49, 189, 99, 59], description: 'Pack, accessoires et habitats pour oiseaux domestiques, avec attention à la specie et aux dimensions.', image: '/images/pet-uccelli.png' },
 ]
 
 const slugify = (value: string) => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-const imageFor = (category: string) => category === 'cani' ? '/images/pet-cani.png' : category === 'gatti' ? '/images/pet-gatti.png' : category === 'piccoli-animali' ? '/images/pet-piccoli-animali.png' : category === 'uccelli' ? '/images/pet-uccelli.png' : '/images/pet-cura.png'
-const marketPrices: Record<string, number[]> = {
-  cani: [29, 34, 12, 9, 14, 29, 12, 28, 10, 39, 24, 11, 16, 7, 19],
-  gatti: [27, 32, 8, 7, 39, 18, 49, 12, 29, 69, 9, 6, 29, 24, 14],
-  'piccoli-animali': [8, 15, 7, 12, 24, 16, 8, 11, 39, 22],
-  uccelli: [9, 12, 8, 15, 10, 7, 13, 19],
-  accessori: [29, 12, 14, 8, 13, 18, 11],
-  'cura-igiene': [12, 13, 9, 11, 8],
-}
 
 export const petCatalog: Product[] = seeds.flatMap((seed) => seed.names.map((name, index) => {
   const id = `pet-${seed.category}-${index + 1}`
-  const price = marketPrices[seed.category]?.[index] ?? seed.base + (index % 5) * 4 + (index % 3)
+  const price = seed.prices[index]
   return {
-    id, slug: slugify(name), name, category: seed.category as Product['category'], description: seed.description,
-    longDescription: `${seed.description} Formato facile da usare e informazioni chiare prima dell’acquisto.`,
-    features: ['Formato pratico', 'Uso quotidiano', 'Confezione pronta per la consegna'], price,
-    image: imageFor(seed.category), images: [imageFor(seed.category)], conditioning: '1 unità', deliveryInfo: 'Consegna in 2-4 giorni', featured: index < 2,
-    variants: [{ id: `${id}-standard`, price, stock: 24, label: 'Formato standard' }],
+    id, slug: slugify(name), name, category: seed.category, description: seed.description,
+    longDescription: `${seed.description} Prezzo indicativo rilevato sul mercato italiano: verifica sempre formato, disponibilità e prezzo aggiornati prima dell’ordine.`,
+    features: ['Formato indicato nella confezione', 'Uso domestico', 'Scheda da verificare prima dell’acquisto'], price,
+    image: seed.image, images: [seed.image], conditioning: '1 unità', deliveryInfo: 'Consegna in 2-4 giorni', featured: index < 2,
+    variants: [{ id: `${id}-standard`, price, stock: 24, label: 'Formato indicato' }],
     translations: { it: name, de: name, description: { it: seed.description, de: seed.description }, conditioning: { it: '1 unità', de: '1 Stück' }, delivery: { it: 'Consegna in 2-4 giorni', de: 'Lieferung in 2-4 Tagen' } },
   }
 }))
 
 export const petArticles = [
-  ['come-scegliere-il-cibo-del-cane', 'Come scegliere il cibo del cane', 'Età, abitudini e formato: i primi criteri per orientarsi senza complicare la scelta.'],
+  ['come-scegliere-il-cibo-del-cane', 'Come scegliere il cibo del cane', 'Età, taglia, attività e formato: i criteri da controllare prima di scegliere un alimento.'],
+  ['gestire-la-lettiera-in-casa', 'Gestire la lettiera in casa', 'Dove posizionarla, come mantenerla pulita e quali accessori rendono la routine più semplice.'],
   ['passeggiate-piu-serene', 'Passeggiate più serene', 'Gli accessori utili per preparare una passeggiata comoda e sicura.'],
   ['arricchimento-per-il-gatto', 'Arricchimento per il gatto', 'Giochi, tiragraffi e piccoli rituali per rendere più interessante la casa.'],
-  ['trasportare-il-tuo-animale', 'Trasportare il tuo animale', 'Come preparare auto e trasportino per spostamenti più semplici.'],
   ['routine-di-igiene', 'Una routine di igiene semplice', 'Pochi gesti regolari per prendersi cura del mantello e degli accessori.'],
   ['prendersi-cura-dei-piccoli-animali', 'Prendersi cura dei piccoli animali', 'Ambiente, fieno, acqua e stimoli: le basi da controllare ogni giorno.'],
   ['preparare-la-gabbia-degli-uccelli', 'Preparare la gabbia degli uccelli', 'Posatoi, acqua e posizione: come creare un ambiente ordinato e tranquillo.'],

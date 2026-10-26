@@ -33,7 +33,7 @@ export default function Home() {
           <section className="bk-delivery bk-section bk-container" aria-labelledby="delivery-title">
             <div className="bk-delivery-photo" data-reveal>
               <Image src="/images/pet-piccoli-animali.png" alt="Sélection d’accessoires pour petits animaux" fill sizes="(max-width: 900px) 100vw, 50vw" className="bk-image" quality={85} />
-              <span className="bk-photo-caption">{copy.heating}</span>
+              <span className="bk-photo-caption">{copy.agriculture}</span>
             </div>
             <div>
               <div data-reveal><p className="bk-eyebrow">{copy.delivery}</p><h2 id="delivery-title" className="bk-title">{copy.deliveryTitle}</h2><p className="bk-lead">{copy.deliveryIntro}</p></div>

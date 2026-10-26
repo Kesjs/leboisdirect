@@ -1,6 +1,13 @@
-# Braviko animaux — catalogue réel à valider
+# Braviko animaux — catalogue de validation
 
-Document de préparation, sans insertion Supabase. Les prix sont des prix repères observés sur les pages sources le 26 octobre 2026 ; les promotions, formats et frais de livraison peuvent changer. Les images doivent être reprises depuis la fiche source après validation des droits d’utilisation.
+Document de préparation, sans insertion Supabase. Les 60 références sont regroupées par usage : alimentation, besoins et litière, soin et hygiène, promenade et transport, confort, jeux, petits animaux et oiseaux. Les prix sources ci-dessous restent des repères de marché ; pour la vitrine Braviko, la sélection locale est présentée en packs/formats utiles avec un seuil commercial de 49 € et un plafond de 300 €. Les promotions, formats et frais de livraison peuvent changer. Les images doivent être reprises depuis la fiche source après validation des droits d’utilisation.
+
+## État technique
+
+- Catalogue affiché sur `braviko-it.vercel.app` : prévisualisation locale de 60 produits, sans écriture dans Supabase.
+- Base Supabase commune confirmée : projet `wdvzopitnulgvptsopcj`, utilisé par `braviko.fr` pour le chauffage.
+- Import volontairement bloqué pour ne pas mélanger les produits animaux avec le catalogue chauffage avant validation du modèle `catalog_type = pets`.
+- Visuels de catégories présents dans le dépôt : images générées pour l’interface, pas des photos fabricant authentifiées.
 
 ## Chiens
 
