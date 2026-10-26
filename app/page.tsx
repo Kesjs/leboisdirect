@@ -32,7 +32,7 @@ export default function Home() {
           </section>
           <section className="bk-delivery bk-section bk-container" aria-labelledby="delivery-title">
             <div className="bk-delivery-photo" data-reveal>
-              <Image src="/images/pet-piccoli-animali.png" alt="Sélection d’accessoires pour petits animaux" fill sizes="(max-width: 900px) 100vw, 50vw" className="bk-image" quality={85} />
+              <Image src="/images/pet-petits-animaux-habitat.png" alt="Habitat et accessoires pour petits animaux" fill sizes="(max-width: 900px) 100vw, 50vw" className="bk-image" quality={85} />
               <span className="bk-photo-caption">{copy.agriculture}</span>
             </div>
             <div>
@@ -47,7 +47,7 @@ export default function Home() {
             </div>
           </section>
           <section className="bk-final bk-container" aria-labelledby="final-title">
-            <div className="bk-final-photo" data-reveal><Image src="/images/pet-cura.png" alt="Accessoires de soin pour animaux" fill sizes="(max-width: 700px) 100vw, 45vw" className="bk-image" /></div>
+            <div className="bk-final-photo" data-reveal><Image src="/images/pet-accessoires-dog.png" alt="Accessoires de promenade pour chien" fill sizes="(max-width: 700px) 100vw, 45vw" className="bk-image" /></div>
             <div className="bk-final-copy" data-reveal><h2 id="final-title">{copy.finalTitle}</h2><p>{copy.finalBody}</p><Link href="/boutique" className="bk-button">{copy.finalCta}<span aria-hidden="true">↗</span></Link></div>
           </section>
         </LandingMotion>

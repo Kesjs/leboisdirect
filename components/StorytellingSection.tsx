@@ -9,9 +9,9 @@ import { useI18n } from '@/lib/i18n-context'
 import { bravikoCopy } from '@/data/braviko-copy'
 
 const images = [
-  '/images/pet-cani.png',
-  '/images/pet-gatti.png',
-  '/images/pet-routine.png',
+  '/images/pet-litiere-cat.png',
+  '/images/pet-accessoires-dog.png',
+  '/images/pet-oiseaux-habitat.png',
 ]
 
 export default function StorytellingSection() {
