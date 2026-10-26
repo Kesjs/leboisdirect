@@ -139,7 +139,7 @@ export default function Header() {
           {mobileOpen && <motion.nav id="mobile-navigation" className="bk-mobile-nav bk-container" aria-label={copy.menu}
             initial={{ opacity: 0, y: reduced ? 0 : -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? 0 : 0.2 }}>
             <div className="bk-mobile-nav-head"><span>{copy.menu}</span><span aria-hidden="true">BRAVIKO</span></div>
-            {[...links, ['/livraison', copy.delivery], ['/notre-histoire', copy.story], ['/contact', 'Contact']].map(([href, title]) => <Link href={href} key={href} onClick={collapse}>{title}</Link>)}
+            {[...links, ['/livraison', copy.delivery], ['/notre-histoire', copy.story], ['/contact', 'Contatti']].map(([href, title]) => <Link href={href} key={href} onClick={collapse}>{title}</Link>)}
           </motion.nav>}
         </AnimatePresence>
       </header>

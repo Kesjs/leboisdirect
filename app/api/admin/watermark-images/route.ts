@@ -70,7 +70,7 @@ async function applyWatermark(source: Buffer) {
 export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Connexion administrateur requise." }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "È necessario accedere come amministratore." }, { status: 401 });
   const { data: admin } = await supabase.from("braviko_admins").select("active").eq("user_id", user.id).maybeSingle();
   if (!admin?.active) return NextResponse.json({ error: "Sono necessari i permessi di amministratore." }, { status: 403 });
 

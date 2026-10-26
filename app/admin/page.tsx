@@ -84,7 +84,7 @@ export default function AdminPage() {
       setError(
         accessError instanceof Error
           ? accessError.message
-          : "Connexion admin indisponible.",
+          : "Accesso amministratore non disponibile.",
       );
     } finally {
       setLoading(false);
