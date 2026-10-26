@@ -36,7 +36,7 @@ export default function ProductCard({ product }: { product: Product }) {
   }, [product.image])
   const add = () => {
     addItem(product, 1, variant?.id)
-    showToast({ title: copy.added, description: `${label.name} a été ajouté à votre panier.` })
+    showToast({ title: copy.added, description: `${label.name} è stato aggiunto al carrello.` })
     setAdded(true)
     setAnimating(true)
     clearTimeout(timer.current)

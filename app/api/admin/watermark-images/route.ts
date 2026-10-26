@@ -25,21 +25,21 @@ function privateAddress(address: string) {
 async function fetchPublicImage(url: string) {
   const target = new URL(url);
   if (!["http:", "https:"].includes(target.protocol) || target.username || target.password)
-    throw new Error("Adresse d’image non autorisée.");
+    throw new Error("Indirizzo dell’immagine non autorizzato.");
   const addresses = await lookup(target.hostname, { all: true, verbatim: true });
   if (!addresses.length || addresses.some(({ address }) => privateAddress(address)))
-    throw new Error("Adresse réseau privée refusée.");
+    throw new Error("Indirizzo di rete privato rifiutato.");
   const response = await fetch(target, {
     redirect: "error",
     signal: AbortSignal.timeout(15_000),
     headers: { Accept: "image/jpeg,image/png,image/webp", "User-Agent": "Braviko watermark worker" },
     cache: "no-store",
   });
-  if (!response.ok) throw new Error(`Source inaccessible (${response.status}).`);
+  if (!response.ok) throw new Error(`Fonte non accessibile (${response.status}).`);
   const length = Number(response.headers.get("content-length") || 0);
-  if (length > MAX_BYTES) throw new Error("Image trop volumineuse.");
+  if (length > MAX_BYTES) throw new Error("Immagine troppo grande.");
   const buffer = Buffer.from(await response.arrayBuffer());
-  if (buffer.byteLength > MAX_BYTES) throw new Error("Image trop volumineuse.");
+  if (buffer.byteLength > MAX_BYTES) throw new Error("Immagine troppo grande.");
   return buffer;
 }
 
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Connexion administrateur requise." }, { status: 401 });
   const { data: admin } = await supabase.from("braviko_admins").select("active").eq("user_id", user.id).maybeSingle();
-  if (!admin?.active) return NextResponse.json({ error: "Accès administrateur requis." }, { status: 403 });
+  if (!admin?.active) return NextResponse.json({ error: "Sono necessari i permessi di amministratore." }, { status: 403 });
 
   const body = await request.json().catch(() => ({})) as { productId?: string; limit?: number };
   const limit = Math.min(Math.max(Number(body.limit || MAX_BATCH), 1), MAX_BATCH);

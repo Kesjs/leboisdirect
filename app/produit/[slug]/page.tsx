@@ -171,7 +171,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
   const handleAddToCart = () => {
     addItem(product, quantity, selectedVariant || undefined)
-    showToast({ title: c.added, description: `${productLabel(product, locale).name} a été ajouté à votre panier.` })
+    showToast({ title: c.added, description: `${productLabel(product, locale).name} è stato aggiunto al carrello.` })
     setAdded(true)
     window.setTimeout(() => setAdded(false), 2200)
   }
@@ -197,7 +197,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     availability: currentVariant && Number(currentVariant.stock ?? 0) > 0
       ? 'https://schema.org/InStock'
       : 'https://schema.org/OutOfStock',
-      url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.fr'}/produit/${encodeURIComponent(product.slug)}`,
+      url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.it'}/produit/${encodeURIComponent(product.slug)}`,
     },
   }
 

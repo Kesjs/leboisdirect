@@ -56,7 +56,7 @@ export default function AdminPage() {
     const timeout = new Promise<never>((_, reject) =>
       window.setTimeout(
         () =>
-          reject(new Error("La session admin met trop de temps à répondre.")),
+          reject(new Error("La sessione di amministrazione sta impiegando troppo tempo per rispondere.")),
         8000,
       ),
     );
@@ -111,7 +111,7 @@ export default function AdminPage() {
       setError(
         productError?.message ||
           categoryError?.message ||
-          "Impossible de charger le catalogue.",
+          "Impossibile caricare il catalogo.",
       );
       return;
     }
@@ -200,14 +200,14 @@ export default function AdminPage() {
   async function createProduct(values: ProductValues, files: File[]): Promise<boolean> {
     setError("");
     setMessage("");
-    if (!values.names.fr.trim() || !values.categoryId) {
-      setError("Le nom français et la catégorie sont obligatoires.");
+    if (!values.names.it.trim() || !values.categoryId) {
+      setError("Il nome italiano e la categoria sono obbligatori.");
       return false;
     }
     const { data: product, error: productError } = await supabase
       .from("braviko_products")
       .insert({
-        slug: slugify(values.slug || values.names.fr),
+        slug: slugify(values.slug || values.names.it),
         category_id: values.categoryId,
         status: values.status,
         featured: values.featured,
@@ -215,13 +215,13 @@ export default function AdminPage() {
       .select("id")
       .single();
     if (productError || !product) {
-      setError(productError?.message || "Création impossible.");
+      setError(productError?.message || "Impossibile creare il prodotto.");
       return false;
     }
     const translations = (["fr", "de", "it"] as const).map((locale) => ({
       product_id: product.id,
       locale,
-      name: values.names[locale] || values.names.fr,
+      name: values.names[locale] || values.names.it,
       short_description: values.shortDescription,
       description: values.description,
       conditioning: values.conditioning,
@@ -232,7 +232,7 @@ export default function AdminPage() {
         supabase.from("braviko_product_translations").insert(translations),
         supabase.from("braviko_product_variants").insert({
           product_id: product.id,
-          sku: values.sku || slugify(values.names.fr),
+          sku: values.sku || slugify(values.names.it),
           label: values.label || "Format standard",
           price: values.price,
           // La quantité est gérée hors de cette interface de catalogue.
@@ -243,27 +243,27 @@ export default function AdminPage() {
       setError(
         translationError?.message ||
           variantError?.message ||
-          "Le produit a été créé mais ses détails sont incomplets.",
+          "Il prodotto è stato creato ma i dettagli sono incompleti.",
       );
       await loadCatalog();
       return false;
     }
     try {
-      await uploadImages(product.id, files, values.names.fr, false);
+      await uploadImages(product.id, files, values.names.it, false);
       await saveImageLinks(
         product.id,
         values.imageUrls,
-        values.names.fr,
+        values.names.it,
         files.length > 0,
       );
     } catch (uploadError) {
       setError(
-        `Produit créé, mais une image n’a pas pu être enregistrée : ${uploadError instanceof Error ? uploadError.message : "erreur inconnue"}`,
+        `Prodotto creato, ma non è stato possibile salvare un’immagine: ${uploadError instanceof Error ? uploadError.message : "errore sconosciuto"}`,
       );
       await loadCatalog();
       return false;
     }
-    setMessage("Produit créé dans le catalogue Braviko.");
+    setMessage("Prodotto creato nel catalogo Braviko.");
     await loadCatalog();
     return true;
   }
@@ -280,7 +280,7 @@ export default function AdminPage() {
     const { error: productError } = await supabase
       .from("braviko_products")
       .update({
-        slug: slugify(values.slug || values.names.fr),
+        slug: slugify(values.slug || values.names.it),
         category_id: values.categoryId,
         status: statusToSave,
         featured: values.featured,
@@ -296,7 +296,7 @@ export default function AdminPage() {
         (["fr", "de", "it"] as const).map((locale) => ({
           product_id: productId,
           locale,
-          name: values.names[locale] || values.names.fr,
+          name: values.names[locale] || values.names.it,
           short_description: values.shortDescription,
           description: values.description,
           conditioning: values.conditioning,
@@ -326,26 +326,26 @@ export default function AdminPage() {
       await uploadImages(
         productId,
         files,
-        values.names.fr,
+        values.names.it,
         Boolean(products.find((item) => item.id === productId)?.images.length),
       );
       await saveImageLinks(
         productId,
         values.imageUrls,
-        values.names.fr,
+        values.names.it,
         Boolean(
           products.find((item) => item.id === productId)?.images.length,
         ) || files.length > 0,
       );
     } catch (uploadError) {
       setError(
-        `Produit enregistré, mais une image n’a pas pu être ajoutée : ${uploadError instanceof Error ? uploadError.message : "erreur inconnue"}`,
+        `Prodotto salvato, ma non è stato possibile aggiungere un’immagine: ${uploadError instanceof Error ? uploadError.message : "errore sconosciuto"}`,
       );
       await loadCatalog();
       return false;
     }
     setMessage(
-      "Produit mis à jour. Les changements sont maintenant visibles dans le catalogue.",
+      "Prodotto aggiornato. Le modifiche sono ora visibili nel catalogo.",
     );
     await loadCatalog();
     return true;
@@ -355,7 +355,7 @@ export default function AdminPage() {
     setMessage("");
     const product = products.find((item) => item.id === productId);
     if (!product) {
-      setError("Produit introuvable.");
+      setError("Prodotto non trovato.");
       return false;
     }
     const storagePaths = product.images
@@ -396,7 +396,7 @@ export default function AdminPage() {
       setError(productError.message);
       return false;
     }
-    setMessage("Produit supprimé du catalogue.");
+    setMessage("Prodotto eliminato dal catalogo.");
     await loadCatalog();
     return true;
   }
@@ -406,17 +406,17 @@ export default function AdminPage() {
     try {
       const parsed = JSON.parse(await file.text()) as CatalogDraft;
       if (!Array.isArray(parsed.products) || !parsed.products.length)
-        throw new Error("Le fichier ne contient aucun produit exploitable.");
+        throw new Error("Il file non contiene prodotti utilizzabili.");
       setCatalogDraft(parsed);
       setMessage(
-        `${parsed.products.length} produits prêts à être prévisualisés.`,
+        `${parsed.products.length} prodotti pronti per l’anteprima.`,
       );
     } catch (fileError) {
       setCatalogDraft(null);
       setError(
         fileError instanceof Error
           ? fileError.message
-          : "Fichier JSON invalide.",
+          : "File JSON non valido.",
       );
     }
   }
@@ -429,7 +429,7 @@ export default function AdminPage() {
     let imported = 0;
     try {
       for (const [index, item] of entries.entries()) {
-        const categoryName = item.category?.trim() || "Autres produits";
+        const categoryName = item.category?.trim() || "Altri prodotti";
         const categorySlug = slugify(categoryName);
         const { data: parent, error: parentError } = await supabase
           .from("braviko_categories")
@@ -441,7 +441,7 @@ export default function AdminPage() {
           .single();
         if (parentError || !parent)
           throw new Error(
-            parentError?.message || `Catégorie introuvable : ${categoryName}`,
+            parentError?.message || `Categoria non trovata: ${categoryName}`,
           );
         const subcategoryName = item.subcategory?.trim();
         const subcategorySlug = subcategoryName
@@ -462,10 +462,10 @@ export default function AdminPage() {
           .single();
         if (categoryError || !category)
           throw new Error(
-            categoryError?.message || "Catégorie impossible à créer",
+            categoryError?.message || "Impossibile creare la categoria",
           );
         const nameFr =
-          item.name?.fr?.trim() || item.slug || `Produit ${index + 1}`;
+          item.name?.it?.trim() || item.name?.fr?.trim() || item.slug || `Prodotto ${index + 1}`;
         const slug = slugify(item.slug || nameFr);
         const { data: product, error: productError } = await supabase
           .from("braviko_products")
@@ -483,7 +483,7 @@ export default function AdminPage() {
           .single();
         if (productError || !product)
           throw new Error(
-            productError?.message || `Produit impossible à créer : ${nameFr}`,
+            productError?.message || `Impossibile creare il prodotto: ${nameFr}`,
           );
         const { error: translationError } = await supabase
           .from("braviko_product_translations")
@@ -516,20 +516,20 @@ export default function AdminPage() {
         imported++;
       }
       setCatalogDraft(null);
-      setMessage(`${imported} produits importés en brouillons.`);
+      setMessage(`${imported} prodotti importati come bozze.`);
       await loadCatalog();
     } catch (importError) {
       setError(
         importError instanceof Error
           ? importError.message
-          : "Import impossible.",
+          : "Impossibile completare l’importazione.",
       );
       if (imported) await loadCatalog();
     } finally {
       setImporting(false);
     }
   }
-  if (loading) return <PageSkeleton variant="admin" withHeader={false} label="Chargement de l’espace admin" />;
+  if (loading) return <PageSkeleton variant="admin" withHeader={false} label="Caricamento dell’area amministratore" />;
   if (!user) return <Login onSuccess={checkAccess} />;
   if (!authorized)
     return (
@@ -549,7 +549,7 @@ export default function AdminPage() {
                 Braviko / Admin
               </p>
               <h1 className="mt-1 truncate text-lg font-semibold tracking-tight sm:mt-2 sm:text-2xl">
-                Votre catalogue, au même endroit
+                Il tuo catalogo, tutto in un unico posto
               </h1>
             </div>
           </div>
@@ -558,13 +558,13 @@ export default function AdminPage() {
               href="/"
               className="hidden text-sm text-smoke transition hover:text-charcoal sm:block"
             >
-              Voir le site ↗
+              Vedi il sito ↗
             </Link>
             <button
               onClick={() => supabase.auth.signOut().then(() => checkAccess())}
               className="rounded-full border border-hairline px-3 py-2 text-xs transition hover:border-charcoal sm:px-4 sm:text-sm"
             >
-              Déconnexion
+              Esci
             </button>
           </div>
         </div>
@@ -573,7 +573,7 @@ export default function AdminPage() {
         <section className="relative isolate overflow-hidden rounded-[16px] border border-charcoal/10 bg-charcoal px-5 py-6 text-white sm:px-8 sm:py-8">
           <Image
             src="/images/agriculture-chainsaw.jpg"
-            alt="Équipement Braviko au travail"
+              alt="Attrezzatura Braviko al lavoro"
             fill
             priority
             className="-z-20 object-cover opacity-[0.07]"
@@ -582,23 +582,23 @@ export default function AdminPage() {
           <div className="absolute inset-0 -z-10 bg-charcoal/80" />
           <div className="relative max-w-3xl">
             <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-orange-200 sm:text-xs sm:tracking-[.22em]">
-              Braviko / espace opérations
+               Braviko / area operativa
             </p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:mt-3 sm:text-3xl">
-              Catalogue opérationnel
+               Catalogo operativo
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-6 text-white/70 sm:mt-3">
-              Contrôlez les fiches, les stocks et les publications depuis un seul poste de travail.
+              Gestisci schede, disponibilità e pubblicazioni da un’unica area di lavoro.
             </p>
             <div className="mt-5 grid max-w-xl grid-cols-3 divide-x divide-white/15 overflow-hidden rounded-[10px] border border-white/15 bg-white/5 text-xs sm:mt-6 sm:text-sm">
               <span className="px-3 py-2.5 text-white/80 sm:px-4">
-                {products.length} produits suivis
+                {products.length} prodotti gestiti
               </span>
               <span className="px-3 py-2.5 text-white/80 sm:px-4">
-                {categories.length} catégories
+                {categories.length} categorie
               </span>
               <span className="px-3 py-2.5 text-white/80 sm:px-4">
-                Images avec aperçu
+                Immagini con anteprima
               </span>
             </div>
           </div>
@@ -635,7 +635,7 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
     setError("");
     const loginEmail = email.trim();
     if (!loginEmail || !password) {
-      setError("Renseignez votre email et votre mot de passe.");
+      setError("Inserisci email e password.");
       setBusy(false);
       return;
     }
@@ -652,7 +652,7 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
       <section className="relative isolate hidden overflow-hidden bg-charcoal lg:block">
         <Image
           src="/images/agriculture-chainsaw.jpg"
-          alt="Équipement agricole Braviko"
+          alt="Attrezzatura agricola Braviko"
           fill
           priority
           className="z-0 object-cover opacity-50"
@@ -660,16 +660,16 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
         />
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-charcoal via-charcoal/45 to-transparent" />
         <div className="absolute left-12 top-12 z-20 text-xs font-semibold uppercase tracking-[.22em] text-orange-200">
-          Braviko / Administration
+          Braviko / Amministrazione
         </div>
         <div className="absolute bottom-12 left-12 z-20 max-w-md text-white">
-          <p className="text-sm font-medium text-white/70">Espace privé</p>
+          <p className="text-sm font-medium text-white/70">Area privata</p>
           <h1 className="mt-4 text-5xl font-semibold leading-none tracking-tight">
-            Votre catalogue, en ordre.
+          Il tuo catalogo, sempre in ordine.
           </h1>
           <p className="mt-5 text-sm leading-6 text-white/75">
-            Ajoutez vos produits, ajustez les prix et préparez une boutique
-            claire pour vos clients.
+            Aggiungi prodotti, aggiorna i prezzi e prepara un negozio
+            chiaro per i tuoi clienti.
           </p>
         </div>
       </section>
@@ -681,17 +681,17 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
               href="/"
               className="text-sm text-smoke transition hover:text-charcoal"
             >
-              Voir la boutique ↗
+              Vedi il negozio ↗
             </Link>
           </div>
           <p className="text-xs font-semibold uppercase tracking-[.22em] text-braise">
-            Accès administrateur
+            Accesso amministratore
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-            Content de vous revoir.
+            Bentornato.
           </h2>
           <p className="mt-3 max-w-sm text-sm leading-6 text-smoke">
-            Connectez-vous avec votre compte administrateur Supabase.
+            Accedi con il tuo account amministratore Supabase.
           </p>
           <div className="mt-8 grid gap-4">
             <label className="grid gap-2 text-sm font-medium">
@@ -703,12 +703,12 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
                 onChange={(event) => setEmail(event.target.value)}
                 required
                 autoComplete="email"
-                placeholder="vous@exemple.com"
+                placeholder="tuo@esempio.it"
                 className="h-[52px] min-h-[52px] rounded-card border border-hairline bg-white px-3 font-normal text-charcoal caret-braise outline-none transition placeholder:text-ash focus:border-braise focus:ring-2 focus:ring-braise/10"
               />
             </label>
             <label className="grid gap-2 text-sm font-medium">
-              Mot de passe
+              Password
               <div className="relative">
                 <input
                   name="password"
@@ -717,16 +717,16 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
                   onChange={(event) => setPassword(event.target.value)}
                   required
                   autoComplete="current-password"
-                  placeholder="Votre mot de passe"
+                  placeholder="La tua password"
                   className="h-[52px] min-h-[52px] w-full rounded-card border border-hairline bg-white px-3 pr-11 font-normal text-charcoal caret-braise outline-none transition placeholder:text-ash focus:border-braise focus:ring-2 focus:ring-braise/10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((value) => !value)}
                   aria-label={
-                    showPassword
-                      ? "Masquer le mot de passe"
-                      : "Afficher le mot de passe"
+                  showPassword
+                    ? "Nascondi password"
+                    : "Mostra password"
                   }
                   className="absolute inset-y-0 right-0 grid w-11 place-items-center text-smoke"
                 >
@@ -740,10 +740,10 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
             disabled={busy}
             className="mt-6 h-[52px] w-full rounded-full bg-charcoal px-5 text-sm font-medium text-white transition hover:bg-braise disabled:opacity-50"
           >
-            {busy ? "Connexion…" : "Entrer dans l’espace admin"}
+            {busy ? "Accesso…" : "Entra nell’area amministratore"}
           </button>
           <p className="mt-5 text-center text-sm text-smoke">
-            Accès réservé à l’équipe Braviko
+            Accesso riservato al team Braviko
           </p>
         </form>
       </section>
@@ -761,20 +761,20 @@ function AccessDenied({
     <main className="grid min-h-screen place-items-center bg-ivory px-6">
       <div className="w-full max-w-md rounded-card border border-hairline bg-white/70 p-8">
         <p className="text-xs font-semibold uppercase tracking-[.22em] text-braise">
-          Accès limité
+          Accesso limitato
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-          Compte non autorisé
+          Account non autorizzato
         </h1>
         <p className="mt-3 text-sm leading-6 text-smoke">
-          {email || "Ce compte"} est bien connecté, mais ne fait pas encore
-          partie des administrateurs Braviko.
+          {email || "Questo account"} è connesso, ma non è ancora autorizzato
+              per gli amministratori Braviko.
         </p>
         <button
           onClick={onSignOut}
           className="mt-6 rounded-full border border-charcoal px-5 py-3 text-sm font-medium"
         >
-          Changer de compte
+          Cambia account
         </button>
       </div>
     </main>

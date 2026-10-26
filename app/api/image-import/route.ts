@@ -43,13 +43,13 @@ function isPrivateAddress(address: string) {
 async function assertPublicImageUrl(value: string) {
   const target = new URL(value);
   if (!["http:", "https:"].includes(target.protocol))
-    throw new Error("Seules les adresses HTTP et HTTPS sont acceptées.");
+    throw new Error("Sono accettati solo indirizzi HTTP e HTTPS.");
   if (target.username || target.password)
-    throw new Error("Les adresses contenant des identifiants sont refusées.");
+    throw new Error("Gli indirizzi con credenziali non sono accettati.");
 
   const addresses = await lookup(target.hostname, { all: true, verbatim: true });
   if (!addresses.length || addresses.some(({ address }) => isPrivateAddress(address)))
-    throw new Error("Cette adresse réseau n’est pas autorisée.");
+    throw new Error("Questo indirizzo di rete non è autorizzato.");
   return target;
 }
 
@@ -70,21 +70,21 @@ async function fetchImage(source: URL) {
     if (response.status >= 300 && response.status < 400) {
       const location = response.headers.get("location");
       if (!location || redirectCount === MAX_REDIRECTS)
-        throw new Error("L’image comporte trop de redirections.");
+        throw new Error("L’immagine contiene troppi reindirizzamenti.");
       target = new URL(location, target);
       continue;
     }
-    if (!response.ok) throw new Error(`Le serveur de l’image répond ${response.status}.`);
+    if (!response.ok) throw new Error(`Il server dell’immagine ha risposto ${response.status}.`);
     return response;
   }
-  throw new Error("L’image n’a pas pu être récupérée.");
+  throw new Error("Non è stato possibile recuperare l’immagine.");
 }
 
 async function readLimitedBody(response: Response) {
   const declaredSize = Number(response.headers.get("content-length") || 0);
   if (declaredSize > MAX_IMAGE_BYTES)
-    throw new Error("L’image dépasse la limite de 8 Mo.");
-  if (!response.body) throw new Error("Le serveur n’a renvoyé aucun fichier.");
+    throw new Error("L’immagine supera il limite di 8 MB.");
+  if (!response.body) throw new Error("Il server non ha restituito alcun file.");
 
   const chunks: Uint8Array[] = [];
   const reader = response.body.getReader();
@@ -95,7 +95,7 @@ async function readLimitedBody(response: Response) {
     received += value.byteLength;
     if (received > MAX_IMAGE_BYTES) {
       await reader.cancel();
-      throw new Error("L’image dépasse la limite de 8 Mo.");
+      throw new Error("L’immagine supera il limite di 8 MB.");
     }
     chunks.push(value);
   }
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user)
-    return NextResponse.json({ error: "Session administrateur requise." }, { status: 401 });
+    return NextResponse.json({ error: "È necessario accedere come amministratore." }, { status: 401 });
 
   const { data: admin } = await supabase
     .from("braviko_admins")
@@ -123,18 +123,18 @@ export async function POST(request: Request) {
     .eq("user_id", user.id)
     .maybeSingle();
   if (!admin?.active)
-    return NextResponse.json({ error: "Accès administrateur requis." }, { status: 403 });
+    return NextResponse.json({ error: "Sono necessari i permessi di amministratore." }, { status: 403 });
 
   try {
     const body = (await request.json()) as { url?: string };
-    if (!body.url) throw new Error("URL manquante.");
+    if (!body.url) throw new Error("URL mancante.");
     const target = await assertPublicImageUrl(body.url);
     const response = await fetchImage(target);
     const contentType = (response.headers.get("content-type") || "")
       .split(";", 1)[0]
       .toLowerCase();
     if (!ALLOWED_TYPES.has(contentType))
-      throw new Error("Le lien ne renvoie pas une image JPG, PNG ou WebP.");
+      throw new Error("Il link non restituisce un’immagine JPG, PNG o WebP.");
 
     const bytes = await readLimitedBody(response);
     return new Response(bytes, {
@@ -150,7 +150,7 @@ export async function POST(request: Request) {
         error:
           error instanceof Error
             ? error.message
-            : "L’image n’a pas pu être importée.",
+            : "Non è stato possibile importare l’immagine.",
       },
       { status: 422 },
     );

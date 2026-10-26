@@ -8,7 +8,7 @@ function getCatalogClient() {
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   if (!url || !key)
-    throw new Error("La configuration du catalogue est absente.");
+    throw new Error("La configurazione del catalogo non è disponibile.");
   return createClient(url, key);
 }
 

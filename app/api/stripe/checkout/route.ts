@@ -16,11 +16,11 @@ export async function POST(request: Request) {
     if (error) throw error
     const { data: translations, error: translationError } = await supabase.from('braviko_product_translations').select('product_id, locale, name').in('product_id', body.items.map(item => item.productId))
     if (translationError) throw translationError
-    const locale = body.locale || 'fr'
+    const locale = body.locale || 'it'
     const lineItems = body.items.map(item => {
       const variant = variants?.find(value => value.id === item.variantId)
       if (!variant || variant.product_id !== item.productId) throw new Error('PRODUCT_UNAVAILABLE')
-      const name = translations?.find(value => value.product_id === item.productId && value.locale === locale)?.name || translations?.find(value => value.product_id === item.productId && value.locale === 'fr')?.name
+      const name = translations?.find(value => value.product_id === item.productId && value.locale === locale)?.name || translations?.find(value => value.product_id === item.productId && value.locale === 'it')?.name
       if (!name) throw new Error('PRODUCT_UNAVAILABLE')
       return { price_data: { currency: 'eur', product_data: { name }, unit_amount: Math.round(Number(variant.price) * 100) }, quantity: item.quantity }
     })
@@ -46,9 +46,9 @@ export async function POST(request: Request) {
     const code = error instanceof Error ? error.message : 'CHECKOUT_UNAVAILABLE'
     if (error instanceof Error && 'type' in error) console.error('Stripe checkout error:', error.message)
     const message = code === 'PRODUCT_UNAVAILABLE'
-      ? 'Un des produits du panier n’est plus disponible.'
+      ? 'Un prodotto del carrello non è più disponibile.'
       : code === 'STRIPE_NOT_CONFIGURED'
-        ? 'Le paiement par carte n’est pas encore disponible.'
+        ? 'Il pagamento con carta non è al momento disponibile.'
         : code
     return NextResponse.json({ error: code, message }, { status: code === 'STRIPE_NOT_CONFIGURED' ? 503 : 400 })
   }

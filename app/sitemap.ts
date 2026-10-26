@@ -8,7 +8,7 @@ const staticRoutes = [
 ]
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.fr'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.it'
   const entries: MetadataRoute.Sitemap = staticRoutes.map((route) => ({
     url: `${baseUrl}${route}`,
     changeFrequency: route === '/' || route === '/boutique' ? 'daily' : 'monthly',

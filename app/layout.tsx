@@ -16,10 +16,10 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.fr'),
-  title: 'Braviko — Les produits utiles, simplement',
-  description: 'Braviko sélectionne des produits utiles pour les animaux : alimentation, confort, jeu et soins.',
-  keywords: 'Braviko, animaux, chiens, chats, accessoires, alimentation, soins',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.it'),
+  title: 'Braviko — Prodotti utili, scelti con cura',
+  description: 'Braviko seleziona prodotti utili per gli animali: alimentazione, comfort, gioco e cura.',
+  keywords: 'Braviko, animali, cani, gatti, accessori, alimentazione, cura',
   alternates: { canonical: '/' },
   verification: {
     google: 'QTU2oN2k4JNkADG259tGdDwK31jtE0WyQvbptMg46QU',
@@ -28,8 +28,8 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: 'Braviko',
     locale: 'it_IT',
-    title: 'Braviko — Les produits utiles, simplement',
-    description: 'Une sélection claire de produits pour chiens, chats, petits animaux et oiseaux.',
+    title: 'Braviko — Prodotti utili, scelti con cura',
+    description: 'Una selezione chiara di prodotti per cani, gatti, piccoli animali e uccelli.',
   },
 }
 

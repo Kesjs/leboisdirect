@@ -75,7 +75,7 @@ type Props = {
   onImportFile: (file: File) => void;
   catalogDraft: {
     products?: {
-      name?: { fr?: string };
+      name?: { fr?: string; it?: string };
       category?: string;
       subcategory?: string;
       sku?: string;
@@ -87,9 +87,9 @@ type Props = {
 };
 
 const statusLabels: Record<AdminStatus, string> = {
-  draft: "Brouillon",
-  published: "Publié",
-  archived: "Archivé",
+  draft: "Bozza",
+  published: "Pubblicato",
+  archived: "Archiviato",
 };
 
 function slugify(value: string) {
@@ -142,6 +142,7 @@ async function addWatermark(file: File) {
 function initialValues(product?: AdminProduct | null): ProductValues {
   const translation = (locale: string) =>
     product?.translations.find((item) => item.locale === locale);
+  const primaryTranslation = translation("it") || translation("fr") || translation("de");
   const variant = product?.variants[0];
   return {
     slug: product?.slug || "",
@@ -153,10 +154,10 @@ function initialValues(product?: AdminProduct | null): ProductValues {
       de: translation("de")?.name || "",
       it: translation("it")?.name || "",
     },
-    shortDescription: translation("fr")?.short_description || "",
-    description: translation("fr")?.description || "",
-    conditioning: translation("fr")?.conditioning || "",
-    deliveryInfo: translation("fr")?.delivery_info || "",
+    shortDescription: primaryTranslation?.short_description || "",
+    description: primaryTranslation?.description || "",
+    conditioning: primaryTranslation?.conditioning || "",
+    deliveryInfo: primaryTranslation?.delivery_info || "",
     sku: variant?.sku || "",
     label: variant?.label || "",
     price: Number(variant?.price || 0),
@@ -325,8 +326,8 @@ function FileDropzone({
             <Icon name="upload" />
           </span>
           <span className="grid gap-0.5">
-            <span className="text-sm font-semibold">Ajouter des images</span>
-            <span className="text-xs text-smoke">PNG, JPG ou WebP · 6 maximum</span>
+        <span className="text-sm font-semibold">Aggiungi immagini</span>
+            <span className="text-xs text-smoke">PNG, JPG o WebP · massimo 6</span>
           </span>
         </button>
       </div>
@@ -416,18 +417,18 @@ function ImageLinksPanel({
     const link = url.trim();
     setLinkNotice("");
     if (!/^https?:\/\//i.test(link)) {
-      setLinkNotice("Collez une adresse complète commençant par http:// ou https://.");
+      setLinkNotice("Incolla un indirizzo completo che inizi con http:// o https://.");
       return;
     }
     if (
       pendingLinks.includes(link) ||
       images.some((image) => image.storage_path === link)
     ) {
-      setLinkNotice("Ce lien est déjà présent sur la fiche.");
+      setLinkNotice("Questo link è già presente nella scheda.");
       return;
     }
     if (availableSlots <= 0) {
-      setLinkNotice("La fiche contient déjà 6 nouvelles images.");
+      setLinkNotice("La scheda contiene già 6 nuove immagini.");
       return;
     }
     setBusy(true);
@@ -441,7 +442,7 @@ function ImageLinksPanel({
         const result = (await response.json().catch(() => null)) as
           | { error?: string }
           | null;
-        throw new Error(result?.error || "L’image n’a pas pu être importée.");
+        throw new Error(result?.error || "Non è stato possibile importare l’immagine.");
       }
       const blob = await response.blob();
       const extension =
@@ -461,12 +462,12 @@ function ImageLinksPanel({
       setUrl("");
       setLinkNotice(
         watermark
-          ? "Image récupérée. Le filigrane Braviko sera intégré automatiquement à l’enregistrement."
-          : "Image récupérée et ajoutée à la fiche.",
+          ? "Immagine recuperata. Il filigrana Braviko sarà integrato automaticamente al salvataggio."
+          : "Immagine recuperata e aggiunta alla scheda.",
       );
     } catch (error) {
       setLinkNotice(
-        error instanceof Error ? error.message : "L’image n’a pas pu être importée.",
+        error instanceof Error ? error.message : "Non è stato possibile importare l’immagine.",
       );
     } finally {
       setBusy(false);
@@ -476,9 +477,9 @@ function ImageLinksPanel({
     <div className="min-w-0 grid gap-3">
       <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
         <div>
-          <p className="text-sm font-semibold">Liens des images</p>
+          <p className="text-sm font-semibold">Link delle immagini</p>
           <p className="mt-1 text-xs text-smoke">
-            Les liens sont testés avant d’être ajoutés au produit.
+          I link vengono verificati prima di essere aggiunti al prodotto.
           </p>
         </div>
         <button
@@ -491,7 +492,7 @@ function ImageLinksPanel({
           }}
           className="shrink-0 rounded-[8px] border border-hairline px-3 py-2 text-xs font-semibold transition hover:border-charcoal disabled:opacity-50"
         >
-          {busy ? "Vérification…" : "Vérifier les liens"}
+          {busy ? "Verifica…" : "Verifica i link"}
         </button>
       </div>
       {allLinks.length > 0 && (
@@ -570,7 +571,7 @@ function ImageLinksPanel({
           disabled={busy || !url.trim() || availableSlots <= 0}
           className="h-[44px] whitespace-nowrap rounded-[8px] bg-charcoal px-4 text-sm font-semibold text-white transition hover:bg-braise disabled:opacity-50"
         >
-          {busy ? "Importation…" : "Importer l’image"}
+          {busy ? "Importazione…" : "Importa immagine"}
         </button>
       </div>
       {linkNotice && (
@@ -580,8 +581,8 @@ function ImageLinksPanel({
       )}
       {watermark && (
         <p className="text-xs text-smoke">
-          Les images fournies par URL sont copiées dans Braviko puis filigranées,
-          sans modifier le fichier du site d’origine.
+          Le immagini fornite tramite URL vengono copiate in Braviko e poi filigranate,
+          senza modificare il file originale del sito.
         </p>
       )}
     </div>
@@ -610,7 +611,7 @@ function ProductEditor({
   const [savingAction, setSavingAction] = useState<"save" | "publish" | "delete" | null>(null);
   const [watermark, setWatermark] = useState(true);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [language, setLanguage] = useState<"fr" | "de" | "it">("fr");
+  const [language, setLanguage] = useState<"fr" | "de" | "it">("it");
   const update = <K extends keyof ProductValues>(
     key: K,
     value: ProductValues[K],
@@ -646,7 +647,7 @@ function ProductEditor({
     }
   };
   const remove = async () => {
-    if (!product || !window.confirm(`Supprimer définitivement « ${values.names.fr || product.slug} » ?`)) return;
+    if (!product || !window.confirm(`Eliminare definitivamente « ${values.names.it || values.names.fr || product.slug} »?`)) return;
     setSavingAction("delete");
     try {
       if (await onDelete(product.id)) onClose();
@@ -666,13 +667,13 @@ function ProductEditor({
       <div className="flex min-w-0 items-start justify-between gap-4 border-b border-hairline pb-4">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[.18em] text-braise">
-            {product ? "Modifier le produit" : "Nouveau produit"}
+            {product ? "Modifica prodotto" : "Nuovo prodotto"}
           </p>
-          <h2 className="mt-1 truncate text-xl font-semibold tracking-tight" title={product ? values.names.fr || product.slug : undefined}>
-            {product ? values.names.fr || product.slug : "Ajouter une fiche"}
+        <h2 className="mt-1 truncate text-xl font-semibold tracking-tight" title={product ? values.names.it || values.names.fr || product.slug : undefined}>
+            {product ? values.names.it || values.names.fr || product.slug : "Aggiungi una scheda"}
           </h2>
           <p className="mt-1 text-sm text-smoke">
-            Tous les champs restent lisibles, avec un aperçu avant publication.
+            Tutti i campi restano chiari, con un’anteprima prima della pubblicazione.
           </p>
         </div>
         <button
@@ -681,26 +682,26 @@ function ProductEditor({
           className="inline-flex shrink-0 items-center gap-1.5 rounded-[8px] border border-hairline px-3 py-2 text-xs font-medium text-smoke transition hover:border-charcoal hover:text-charcoal"
         >
           <Icon name="close" />
-          Fermer
+          Chiudi
         </button>
       </div>
       <div className="mt-4 grid min-w-0 gap-4 overflow-y-auto pr-1">
         {values.status !== "published" && (
           <div className="rounded-[8px] border border-amber-300/60 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
-            <p className="font-semibold">Cette fiche n’est pas visible sur la boutique</p>
-            <p className="mt-1 text-xs leading-5">Passe l’état à « Publié » pour l’afficher sur le site. Les brouillons restent visibles uniquement dans l’administration.</p>
+            <p className="font-semibold">Questa scheda non è visibile nel negozio</p>
+            <p className="mt-1 text-xs leading-5">Imposta lo stato su « Pubblicato » per mostrarla sul sito. Le bozze restano visibili solo nell’area amministratore.</p>
           </div>
         )}
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="grid gap-2 text-sm font-medium sm:col-span-2">
-            Nom du produit
+            Nome del prodotto
             <input
               value={values.names[language]}
               onChange={(event) => updateName(event.target.value)}
-              required={language === "fr"}
+               required={language === "it"}
               placeholder={
                 language === "fr"
-                  ? "Bûches de chêne 33 cm"
+                  ? "Legna di quercia 33 cm"
                   : language === "de"
                     ? "Eichenholz 33 cm"
                     : "Legna di quercia 33 cm"
@@ -732,10 +733,10 @@ function ProductEditor({
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <AdminSelect
-            label="Catégorie"
+             label="Categoria"
             value={values.categoryId}
             options={[
-              { value: "", label: "Choisir une catégorie" },
+               { value: "", label: "Scegli una categoria" },
               ...categories.map((category) => ({
                 value: category.id,
                 label: category.name,
@@ -744,7 +745,7 @@ function ProductEditor({
             onChange={(value) => update("categoryId", value)}
           />
           <AdminSelect
-            label="État"
+             label="Stato"
             value={values.status}
             options={Object.entries(statusLabels).map(([value, label]) => ({
               value,
@@ -754,7 +755,7 @@ function ProductEditor({
           />
         </div>
         <label className="grid gap-2 text-sm font-medium">
-          Prix (€)
+          Prezzo (€)
           <input
             type="number"
             min="0"
@@ -785,48 +786,47 @@ function ProductEditor({
           </label>
         </div>
         <label className="grid gap-2 text-sm font-medium">
-          Description courte
+           Descrizione breve
           <textarea
             value={values.shortDescription}
             onChange={(event) => update("shortDescription", event.target.value)}
             rows={3}
             className="admin-input min-h-[78px] resize-y py-2.5"
-            placeholder="Une phrase claire pour présenter le produit."
+             placeholder="Una frase chiara per presentare il prodotto."
           />
         </label>
         <label className="grid gap-2 text-sm font-medium">
-          Caractéristiques du produit
+           Caratteristiche del prodotto
           <span className="text-xs font-normal leading-5 text-smoke">
-            Ajoutez les détails techniques, un par ligne, au format « Nom : valeur ».
+             Aggiungi i dettagli tecnici, uno per riga, nel formato « Nome: valore ».
           </span>
           <textarea
             value={values.description}
             onChange={(event) => update("description", event.target.value)}
             rows={12}
             className="admin-input min-h-[220px] resize-y py-2.5 leading-6"
-            placeholder={'Type : Bois de chauffage / feuillus durs\nEssences : Chêne, charme et hêtre\nQuantité : 2 stères'}
+             placeholder={'Tipo: legna da ardere / latifoglie dure\nEssenze: quercia, faggio e carpino\nQuantità: 2 steri'}
           />
         </label>
         <AdminCheckbox
           checked={values.featured}
           onChange={(value) => update("featured", value)}
         >
-          Mettre ce produit à la une
+          Metti questo prodotto in evidenza
         </AdminCheckbox>
         <div className="grid min-w-0 gap-3 border-t border-hairline pt-4">
           <div>
-            <p className="text-sm font-semibold">Images du produit</p>
+             <p className="text-sm font-semibold">Immagini del prodotto</p>
             <p className="mt-1 text-xs text-smoke">
-              Le filigrane est intégré dans le fichier final de chaque nouvelle
-              image au moment de l’enregistrement.
+               Il filigrana viene integrato nel file finale di ogni nuova immagine al momento del salvataggio.
             </p>
           </div>
           <AdminCheckbox checked={watermark} onChange={setWatermark}>
-            Appliquer le filigrane Braviko aux nouvelles images
+             Applica il filigrana Braviko alle nuove immagini
           </AdminCheckbox>
           <ImageLinksPanel
             images={product?.images || []}
-            productName={values.names.fr}
+            productName={values.names.it || values.names.fr}
             pendingLinks={imageUrls}
             onPendingLinksChange={setImageUrls}
             availableSlots={6 - files.length}
@@ -844,7 +844,7 @@ function ProductEditor({
           onClick={onClose}
           className="h-[42px] rounded-[8px] border border-hairline px-4 text-sm font-medium transition hover:border-charcoal"
         >
-          Annuler
+           Annulla
         </button>
         <button
           type="submit"
@@ -852,10 +852,10 @@ function ProductEditor({
           className="h-[42px] min-w-0 rounded-[8px] bg-charcoal px-4 text-sm font-semibold text-white transition hover:bg-braise disabled:opacity-50"
         >
           {savingAction === "save"
-            ? "Enregistrement…"
+             ? "Salvataggio…"
             : product
-              ? "Enregistrer les modifications"
-              : "Créer le produit"}{" "}
+               ? "Salva modifiche"
+               : "Crea prodotto"}{" "}
           <span aria-hidden="true">↗</span>
         </button>
         {product && values.status !== "published" && (
@@ -865,7 +865,7 @@ function ProductEditor({
             onClick={() => void save(true)}
             className="h-[42px] min-w-0 rounded-[8px] bg-forest px-4 text-sm font-semibold text-white transition hover:bg-forest/80 disabled:opacity-50 sm:col-span-2 xl:col-span-1 2xl:col-span-2"
           >
-            {savingAction === "publish" ? "Publication…" : "Publier et enregistrer"} <span aria-hidden="true">↗</span>
+            {savingAction === "publish" ? "Pubblicazione…" : "Pubblica e salva"} <span aria-hidden="true">↗</span>
           </button>
         )}
         {product && (
@@ -875,7 +875,7 @@ function ProductEditor({
             onClick={() => void remove()}
             className="h-[42px] rounded-[8px] border border-red-200 px-4 text-sm font-semibold text-red-700 transition hover:border-red-400 hover:bg-red-50 disabled:opacity-50 sm:col-span-2 xl:col-span-1 2xl:col-span-2"
           >
-            {savingAction === "delete" ? "Suppression…" : "Supprimer le produit"}
+             {savingAction === "delete" ? "Eliminazione…" : "Elimina prodotto"}
           </button>
         )}
       </div>
@@ -909,7 +909,7 @@ function ProductEditorModal({
       <section
         role="dialog"
         aria-modal="true"
-        aria-label="Éditeur de produit"
+         aria-label="Editor del prodotto"
         className="admin-modal-panel max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl overflow-y-auto rounded-[16px]"
       >
         {children}
@@ -943,7 +943,7 @@ export default function CatalogWorkspace({
     () =>
       products.filter((product) => {
         const name =
-          product.translations.find((item) => item.locale === "fr")?.name ||
+          product.translations.find((item) => item.locale === "it")?.name ||
           product.slug;
         return (
           (!query ||
@@ -969,9 +969,9 @@ export default function CatalogWorkspace({
       return product.images.some((image) => Boolean(image.publicUrl));
     })?.images.find((image) => Boolean(image.publicUrl))?.publicUrl;
   const filterItems = [
-    { value: "all" as const, label: "Tout le catalogue", count: counts.all },
-    { value: "published" as const, label: "Publié", count: counts.published },
-    { value: "draft" as const, label: "À compléter", count: counts.draft },
+    { value: "all" as const, label: "Tutto il catalogo", count: counts.all },
+    { value: "published" as const, label: "Pubblicati", count: counts.published },
+    { value: "draft" as const, label: "Da completare", count: counts.draft },
   ];
   const backfillImages = async () => {
     setBackfilling(true);
@@ -988,15 +988,15 @@ export default function CatalogWorkspace({
         const result = (await response.json().catch(() => null)) as
           | { processed?: number; hasMore?: boolean; error?: string; errors?: Array<{ message: string }> }
           | null;
-        if (!response.ok) throw new Error(result?.error || result?.errors?.[0]?.message || "Le filigranage n’a pas pu démarrer.");
+        if (!response.ok) throw new Error(result?.error || result?.errors?.[0]?.message || "Impossibile avviare il filigrana.");
         total += result?.processed || 0;
         hasMore = Boolean(result?.hasMore);
-        if (result?.errors?.length) throw new Error(`${result.errors[0].message}${result.errors.length > 1 ? ` (+${result.errors.length - 1} autre${result.errors.length > 2 ? "s" : ""})` : ""}`);
-        if (!result?.processed && hasMore) throw new Error("Le traitement est bloqué sur une image.");
+        if (result?.errors?.length) throw new Error(`${result.errors[0].message}${result.errors.length > 1 ? ` (+${result.errors.length - 1} altro${result.errors.length > 2 ? "i" : ""})` : ""}`);
+        if (!result?.processed && hasMore) throw new Error("L’elaborazione è bloccata su un’immagine.");
       }
-      setBackfillNotice(total ? `${total} image${total > 1 ? "s" : ""} filigranée${total > 1 ? "s" : ""} et protégée${total > 1 ? "s" : ""}.` : "Toutes les images sont déjà protégées.");
+      setBackfillNotice(total ? `${total} immagin${total > 1 ? "i" : "e"} filigranat${total > 1 ? "e" : "a"} e protett${total > 1 ? "e" : "a"}.` : "Tutte le immagini sono già protette.");
     } catch (backfillError) {
-      setBackfillNotice(backfillError instanceof Error ? backfillError.message : "Le filigranage a échoué.");
+      setBackfillNotice(backfillError instanceof Error ? backfillError.message : "Il filigrana non è riuscito.");
     } finally {
       setBackfilling(false);
     }
@@ -1006,11 +1006,11 @@ export default function CatalogWorkspace({
       <section className="min-w-0">
         <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[.16em] text-braise">Catalogue produits</p>
+            <p className="text-xs font-semibold uppercase tracking-[.16em] text-braise">Catalogo prodotti</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-              {products.length} fiche{products.length > 1 ? "s" : ""}
+              {products.length} scheda{products.length > 1 ? "e" : ""}
             </h2>
-            <p className="mt-2 max-w-md text-sm leading-6 text-smoke">Gérez vos produits, leur disponibilité et leur présence dans la boutique.</p>
+            <p className="mt-2 max-w-md text-sm leading-6 text-smoke">Gestisci prodotti, disponibilità e presenza nel negozio.</p>
           </div>
           <div className="grid w-full gap-2 sm:w-auto sm:grid-cols-[auto_auto]">
             <button
@@ -1019,7 +1019,7 @@ export default function CatalogWorkspace({
               disabled={backfilling}
               className="inline-flex h-[42px] items-center justify-center gap-2 rounded-[8px] border border-hairline bg-white px-4 text-sm font-semibold text-charcoal transition hover:border-charcoal disabled:opacity-50"
             >
-              {backfilling ? "Protection…" : "Protéger les images existantes"}
+              {backfilling ? "Protezione…" : "Proteggi immagini esistenti"}
             </button>
             <button
               type="button"
@@ -1029,18 +1029,18 @@ export default function CatalogWorkspace({
               }}
               className="inline-flex h-[42px] items-center justify-center gap-2 rounded-[8px] bg-charcoal px-4 text-sm font-semibold text-white transition hover:bg-braise"
             >
-              <Icon name="plus" /> Nouveau produit
+              <Icon name="plus" /> Nuovo prodotto
             </button>
           </div>
         </div>
         {backfillNotice && <p role="status" className="mb-5 rounded-[12px] border border-forest/20 bg-forest/10 p-4 text-sm text-forest">{backfillNotice}</p>}
         <div className="mb-6 grid overflow-hidden rounded-[12px] border border-hairline bg-white sm:grid-cols-2">
           <div className="border-b border-hairline px-4 py-3.5 sm:border-b-0 sm:border-r">
-            <p className="text-xs text-smoke">Visibles en boutique</p>
+            <p className="text-xs text-smoke">Visibili nel negozio</p>
             <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.published}</p>
           </div>
           <div className="border-b border-hairline px-4 py-3.5 sm:border-b-0 sm:border-r">
-            <p className="text-xs text-smoke">À compléter</p>
+            <p className="text-xs text-smoke">Da completare</p>
             <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.draft}</p>
           </div>
         </div>
@@ -1056,11 +1056,11 @@ export default function CatalogWorkspace({
         )}
         <div className="mb-4">
           <label className="relative">
-            <span className="sr-only">Rechercher un produit</span>
+             <span className="sr-only">Cerca un prodotto</span>
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Rechercher un produit, une catégorie…"
+               placeholder="Cerca un prodotto o una categoria…"
               className="admin-input h-[44px] w-full pl-10"
             />
             <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-smoke">
@@ -1069,7 +1069,7 @@ export default function CatalogWorkspace({
           </label>
         </div>
         <div className="mb-6 -mx-1 overflow-x-auto px-1 pb-2">
-          <div className="flex min-w-max items-stretch gap-2.5" role="group" aria-label="Filtrer le catalogue">
+           <div className="flex min-w-max items-stretch gap-2.5" role="group" aria-label="Filtra il catalogo">
             {filterItems.map((item, index) => {
               const image = filterImage(item.value);
               const active = status === item.value;
@@ -1085,7 +1085,7 @@ export default function CatalogWorkspace({
                   <span className={`absolute inset-0 ${active ? "bg-charcoal/75" : "bg-charcoal/55"}`} />
                   <span className={`relative flex h-full skew-x-0 flex-col justify-between p-3 text-white ${index === 1 ? "transform skew-x-2" : index === 2 ? "transform -skew-x-2" : ""}`}>
                     <span className="text-[11px] font-medium uppercase tracking-[.12em]">{item.label}</span>
-                    <span className="flex items-end justify-between gap-2"><strong className="text-xl font-semibold leading-none tabular-nums">{item.count}</strong><span className="text-[11px] text-white/75">fiches</span></span>
+               <span className="flex items-end justify-between gap-2"><strong className="text-xl font-semibold leading-none tabular-nums">{item.count}</strong><span className="text-[11px] text-white/75">schede</span></span>
                   </span>
                 </button>
               );
@@ -1095,12 +1095,12 @@ export default function CatalogWorkspace({
         <div className="grid gap-3 sm:grid-cols-2">
           {filtered.length === 0 ? (
             <div className="rounded-[16px] border border-dashed border-[#cfc9be] bg-white/60 p-12 text-center text-sm text-smoke sm:col-span-2">
-              Aucun produit ne correspond à cette recherche.
+               Nessun prodotto corrisponde alla ricerca.
             </div>
           ) : (
             filtered.map((product) => {
               const name =
-                product.translations.find((item) => item.locale === "fr")
+                product.translations.find((item) => item.locale === "it")
                   ?.name || product.slug;
               const variant = product.variants[0];
               const image =
@@ -1127,7 +1127,7 @@ export default function CatalogWorkspace({
                       <div className="grid h-full place-items-center bg-ivory text-center text-sm text-smoke">
                         <span className="grid justify-items-center gap-2 rounded-[10px] border border-dashed border-[#cfc9be] bg-white/70 px-4 py-3">
                           <Icon name="image" />
-                          <span>Image à ajouter</span>
+                           <span>Immagine da aggiungere</span>
                         </span>
                       </div>
                     )}
@@ -1136,15 +1136,15 @@ export default function CatalogWorkspace({
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="truncate text-[15px] font-semibold">{name}</p>
-                        <p className="mt-1 truncate text-xs text-smoke">{product.categoryName || "Sans catégorie"}</p>
+                         <p className="mt-1 truncate text-xs text-smoke">{product.categoryName || "Senza categoria"}</p>
                       </div>
                       <span className={`shrink-0 rounded-full px-2 py-1 text-[11px] font-medium ${product.status === "published" ? "bg-forest/10 text-forest" : "bg-black/5 text-smoke"}`}>
                         {statusLabels[product.status]}
                       </span>
                     </div>
                     <div className="mt-5 flex items-center justify-between gap-3 border-t border-hairline pt-3.5 text-sm">
-                      <span className="font-semibold tabular-nums">{variant ? `${Number(variant.price).toFixed(2)} €` : "Prix à définir"}</span>
-                      <span className="text-xs font-semibold text-smoke transition group-hover:text-charcoal">Ouvrir la fiche <span aria-hidden="true">→</span></span>
+                       <span className="font-semibold tabular-nums">{variant ? `${Number(variant.price).toFixed(2)} €` : "Prezzo da definire"}</span>
+                       <span className="text-xs font-semibold text-smoke transition group-hover:text-charcoal">Apri la scheda <span aria-hidden="true">→</span></span>
                     </div>
                   </div>
                 </button>
@@ -1155,13 +1155,13 @@ export default function CatalogWorkspace({
         <details className="mt-6 rounded-[12px] border border-braise/30 bg-braise/5 p-4">
           <summary className="cursor-pointer list-none">
             <p className="text-xs font-semibold uppercase tracking-[.16em] text-braise">
-              Import rapide
+               Importazione rapida
             </p>
             <h3 className="mt-1 text-lg font-semibold">
-              Préremplir depuis un catalogue JSON
+               Precompila da un catalogo JSON
             </h3>
             <p className="mt-1 text-sm text-smoke">
-              Analyse locale avant toute écriture dans Supabase.
+               Analisi locale prima di qualsiasi scrittura in Supabase.
             </p>
           </summary>
           <div className="mt-4">
@@ -1177,7 +1177,7 @@ export default function CatalogWorkspace({
             {catalogDraft?.products?.length ? (
               <>
                 <p className="mt-3 text-sm font-semibold">
-                  {catalogDraft.products.length} fiches prêtes
+                   {catalogDraft.products.length} schede pronte
                 </p>
                 <button
                   type="button"
@@ -1186,8 +1186,8 @@ export default function CatalogWorkspace({
                   className="mt-3 rounded-full bg-charcoal px-5 py-3 text-sm font-medium text-white disabled:opacity-50"
                 >
                   {importing
-                    ? "Import en cours…"
-                    : `Importer ${catalogDraft.products.length} produits en brouillons`}
+                     ? "Importazione in corso…"
+                     : `Importa ${catalogDraft.products.length} prodotti come bozze`}
                 </button>
               </>
             ) : null}

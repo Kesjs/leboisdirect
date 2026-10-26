@@ -11,7 +11,7 @@ function csv(value: unknown) {
 function siteUrl(request: NextRequest) {
   return (
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    "https://braviko.fr"
+    "https://braviko.it"
   );
 }
 
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   if (!url || !key) {
-    return new NextResponse("Catalogue indisponible", { status: 500 });
+    return new NextResponse("Catalogo non disponibile", { status: 500 });
   }
 
   const supabase = createClient(url, key);
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     .eq("status", "published")
     .order("sort_order", { ascending: true });
 
-  if (error) return new NextResponse("Erreur catalogue", { status: 500 });
+  if (error) return new NextResponse("Errore del catalogo", { status: 500 });
 
   const rows = [
     [
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
 
   for (const product of data || []) {
     const translations = (product.braviko_product_translations || []) as any[];
-    const fr = translations.find((item) => item.locale === "fr") || translations[0] || {};
+    const it = translations.find((item) => item.locale === "it") || translations[0] || {};
     const variants = ((product.braviko_product_variants || []) as any[]).sort(
       (a, b) => Number(a.price) - Number(b.price),
     );
@@ -58,14 +58,14 @@ export async function GET(request: NextRequest) {
           ? `${baseUrl}/${images[0].storage_path.replace(/^\//, "")}`
           : supabase.storage.from("braviko-product-media").getPublicUrl(images[0].storage_path).data.publicUrl
       : "";
-    const description = fr.short_description || fr.description || "";
+    const description = it.short_description || it.description || "";
 
     // Merchant Center must never receive a fabricated zero price. Products without
     // a real purchasable variant are omitted until the catalogue is complete.
     for (const variant of variants) {
       if (variant.price == null || Number(variant.price) <= 0) continue;
       const id = variant.sku || `${product.id}-${variant.id}`;
-      const title = [fr.name || product.slug, variant.label].filter(Boolean).join(" - ");
+      const title = [it.name || product.slug, variant.label].filter(Boolean).join(" - ");
       rows.push([
         id, title, description, `${baseUrl}/produit/${product.slug}`, image,
         `${Number(variant.price).toFixed(2)} EUR`, Number(variant.stock || 0) > 0 ? "in_stock" : "out_of_stock",

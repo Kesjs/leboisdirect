@@ -162,5 +162,5 @@ function ConnectionContent() {
 }
 
 export default function ConnectionPage() {
-  return <Suspense fallback={<PageSkeleton variant="auth" label="Chargement de la connexion" />}><ConnectionContent /></Suspense>
+  return <Suspense fallback={<PageSkeleton variant="auth" label="Caricamento dell’accesso" />}><ConnectionContent /></Suspense>
 }

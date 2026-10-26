@@ -53,7 +53,7 @@ function PageSkeletonContent({ variant }: { variant: PageSkeletonVariant }) {
   return <div className="bk-page-skeleton-content"><div className="bk-page-skeleton-heading"><SkeletonBlock className="bk-page-skeleton-heading-kicker" /><SkeletonBlock className="bk-page-skeleton-heading-title" /><SkeletonBlock className="bk-page-skeleton-heading-copy" /></div><div className="bk-page-skeleton-copy-block"><SkeletonBlock /><SkeletonBlock /><SkeletonBlock /><SkeletonBlock /></div></div>
 }
 
-export default function PageSkeleton({ variant = 'page', label = 'Chargement de la page', withHeader = true }: PageSkeletonProps) {
+export default function PageSkeleton({ variant = 'page', label = 'Caricamento della pagina', withHeader = true }: PageSkeletonProps) {
   return <>
     {withHeader && <Header />}
     <main className={`bk-page-skeleton bk-page-skeleton--${variant}`} aria-busy="true" aria-label={label}>

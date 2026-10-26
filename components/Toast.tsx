@@ -19,7 +19,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     {children}
     {toast && <div className="bk-toast" role="status" aria-live="polite">
       <div><strong>{toast.title}</strong><p>{toast.description}</p></div>
-      <button type="button" onClick={() => setToast(null)} aria-label="Fermer la notification">×</button>
+      <button type="button" onClick={() => setToast(null)} aria-label="Chiudi la notifica">×</button>
     </div>}
   </ToastContext.Provider>
 }
