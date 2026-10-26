@@ -13,10 +13,18 @@ const seeds: PetSeed[] = [
 
 const slugify = (value: string) => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 const imageFor = (category: string) => category === 'cani' ? '/images/pet-cani.png' : category === 'gatti' ? '/images/pet-gatti.png' : category === 'piccoli-animali' ? '/images/pet-piccoli-animali.png' : category === 'uccelli' ? '/images/pet-uccelli.png' : '/images/pet-cura.png'
+const marketPrices: Record<string, number[]> = {
+  cani: [29, 34, 12, 9, 14, 29, 12, 28, 10, 39, 24, 11, 16, 7, 19],
+  gatti: [27, 32, 8, 7, 39, 18, 49, 12, 29, 69, 9, 6, 29, 24, 14],
+  'piccoli-animali': [8, 15, 7, 12, 24, 16, 8, 11, 39, 22],
+  uccelli: [9, 12, 8, 15, 10, 7, 13, 19],
+  accessori: [29, 12, 14, 8, 13, 18, 11],
+  'cura-igiene': [12, 13, 9, 11, 8],
+}
 
 export const petCatalog: Product[] = seeds.flatMap((seed) => seed.names.map((name, index) => {
   const id = `pet-${seed.category}-${index + 1}`
-  const price = seed.base + (index % 5) * 4 + (index % 3)
+  const price = marketPrices[seed.category]?.[index] ?? seed.base + (index % 5) * 4 + (index % 3)
   return {
     id, slug: slugify(name), name, category: seed.category as Product['category'], description: seed.description,
     longDescription: `${seed.description} Formato facile da usare e informazioni chiare prima dell’acquisto.`,

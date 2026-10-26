@@ -18,8 +18,8 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.fr'),
   title: 'Braviko — Les produits utiles, simplement',
-  description: 'Préparez votre chauffage au bois avec des bûches, granulés et équipements sélectionnés pour l’hiver.',
-  keywords: 'Braviko, chauffage au bois, bûches, granulés, bois compressé, hiver',
+  description: 'Braviko sélectionne des produits utiles pour les animaux : alimentation, confort, jeu et soins.',
+  keywords: 'Braviko, animaux, chiens, chats, accessoires, alimentation, soins',
   alternates: { canonical: '/' },
   verification: {
     google: 'QTU2oN2k4JNkADG259tGdDwK31jtE0WyQvbptMg46QU',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     siteName: 'Braviko',
     locale: 'fr_FR',
     title: 'Braviko — Les produits utiles, simplement',
-    description: 'Préparez votre chauffage au bois avec des bûches, granulés et équipements sélectionnés pour l’hiver.',
+    description: 'Une sélection claire de produits pour chiens, chats, petits animaux et oiseaux.',
   },
 }
 

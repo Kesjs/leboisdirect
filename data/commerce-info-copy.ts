@@ -30,19 +30,19 @@ export const commerceInfoCopy: Record<'retours-remboursements' | 'expedition' | 
     ] },
   },
   expedition: {
-    fr: { eyebrow: 'BRAVIKO / LOGISTIQUE', title: 'Expédition et livraison', intro: 'Les informations pratiques pour préparer la réception de votre bois et de vos équipements.', updated: 'Mise à jour : 1 octobre 2026', sections: [
+    fr: { eyebrow: 'BRAVIKO / LOGISTIQUE', title: 'Expédition et livraison', intro: 'Les informations pratiques pour recevoir vos produits pour animaux.', updated: 'Mise à jour : 1 octobre 2026', sections: [
       { title: 'Préparation', body: 'Chaque fiche indique un délai indicatif de préparation. Les produits d’une même commande peuvent être expédiés séparément selon leur disponibilité et leur origine.' },
       { title: 'Accès et déchargement', body: 'Avant la confirmation, vérifiez l’accès du véhicule, la solidité du sol et l’espace disponible pour le déchargement. Signalez toute contrainte particulière dans votre demande.' },
       { title: 'Réception', body: 'Contrôlez l’état de l’emballage et du produit à la livraison. Notez toute réserve précise sur le bon du transporteur et contactez-nous rapidement en cas d’anomalie.' },
       { title: 'Frais', body: 'Les frais dépendent de la destination, du poids, du volume et des conditions d’accès. Ils sont précisés avant la confirmation définitive de la commande.' },
     ] },
-    de: { eyebrow: 'BRAVIKO / LOGISTIK', title: 'Versand und Lieferung', intro: 'Praktische Informationen zur Annahme von Brennholz und Ausrüstung.', updated: 'Aktualisiert am 1. Oktober 2026', sections: [
+    de: { eyebrow: 'BRAVIKO / LOGISTIK', title: 'Versand und Lieferung', intro: 'Praktische Informationen zur Annahme Ihrer Tierprodukte.', updated: 'Aktualisiert am 1. Oktober 2026', sections: [
       { title: 'Vorbereitung', body: 'Jede Produktseite nennt eine voraussichtliche Vorbereitungszeit. Produkte einer Bestellung können je nach Verfügbarkeit getrennt versendet werden.' },
       { title: 'Zufahrt und Abladen', body: 'Prüfen Sie vor der Bestätigung Zufahrt, Boden und Platz für das Abladen. Teilen Sie besondere Einschränkungen in Ihrer Anfrage mit.' },
       { title: 'Annahme', body: 'Prüfen Sie Verpackung und Produkt bei Lieferung. Vermerken Sie konkrete Vorbehalte beim Transporteur und melden Sie Auffälligkeiten schnell.' },
       { title: 'Kosten', body: 'Kosten hängen von Zielort, Gewicht, Volumen und Zufahrt ab und werden vor der endgültigen Bestätigung mitgeteilt.' },
     ] },
-    it: { eyebrow: 'BRAVIKO / LOGISTICA', title: 'Spedizione e consegna', intro: 'Informazioni pratiche per ricevere legna e attrezzature.', updated: 'Aggiornato il 1 ottobre 2026', sections: [
+    it: { eyebrow: 'BRAVIKO / LOGISTICA', title: 'Spedizione e consegna', intro: 'Informazioni pratiche per ricevere i tuoi prodotti per animali.', updated: 'Aggiornato il 1 ottobre 2026', sections: [
       { title: 'Preparazione', body: 'Ogni scheda indica un tempo indicativo di preparazione. I prodotti dello stesso ordine possono essere spediti separatamente in base alla disponibilità.' },
       { title: 'Accesso e scarico', body: 'Prima della conferma verifica accesso del veicolo, fondo e spazio per lo scarico. Indica eventuali vincoli nella richiesta.' },
       { title: 'Ricezione', body: 'Controlla imballaggio e prodotto alla consegna. Segnala riserve precise al corriere e contattaci rapidamente in caso di problemi.' },
@@ -78,7 +78,7 @@ export const commerceInfoCopy: Record<'retours-remboursements' | 'expedition' | 
     ] },
     de: { eyebrow: 'BRAVIKO / PRODUKTE', title: 'Produktzustand und Details', intro: 'Was Sie vor der Bestätigung Ihrer Anfrage wissen sollten.', updated: 'Aktualisiert am 1. Oktober 2026', sections: [
       { title: 'Angegebener Zustand', body: 'Veröffentlichte Produkte gelten als neu, sofern die Produktseite nichts anderes angibt. Entwürfe sind nicht sichtbar, archivierte Produkte werden nicht mehr angeboten.' },
-      { title: 'Produktseite', body: 'Die Seite enthält verfügbare Angaben wie Holzart, Maße, Verpackung, Menge, Herkunft und Lieferzeit. Bilder dienen der Illustration und können leicht abweichen.' },
+      { title: 'Produktseite', body: 'Die Seite enthält verfügbare Angaben wie Größe, Nutzung, Verpackung, Menge und Lieferzeit. Bilder dienen der Illustration und können leicht abweichen.' },
       { title: 'Verfügbarkeit', body: 'Die Verfügbarkeit wird bei der Bearbeitung Ihrer Bestellung bestätigt. Bei Engpässen kann eine gleichwertige Lösung oder Erstattung angeboten werden.' },
       { title: 'Preise und Varianten', body: 'Der Preis hängt von Format oder Variante ab. Prüfen Sie Menge, Verpackung und Preis im Warenkorb vor der Bestätigung.' },
     ] },

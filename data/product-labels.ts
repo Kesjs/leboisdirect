@@ -2,9 +2,9 @@ import type { Product } from './products'
 import type { Locale } from '@/lib/i18n-context'
 
 export const categoryLabels = {
-  fr: { buches: 'Bûches', 'bois-compresse': 'Bois compressé', granules: 'Granulés', allumage: 'Bois d’allumage', 'allume-feu': 'Allume-feu', 'accessoires-chauffage': 'Accessoires chauffage', 'machines-agricoles': 'Machines agricoles' },
-  de: { buches: 'Brennholz', 'bois-compresse': 'Holzbriketts', granules: 'Pellets', allumage: 'Anzündholz', 'allume-feu': 'Feueranzünder', 'accessoires-chauffage': 'Heizungszubehör', 'machines-agricoles': 'Landmaschinen' },
-  it: { buches: 'Legna', 'bois-compresse': 'Bricchetti', granules: 'Pellet', allumage: 'Legna da accensione', 'allume-feu': 'Accendifuoco', 'accessoires-chauffage': 'Accessori per il riscaldamento', 'machines-agricoles': 'Macchine agricole' },
+  fr: { cani: 'Chiens', gatti: 'Chats', 'piccoli-animali': 'Petits animaux', uccelli: 'Oiseaux', accessori: 'Accessoires', 'cura-igiene': 'Soin et hygiène', buches: 'Bûches', 'bois-compresse': 'Bois compressé', granules: 'Granulés', allumage: 'Bois d’allumage', 'allume-feu': 'Allume-feu', 'accessoires-chauffage': 'Accessoires chauffage', 'machines-agricoles': 'Machines agricoles' },
+  de: { cani: 'Hunde', gatti: 'Katzen', 'piccoli-animali': 'Kleine Tiere', uccelli: 'Vögel', accessori: 'Zubehör', 'cura-igiene': 'Pflege und Hygiene', buches: 'Brennholz', 'bois-compresse': 'Holzbriketts', granules: 'Pellets', allumage: 'Anzündholz', 'allume-feu': 'Feueranzünder', 'accessoires-chauffage': 'Heizungszubehör', 'machines-agricoles': 'Landmaschinen' },
+  it: { cani: 'Cani', gatti: 'Gatti', 'piccoli-animali': 'Piccoli animali', uccelli: 'Uccelli', accessori: 'Accessori', 'cura-igiene': 'Cura e igiene', buches: 'Legna', 'bois-compresse': 'Bricchetti', granules: 'Pellet', allumage: 'Legna da accensione', 'allume-feu': 'Accendifuoco', 'accessoires-chauffage': 'Accessori per il riscaldamento', 'machines-agricoles': 'Macchine agricole' },
 }
 
 const categorySuffixLabels: Record<string, Record<Locale, string>> = {
