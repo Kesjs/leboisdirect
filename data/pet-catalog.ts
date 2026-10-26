@@ -12,6 +12,7 @@ const seeds: PetSeed[] = [
 ]
 
 const slugify = (value: string) => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+const imageFor = (category: string) => category === 'cani' ? '/images/pet-cani.png' : category === 'gatti' ? '/images/pet-gatti.png' : category === 'piccoli-animali' ? '/images/pet-piccoli-animali.png' : category === 'uccelli' ? '/images/pet-uccelli.png' : '/images/pet-cura.png'
 
 export const petCatalog: Product[] = seeds.flatMap((seed) => seed.names.map((name, index) => {
   const id = `pet-${seed.category}-${index + 1}`
@@ -20,7 +21,7 @@ export const petCatalog: Product[] = seeds.flatMap((seed) => seed.names.map((nam
     id, slug: slugify(name), name, category: seed.category as Product['category'], description: seed.description,
     longDescription: `${seed.description} Formato facile da usare e informazioni chiare prima dell’acquisto.`,
     features: ['Formato pratico', 'Uso quotidiano', 'Confezione pronta per la consegna'], price,
-    image: '/images/pet-placeholder.svg', images: ['/images/pet-placeholder.svg'], conditioning: '1 unità', deliveryInfo: 'Consegna in 2-4 giorni', featured: index < 2,
+    image: imageFor(seed.category), images: [imageFor(seed.category)], conditioning: '1 unità', deliveryInfo: 'Consegna in 2-4 giorni', featured: index < 2,
     variants: [{ id: `${id}-standard`, price, stock: 24, label: 'Formato standard' }],
     translations: { it: name, de: name, description: { it: seed.description, de: seed.description }, conditioning: { it: '1 unità', de: '1 Stück' }, delivery: { it: 'Consegna in 2-4 giorni', de: 'Lieferung in 2-4 Tagen' } },
   }

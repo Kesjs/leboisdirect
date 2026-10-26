@@ -1,0 +1,6 @@
+*.zip
+.next
+.codex
+.cursor
+docs
+supabase/.temp
