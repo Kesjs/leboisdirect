@@ -8,7 +8,6 @@ import { bravikoCopy } from '@/data/braviko-copy'
 import { useI18n } from '@/lib/i18n-context'
 import ProductCard from './ProductCard'
 import { uiCopy } from '@/data/ui-copy'
-import { isHeatingCategory } from '@/data/catalog-taxonomy'
 
 function shuffle<T>(items: T[]) {
   const shuffled = [...items]
@@ -27,7 +26,7 @@ export default function FeaturedProducts() {
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([])
   const [catalogError, setCatalogError] = useState(false)
   const reduced = useReducedMotion()
-  const universeProducts = catalogProducts.filter(product => isHeatingCategory(product.category))
+  const universeProducts = catalogProducts
   const availableCategories = Array.from(new Set(universeProducts.map(product => product.category)))
   const visibleProducts = selectedCategory === 'all'
     ? universeProducts

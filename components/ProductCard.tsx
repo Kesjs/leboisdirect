@@ -11,7 +11,7 @@ import { useCart } from '@/lib/cart-context'
 import { useToast } from '@/components/Toast'
 
 export default function ProductCard({ product }: { product: Product }) {
-  const fallbackImage = '/images/photorealistic-perspective-wood-logs.jpg'
+  const fallbackImage = '/images/pet-cura.png'
   const { locale } = useI18n()
   const { addItem } = useCart()
   const { showToast } = useToast()

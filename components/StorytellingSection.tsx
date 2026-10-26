@@ -11,7 +11,7 @@ import { bravikoCopy } from '@/data/braviko-copy'
 const images = [
   '/images/pet-cani.png',
   '/images/pet-gatti.png',
-  '/images/cozy-stove-comfort.jpg',
+  '/images/pet-routine.png',
 ]
 
 export default function StorytellingSection() {

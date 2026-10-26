@@ -86,10 +86,10 @@ export async function GET(request: NextRequest) {
       features: parseFeatures(fr.description || ""),
       longDescription: fr.description || fr.short_description || "",
       price: Number(variants[0]?.price || 0),
-      image: images[0] || "/images/photorealistic-perspective-wood-logs.jpg",
+      image: images[0] || "/images/pet-cura.png",
       images: images.length
         ? images
-        : ["/images/photorealistic-perspective-wood-logs.jpg"],
+        : ["/images/pet-cura.png"],
       conditioning: fr.conditioning || variants[0]?.label || "",
       deliveryInfo: fr.delivery_info || "",
       variants: variants.map((variant: any) => ({
