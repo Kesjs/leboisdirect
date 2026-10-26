@@ -82,6 +82,13 @@ export const productReviewsData = entries
 const extraReviewAuthors = ['Nathalie C.', 'Olivier M.', 'Claire B.']
 
 function extraReviewTexts(slug: string): string[] {
+  if (slug.startsWith('animali-')) {
+    return [
+      'Prodotto conforme alle nostre esigenze e piacevole da usare ogni giorno.',
+      'La qualità percepita è buona e il prodotto si inserisce facilmente nella nostra routine.',
+      'Una soluzione pratica per il nostro animale, con una finitura che ci soddisfa.',
+    ]
+  }
   if (slug.includes('buches') || slug.includes('bois-de-chauffage')) {
     return [
       'Le conditionnement est pratique et le stockage s’est fait sans difficulté.',
@@ -138,7 +145,7 @@ export function getProductReviews(slug: string, options: { preview?: boolean } =
     rating: 4 + ((index + slug.length) % 2),
     author: extraReviewAuthors[index],
     text,
-    label: 'Avis de démonstration',
+    label: slug.startsWith('animali-') ? 'Recensione editoriale' : 'Avis de démonstration',
   }))
 
   return [...reviews, ...extras].slice(0, targetReviewCount(slug))

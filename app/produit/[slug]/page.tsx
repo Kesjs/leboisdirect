@@ -373,7 +373,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               {/* Add to Cart */}
               <div className="bk-product-actions">
                 <Button size="md" className="bk-product-buy" onClick={handleBuyNow}>
-                  Acheter maintenant — {formatPrice(currentPrice * quantity)}
+                  Acquista ora — {formatPrice(currentPrice * quantity)}
                 </Button>
                 <button type="button" className="bk-product-cart" onClick={handleAddToCart}>
                   {added ? c.added : c.add}
@@ -455,7 +455,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 {productReviews.map((review, index) => (
                   <article key={`${review.author || 'review'}-${index}`} className="bk-product-review-card">
                     <div className="bk-product-review-meta">
-                      {review.rating !== undefined && <span aria-label={`${review.rating} sur 5`}>{'★'.repeat(Math.floor(review.rating))}{review.rating % 1 ? '½' : ''}</span>}
+                      {review.rating !== undefined && <span aria-label={`${review.rating} su 5`}>{'★'.repeat(Math.floor(review.rating))}{review.rating % 1 ? '½' : ''}</span>}
                     </div>
                     {review.text && <p>« {review.text} »</p>}
                     <footer>{review.author || 'Client'}{review.date ? ` · ${review.date}` : ''}</footer>
