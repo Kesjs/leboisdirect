@@ -47,7 +47,7 @@ export default function FeaturedProducts() {
         <div><p className="bk-eyebrow">BRAVIKO · {copy.heating}</p></div>
         <Link href="/boutique" className="bk-text-link">{copy.all}<span aria-hidden="true">↗</span></Link>
       </div>
-      <div className="bk-selection-context"><span>{copy.heating}</span><span>{universeProducts.length} {ui.shop.product}{universeProducts.length > 1 ? 's' : ''}</span></div>
+      <div className="bk-selection-context"><span>{copy.heating}</span></div>
       <div className="flex flex-wrap gap-8 mt-20" aria-label={ui.shop.categories}>
         <button type="button" onClick={() => setSelectedCategory('all')} className={'px-12 py-8 text-body-sm rounded-card border transition-colors ' + (selectedCategory === 'all' ? 'bg-charcoal text-white border-charcoal' : 'bg-white text-smoke border-hairline hover:border-charcoal')}>{ui.shop.allProducts}</button>
         {availableCategories.map(category => <button type="button" key={category} onClick={() => setSelectedCategory(category)} className={'px-12 py-8 text-body-sm rounded-card border transition-colors ' + (selectedCategory === category ? 'bg-charcoal text-white border-charcoal' : 'bg-white text-smoke border-hairline hover:border-charcoal')}>{categoryLabel(category, locale)}</button>)}
