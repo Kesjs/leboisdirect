@@ -76,6 +76,9 @@ export default function Hero() {
           </div>
         </Link>
       </div>
+      <div className="bk-hero-foot" data-hero-enter aria-label="Repères Braviko">
+        {copy.heroFoot.map((item) => <span key={item}>{item}</span>)}
+      </div>
     </section>
   )
 }
