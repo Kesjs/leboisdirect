@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 180" role="img" aria-labelledby="title desc">
+  <title id="title">Braviko</title>
+  <desc id="desc">Logo Braviko pour les produits du quotidien des animaux</desc>
+  <g transform="translate(12 12)">
+    <circle cx="78" cy="6" r="12" fill="none" stroke="#2F5D50" stroke-width="8"/>
+    <rect width="156" height="156" rx="48" fill="#2F5D50"/>
+    <g fill="#D8E7DE">
+      <ellipse cx="50" cy="62" rx="15" ry="22" transform="rotate(-26 50 62)"/>
+      <ellipse cx="75" cy="50" rx="15" ry="22" transform="rotate(-8 75 50)"/>
+      <ellipse cx="101" cy="50" rx="15" ry="22" transform="rotate(8 101 50)"/>
+      <ellipse cx="126" cy="62" rx="15" ry="22" transform="rotate(26 126 62)"/>
+      <path d="M42 103c0-18 16-31 36-31s36 13 36 31c0 24-16 39-36 39s-36-15-36-39Z"/>
+    </g>
+    <path d="M78 122c-4-5-19-12-19-23 0-7 5-12 12-12 4 0 7 2 10 6 3-4 6-6 10-6 7 0 12 5 12 12 0 11-15 18-19 23l-3 3Z" fill="#E68461"/>
+  </g>
+  <g fill="#252823">
+    <text x="198" y="99" font-family="Arial, Helvetica, sans-serif" font-size="76" font-weight="700" letter-spacing="-3">BRAVIKO</text>
+    <text x="202" y="133" fill="#2F5D50" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" letter-spacing="3.2">PRODOTTI PER ANIMALI</text>
+  </g>
+</svg>

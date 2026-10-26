@@ -4,8 +4,8 @@
   --bk-ink: #252823;
   --bk-muted: #64685f;
   --bk-line: #dedfd6;
-  --bk-accent: #995033;
-  --bk-surface: #eeeee7;
+  --bk-accent: #2f5d50;
+  --bk-surface: #eef5ef;
   --bk-radius: 8px;
   --bk-ease: cubic-bezier(.22, 1, .36, 1);
 }
@@ -642,7 +642,7 @@
   .bk-mobile-nav a { display: flex; align-items: center; min-height: 56px; padding: 14px 0; border-top: 1px solid var(--bk-line); font-size: clamp(17px, 4.8vw, 20px); letter-spacing: -.025em; transition: color .2s var(--bk-ease), padding-inline-start .2s var(--bk-ease); }
   .bk-mobile-nav a:hover, .bk-mobile-nav a:focus-visible { color: var(--bk-accent); padding-inline-start: 4px; }
   .bk-mobile-search { display: flex; align-items: center; gap: 10px; min-height: 44px; margin-bottom: 10px; padding: 0 12px; border: 1px solid var(--bk-line); border-radius: 8px; background: white; color: var(--bk-muted); }
-  .bk-mobile-search:focus-within { border-color: var(--bk-accent); box-shadow: 0 0 0 3px rgb(153 80 51 / .10); }
+  .bk-mobile-search:focus-within { border-color: var(--bk-accent); box-shadow: 0 0 0 3px rgb(47 93 80 / .10); }
   .bk-mobile-search input { flex: 1; min-width: 0; height: 42px; border: 0; outline: 0; background: transparent; color: var(--bk-ink); font-size: 16px; }
   .bk-mobile-search input::placeholder { color: var(--bk-muted); }
   .bk-mobile-search button { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; color: var(--bk-accent); font-size: 20px; }
