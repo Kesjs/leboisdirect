@@ -14,8 +14,9 @@ const seeds: PetSeed[] = [
 ]
 
 const slugify = (value: string) => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+const catalogLimit: Record<PetSeed['category'], number> = { alimentazione: 15, bisogni: 7, 'cura-igiene': 6, 'passeggiata-trasporto': 6, comfort: 7, giochi: 6, 'piccoli-animali': 7, uccelli: 6 }
 
-export const petCatalog: Product[] = seeds.flatMap((seed) => seed.names.map((name, index) => {
+export const petCatalog: Product[] = seeds.flatMap((seed) => seed.names.slice(0, catalogLimit[seed.category]).map((name, index) => {
   const id = `pet-${seed.category}-${index + 1}`
   const price = seed.prices[index]
   return {
