@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { petCatalog } from "@/data/pet-catalog";
 
 function getCatalogClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -48,8 +49,8 @@ export async function GET(request: NextRequest) {
 
   if (slug) query = query.eq("slug", slug);
   const { data, error } = await query;
-  if (error)
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error || !data?.length)
+    return NextResponse.json({ products: petCatalog, categories: [...new Set(petCatalog.map((product) => product.category))], source: 'local-preview' });
 
   const products = (data || []).map((item: any) => {
     const translations = Object.fromEntries(
