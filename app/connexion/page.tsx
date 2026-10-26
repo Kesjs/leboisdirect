@@ -36,7 +36,7 @@ function ConnectionContent() {
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const [phoneCountry, setPhoneCountry] = useState('+33')
+  const [phoneCountry, setPhoneCountry] = useState('+39')
   const [phone, setPhone] = useState('')
   const [message, setMessage] = useState(params.get('reason') === 'checkout' ? c.checkoutRequired : '')
   const [error, setError] = useState('')
@@ -129,7 +129,7 @@ function ConnectionContent() {
     <Header />
     <main id="main-content" className="bk-home bk-auth-page">
       <section className="bk-auth-intro">
-        <Image className="bk-auth-intro-image" src="/images/login-wood-fired-heater.jpg" alt="Poêle à bois dans une maison chaleureuse" fill priority sizes="(max-width: 900px) 100vw, 52vw" />
+        <Image className="bk-auth-intro-image" src="/images/login-pets.png" alt="Cane e gatto riposano in angoli separati della casa" fill priority sizes="(max-width: 900px) 100vw, 52vw" />
         <div className="bk-auth-intro-shade" aria-hidden="true" />
         <p className="bk-eyebrow">BRAVIKO / {c.account}</p>
         <h1 className="sr-only">{signup ? c.signupTitle : c.loginTitle}</h1>

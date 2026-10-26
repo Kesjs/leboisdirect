@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'Braviko',
-    locale: 'fr_FR',
+    locale: 'it_IT',
     title: 'Braviko — Les produits utiles, simplement',
     description: 'Une sélection claire de produits pour chiens, chats, petits animaux et oiseaux.',
   },
@@ -39,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="fr" className={inter.variable}>
+    <html lang="it" className={inter.variable}>
       <body>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-18503582950"

@@ -15,9 +15,8 @@ const I18nContext = createContext<I18nContextValue | null>(null)
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocale] = useState<Locale>('it')
-  useEffect(() => { try { const saved = window.localStorage.getItem('braviko-locale'); if (saved === 'fr' || saved === 'de' || saved === 'it') setLocale(saved) } catch {} }, [])
-  useEffect(() => { document.documentElement.lang = locale }, [locale])
-  const changeLocale = useCallback((nextLocale: Locale) => { setLocale(nextLocale); try { window.localStorage.setItem('braviko-locale', nextLocale) } catch {} }, [])
+  useEffect(() => { document.documentElement.lang = 'it'; try { window.localStorage.setItem('braviko-locale', 'it') } catch {} }, [])
+  const changeLocale = useCallback((_nextLocale: Locale) => { setLocale('it'); try { window.localStorage.setItem('braviko-locale', 'it') } catch {} }, [])
   const value = useMemo(() => ({ locale, setLocale: changeLocale, t: translations[locale] }), [locale, changeLocale])
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
 }

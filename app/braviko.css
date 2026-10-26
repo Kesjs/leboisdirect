@@ -178,6 +178,7 @@
 .bk-account-menu a:hover, .bk-account-menu button:hover { background: var(--bk-surface); }
 .bk-account-menu span { color: var(--bk-accent); font-size: 16px; }
 .bk-language { position: relative; }
+.bk-locale-fixed { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 4px; color: var(--bk-ink); font-size: 12px; letter-spacing: .02em; }
 .bk-language-trigger { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px; font-size: 12px; }
 .bk-chevron { display: block; width: 6px; height: 6px; border-right: 1px solid; border-bottom: 1px solid; transform: rotate(45deg) translateY(-2px); margin: 0 4px; transition: transform .2s; }
 .bk-chevron.is-open { transform: rotate(225deg); }

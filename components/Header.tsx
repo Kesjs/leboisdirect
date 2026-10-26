@@ -7,24 +7,19 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import Logo from './Logo'
 import CartDrawer from './CartDrawer'
 import { useCart } from '@/lib/cart-context'
-import { type Locale, useI18n } from '@/lib/i18n-context'
+import { useI18n } from '@/lib/i18n-context'
 import { bravikoCopy } from '@/data/braviko-copy'
 import { accountCopy } from '@/data/account-copy'
 import { useAuth } from '@/lib/auth-context'
 
-const languages: { code: Locale; label: string }[] = [
-  { code: 'fr', label: 'Français' }, { code: 'de', label: 'Deutsch' }, { code: 'it', label: 'Italiano' },
-]
-
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
-  const [languageOpen, setLanguageOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const { totalItems } = useCart()
-  const { locale, setLocale } = useI18n()
+  const { locale } = useI18n()
   const copy = bravikoCopy[locale]
   const account = accountCopy[locale]
   const { user, isAdmin, loading: authLoading } = useAuth()
@@ -32,7 +27,6 @@ export default function Header() {
   const reduced = useReducedMotion()
   const sentinel = useRef<HTMLDivElement>(null)
   const header = useRef<HTMLElement>(null)
-  const languageButton = useRef<HTMLButtonElement>(null)
   const menuButton = useRef<HTMLButtonElement>(null)
   const searchButton = useRef<HTMLButtonElement>(null)
   const searchInput = useRef<HTMLInputElement>(null)
@@ -47,7 +41,7 @@ export default function Header() {
   useEffect(() => {
     const dismiss = (event: PointerEvent) => {
       if (!header.current?.contains(event.target as Node)) {
-        setLanguageOpen(false); setSearchOpen(false); setMobileOpen(false); setAccountOpen(false)
+        setSearchOpen(false); setMobileOpen(false); setAccountOpen(false)
       }
     }
     document.addEventListener('pointerdown', dismiss)
@@ -56,15 +50,14 @@ export default function Header() {
   const links = [
     ['/boutique', copy.shop], ['/conseils', copy.advice],
   ]
-  const collapse = () => { setMobileOpen(false); setLanguageOpen(false); setSearchOpen(false); setAccountOpen(false) }
+  const collapse = () => { setMobileOpen(false); setSearchOpen(false); setAccountOpen(false) }
   return (
     <>
       <div ref={sentinel} className="bk-header-sentinel" aria-hidden="true" />
       <header ref={header} className={'bk-header' + (scrolled ? ' is-scrolled' : '')}
         onKeyDown={event => {
           if (event.key !== 'Escape') return
-          if (languageOpen) languageButton.current?.focus()
-          else if (searchOpen) searchButton.current?.focus()
+          if (searchOpen) searchButton.current?.focus()
           else if (mobileOpen) menuButton.current?.focus()
           collapse()
         }}>
@@ -86,24 +79,9 @@ export default function Header() {
             {links.map(([href, title]) => <Link key={href} href={href} onClick={collapse} aria-current={pathname === href ? 'page' : undefined}>{title}</Link>)}
           </nav>
           <div className="bk-nav-actions">
-            <div className="bk-language">
-              <button ref={languageButton} type="button" className="bk-language-trigger" aria-label={copy.language + ' : ' + languages.find(x => x.code === locale)?.label} aria-expanded={languageOpen} aria-controls="language-options"
-                onClick={() => { setLanguageOpen(!languageOpen); setSearchOpen(false) }}>
-                <span className={'bk-flag bk-flag-' + locale} aria-hidden="true" />
-                <span className="bk-language-name">{languages.find(x => x.code === locale)?.label}</span>
-                <span className={'bk-chevron' + (languageOpen ? ' is-open' : '')} aria-hidden="true" />
-              </button>
-              <AnimatePresence>
-                {languageOpen && <motion.div id="language-options" className="bk-language-options" initial={{ opacity: 0, y: reduced ? 0 : -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? 0 : 0.16 }}>
-                  {languages.map(item => <button key={item.code} type="button" lang={item.code} aria-pressed={locale === item.code}
-                    onClick={() => { setLocale(item.code); setLanguageOpen(false); languageButton.current?.focus() }}>
-                    <span className={'bk-flag bk-flag-' + item.code} aria-hidden="true" />{item.label}<span aria-hidden="true">{locale === item.code ? '✓' : ''}</span>
-                  </button>)}
-                </motion.div>}
-              </AnimatePresence>
-            </div>
+            <span className="bk-locale-fixed" lang="it">Italiano</span>
             <button ref={searchButton} type="button" className="bk-icon-button bk-search-trigger" aria-label={copy.search} aria-expanded={searchOpen} aria-controls="header-search"
-              onClick={() => { setSearchOpen(!searchOpen); setLanguageOpen(false) }}>
+              onClick={() => { setSearchOpen(!searchOpen) }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" /><path d="m13 13 4 4" /></svg>
             </button>
             <button type="button" className="bk-cart-trigger" aria-label={copy.cart + ' (' + totalItems + ')'} onClick={() => { collapse(); setCartOpen(true) }}>
@@ -138,7 +116,7 @@ export default function Header() {
               </Link>
             )}
             <button ref={menuButton} type="button" className="bk-icon-button bk-menu-trigger" aria-label={mobileOpen ? copy.close : copy.menu} aria-expanded={mobileOpen} aria-controls="mobile-navigation"
-              onClick={() => { setMobileOpen(!mobileOpen); setLanguageOpen(false); setSearchOpen(false) }}>
+              onClick={() => { setMobileOpen(!mobileOpen); setSearchOpen(false) }}>
               {mobileOpen ? <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="m4 4 12 12M16 4 4 16" /></svg> : <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" /></svg>}
             </button>
           </div>
