@@ -25,7 +25,10 @@ export async function POST(request: Request) {
       return { price_data: { currency: 'eur', product_data: { name }, unit_amount: Math.round(Number(variant.price) * 100) }, quantity: item.quantity }
     })
     const stripe = stripeClient()
-    const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin
+    // Always return to the host that opened checkout. This keeps cancellation
+    // and success links valid on Vercel previews and avoids a stale custom
+    // domain value sending customers to an unresolved hostname.
+    const origin = new URL(request.url).origin
     const sessionParams = {
       mode: 'payment' as const,
       line_items: lineItems,

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/Header'
@@ -29,6 +30,92 @@ async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit, tim
   }
 }
 
+type CheckoutSelectOption = { value: string; label: string }
+
+function CheckoutSelect({
+  id,
+  value,
+  options,
+  onChange,
+  ariaLabel,
+  leading,
+}: {
+  id: string
+  value: string
+  options: CheckoutSelectOption[]
+  onChange: (value: string) => void
+  ariaLabel: string
+  leading?: (option: CheckoutSelectOption) => ReactNode
+}) {
+  const [open, setOpen] = useState(false)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const selected = options.find(option => option.value === value) || options[0]
+
+  useEffect(() => {
+    if (!open) return
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) setOpen(false)
+    }
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('pointerdown', closeOnOutsidePointer)
+    document.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsidePointer)
+      document.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [open])
+
+  const handleTriggerKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      setOpen(true)
+    }
+  }
+
+  return (
+    <div ref={rootRef} className="relative w-full">
+      <button
+        type="button"
+        id={id}
+        className="flex min-h-[52px] w-full items-center justify-between gap-12 rounded-card border border-hairline bg-white px-16 py-12 text-left text-body text-charcoal transition-colors hover:border-charcoal focus:border-braise focus:outline-none focus:ring-2 focus:ring-braise/30"
+        aria-label={ariaLabel}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={`${id}-options`}
+        onClick={() => setOpen(current => !current)}
+        onKeyDown={handleTriggerKeyDown}
+      >
+        <span className="flex min-w-0 items-center gap-10">
+          {leading?.(selected)}
+          <span className="truncate">{selected.label}</span>
+        </span>
+        <svg className={`h-16 w-16 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+          <path d="m3 6 5 5 5-5" />
+        </svg>
+      </button>
+      {open && (
+        <div id={`${id}-options`} role="listbox" aria-label={ariaLabel} className="absolute left-0 right-0 top-[calc(100%+6px)] z-30 max-h-64 overflow-y-auto rounded-card border border-hairline bg-white p-4 shadow-xl">
+          {options.map(option => (
+            <button
+              key={option.value}
+              type="button"
+              role="option"
+              aria-selected={option.value === value}
+              className={`flex min-h-44 w-full items-center gap-10 rounded-card px-12 py-8 text-left text-body-sm transition-colors ${option.value === value ? 'bg-mist font-semibold text-charcoal' : 'text-smoke hover:bg-mist hover:text-charcoal'}`}
+              onClick={() => { onChange(option.value); setOpen(false) }}
+            >
+              {leading?.(option)}
+              <span>{option.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, totalPrice, clearCart } = useCart()
@@ -42,12 +129,13 @@ export default function CheckoutPage() {
   const [bankSubmitting, setBankSubmitting] = useState(false)
   const [bankTransferReference, setBankTransferReference] = useState<string | null>(null)
   const [copiedField, setCopiedField] = useState<string | null>(null)
+  const [paymentCancelled, setPaymentCancelled] = useState(false)
   const paymentLock = useRef(false)
   const paymentCopy = locale === 'de'
-      ? { error: 'Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut.', unavailable: 'Die Zahlung ist derzeit nicht verfügbar.', card: 'Mit Karte bezahlen', cardBody: 'Sichere Zahlung', bank: 'SEPA-Überweisung', bankBody: 'Erhalten Sie die Bankverbindung und Ihre Bestellreferenz.', bankTitle: 'Ihre SEPA-Überweisung', bankIntro: 'Überweisen Sie den Gesamtbetrag und geben Sie diese Bestellreferenz im Verwendungszweck an.', holder: 'Kontoinhaber', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Überweisungsreferenz', copy: 'Kopieren', copied: 'Kopiert', close: 'Schließen', backToShop: 'Zurück zum Shop', processingTitle: 'Bearbeitungszeit', processingBody: 'Eine klassische SEPA-Überweisung kann 1 bis 2 Werktage dauern. Für eine schnellere Lieferung nutzen Sie, wenn möglich, eine Echtzeitüberweisung.', bankError: 'Die Überweisung konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.' }
+      ? { error: 'Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut.', unavailable: 'Die Zahlung ist derzeit nicht verfügbar.', cancelled: 'Die Zahlung wurde abgebrochen. Deine Angaben und dein Warenkorb bleiben erhalten. Du kannst es erneut versuchen.', card: 'Mit Karte bezahlen', cardBody: 'Sichere Zahlung', bank: 'SEPA-Überweisung', bankBody: 'Erhalten Sie die Bankverbindung und Ihre Bestellreferenz.', bankTitle: 'Ihre SEPA-Überweisung', bankIntro: 'Überweisen Sie den Gesamtbetrag und geben Sie diese Bestellreferenz im Verwendungszweck an.', holder: 'Kontoinhaber', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Überweisungsreferenz', copy: 'Kopieren', copied: 'Kopiert', close: 'Schließen', backToShop: 'Zurück zum Shop', processingTitle: 'Bearbeitungszeit', processingBody: 'Eine klassische SEPA-Überweisung kann 1 bis 2 Werktage dauern. Für eine schnellere Lieferung nutzen Sie, wenn möglich, eine Echtzeitüberweisung.', bankError: 'Die Überweisung konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.' }
     : locale === 'it'
-      ? { error: 'Impossibile avviare il pagamento. Riprova.', unavailable: 'Il pagamento non è al momento disponibile.', card: 'Paga con carta', cardBody: 'Pagamento sicuro', bank: 'Bonifico SEPA', bankBody: 'Ricevi le coordinate bancarie e il riferimento dell’ordine.', bankTitle: 'Il tuo bonifico SEPA', bankIntro: 'Effettua il bonifico per l’importo totale e indica questo riferimento nella causale.', holder: 'Intestatario', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Riferimento del bonifico', copy: 'Copia', copied: 'Copiato', close: 'Chiudi', backToShop: 'Torna al negozio', processingTitle: 'Tempi di elaborazione', processingBody: 'Un bonifico SEPA classico può richiedere da 1 a 2 giorni lavorativi. Per una consegna più rapida, usa un bonifico istantaneo se la tua banca lo consente.', bankError: 'Impossibile preparare il bonifico. Riprova.' }
-      : { error: 'Impossibile avviare il pagamento. Riprova.', unavailable: 'Il pagamento con carta non è al momento disponibile.', card: 'Paga con carta', cardBody: 'Pagamento sicuro', bank: 'Bonifico SEPA', bankBody: 'Ricevi le coordinate bancarie e il riferimento dell’ordine.', bankTitle: 'Il tuo bonifico SEPA', bankIntro: 'Effettua il bonifico per l’importo totale e indica questo riferimento nella causale.', holder: 'Intestatario', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Riferimento del bonifico', copy: 'Copia', copied: 'Copiato', close: 'Chiudi', backToShop: 'Torna al negozio', processingTitle: 'Tempi di elaborazione', processingBody: 'Un bonifico SEPA classico può richiedere da 1 a 2 giorni lavorativi. Per una consegna più rapida, usa un bonifico istantaneo se la tua banca lo consente.', bankError: 'Impossibile preparare il bonifico. Riprova.' }
+      ? { error: 'Impossibile avviare il pagamento. Riprova.', unavailable: 'Il pagamento non è al momento disponibile.', cancelled: 'Il pagamento è stato annullato. I tuoi dati e il carrello sono rimasti invariati: puoi riprovare.', card: 'Paga con carta', cardBody: 'Pagamento sicuro', bank: 'Bonifico SEPA', bankBody: 'Ricevi le coordinate bancarie e il riferimento dell’ordine.', bankTitle: 'Il tuo bonifico SEPA', bankIntro: 'Effettua il bonifico per l’importo totale e indica questo riferimento nella causale.', holder: 'Intestatario', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Riferimento del bonifico', copy: 'Copia', copied: 'Copiato', close: 'Chiudi', backToShop: 'Torna al negozio', processingTitle: 'Tempi di elaborazione', processingBody: 'Un bonifico SEPA classico può richiedere da 1 a 2 giorni lavorativi. Per una consegna più rapida, usa un bonifico istantaneo se la tua banca lo consente.', bankError: 'Impossibile preparare il bonifico. Riprova.' }
+      : { error: 'Impossibile avviare il pagamento. Riprova.', unavailable: 'Il pagamento con carta non è al momento disponibile.', cancelled: 'Le paiement a été annulé. Vos informations et votre panier sont conservés : vous pouvez réessayer.', card: 'Paga con carta', cardBody: 'Pagamento sicuro', bank: 'Bonifico SEPA', bankBody: 'Ricevi le coordinate bancarie e il riferimento dell’ordine.', bankTitle: 'Il tuo bonifico SEPA', bankIntro: 'Effettua il bonifico per l’importo totale e indica questo riferimento nella causale.', holder: 'Intestatario', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Riferimento del bonifico', copy: 'Copia', copied: 'Copiato', close: 'Chiudi', backToShop: 'Torna al negozio', processingTitle: 'Tempi di elaborazione', processingBody: 'Un bonifico SEPA classico può richiedere da 1 a 2 giorni lavorativi. Per una consegna più rapida, usa un bonifico istantaneo se la tua banca lo consente.', bankError: 'Impossibile preparare il bonifico. Riprova.' }
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -79,6 +167,18 @@ export default function CheckoutPage() {
       window.localStorage.setItem('braviko-checkout-step', String(step))
     } catch { /* The active checkout remains usable without browser storage. */ }
   }, [formData, step])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('payment') !== 'cancelled') return
+    setPaymentCancelled(true)
+    setStep(2)
+    setSubmitting(false)
+    setFormError(paymentCopy.cancelled)
+    paymentLock.current = false
+    try { window.localStorage.setItem('braviko-checkout-step', '2') } catch { /* Ignore unavailable storage. */ }
+    window.history.replaceState(null, '', '/checkout')
+  }, [paymentCopy.cancelled, router])
 
   useEffect(() => {
     if (!authLoading && !user) router.replace('/connexion?mode=signup&next=/checkout&reason=checkout')
@@ -126,6 +226,7 @@ export default function CheckoutPage() {
     e.preventDefault()
     if (step === 1) {
       setFormError('')
+      setPaymentCancelled(false)
       setStep(step + 1)
       return
     }
@@ -134,6 +235,7 @@ export default function CheckoutPage() {
     paymentLock.current = true
     setSubmitting(true)
     setFormError('')
+    setPaymentCancelled(false)
     try {
       const draft = await createPendingOrder()
       const checkoutResponse = await fetchWithTimeout('/api/stripe/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: draft.reference, locale, items: items.map(item => ({ productId: item.product.id, variantId: item.variantId, quantity: item.quantity })) }) })
@@ -143,7 +245,7 @@ export default function CheckoutPage() {
         ;(checkoutError as Error & { userMessage?: string }).userMessage = checkoutResult.message
         throw checkoutError
       }
-      try { window.localStorage.removeItem('braviko-checkout-step') } catch { /* Ignore unavailable storage. */ }
+      try { window.localStorage.setItem('braviko-checkout-step', '2') } catch { /* Ignore unavailable storage. */ }
       window.location.assign(checkoutResult.url)
     } catch (error) {
       const code = error instanceof Error ? error.message : 'CHECKOUT_UNAVAILABLE'
@@ -159,6 +261,7 @@ export default function CheckoutPage() {
     paymentLock.current = true
     setBankSubmitting(true)
     setFormError('')
+    setPaymentCancelled(false)
     try {
       const draft = await createPendingOrder()
       const response = await fetchWithTimeout('/api/bank-transfer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: draft.reference }) })
@@ -305,25 +408,17 @@ export default function CheckoutPage() {
                         </label>
                         <div className="bk-phone-field">
                           <span className="bk-country-select">
-                            <span className={`bk-country-flag bk-flag-${formData.phoneCountry.toLowerCase()}`} aria-hidden="true" />
-                            <select
+                            <CheckoutSelect
                               id="phoneCountry"
-                              name="phoneCountry"
                               value={formData.phoneCountry}
-                              onChange={(event) => {
+                              options={[{ value: 'FR', label: 'FR +33' }, { value: 'BE', label: 'BE +32' }, { value: 'CH', label: 'CH +41' }, { value: 'LU', label: 'LU +352' }, { value: 'DE', label: 'DE +49' }, { value: 'IT', label: 'IT +39' }]}
+                              ariaLabel="Paese del telefono"
+                              leading={(option) => <span className={`bk-country-flag bk-flag-${option.value.toLowerCase()}`} aria-hidden="true" />}
+                              onChange={(value) => {
                                 const codes: Record<string, string> = { FR: '+33', BE: '+32', CH: '+41', LU: '+352', DE: '+49', IT: '+39' }
-                                setFormData({ ...formData, phoneCountry: event.target.value, phoneCode: codes[event.target.value] ?? '+39' })
+                                setFormData(current => ({ ...current, phoneCountry: value, phoneCode: codes[value] ?? '+39' }))
                               }}
-                              aria-label="Paese del telefono"
-                              className="w-full px-12 py-12 border border-hairline rounded-card bg-white text-body text-charcoal focus:border-braise focus:outline-none"
-                            >
-                            <option value="FR">FR +33</option>
-                            <option value="BE">BE +32</option>
-                            <option value="CH">CH +41</option>
-                            <option value="LU">LU +352</option>
-                            <option value="DE">DE +49</option>
-                            <option value="IT">IT +39</option>
-                            </select>
+                            />
                           </span>
                           <input
                             type="tel"
@@ -359,9 +454,13 @@ export default function CheckoutPage() {
                     <div className="space-y-20">
                       <div>
                         <label htmlFor="country" className="block text-body-sm font-medium text-charcoal mb-8">Paese di consegna</label>
-                        <select id="country" name="country" value={formData.country} onChange={handleInputChange} required autoComplete="country-name" className="w-full px-16 py-12 border border-hairline rounded-card bg-white text-body text-charcoal focus:border-braise focus:outline-none">
-                          <option>Italia</option><option>Francia</option><option>Belgio</option><option>Lussemburgo</option><option>Svizzera</option><option>Germania</option>
-                        </select>
+                        <CheckoutSelect
+                          id="country"
+                          value={formData.country}
+                          options={[{ value: 'Italia', label: 'Italia' }, { value: 'Francia', label: 'Francia' }, { value: 'Belgio', label: 'Belgio' }, { value: 'Lussemburgo', label: 'Lussemburgo' }, { value: 'Svizzera', label: 'Svizzera' }, { value: 'Germania', label: 'Germania' }]}
+                          ariaLabel="Paese di consegna"
+                          onChange={(value) => setFormData(current => ({ ...current, country: value }))}
+                        />
                       </div>
                       <div>
                         <label htmlFor="address" className="block text-body-sm font-medium text-charcoal mb-8">
@@ -421,7 +520,7 @@ export default function CheckoutPage() {
                         </div>
                       </div>
                     </div>
-                    {formError && <p role="alert" className="mt-24 rounded-card border border-red-200 bg-red-50 px-16 py-12 text-body-sm text-red-700">{formError}</p>}
+                    {formError && <p role="alert" data-payment-cancelled={paymentCancelled ? 'true' : undefined} className={`mt-24 rounded-card border px-16 py-12 text-body-sm ${paymentCancelled ? 'border-amber-200 bg-amber-50 text-amber-900' : 'border-red-200 bg-red-50 text-red-700'}`}>{formError}</p>}
                     <div className="bk-checkout-payment mt-32 space-y-12" aria-label={c.payment}>
                       <div className="bk-checkout-payment-heading">
                         <h3 className="text-heading-sm font-semibold text-charcoal">{c.payment}</h3>
