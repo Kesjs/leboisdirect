@@ -34,7 +34,7 @@ export default function FeaturedProducts() {
     : universeProducts.filter(product => product.category === selectedCategory)
   const randomizedProducts = useMemo(() => {
     const productsForCategory = selectedCategory === 'all' ? universeProducts : universeProducts.filter(product => product.category === selectedCategory)
-    return shuffle(productsForCategory).slice(0, 3)
+    return shuffle(productsForCategory).slice(0, 9)
   }, [universeProducts, selectedCategory])
   useEffect(() => {
     fetch('/api/catalog').then(response => response.ok ? response.json() : Promise.reject(new Error('catalog unavailable'))).then(payload => {
@@ -42,9 +42,9 @@ export default function FeaturedProducts() {
     }).catch(() => setCatalogError(true))
   }, [])
   return (
-    <section id="selection" className="bk-section bk-container" aria-labelledby="selection-title">
+    <section id="selection" className="bk-section bk-container" aria-label={ui.shop.categories}>
       <div className="bk-selection-heading" data-reveal>
-        <div><p className="bk-eyebrow">BRAVIKO · {copy.heating}</p><h2 id="selection-title" className="bk-title">{copy.selection}</h2></div>
+        <div><p className="bk-eyebrow">BRAVIKO · {copy.heating}</p></div>
         <Link href="/boutique" className="bk-text-link">{copy.all}<span aria-hidden="true">↗</span></Link>
       </div>
       <div className="bk-selection-context"><span>{copy.heating}</span><span>{universeProducts.length} {ui.shop.product}{universeProducts.length > 1 ? 's' : ''}</span></div>
