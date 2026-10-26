@@ -101,44 +101,6 @@ function slugify(value: string) {
     .replace(/(^-|-$)/g, "");
 }
 
-async function addWatermark(file: File) {
-  const sourceUrl = URL.createObjectURL(file);
-  try {
-    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const element = new window.Image();
-      element.onload = () => resolve(element);
-      element.onerror = reject;
-      element.src = sourceUrl;
-    });
-    const canvas = document.createElement("canvas");
-    canvas.width = image.naturalWidth;
-    canvas.height = image.naturalHeight;
-    const context = canvas.getContext("2d");
-    if (!context) return file;
-    context.drawImage(image, 0, 0);
-    const size = Math.max(32, Math.round(Math.min(canvas.width, canvas.height) * 0.15));
-    context.save();
-    context.translate(canvas.width / 2, canvas.height / 2);
-    context.rotate(-Math.PI / 7);
-    context.font = `700 ${size}px Arial, sans-serif`;
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.fillStyle = "rgba(255,255,255,.48)";
-    context.fillText("braviko", 0, 0);
-    context.restore();
-    const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, file.type || "image/jpeg", 0.92),
-    );
-    if (!blob) return file;
-    return new File([blob], file.name, {
-      type: blob.type,
-      lastModified: Date.now(),
-    });
-  } finally {
-    URL.revokeObjectURL(sourceUrl);
-  }
-}
-
 function initialValues(product?: AdminProduct | null): ProductValues {
   const translation = (locale: string) =>
     product?.translations.find((item) => item.locale === locale);
@@ -276,11 +238,9 @@ function AdminCheckbox({
 function FileDropzone({
   files,
   onChange,
-  watermark = true,
 }: {
   files: File[];
   onChange: (files: File[]) => void;
-  watermark?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -343,13 +303,6 @@ function FileDropzone({
                 alt={file.name}
                 className="h-full w-full object-cover"
               />
-              {watermark && (
-                <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center">
-                  <span className="-rotate-[25deg] whitespace-nowrap text-[clamp(28px,5vw,52px)] font-bold tracking-[-.04em] text-white/50">
-                    braviko
-                  </span>
-                </div>
-              )}
               <button
                 type="button"
                 onClick={() =>
@@ -377,7 +330,6 @@ function ImageLinksPanel({
   onPendingLinksChange,
   availableSlots,
   onImportedFile,
-  watermark,
 }: {
   images: AdminProduct["images"];
   productName: string;
@@ -385,7 +337,6 @@ function ImageLinksPanel({
   onPendingLinksChange: (links: string[]) => void;
   availableSlots: number;
   onImportedFile: (file: File) => void;
-  watermark: boolean;
 }) {
   const [url, setUrl] = useState("");
   const [states, setStates] = useState<Record<string, LinkState>>({});
@@ -460,11 +411,7 @@ function ImageLinksPanel({
         }),
       );
       setUrl("");
-      setLinkNotice(
-        watermark
-          ? "Immagine recuperata. Il filigrana Braviko sarà integrato automaticamente al salvataggio."
-          : "Immagine recuperata e aggiunta alla scheda.",
-      );
+      setLinkNotice("Immagine recuperata e aggiunta alla scheda.");
     } catch (error) {
       setLinkNotice(
         error instanceof Error ? error.message : "Non è stato possibile importare l’immagine.",
@@ -579,12 +526,6 @@ function ImageLinksPanel({
           {linkNotice}
         </p>
       )}
-      {watermark && (
-        <p className="text-xs text-smoke">
-          Le immagini fornite tramite URL vengono copiate in Braviko e poi filigranate,
-          senza modificare il file originale del sito.
-        </p>
-      )}
     </div>
   );
 }
@@ -609,7 +550,6 @@ function ProductEditor({
   );
   const [files, setFiles] = useState<File[]>([]);
   const [savingAction, setSavingAction] = useState<"save" | "publish" | "delete" | null>(null);
-  const [watermark, setWatermark] = useState(true);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [language, setLanguage] = useState<"fr" | "de" | "it">("it");
   const update = <K extends keyof ProductValues>(
@@ -624,9 +564,6 @@ function ProductEditor({
   const save = async (publish = false) => {
     setSavingAction(publish ? "publish" : "save");
     try {
-      const filesToSave = watermark
-        ? await Promise.all(files.map(addWatermark))
-        : files;
       const valuesToSave = {
         ...values,
         imageUrls,
@@ -638,9 +575,9 @@ function ProductEditor({
           product.id,
           product.variants[0]?.id,
           valuesToSave,
-          filesToSave,
+          files,
         )
-        : await onCreate(valuesToSave, filesToSave);
+        : await onCreate(valuesToSave, files);
       if (saved) onClose();
     } finally {
       setSavingAction(null);
@@ -818,12 +755,9 @@ function ProductEditor({
           <div>
              <p className="text-sm font-semibold">Immagini del prodotto</p>
             <p className="mt-1 text-xs text-smoke">
-               Il filigrana viene integrato nel file finale di ogni nuova immagine al momento del salvataggio.
+               Le immagini vengono conservate senza filigrana per presentare chiaramente il prodotto.
             </p>
           </div>
-          <AdminCheckbox checked={watermark} onChange={setWatermark}>
-             Applica il filigrana Braviko alle nuove immagini
-          </AdminCheckbox>
           <ImageLinksPanel
             images={product?.images || []}
             productName={values.names.it || values.names.fr}
@@ -833,7 +767,6 @@ function ProductEditor({
             onImportedFile={(file) =>
               setFiles((current) => [...current, file].slice(0, 6))
             }
-            watermark={watermark}
           />
           <FileDropzone files={files} onChange={setFiles} />
         </div>
@@ -935,8 +868,6 @@ export default function CatalogWorkspace({
   const [creating, setCreating] = useState(false);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"all" | AdminStatus>("all");
-  const [backfilling, setBackfilling] = useState(false);
-  const [backfillNotice, setBackfillNotice] = useState("");
   const selected =
     products.find((product) => product.id === selectedId) || null;
   const filtered = useMemo(
@@ -973,34 +904,7 @@ export default function CatalogWorkspace({
     { value: "published" as const, label: "Pubblicati", count: counts.published },
     { value: "draft" as const, label: "Da completare", count: counts.draft },
   ];
-  const backfillImages = async () => {
-    setBackfilling(true);
-    setBackfillNotice("");
-    let total = 0;
-    let hasMore = true;
-    try {
-      while (hasMore) {
-        const response = await fetch("/api/admin/watermark-images", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ limit: 24 }),
-        });
-        const result = (await response.json().catch(() => null)) as
-          | { processed?: number; hasMore?: boolean; error?: string; errors?: Array<{ message: string }> }
-          | null;
-        if (!response.ok) throw new Error(result?.error || result?.errors?.[0]?.message || "Impossibile avviare il filigrana.");
-        total += result?.processed || 0;
-        hasMore = Boolean(result?.hasMore);
-        if (result?.errors?.length) throw new Error(`${result.errors[0].message}${result.errors.length > 1 ? ` (+${result.errors.length - 1} altro${result.errors.length > 2 ? "i" : ""})` : ""}`);
-        if (!result?.processed && hasMore) throw new Error("L’elaborazione è bloccata su un’immagine.");
-      }
-      setBackfillNotice(total ? `${total} immagin${total > 1 ? "i" : "e"} filigranat${total > 1 ? "e" : "a"} e protett${total > 1 ? "e" : "a"}.` : "Tutte le immagini sono già protette.");
-    } catch (backfillError) {
-      setBackfillNotice(backfillError instanceof Error ? backfillError.message : "Il filigrana non è riuscito.");
-    } finally {
-      setBackfilling(false);
-    }
-  };
+  // Legacy watermark backfill intentionally removed from the admin flow.
   return (
     <div className="admin-workspace min-w-0">
       <section className="min-w-0">
@@ -1015,14 +919,6 @@ export default function CatalogWorkspace({
           <div className="grid w-full gap-2 sm:w-auto sm:grid-cols-[auto_auto]">
             <button
               type="button"
-              onClick={backfillImages}
-              disabled={backfilling}
-              className="inline-flex h-[42px] items-center justify-center gap-2 rounded-[8px] border border-hairline bg-white px-4 text-sm font-semibold text-charcoal transition hover:border-charcoal disabled:opacity-50"
-            >
-              {backfilling ? "Protezione…" : "Proteggi immagini esistenti"}
-            </button>
-            <button
-              type="button"
               onClick={() => {
                 setCreating(true);
                 setSelectedId(null);
@@ -1033,7 +929,6 @@ export default function CatalogWorkspace({
             </button>
           </div>
         </div>
-        {backfillNotice && <p role="status" className="mb-5 rounded-[12px] border border-forest/20 bg-forest/10 p-4 text-sm text-forest">{backfillNotice}</p>}
         <div className="mb-6 grid overflow-hidden rounded-[12px] border border-hairline bg-white sm:grid-cols-2">
           <div className="border-b border-hairline px-4 py-3.5 sm:border-b-0 sm:border-r">
             <p className="text-xs text-smoke">Visibili nel negozio</p>

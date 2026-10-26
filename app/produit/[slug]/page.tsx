@@ -74,12 +74,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     : catalogProducts.filter((item) => item.id !== product.id)
   ).slice(0, 6)
   const productVideo = getProductVideo(product.slug)
-  const embeddedWatermarkProducts = new Set([
-    'cheminee-electrique-purline-verre-noir-2000w',
-    'insert-bois-invicta-p947044-10-kw',
-    'ofyr-wood-storage-corten-100-range-buches',
-  ])
-  const imageHasWatermark = (src: string) => embeddedWatermarkProducts.has(product.slug) || src.includes('/watermarked-')
   const videoThumbnail = productVideo?.posterUrl || product.images[0] || product.image
   const galleryItems = [
     ...product.images.map((src) => ({ type: 'image' as const, src })),
@@ -259,7 +253,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                       }}
                     />
                   ) : null}
-                  {selectedMedia?.type === 'image' && !imageHasWatermark(selectedMedia.src) && <span className="bk-detail-watermark" aria-hidden="true">BRAVIKO</span>}
                 </div>
                 {galleryItems.length > 1 && (
                   <div className="grid grid-cols-4 gap-12">
@@ -287,7 +280,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                             }
                           }}
                         />
-                        {item.type === 'image' && !imageHasWatermark(item.src) && <span className="bk-detail-thumb-watermark" aria-hidden="true">B</span>}
                         {item.type === 'video' && <span className="bk-video-thumb-play" aria-hidden="true">▶</span>}
                       </button>
                     ))}

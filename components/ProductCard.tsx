@@ -24,11 +24,6 @@ export default function ProductCard({ product }: { product: Product }) {
   const label = productLabel(product, locale)
   const variant = product.variants?.[0]
   const price = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(variant?.price ?? product.price)
-  const embeddedWatermarkProducts = new Set([
-    'cheminee-electrique-purline-verre-noir-2000w',
-    'insert-bois-invicta-p947044-10-kw',
-    'ofyr-wood-storage-corten-100-range-buches',
-  ])
   useEffect(() => () => clearTimeout(timer.current), [])
   useEffect(() => {
     setDisplayImage(product.image || fallbackImage)
@@ -55,7 +50,6 @@ export default function ProductCard({ product }: { product: Product }) {
         <div className={'bk-product-photo' + (imageLoaded ? ' is-loaded' : '')}>
           {!imageLoaded && <span className="bk-image-placeholder" aria-hidden="true" />}
           <Image onLoad={() => setImageLoaded(true)} onError={handleImageError} src={displayImage} alt={label.name} fill sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw" className="bk-image bk-product-front" quality={70} />
-          {!embeddedWatermarkProducts.has(product.slug) && !displayImage.includes('/watermarked-') && <span className="bk-watermark" aria-hidden="true">braviko</span>}
           <span className="bk-product-view">{copy.details} <span aria-hidden="true">↗</span></span>
         </div>
         <p className="bk-product-category">{categoryLabel(product.category, locale)}</p>

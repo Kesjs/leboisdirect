@@ -294,10 +294,6 @@
 .bk-image-placeholder { position: absolute; inset: 0; z-index: 1; background: linear-gradient(100deg, var(--bk-surface) 25%, #f7f6f1 45%, var(--bk-surface) 65%); background-size: 220% 100%; animation: bk-skeleton 1.5s ease-in-out infinite; transition: opacity .35s ease; }
 .bk-product-photo:not(.is-loaded) .bk-product-front { opacity: 0; }
 .bk-product-photo.is-loaded .bk-image-placeholder { opacity: 0; pointer-events: none; }
-.bk-watermark { position: absolute; z-index: 2; inset: 50% auto auto 50%; color: rgb(255 255 255 / .48); font-family: var(--font-suisse), sans-serif; font-size: clamp(28px, 5vw, 72px); font-weight: 700; letter-spacing: -.04em; pointer-events: none; text-transform: lowercase; transform: translate(-50%, -50%) rotate(-25.7deg); text-shadow: 0 1px 4px rgb(0 0 0 / .08); }
-.bk-watermark--hero { font-size: clamp(44px, 7vw, 110px); }
-.bk-detail-watermark { position: absolute; z-index: 2; inset: 50% auto auto 50%; color: rgb(255 255 255 / .38); font-family: var(--font-suisse), sans-serif; font-size: clamp(42px, 6vw, 92px); font-weight: 700; letter-spacing: .08em; pointer-events: none; text-shadow: 0 1px 5px rgb(0 0 0 / .18); transform: translate(-50%, -50%) rotate(-24deg); }
-.bk-detail-thumb-watermark { position: absolute; z-index: 2; inset: auto 7px 5px auto; color: rgb(255 255 255 / .8); font-family: var(--font-suisse), sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .08em; pointer-events: none; text-shadow: 0 1px 3px rgb(0 0 0 / .45); }
 .bk-product-video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .bk-video-thumb-play { position: absolute; z-index: 2; inset: 50% auto auto 50%; display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid rgb(255 255 255 / .85); border-radius: 50%; background: rgb(20 24 18 / .78); color: white; font-size: 14px; transform: translate(-50%, -50%); pointer-events: none; }
 .bk-product-photo img { transition: transform .65s var(--bk-ease), opacity .5s; }
