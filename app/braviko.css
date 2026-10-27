@@ -731,6 +731,7 @@
   .bk-products-list .bk-product h3 { grid-column: 2; grid-row: 2; font-size: 16px; line-height: 1.25; }
   .bk-products-list .bk-product-excerpt { grid-column: 2; grid-row: 3; min-height: 0; margin-top: 5px; font-size: 12px; line-height: 1.4; -webkit-line-clamp: 2; }
   .bk-products-list .bk-product-conditioning { grid-column: 2; grid-row: 3; }
+  .bk-products-list .bk-product-view { display: none; }
   .bk-products-list .bk-product-purchase { grid-column: 1 / -1; grid-row: 4; width: 100%; margin-top: 12px; padding-top: 10px; }
   .bk-products-list .bk-product-feedback { display: block; grid-column: 1 / -1; grid-row: 5; min-height: 0; }
   .bk-pagination { gap: 6px; margin-top: 32px; }
