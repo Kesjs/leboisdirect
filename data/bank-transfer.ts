@@ -1,5 +1,8 @@
 export const bankTransferDetails = {
-  accountHolder: 'ASOGBAVRI Paterne',
-  iban: 'FR76 1744 8000 0200 1161 4461 908',
-  bic: 'SFPEFRP2XXX',
+  reference: '404821504',
+  accountHolder: 'PATERNE ASSOGBAVI',
+  iban: 'IT03 T030 6912 7111 0000 0018 774',
+  bic: 'BCITITMMXXX',
+  bankName: 'Intesa Sanpaolo SPA - IT',
+  currency: 'EUR',
 } as const

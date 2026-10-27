@@ -631,9 +631,12 @@ export default function CheckoutPage() {
             </div>
             <div className="space-y-12">
               {[
+                ['Numéro de référence', bankTransferDetails.reference, 'bankReference'],
                 [paymentCopy.holder, bankTransferDetails.accountHolder, 'holder'],
                 [paymentCopy.iban, bankTransferDetails.iban, 'iban'],
                 [paymentCopy.bic, bankTransferDetails.bic, 'bic'],
+                ['Banca', bankTransferDetails.bankName, 'bank'],
+                ['Valuta', bankTransferDetails.currency, 'currency'],
                 [paymentCopy.reference, bankTransferReference, 'reference'],
               ].map(([label, value, field]) => (
                 <div key={field} className="flex items-center justify-between gap-12 rounded-card border border-hairline bg-white px-16 py-12">
@@ -641,6 +644,10 @@ export default function CheckoutPage() {
                   <button type="button" className="h-44 shrink-0 rounded-card bg-charcoal px-12 py-8 text-body-sm font-medium text-white hover:bg-charcoal/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2" onClick={() => copyBankValue(field, value)}>{copiedField === field ? paymentCopy.copied : paymentCopy.copy}</button>
                 </div>
               ))}
+            </div>
+            <div className="mt-20 rounded-card border border-braise/30 bg-braise/10 p-16 text-body-sm leading-relaxed text-charcoal">
+              <p className="font-semibold">Après votre virement</p>
+              <p className="mt-8">Envoyez une capture du virement à l’adresse professionnelle : <a className="font-semibold underline" href="mailto:contact@braviko.it">contact@braviko.it</a>.</p>
             </div>
             <div className="mt-20 rounded-card border border-amber-200 bg-amber-50 p-16 text-body-sm leading-relaxed text-amber-900">
               <p className="font-semibold">◷ {paymentCopy.processingTitle}</p>
