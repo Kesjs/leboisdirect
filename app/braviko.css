@@ -261,7 +261,8 @@
 .bk-selection-filters > button { min-height: 40px; padding: 8px 14px; border: 1px solid var(--bk-line); border-radius: 999px; color: var(--bk-muted); font-size: 12px; transition: color .2s, background .2s, border-color .2s; }
 .bk-selection-filters > button:hover, .bk-selection-filters > button[aria-pressed=true] { border-color: var(--bk-ink); background: var(--bk-ink); color: white; }
 .bk-tab-underline { position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--bk-accent); }
-.bk-products-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px 24px; }
+.bk-products-grid { display: grid; width: 100%; min-width: 0; max-width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px 24px; }
+.bk-boutique-content > .grid > div { min-width: 0; }
 .bk-products-list { display: grid; gap: 24px; }
 .bk-products-list .bk-product { display: grid; grid-template-columns: minmax(210px, .72fr) minmax(0, 1fr) minmax(180px, .45fr); column-gap: 24px; align-items: end; padding-bottom: 24px; border-bottom: 1px solid var(--bk-line); }
 .bk-products-list .bk-product-link { display: contents; }
