@@ -31,6 +31,17 @@ function parseFeatures(description: string) {
     .map((line) => line.replace(/^[*-]\s*/, ""));
 }
 
+function isInternalDescription(value: string) {
+  return /sourcing|scheda di sourcing|approvata|selezionato da braviko|selected by braviko/i.test(value);
+}
+
+function getCustomerDescription(translation: any) {
+  const description = String(translation?.description || '').trim();
+  const shortDescription = String(translation?.short_description || '').trim();
+  if (description && !isInternalDescription(description)) return description;
+  return shortDescription || description;
+}
+
 export async function GET(request: NextRequest) {
   if (process.env.BRAVIKO_PET_PREVIEW === 'true') {
     return NextResponse.json({ products: petCatalog, categories: [...new Set(petCatalog.map((product) => product.category))], source: 'local-preview' });
@@ -41,10 +52,10 @@ export async function GET(request: NextRequest) {
     .from("braviko_products")
     .select(
       `
-      id, slug, status, featured, sort_order,
+      id, slug, status, featured, sort_order, product_attributes,
       braviko_categories ( id, slug, name ),
       braviko_product_translations ( locale, name, short_description, description, conditioning, delivery_info ),
-      braviko_product_variants ( id, sku, label, price, compare_at_price ),
+      braviko_product_variants ( id, sku, label, price, compare_at_price, stock ),
       braviko_product_images ( storage_path, alt_text, sort_order, is_primary )
     `,
     )
@@ -70,9 +81,13 @@ export async function GET(request: NextRequest) {
       ]),
     );
     const it = translations.it || translations.fr || translations.de || {};
+    const customerDescription = getCustomerDescription(it);
     const variants = [...(item.braviko_product_variants || [])].sort(
       (a: any, b: any) => Number(a.price) - Number(b.price),
     );
+    const conditioning = it.conditioning && it.conditioning.trim().toLowerCase() !== String(it.name || '').trim().toLowerCase()
+      ? it.conditioning
+      : '';
     const images = [...(item.braviko_product_images || [])]
       .sort(
         (a: any, b: any) =>
@@ -88,20 +103,31 @@ export async function GET(request: NextRequest) {
       featured: Boolean(item.featured),
       name: it.name || item.slug,
       category: item.braviko_categories?.slug || "buches",
-      description: it.short_description || it.description || "",
-      features: parseFeatures(it.description || ""),
-      longDescription: it.description || it.short_description || "",
+      description: customerDescription,
+      features: parseFeatures(customerDescription),
+      longDescription: customerDescription,
       price: Number(variants[0]?.price || 0),
       image: images[0] || "/images/pet-cura.png",
       images: images.length
         ? images
         : ["/images/pet-cura.png"],
-      conditioning: it.conditioning || variants[0]?.label || "",
+      conditioning,
       deliveryInfo: it.delivery_info || "",
+      attributes: {
+        brand: item.product_attributes?.brand || undefined,
+        productType: item.product_attributes?.product_type || undefined,
+        formatOrWeight: item.product_attributes?.format_or_weight || undefined,
+        dimensions: item.product_attributes?.dimensions || undefined,
+        size: item.product_attributes?.size || undefined,
+        packaging: item.product_attributes?.packaging || undefined,
+        use: item.product_attributes?.use || undefined,
+      },
       variants: variants.map((variant: any) => ({
         id: variant.id,
+        sku: variant.sku,
         price: Number(variant.price),
         label: variant.label,
+        stock: Number(variant.stock ?? 0),
       })),
       translations: {
         de: translations.de?.name || it.name || item.slug,
@@ -112,13 +138,12 @@ export async function GET(request: NextRequest) {
             translations.de?.description ||
             "",
           it:
-            translations.it?.short_description ||
-            translations.it?.description ||
+            getCustomerDescription(translations.it) ||
             "",
         },
         conditioning: {
           de: translations.de?.conditioning || "",
-          it: translations.it?.conditioning || "",
+          it: conditioning,
         },
         delivery: {
           de: translations.de?.delivery_info || "",

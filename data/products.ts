@@ -4,12 +4,23 @@ export type WoodSpecies = 'chene' | 'hetre' | 'charme' | 'mixte'
 
 export type ProductVariant = {
   id: string
+  sku?: string
   length?: number // en cm
   volume?: number // en stères
   weight?: number // en kg
   price: number
   stock: number
   label?: string
+}
+
+export type ProductAttributes = {
+  brand?: string
+  productType?: string
+  formatOrWeight?: string
+  dimensions?: string
+  size?: string
+  packaging?: string
+  use?: string
 }
 
 export type Product = {
@@ -31,6 +42,7 @@ export type Product = {
   origin?: string
   conditioning?: string
   deliveryInfo: string
+  attributes?: ProductAttributes
   translations?: {
     de?: string
     it?: string
