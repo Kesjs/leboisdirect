@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     .from("braviko_products")
     .select(
       `
-      id, slug, status, featured, sort_order, product_attributes,
+      id, slug, status, featured, sort_order, product_attributes, product_details,
       braviko_categories ( id, slug, name ),
       braviko_product_translations ( locale, name, short_description, description, conditioning, delivery_info ),
       braviko_product_variants ( id, sku, label, price, compare_at_price, stock ),
@@ -82,6 +82,15 @@ export async function GET(request: NextRequest) {
     );
     const it = translations.it || translations.fr || translations.de || {};
     const customerDescription = getCustomerDescription(it);
+    const details = item.product_details || {};
+    const productDetails = {
+      overview: details.overview || customerDescription,
+      benefits: Array.isArray(details.benefits) ? details.benefits.filter(Boolean) : [],
+      usage: details.usage || undefined,
+      care: details.care || undefined,
+      safety: Array.isArray(details.safety) ? details.safety.filter(Boolean) : [],
+      included: details.included || undefined,
+    };
     const variants = [...(item.braviko_product_variants || [])].sort(
       (a: any, b: any) => Number(a.price) - Number(b.price),
     );
@@ -104,8 +113,8 @@ export async function GET(request: NextRequest) {
       name: it.name || item.slug,
       category: item.braviko_categories?.slug || "buches",
       description: customerDescription,
-      features: parseFeatures(customerDescription),
-      longDescription: customerDescription,
+      features: productDetails.benefits.length ? productDetails.benefits : parseFeatures(customerDescription),
+      longDescription: productDetails.overview,
       price: Number(variants[0]?.price || 0),
       image: images[0] || "/images/pet-cura.png",
       images: images.length
@@ -120,8 +129,13 @@ export async function GET(request: NextRequest) {
         dimensions: item.product_attributes?.dimensions || undefined,
         size: item.product_attributes?.size || undefined,
         packaging: item.product_attributes?.packaging || undefined,
+        materials: item.product_attributes?.materials || undefined,
+        capacity: item.product_attributes?.capacity || undefined,
+        color: item.product_attributes?.color || undefined,
+        assembly: item.product_attributes?.assembly || undefined,
         use: item.product_attributes?.use || undefined,
       },
+      details: productDetails,
       variants: variants.map((variant: any) => ({
         id: variant.id,
         sku: variant.sku,

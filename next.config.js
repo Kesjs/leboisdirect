@@ -4,6 +4,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'flagcdn.com' },
       { protocol: 'https', hostname: 'wsrv.nl' },
+      { protocol: 'https', hostname: 'tse1.mm.bing.net' },
       { protocol: 'https', hostname: 'media.adeo.com' },
       { protocol: 'https', hostname: 'www.mademoisellebuche.com' },
       { protocol: 'https', hostname: 'www.staub-motoculture.fr' },
@@ -19,6 +20,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'arcaplanet.vtexassets.com' },
       { protocol: 'https', hostname: 'shop-cdn.m.mediazs.com' },
       { protocol: 'https', hostname: 'trixie.shop' },
+      { protocol: 'https', hostname: 'cdn.trixie.de' },
       { protocol: 'https', hostname: 'www.trixie.es' },
       { protocol: 'https', hostname: 'zoozone.pl' },
       { protocol: 'https', hostname: 'rinti.shop' },

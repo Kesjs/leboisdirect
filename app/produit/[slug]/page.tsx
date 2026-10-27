@@ -90,6 +90,10 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     [locale === 'it' ? 'Dimensioni' : locale === 'de' ? 'Maße' : 'Dimensions', product.attributes?.dimensions],
     [locale === 'it' ? 'Taglia' : locale === 'de' ? 'Größe' : 'Taille', product.attributes?.size],
     [locale === 'it' ? 'Confezione' : locale === 'de' ? 'Verpackung' : 'Conditionnement', product.attributes?.packaging],
+    [locale === 'it' ? 'Materiali' : locale === 'de' ? 'Materialien' : 'Matériaux', product.attributes?.materials],
+    [locale === 'it' ? 'Portata / capacità' : locale === 'de' ? 'Traglast / Kapazität' : 'Charge / capacité', product.attributes?.capacity],
+    [locale === 'it' ? 'Colore' : locale === 'de' ? 'Farbe' : 'Couleur', product.attributes?.color],
+    [locale === 'it' ? 'Montaggio' : locale === 'de' ? 'Montage' : 'Montage', product.attributes?.assembly],
     [locale === 'it' ? 'Utilizzo' : locale === 'de' ? 'Verwendung' : 'Usage', product.attributes?.use],
   ].filter(([, value]) => Boolean(value)) as [string, string][]
 
@@ -332,7 +336,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 </p>
               )}
 
-              <p className="text-body-lg text-smoke mb-16 leading-relaxed">{product.longDescription || productLabel(product, locale).description}</p>
+              <p className="text-body-lg text-smoke mb-16 leading-relaxed">{product.description || productLabel(product, locale).description}</p>
               <div className="mb-32 pb-32 border-b border-hairline">
                 <div className="text-[48px] font-semibold text-charcoal tracking-tight mb-8">
                   {formatPrice(currentPrice)}
@@ -452,6 +456,43 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                       </div>
                     )}
                   </dl>
+                </div>
+              )}
+
+              {product.details && (
+                <div className="bk-product-description mt-32 pt-32 border-t border-hairline">
+                  <h2 className="text-heading-sm font-semibold text-charcoal mb-20">Descrizione del prodotto</h2>
+                  {product.details.overview && <p className="text-body-sm text-smoke leading-relaxed">{product.details.overview}</p>}
+                  {(product.details.usage || product.details.care || product.details.included) && (
+                    <div className="bk-product-detail-grid">
+                      {product.details.usage && (
+                        <div className="bk-product-detail-card">
+                          <h3>Come usarlo</h3>
+                          <p>{product.details.usage}</p>
+                        </div>
+                      )}
+                      {product.details.care && (
+                        <div className="bk-product-detail-card">
+                          <h3>Cura e manutenzione</h3>
+                          <p>{product.details.care}</p>
+                        </div>
+                      )}
+                      {product.details.included && (
+                        <div className="bk-product-detail-card">
+                          <h3>Contenuto della confezione</h3>
+                          <p>{product.details.included}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {product.details.safety && product.details.safety.length > 0 && (
+                    <div className="bk-product-safety">
+                      <h3>Informazioni di sicurezza</h3>
+                      <ul>
+                        {product.details.safety.map((item, index) => <li key={index}>{item}</li>)}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               )}
 

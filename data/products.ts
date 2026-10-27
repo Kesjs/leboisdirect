@@ -20,7 +20,20 @@ export type ProductAttributes = {
   dimensions?: string
   size?: string
   packaging?: string
+  materials?: string
+  capacity?: string
+  color?: string
+  assembly?: string
   use?: string
+}
+
+export type ProductDetails = {
+  overview?: string
+  benefits?: string[]
+  usage?: string
+  care?: string
+  safety?: string[]
+  included?: string
 }
 
 export type Product = {
@@ -43,6 +56,7 @@ export type Product = {
   conditioning?: string
   deliveryInfo: string
   attributes?: ProductAttributes
+  details?: ProductDetails
   translations?: {
     de?: string
     it?: string
