@@ -646,9 +646,15 @@ export default function CheckoutPage() {
               ))}
             </div>
             <div className="mt-20 rounded-card border border-braise/30 bg-braise/10 p-16 text-body-sm leading-relaxed text-charcoal">
-              <p className="font-semibold">Après votre virement</p>
-              <p className="mt-8">Envoyez une capture du virement à l’adresse professionnelle : <a className="font-semibold underline" href="mailto:contact@braviko.it">contact@braviko.it</a>.</p>
-            </div>
+              
+<p className="font-semibold">Dopo aver effettuato il bonifico</p>
+<p className="mt-8">
+  Invia uno screenshot della conferma del bonifico all'indirizzo email aziendale:{" "}
+  <a className="font-semibold underline" href="mailto:contact@braviko.it">
+    contact@braviko.it
+  </a>.
+</p>
+</div>
             <div className="mt-20 rounded-card border border-amber-200 bg-amber-50 p-16 text-body-sm leading-relaxed text-amber-900">
               <p className="font-semibold">◷ {paymentCopy.processingTitle}</p>
               <p className="mt-8">{paymentCopy.processingBody}</p>
