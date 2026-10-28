@@ -15,6 +15,7 @@ type CartContextType = {
   removeItem: (productId: string, variantId?: string) => void
   updateQuantity: (productId: string, quantity: number, variantId?: string) => void
   clearCart: () => void
+  hydrated: boolean
   totalItems: number
   totalPrice: number
 }
@@ -107,6 +108,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         removeItem,
         updateQuantity,
         clearCart,
+        hydrated,
         totalItems,
         totalPrice,
       }}

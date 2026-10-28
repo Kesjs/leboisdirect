@@ -70,7 +70,7 @@ function CheckoutSelect({
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { items, totalPrice, clearCart } = useCart()
+  const { items, totalPrice, clearCart, hydrated: cartHydrated } = useCart()
   const { locale } = useI18n()
   const c = commerceCopy[locale]
   const { user, loading: authLoading } = useAuth()
@@ -80,6 +80,7 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false)
   const [bankSubmitting, setBankSubmitting] = useState(false)
   const [paymentCancelled, setPaymentCancelled] = useState(false)
+  const [checkoutHydrated, setCheckoutHydrated] = useState(false)
   const paymentLock = useRef(false)
   const paymentCopy = locale === 'de'
       ? { error: 'Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut.', unavailable: 'Die Zahlung ist derzeit nicht verfügbar.', cancelled: 'Die Zahlung wurde abgebrochen. Deine Angaben und dein Warenkorb bleiben erhalten. Du kannst es erneut versuchen.', card: 'Mit Karte bezahlen', cardBody: 'Sichere Zahlung', bank: 'SEPA-Überweisung', bankBody: 'Erhalten Sie die Bankverbindung und Ihre Bestellreferenz.', bankTitle: 'Ihre SEPA-Überweisung', bankIntro: 'Überweisen Sie den Gesamtbetrag und geben Sie diese Bestellreferenz im Verwendungszweck an.', holder: 'Kontoinhaber', iban: 'IBAN', bic: 'BIC / SWIFT', reference: 'Überweisungsreferenz', copy: 'Kopieren', copied: 'Kopiert', close: 'Schließen', backToShop: 'Zurück zum Shop', processingTitle: 'Bearbeitungszeit', processingBody: 'Eine klassische SEPA-Überweisung kann 1 bis 2 Werktage dauern. Für eine schnellere Lieferung nutzen Sie, wenn möglich, eine Echtzeitüberweisung.', bankError: 'Die Überweisung konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.' }
@@ -100,6 +101,7 @@ export default function CheckoutPage() {
     phoneCode: '+39',
   })
   useEffect(() => {
+    if (!cartHydrated) return
     try {
       const saved = window.localStorage.getItem('braviko-checkout-form')
       if (saved) {
@@ -108,15 +110,18 @@ export default function CheckoutPage() {
           setFormData(current => ({ ...current, ...parsed }))
         }
       }
-      if (window.localStorage.getItem('braviko-checkout-step') === '2' && items.length > 0) setStep(2)
+      const savedStep = window.localStorage.getItem('braviko-checkout-step')
+      setStep(savedStep === '2' && items.length > 0 ? 2 : 1)
     } catch { /* Continue with an empty form when browser storage is unavailable. */ }
-  }, [items.length])
+    setCheckoutHydrated(true)
+  }, [cartHydrated, items.length])
   useEffect(() => {
+    if (!checkoutHydrated) return
     try {
       window.localStorage.setItem('braviko-checkout-form', JSON.stringify(formData))
       window.localStorage.setItem('braviko-checkout-step', String(step))
     } catch { /* The active checkout remains usable without browser storage. */ }
-  }, [formData, step])
+  }, [checkoutHydrated, formData, step])
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -131,9 +136,10 @@ export default function CheckoutPage() {
   }, [paymentCopy.cancelled, router])
 
   useEffect(() => {
+    if (!cartHydrated || !checkoutHydrated) return
     if (!authLoading && !user) router.replace('/connexion?mode=signup&next=/checkout&reason=checkout')
     else if (items.length === 0 && step === 1) router.replace('/panier')
-  }, [authLoading, items.length, router, step, user])
+  }, [authLoading, cartHydrated, checkoutHydrated, items.length, router, step, user])
   useEffect(() => {
     if (!user) return
     setFormData(current => ({
@@ -143,7 +149,7 @@ export default function CheckoutPage() {
       lastName: current.lastName || user.user_metadata?.last_name || '',
     }))
   }, [user])
-  if (authLoading) return <PageSkeleton variant="checkout" label="Caricamento dell’ordine" />
+  if (authLoading || !cartHydrated || !checkoutHydrated) return <PageSkeleton variant="checkout" label="Caricamento dell’ordine" />
   if (!user || (items.length === 0 && step === 1)) return null
 
   const createPendingOrder = async () => {
