@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/Header'
@@ -18,7 +18,6 @@ import { productLabel } from '@/data/product-labels'
 import { useAuth } from '@/lib/auth-context'
 import { createClient } from '@/lib/supabase/client'
 import { useMemo } from 'react'
-import { bankTransferDetails } from '@/data/bank-transfer'
 
 async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit, timeoutMs = 15000) {
   const controller = new AbortController()
@@ -47,71 +46,24 @@ function CheckoutSelect({
   ariaLabel: string
   leading?: (option: CheckoutSelectOption) => ReactNode
 }) {
-  const [open, setOpen] = useState(false)
-  const rootRef = useRef<HTMLDivElement>(null)
   const selected = options.find(option => option.value === value) || options[0]
 
-  useEffect(() => {
-    if (!open) return
-    const closeOnOutsidePointer = (event: PointerEvent) => {
-      if (rootRef.current && !rootRef.current.contains(event.target as Node)) setOpen(false)
-    }
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('pointerdown', closeOnOutsidePointer)
-    document.addEventListener('keydown', closeOnEscape)
-    return () => {
-      document.removeEventListener('pointerdown', closeOnOutsidePointer)
-      document.removeEventListener('keydown', closeOnEscape)
-    }
-  }, [open])
-
-  const handleTriggerKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>) => {
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      setOpen(true)
-    }
-  }
-
   return (
-    <div ref={rootRef} className="relative w-full">
-      <button
-        type="button"
-        id={id}
-        className="flex min-h-[52px] w-full items-center justify-between gap-12 rounded-card border border-hairline bg-white px-16 py-12 text-left text-body text-charcoal transition-colors hover:border-charcoal focus:border-braise focus:outline-none focus:ring-2 focus:ring-braise/30"
-        aria-label={ariaLabel}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-controls={`${id}-options`}
-        onClick={() => setOpen(current => !current)}
-        onKeyDown={handleTriggerKeyDown}
-      >
-        <span className="flex min-w-0 items-center gap-10">
-          {leading?.(selected)}
-          <span className="truncate">{selected.label}</span>
+    <div className="relative w-full">
+      {leading && (
+        <span className="pointer-events-none absolute left-16 top-1/2 z-10 -translate-y-1/2">
+          {leading(selected)}
         </span>
-        <svg className={`h-16 w-16 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-          <path d="m3 6 5 5 5-5" />
-        </svg>
-      </button>
-      {open && (
-        <div id={`${id}-options`} role="listbox" aria-label={ariaLabel} className="absolute left-0 right-0 top-[calc(100%+6px)] z-30 max-h-64 overflow-y-auto rounded-card border border-hairline bg-white p-4 shadow-xl">
-          {options.map(option => (
-            <button
-              key={option.value}
-              type="button"
-              role="option"
-              aria-selected={option.value === value}
-              className={`flex min-h-44 w-full items-center gap-10 rounded-card px-12 py-8 text-left text-body-sm transition-colors ${option.value === value ? 'bg-mist font-semibold text-charcoal' : 'text-smoke hover:bg-mist hover:text-charcoal'}`}
-              onClick={() => { onChange(option.value); setOpen(false) }}
-            >
-              {leading?.(option)}
-              <span>{option.label}</span>
-            </button>
-          ))}
-        </div>
       )}
+      <select
+        id={id}
+        value={value}
+        onChange={event => onChange(event.target.value)}
+        className={`min-h-[52px] w-full rounded-card border border-hairline bg-white py-12 text-body text-charcoal transition-colors hover:border-charcoal focus:border-braise focus:outline-none focus:ring-2 focus:ring-braise/30 ${leading ? 'pl-48 pr-40' : 'px-16'}`}
+        aria-label={ariaLabel}
+      >
+        {options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+      </select>
     </div>
   )
 }
@@ -127,8 +79,6 @@ export default function CheckoutPage() {
   const [formError, setFormError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [bankSubmitting, setBankSubmitting] = useState(false)
-  const [bankTransferReference, setBankTransferReference] = useState<string | null>(null)
-  const [copiedField, setCopiedField] = useState<string | null>(null)
   const [paymentCancelled, setPaymentCancelled] = useState(false)
   const paymentLock = useRef(false)
   const paymentCopy = locale === 'de'
@@ -266,8 +216,8 @@ export default function CheckoutPage() {
       const draft = await createPendingOrder()
       const response = await fetchWithTimeout('/api/bank-transfer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: draft.reference }) })
       if (!response.ok) throw new Error('BANK_TRANSFER_UNAVAILABLE')
-      setBankTransferReference(draft.reference)
       try { window.localStorage.removeItem('braviko-checkout-step') } catch { /* Ignore unavailable storage. */ }
+      router.push(`/commande/bonifico?reference=${encodeURIComponent(draft.reference)}`)
     } catch (error) {
       const code = error instanceof Error ? error.message : 'BANK_TRANSFER_UNAVAILABLE'
       setFormError(code === 'AUTH_REQUIRED' ? 'La sessione è scaduta. Accedi di nuovo.' : paymentCopy.bankError)
@@ -275,14 +225,6 @@ export default function CheckoutPage() {
     } finally {
       setBankSubmitting(false)
     }
-  }
-
-  const copyBankValue = async (field: string, value: string) => {
-    try {
-      await navigator.clipboard.writeText(value)
-      setCopiedField(field)
-      window.setTimeout(() => setCopiedField(current => current === field ? null : current), 1800)
-    } catch { setCopiedField(null) }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -613,56 +555,6 @@ export default function CheckoutPage() {
           </div>
         </div>
       </main>
-      {bankTransferReference && (
-        <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-charcoal/60 sm:items-center sm:p-20" role="dialog" aria-modal="true" aria-labelledby="bank-transfer-title">
-          <div className="relative h-full w-full max-w-lg overflow-y-auto bg-white p-24 pb-[max(24px,env(safe-area-inset-bottom))] shadow-2xl sm:h-auto sm:max-h-[min(92dvh,760px)] sm:rounded-card sm:p-32">
-            <button type="button" className="absolute right-16 top-16 flex h-44 w-44 items-center justify-center rounded-card text-smoke hover:bg-mist hover:text-charcoal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise" onClick={() => setBankTransferReference(null)} aria-label={paymentCopy.close}>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" /></svg>
-            </button>
-            <div className="mb-24 flex items-center justify-between gap-16 border-b border-hairline pb-16 pr-32">
-              <h2 id="bank-transfer-title" className="text-heading-sm font-semibold text-charcoal">{paymentCopy.bankTitle}</h2>
-            </div>
-            <div className="mb-24 pr-32">
-              <p className="text-body-sm leading-relaxed text-smoke">{paymentCopy.bankIntro}</p>
-            </div>
-            <div className="mb-20 rounded-card border border-hairline bg-mist p-16">
-              <div className="flex items-center justify-between gap-16 text-body-sm"><span className="text-smoke">{c.total}</span><strong className="text-charcoal">{formatPrice(totalPrice)}</strong></div>
-              <div className="mt-8 flex items-center justify-between gap-16 text-body-sm"><span className="text-smoke">{paymentCopy.reference}</span><strong className="text-charcoal">{bankTransferReference}</strong></div>
-            </div>
-            <div className="space-y-12">
-              {[
-                ['Numéro de référence', bankTransferDetails.reference, 'bankReference'],
-                [paymentCopy.holder, bankTransferDetails.accountHolder, 'holder'],
-                [paymentCopy.iban, bankTransferDetails.iban, 'iban'],
-                [paymentCopy.bic, bankTransferDetails.bic, 'bic'],
-                ['Banca', bankTransferDetails.bankName, 'bank'],
-                ['Valuta', bankTransferDetails.currency, 'currency'],
-                [paymentCopy.reference, bankTransferReference, 'reference'],
-              ].map(([label, value, field]) => (
-                <div key={field} className="flex items-center justify-between gap-12 rounded-card border border-hairline bg-white px-16 py-12">
-                  <div className="min-w-0"><p className="text-body-sm text-smoke">{label}</p><p className="mt-4 break-all font-medium text-charcoal">{value}</p></div>
-                  <button type="button" className="h-44 shrink-0 rounded-card bg-charcoal px-12 py-8 text-body-sm font-medium text-white hover:bg-charcoal/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2" onClick={() => copyBankValue(field, value)}>{copiedField === field ? paymentCopy.copied : paymentCopy.copy}</button>
-                </div>
-              ))}
-            </div>
-            <div className="mt-20 rounded-card border border-braise/30 bg-braise/10 p-16 text-body-sm leading-relaxed text-charcoal">
-              
-<p className="font-semibold">Dopo aver effettuato il bonifico</p>
-<p className="mt-8">
-  Invia uno screenshot della conferma del bonifico all'indirizzo email aziendale:{" "}
-  <a className="font-semibold underline" href="mailto:contact@braviko.it">
-    contact@braviko.it
-  </a>.
-</p>
-</div>
-            <div className="mt-20 rounded-card border border-amber-200 bg-amber-50 p-16 text-body-sm leading-relaxed text-amber-900">
-              <p className="font-semibold">◷ {paymentCopy.processingTitle}</p>
-              <p className="mt-8">{paymentCopy.processingBody}</p>
-            </div>
-            <button type="button" className="mx-auto mt-24 block min-h-44 w-fit whitespace-nowrap rounded-card border border-charcoal bg-white px-16 py-8 text-center text-body-sm font-medium leading-none text-charcoal hover:bg-mist focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2" onClick={() => { clearCart(); router.push('/boutique') }}>{paymentCopy.backToShop}</button>
-          </div>
-        </div>
-      )}
       <Footer />
     </>
   )
