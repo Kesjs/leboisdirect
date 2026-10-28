@@ -51,7 +51,7 @@ function CopyRow({
           {value}
         </span>
       </span>
-      <span className={`shrink-0 rounded-md border px-10 py-6 text-xs font-medium transition-colors ${done ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-hairline bg-white text-smoke group-hover:border-charcoal group-hover:bg-mist'}`} aria-live="polite">
+      <span className="bk-copy-control" data-done={done ? 'true' : undefined} aria-live="polite">
         {done ? copiedLabel : copyLabel}
       </span>
     </button>

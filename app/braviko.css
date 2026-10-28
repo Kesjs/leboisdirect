@@ -129,10 +129,9 @@
 .bk-button:active { transform: translateY(1px); }
 .bk-button > span, .bk-text-link > span { transition: transform .3s var(--bk-ease); font-size: 20px; font-weight: 400; }
 .bk-button:hover > span, .bk-text-link:hover > span { transform: translate(3px, -3px); }
-.bk-bank-copy-button { display: inline-flex; align-items: center; justify-content: center; align-self: flex-start; flex: 0 0 auto; width: fit-content; min-width: 84px; height: 44px; min-height: 44px; padding: 8px 14px; border: 0; border-radius: 6px; box-sizing: border-box; background: var(--bk-ink); color: white; font-size: 13px; font-weight: 600; line-height: 1; white-space: nowrap; cursor: pointer; transition: background .2s, transform .2s; }
-.bk-bank-copy-button:hover { background: var(--bk-accent); }
-.bk-bank-copy-button:active { transform: translateY(1px); }
-.bk-bank-copy-button:focus-visible { outline: 2px solid var(--bk-accent); outline-offset: 3px; }
+.bk-copy-control { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; border: 1px solid var(--bk-line); border-radius: 4px; background: white; padding: 6px 10px; color: var(--bk-muted); font-size: 12px; font-weight: 500; line-height: 1.2; white-space: nowrap; transition: border-color .2s, background .2s, color .2s; }
+.group:hover .bk-copy-control, .group:focus-visible .bk-copy-control { border-color: var(--bk-ink); background: var(--bk-mist); }
+.bk-copy-control[data-done='true'] { border-color: #a7f3d0; background: #ecfdf5; color: #065f46; }
 .bk-text-link { display: inline-flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 44px; width: fit-content; border-bottom: 1px solid currentColor; font-size: 14px; font-weight: 500; }
 .bk-text-link:hover { color: var(--bk-accent); }
 
