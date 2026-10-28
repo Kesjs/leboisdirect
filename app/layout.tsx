@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   keywords: 'Braviko, animali, cani, gatti, accessori, alimentazione, cura',
   alternates: { canonical: '/' },
   verification: {
-    google: 'QTU2oN2k4JNkADG259tGdDwK31jtE0WyQvbptMg46QU',
+    google: 'S-OPtyWEFmW-EvM3oH7AaghX3kcoTVXaHXL8yRyDM5w',
   },
   openGraph: {
     type: 'website',
