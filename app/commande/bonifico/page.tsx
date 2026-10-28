@@ -13,10 +13,49 @@ import { useI18n } from '@/lib/i18n-context'
 import { productLabel } from '@/data/product-labels'
 import { formatPrice } from '@/lib/utils'
 
-type BankField = {
-  key: string
+function CopyRow({
+  label,
+  value,
+  copyLabel,
+  copiedLabel,
+  mono = false,
+}: {
   label: string
   value: string
+  copyLabel: string
+  copiedLabel: string
+  mono?: boolean
+}) {
+  const [done, setDone] = useState(false)
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(value)
+      setDone(true)
+      window.setTimeout(() => setDone(false), 1800)
+    } catch {
+      setDone(false)
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      className="group flex w-full items-center justify-between gap-16 px-20 py-16 text-left transition-colors hover:bg-mist focus-visible:bg-mist focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-braise"
+      aria-label={`${done ? copiedLabel : copyLabel} ${label}`}
+    >
+      <span className="min-w-0">
+        <span className="block text-body-sm text-smoke">{label}</span>
+        <span className={`mt-4 block break-words text-body font-medium text-charcoal ${mono ? 'font-mono tracking-wide' : ''}`}>
+          {value}
+        </span>
+      </span>
+      <span className={`shrink-0 rounded-full px-12 py-6 text-xs font-medium transition-colors ${done ? 'bg-emerald-100 text-emerald-800' : 'bg-mist text-smoke group-hover:bg-hairline'}`} aria-live="polite">
+        {done ? copiedLabel : copyLabel}
+      </span>
+    </button>
+  )
 }
 
 function BankTransferPageContent() {
@@ -24,15 +63,16 @@ function BankTransferPageContent() {
   const searchParams = useSearchParams()
   const { locale } = useI18n()
   const { items, totalPrice, clearCart } = useCart()
-  const [copiedField, setCopiedField] = useState<string | null>(null)
   const reference = searchParams.get('reference')?.trim() || ''
 
   const copy = locale === 'de'
     ? {
         eyebrow: 'BRAVIKO / SEPA-ÜBERWEISUNG',
-        title: 'Überweisung vorbereitet.',
+        received: 'Bestellung erhalten',
+        title: 'Zahlung per Überweisung abschließen',
         intro: 'Schließe deine Zahlung mit den folgenden Bankdaten ab. Deine Bestellung bleibt bis zum Eingang der Überweisung vorgemerkt.',
         orderReference: 'Bestellreferenz',
+        referenceCause: 'Verwendungszweck (Bestellreferenz)',
         total: 'Gesamtbetrag',
         bankDetails: 'Bankverbindung',
         copy: 'Kopieren',
@@ -53,9 +93,11 @@ function BankTransferPageContent() {
     : locale === 'fr'
       ? {
           eyebrow: 'BRAVIKO / VIREMENT SEPA',
-          title: 'Virement préparé.',
+          received: 'Commande reçue',
+          title: 'Finalisez le paiement par virement',
           intro: 'Finalisez votre paiement avec les coordonnées bancaires ci-dessous. Votre commande reste en attente de réception du virement.',
           orderReference: 'Référence de commande',
+          referenceCause: 'Motif (référence de commande)',
           total: 'Total',
           bankDetails: 'Coordonnées bancaires',
           copy: 'Copier',
@@ -75,9 +117,11 @@ function BankTransferPageContent() {
         }
       : {
           eyebrow: 'BRAVIKO / BONIFICO SEPA',
-          title: 'Bonifico preparato.',
+          received: 'Ordine ricevuto',
+          title: 'Completa il pagamento con bonifico',
           intro: 'Concludi il pagamento con le coordinate qui sotto. Il tuo ordine resta in attesa della ricezione del bonifico.',
           orderReference: 'Riferimento ordine',
+          referenceCause: 'Causale (riferimento ordine)',
           total: 'Totale',
           bankDetails: 'Coordinate bancarie',
           copy: 'Copia',
@@ -95,24 +139,6 @@ function BankTransferPageContent() {
           missingBody: 'Questo link non contiene un riferimento d’ordine valido. Ricomincia il pagamento.',
           backToCheckout: 'Torna al checkout',
         }
-
-  const fields: BankField[] = [
-    { key: 'holder', label: copy.holder, value: bankTransferDetails.accountHolder },
-    { key: 'iban', label: 'IBAN', value: bankTransferDetails.iban },
-    { key: 'bic', label: 'BIC / SWIFT', value: bankTransferDetails.bic },
-    { key: 'bank', label: copy.bank, value: bankTransferDetails.bankName },
-    { key: 'currency', label: copy.currency, value: bankTransferDetails.currency },
-  ]
-
-  const copyValue = async (field: BankField) => {
-    try {
-      await navigator.clipboard.writeText(field.value)
-      setCopiedField(field.key)
-      window.setTimeout(() => setCopiedField(current => current === field.key ? null : current), 1800)
-    } catch {
-      setCopiedField(null)
-    }
-  }
 
   const leaveOrder = () => {
     clearCart()
@@ -148,46 +174,28 @@ function BankTransferPageContent() {
             <div className="container-custom py-40 md:py-64">
               <div className="grid gap-40 lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,.72fr)] lg:items-start lg:gap-64">
                 <section aria-labelledby="bank-transfer-title">
-                  <p className="eyebrow text-braise">{copy.eyebrow}</p>
+                  <p className="inline-flex items-center gap-8 rounded-full bg-emerald-50 px-12 py-6 text-xs font-medium text-emerald-800">
+                    <span className="h-6 w-6 rounded-full bg-emerald-600" aria-hidden="true" />
+                    {copy.received}
+                  </p>
                   <h1 id="bank-transfer-title" className="mt-16 max-w-2xl text-heading-lg font-semibold text-charcoal md:text-display-sm">{copy.title}</h1>
-                  <p className="mt-20 max-w-2xl text-body-lg leading-relaxed text-smoke">{copy.intro}</p>
+                  <p className="mt-20 max-w-2xl text-body-lg leading-relaxed text-smoke">{copy.intro} <strong className="font-semibold text-charcoal">{formatPrice(totalPrice)}</strong>.</p>
 
-                  <div className="mt-32 grid gap-12 sm:grid-cols-2">
-                    <div className="rounded-card border border-hairline bg-white p-20 md:p-24">
-                      <p className="text-body-sm text-smoke">{copy.total}</p>
-                      <p className="mt-8 text-heading-sm font-semibold text-charcoal">{formatPrice(totalPrice)}</p>
-                    </div>
-                    <div className="rounded-card border border-braise/30 bg-braise/10 p-20 md:p-24">
-                      <p className="text-body-sm text-charcoal/70">{copy.orderReference}</p>
-                      <p className="mt-8 break-all text-heading-sm font-semibold text-charcoal">{reference}</p>
-                    </div>
+                  <div className="mt-32 overflow-hidden rounded-card border border-braise/30 bg-braise/10 p-4">
+                    <CopyRow label={copy.referenceCause} value={reference} copyLabel={copy.copy} copiedLabel={copy.copied} mono />
                   </div>
 
-                  <div className="mt-40">
-                    <div className="flex items-end justify-between gap-16 border-b border-hairline pb-12">
+                  <div className="mt-24 overflow-hidden rounded-card border border-hairline bg-white">
+                    <div className="flex items-end justify-between gap-16 border-b border-hairline px-20 py-16">
                       <h2 className="text-heading-sm font-semibold text-charcoal">{copy.bankDetails}</h2>
-                      <span className="text-body-sm text-smoke">EUR · SEPA</span>
+                      <span className="text-body-sm text-smoke">{bankTransferDetails.currency} · SEPA</span>
                     </div>
-                    <div className="mt-16 grid gap-12 sm:grid-cols-2">
-                      {fields.map(field => (
-                        <div key={field.key} className="flex min-h-[112px] flex-col justify-between gap-16 rounded-card border border-hairline bg-white p-16 md:p-20">
-                          <div className="min-w-0">
-                            <p className="text-body-sm text-smoke">{field.label}</p>
-                            <p className="mt-8 break-words text-body font-medium leading-snug text-charcoal">{field.value}</p>
-                          </div>
-                          <button type="button" className="bk-bank-copy-button" onClick={() => copyValue(field)}>
-                            {copiedField === field.key ? copy.copied : copy.copy}
-                          </button>
-                        </div>
-                      ))}
-                      <div className="flex min-h-[112px] flex-col justify-between gap-16 rounded-card border border-hairline bg-white p-16 sm:col-span-2 md:p-20">
-                        <div>
-                          <p className="text-body-sm text-smoke">{copy.orderReference}</p>
-                          <p className="mt-8 break-all text-body font-semibold text-charcoal">{reference}</p>
-                        </div>
-                        <button type="button" className="bk-bank-copy-button" onClick={() => copyValue({ key: 'reference', label: copy.orderReference, value: reference })}>
-                          {copiedField === 'reference' ? copy.copied : copy.copy}
-                        </button>
+                    <div className="divide-y divide-hairline">
+                      <CopyRow label={copy.holder} value={bankTransferDetails.accountHolder} copyLabel={copy.copy} copiedLabel={copy.copied} />
+                      <CopyRow label="IBAN" value={bankTransferDetails.iban} copyLabel={copy.copy} copiedLabel={copy.copied} mono />
+                      <div className="grid divide-y divide-hairline sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+                        <CopyRow label="BIC / SWIFT" value={bankTransferDetails.bic} copyLabel={copy.copy} copiedLabel={copy.copied} mono />
+                        <CopyRow label={copy.bank} value={bankTransferDetails.bankName} copyLabel={copy.copy} copiedLabel={copy.copied} />
                       </div>
                     </div>
                   </div>
