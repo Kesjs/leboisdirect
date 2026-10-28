@@ -51,7 +51,7 @@ function CopyRow({
           {value}
         </span>
       </span>
-      <span className={`shrink-0 rounded-full px-12 py-6 text-xs font-medium transition-colors ${done ? 'bg-emerald-100 text-emerald-800' : 'bg-mist text-smoke group-hover:bg-hairline'}`} aria-live="polite">
+      <span className={`shrink-0 rounded-md border px-10 py-6 text-xs font-medium transition-colors ${done ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-hairline bg-white text-smoke group-hover:border-charcoal group-hover:bg-mist'}`} aria-live="polite">
         {done ? copiedLabel : copyLabel}
       </span>
     </button>
@@ -174,10 +174,7 @@ function BankTransferPageContent() {
             <div className="container-custom py-40 md:py-64">
               <div className="grid gap-40 lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,.72fr)] lg:items-start lg:gap-64">
                 <section aria-labelledby="bank-transfer-title">
-                  <p className="inline-flex items-center gap-8 rounded-full bg-emerald-50 px-12 py-6 text-xs font-medium text-emerald-800">
-                    <span className="h-6 w-6 rounded-full bg-emerald-600" aria-hidden="true" />
-                    {copy.received}
-                  </p>
+                  <p className="inline-flex rounded-full bg-emerald-50 px-12 py-6 text-xs font-medium text-emerald-800">{copy.received}</p>
                   <h1 id="bank-transfer-title" className="mt-16 max-w-2xl text-heading-lg font-semibold text-charcoal md:text-display-sm">{copy.title}</h1>
                   <p className="mt-20 max-w-2xl text-body-lg leading-relaxed text-smoke">{copy.intro} <strong className="font-semibold text-charcoal">{formatPrice(totalPrice)}</strong>.</p>
 
