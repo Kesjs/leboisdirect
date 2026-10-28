@@ -129,6 +129,10 @@
 .bk-button:active { transform: translateY(1px); }
 .bk-button > span, .bk-text-link > span { transition: transform .3s var(--bk-ease); font-size: 20px; font-weight: 400; }
 .bk-button:hover > span, .bk-text-link:hover > span { transform: translate(3px, -3px); }
+.bk-bank-copy-button { display: inline-flex; align-items: center; justify-content: center; align-self: flex-start; flex: 0 0 auto; width: fit-content; min-width: 84px; height: 44px; min-height: 44px; padding: 8px 14px; border: 0; border-radius: 6px; box-sizing: border-box; background: var(--bk-ink); color: white; font-size: 13px; font-weight: 600; line-height: 1; white-space: nowrap; cursor: pointer; transition: background .2s, transform .2s; }
+.bk-bank-copy-button:hover { background: var(--bk-accent); }
+.bk-bank-copy-button:active { transform: translateY(1px); }
+.bk-bank-copy-button:focus-visible { outline: 2px solid var(--bk-accent); outline-offset: 3px; }
 .bk-text-link { display: inline-flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 44px; width: fit-content; border-bottom: 1px solid currentColor; font-size: 14px; font-weight: 500; }
 .bk-text-link:hover { color: var(--bk-accent); }
 

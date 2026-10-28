@@ -175,7 +175,7 @@ function BankTransferPageContent() {
                             <p className="text-body-sm text-smoke">{field.label}</p>
                             <p className="mt-8 break-words text-body font-medium leading-snug text-charcoal">{field.value}</p>
                           </div>
-                          <button type="button" className="inline-flex min-h-44 w-fit items-center justify-center rounded-card bg-charcoal px-14 py-8 text-body-sm font-semibold text-white transition-colors hover:bg-braise focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2" onClick={() => copyValue(field)}>
+                          <button type="button" className="bk-bank-copy-button" onClick={() => copyValue(field)}>
                             {copiedField === field.key ? copy.copied : copy.copy}
                           </button>
                         </div>
@@ -185,7 +185,7 @@ function BankTransferPageContent() {
                           <p className="text-body-sm text-smoke">{copy.orderReference}</p>
                           <p className="mt-8 break-all text-body font-semibold text-charcoal">{reference}</p>
                         </div>
-                        <button type="button" className="inline-flex min-h-44 w-fit items-center justify-center rounded-card bg-charcoal px-14 py-8 text-body-sm font-semibold text-white transition-colors hover:bg-braise focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2" onClick={() => copyValue({ key: 'reference', label: copy.orderReference, value: reference })}>
+                        <button type="button" className="bk-bank-copy-button" onClick={() => copyValue({ key: 'reference', label: copy.orderReference, value: reference })}>
                           {copiedField === 'reference' ? copy.copied : copy.copy}
                         </button>
                       </div>
