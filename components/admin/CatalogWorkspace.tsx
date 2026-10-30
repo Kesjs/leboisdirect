@@ -32,6 +32,7 @@ export type AdminProduct = {
     storage_path: string;
     alt_text?: string | null;
     is_primary: boolean;
+    sort_order: number;
     publicUrl: string;
   }[];
 };
@@ -56,6 +57,7 @@ export type ProductValues = {
   sku: string;
   label: string;
   price: number | "";
+  stock: number | "";
   imageUrls: string[];
 };
 
@@ -123,6 +125,7 @@ function initialValues(product?: AdminProduct | null): ProductValues {
     sku: variant?.sku || "",
     label: variant?.label || "",
     price: Number(variant?.price || 0),
+    stock: Number(variant?.stock || 0),
     imageUrls: [],
   };
 }
@@ -629,7 +632,7 @@ function ProductEditor({
             <p className="mt-1 text-xs leading-5">Choisissez l’état « Publié » pour l’afficher sur le site. Les brouillons restent visibles uniquement dans l’administration.</p>
           </div>
         )}
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-3">
           <label className="grid gap-2 text-sm font-medium sm:col-span-2">
             Nom du produit
             <input
@@ -713,6 +716,17 @@ function ProductEditor({
             />
           </label>
           <label className="grid gap-2 text-sm font-medium">
+            Stock disponible
+            <input
+              type="number"
+              min="0"
+              step="1"
+              value={values.stock}
+              onChange={(event) => update("stock", event.target.value === "" ? "" : Number(event.target.value))}
+              className="admin-input"
+            />
+          </label>
+          <label className="grid gap-2 text-sm font-medium">
             Format
             <input
               value={values.label}
@@ -758,6 +772,24 @@ function ProductEditor({
               Les images sont conservées sans filigrane pour présenter clairement le produit.
             </p>
           </div>
+          {product?.images.length ? (
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {[...product.images]
+                .sort((first, second) => Number(second.is_primary) - Number(first.is_primary) || first.sort_order - second.sort_order)
+                .map((image, index) => (
+                  <div key={image.id} className="relative aspect-square overflow-hidden rounded-[10px] border border-hairline bg-ivory">
+                    <img src={image.publicUrl} alt={image.alt_text || values.names.it || values.names.fr} className="h-full w-full object-cover" />
+                    <span className="absolute inset-x-1 bottom-1 rounded bg-charcoal/75 px-1.5 py-1 text-center text-[10px] font-medium text-white">
+                      {image.is_primary || index === 0 ? "Image principale" : `Image ${index + 1}`}
+                    </span>
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <p className="rounded-[10px] border border-dashed border-hairline px-3 py-3 text-xs text-smoke">
+              Aucune image enregistrée. Ajoutez au moins une photo du produit avant de publier.
+            </p>
+          )}
           <ImageLinksPanel
             images={product?.images || []}
             productName={values.names.it || values.names.fr}
@@ -843,7 +875,7 @@ function ProductEditorModal({
         role="dialog"
         aria-modal="true"
          aria-label="Editor del prodotto"
-        className="admin-modal-panel max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl overflow-y-auto rounded-[16px]"
+        className="admin-modal-panel max-h-[calc(100dvh-1.5rem)] w-full max-w-5xl overflow-y-auto rounded-[16px]"
       >
         {children}
       </section>
@@ -894,11 +926,6 @@ export default function CatalogWorkspace({
     }),
     [products],
   );
-  const filterImage = (filter: "all" | AdminStatus) =>
-    products.find((product) => {
-      if (filter !== "all" && product.status !== filter) return false;
-      return product.images.some((image) => Boolean(image.publicUrl));
-    })?.images.find((image) => Boolean(image.publicUrl))?.publicUrl;
   const filterItems = [
     { value: "all" as const, label: "Tout le catalogue", count: counts.all },
     { value: "published" as const, label: "Publiés", count: counts.published },
@@ -906,13 +933,13 @@ export default function CatalogWorkspace({
   ];
   // Legacy watermark backfill intentionally removed from the admin flow.
   return (
-    <div className="admin-workspace min-w-0">
+    <div className="admin-catalog-workspace min-w-0">
       <section className="min-w-0">
         <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[.16em] text-braise">Catalogue produits</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-              {products.length} scheda{products.length > 1 ? "e" : ""}
+              {products.length} produit{products.length > 1 ? "s" : ""}
             </h2>
             <p className="mt-2 max-w-md text-sm leading-6 text-smoke">Gérez les produits, les stocks et leur présence dans la boutique.</p>
           </div>
@@ -963,10 +990,8 @@ export default function CatalogWorkspace({
             </span>
           </label>
         </div>
-        <div className="mb-6 -mx-1 overflow-x-auto px-1 pb-2">
-          <div className="flex min-w-max items-stretch gap-2.5" role="group" aria-label="Filtrer le catalogue">
-            {filterItems.map((item, index) => {
-              const image = filterImage(item.value);
+        <div className="mb-6 grid gap-2 sm:grid-cols-3" role="group" aria-label="Filtrer le catalogue">
+            {filterItems.map((item) => {
               const active = status === item.value;
               return (
                 <button
@@ -974,20 +999,18 @@ export default function CatalogWorkspace({
                   key={item.value}
                   aria-pressed={active}
                   onClick={() => setStatus(item.value)}
-                  className={`group relative h-[76px] w-[152px] overflow-hidden rounded-[12px] border text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 ${index === 1 ? "-skew-x-2" : index === 2 ? "skew-x-2" : ""} ${active ? "border-charcoal" : "border-hairline"}`}
+                  className={`group flex min-h-[74px] items-center justify-between gap-3 rounded-[12px] border px-4 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 ${active ? "border-charcoal bg-charcoal text-white" : "border-hairline bg-white text-charcoal hover:border-charcoal"}`}
                 >
-                  {image ? <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-70 transition duration-300 group-hover:scale-105" /> : null}
-                  <span className={`absolute inset-0 ${active ? "bg-charcoal/75" : "bg-charcoal/55"}`} />
-                  <span className={`relative flex h-full skew-x-0 flex-col justify-between p-3 text-white ${index === 1 ? "transform skew-x-2" : index === 2 ? "transform -skew-x-2" : ""}`}>
-                    <span className="text-[11px] font-medium uppercase tracking-[.12em]">{item.label}</span>
-              <span className="flex items-end justify-between gap-2"><strong className="text-xl font-semibold leading-none tabular-nums">{item.count}</strong><span className="text-[11px] text-white/75">fiches</span></span>
+                  <span className="grid gap-1">
+                    <span className={`text-[11px] font-medium uppercase tracking-[.12em] ${active ? "text-white/70" : "text-smoke"}`}>{item.label}</span>
+                    <span className="text-sm">Afficher cette vue</span>
                   </span>
+                  <strong className="text-2xl font-semibold leading-none tabular-nums">{item.count}</strong>
                 </button>
               );
             })}
-          </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.length === 0 ? (
             <div className="rounded-[16px] border border-dashed border-[#cfc9be] bg-white/60 p-12 text-center text-sm text-smoke sm:col-span-2">
               Aucun produit ne correspond à la recherche.
@@ -1039,7 +1062,7 @@ export default function CatalogWorkspace({
                     </div>
                     <div className="mt-5 flex items-center justify-between gap-3 border-t border-hairline pt-3.5 text-sm">
                       <span className="font-semibold tabular-nums">{variant ? `${Number(variant.price).toFixed(2)} €` : "Prix à définir"}</span>
-                      <span className="text-xs font-semibold text-smoke transition group-hover:text-charcoal">Ouvrir la fiche <span aria-hidden="true">→</span></span>
+                      <span className="text-xs font-semibold text-smoke transition group-hover:text-charcoal">Modifier la fiche <span aria-hidden="true">→</span></span>
                     </div>
                   </div>
                 </button>

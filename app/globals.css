@@ -95,6 +95,11 @@
     min-width: 0;
   }
 
+  .admin-catalog-workspace {
+    width: 100%;
+    min-width: 0;
+  }
+
   .admin-overview-heading,
   .admin-catalog-heading,
   .admin-panel-heading {

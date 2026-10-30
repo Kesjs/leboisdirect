@@ -26,7 +26,7 @@ function toneForStatus(status: string) {
   return 'neutral' as const
 }
 
-export default function AdminOverview({ section, onNavigate }: { section: AdminSection; onNavigate: (section: 'overview' | 'orders' | 'customers' | 'products') => void }) {
+export default function AdminOverview({ section, onNavigate, catalogCounts }: { section: AdminSection; onNavigate: (section: 'overview' | 'orders' | 'customers' | 'products') => void; catalogCounts: { all: number; heating: number; pets: number } }) {
   const [data, setData] = useState<OverviewData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -57,7 +57,7 @@ export default function AdminOverview({ section, onNavigate }: { section: AdminS
       <div className="admin-metric"><span>Clients inscrits</span><strong>{metrics.customers}</strong><small>Profils clients actifs</small></div>
       <div className="admin-metric"><span>Commandes</span><strong>{metrics.orders}</strong><small>{metrics.paidOrders} paiements réussis</small></div>
       <div className="admin-metric"><span>Chiffre encaissé</span><strong>{euro.format(metrics.revenue)}</strong><small>Paiements confirmés</small></div>
-      <div className="admin-metric"><span>Produits publiés</span><strong>{metrics.publishedProducts}<em> / {metrics.products}</em></strong><small>État du catalogue</small></div>
+      <div className="admin-metric"><span>Catalogue produits</span><strong>{metrics.products}</strong><small>{metrics.publishedProducts} publiés · {catalogCounts.heating} chauffage · {catalogCounts.pets} animaux</small></div>
     </div>
     {section === 'overview' && <div className="admin-overview-columns"><section className="admin-panel"><div className="admin-panel-heading"><div><p className="admin-eyebrow">Commandes récentes</p><h3>Suivre les dernières activités</h3></div><button className="admin-link-button" onClick={() => onNavigate('orders')}>Tout voir</button></div><OrderTable orders={recentOrders} compact /></section><section className="admin-panel"><div className="admin-panel-heading"><div><p className="admin-eyebrow">État opérationnel</p><h3>Points à surveiller</h3></div></div><div className="admin-status-list">{Object.entries(statusLabels).map(([key, label]) => <div key={key}><span>{label}</span><strong>{statusCounts[key] || 0}</strong></div>)}</div><div className="admin-panel-divider" /><div className="admin-panel-heading"><div><p className="admin-eyebrow">Clients récents</p><h3>Nouveaux comptes</h3></div><button className="admin-link-button" onClick={() => onNavigate('customers')}>Tout voir</button></div><CustomerList customers={recentCustomers.slice(0, 4)} /></section></div>}
     {section === 'orders' && <section className="admin-panel"><div className="admin-panel-heading"><div><p className="admin-eyebrow">Registre des commandes</p><h3>Toutes les commandes reçues</h3></div></div><OrderTable orders={recentOrders} /></section>}

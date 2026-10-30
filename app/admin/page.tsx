@@ -32,6 +32,7 @@ type CatalogDraft = {
 type AdminSection = "overview" | "orders" | "customers" | "products";
 type CatalogScope = "all" | "heating" | "pets";
 const supabase = createClient();
+const STOREFRONT_URL = "https://braviko.it/";
 const PET_CATEGORY_SLUGS = new Set([
   "alimentazione",
   "comfort",
@@ -128,7 +129,7 @@ export default function AdminPage() {
     const mapped = (
       (productData || []) as unknown as Array<
         AdminProduct & {
-          braviko_categories?: { name: string }[];
+          braviko_categories?: { name: string } | { name: string }[];
           braviko_product_translations?: AdminProduct["translations"];
           braviko_product_variants?: AdminProduct["variants"];
           braviko_product_images?: Omit<
@@ -139,7 +140,9 @@ export default function AdminPage() {
       >
     ).map((product) => ({
       ...product,
-      categoryName: product.braviko_categories?.[0]?.name,
+      categoryName: Array.isArray(product.braviko_categories)
+        ? product.braviko_categories[0]?.name
+        : product.braviko_categories?.name,
       translations: product.braviko_product_translations || [],
       variants: product.braviko_product_variants || [],
       images: (product.braviko_product_images || [])
@@ -211,7 +214,7 @@ export default function AdminPage() {
     setError("");
     setMessage("");
     if (!values.names.it.trim() || !values.categoryId) {
-      setError("Le nom français et la catégorie sont obligatoires.");
+      setError("Le nom principal et la catégorie sont obligatoires.");
       return false;
     }
     const { data: product, error: productError } = await supabase
@@ -245,8 +248,7 @@ export default function AdminPage() {
           sku: values.sku || slugify(values.names.it),
           label: values.label || "Format standard",
           price: values.price,
-          // La quantité est gérée hors de cette interface de catalogue.
-          stock: 0,
+          stock: Number(values.stock || 0),
         }),
       ]);
     if (translationError || variantError) {
@@ -325,6 +327,7 @@ export default function AdminPage() {
           sku: values.sku,
           label: values.label,
           price: values.price,
+          stock: Number(values.stock || 0),
         })
         .eq("id", variantId);
       if (variantError) {
@@ -588,7 +591,7 @@ export default function AdminPage() {
           </div>
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <Link
-              href="/"
+              href={STOREFRONT_URL}
               className="hidden text-sm text-smoke transition hover:text-charcoal sm:block"
             >
               Voir le site ↗
@@ -610,11 +613,11 @@ export default function AdminPage() {
           <button className={activeSection === "customers" ? "is-active" : ""} onClick={() => setActiveSection("customers")}>Clients</button>
           <button className={activeSection === "products" ? "is-active" : ""} onClick={() => setActiveSection("products")}>Produits</button>
           <div className="admin-sidebar-rule" />
-          <Link href="/boutique">Voir la boutique <span aria-hidden="true">↗</span></Link>
+          <a href={STOREFRONT_URL}>Voir la boutique <span aria-hidden="true">↗</span></a>
         </aside>
         <div className="admin-main">
           <CatalogSwitcher scope={catalogScope} counts={catalogCounts} onChange={setCatalogScope} />
-          {activeSection !== "products" && <AdminOverview section={activeSection} onNavigate={setActiveSection} />}
+          {activeSection !== "products" && <AdminOverview section={activeSection} onNavigate={setActiveSection} catalogCounts={catalogCounts} />}
           {activeSection === "products" && <div className="admin-catalog-view"><div className="admin-catalog-heading"><div><p className="admin-eyebrow">{scopeLabel}</p><h2>Gérer les produits</h2><p className="admin-muted">{scopedProducts.length} produits dans cette vue, {scopedCategories.length} catégories disponibles et des images prêtes à publier.</p></div><button className="admin-button" onClick={() => setActiveSection("overview")}>Retour au tableau de bord</button></div><CatalogWorkspace products={scopedProducts} categories={scopedCategories} error={error} message={message} onCreate={createProduct} onSave={saveProduct} onDelete={deleteProduct} onImportFile={readCatalogFile} catalogDraft={catalogDraft} importing={importing} onImport={importCatalogDraft} /></div>}
         </div>
       </div>
@@ -679,7 +682,7 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
           <div className="mb-10 flex items-center justify-between gap-4">
             <Logo />
             <Link
-              href="/"
+              href={STOREFRONT_URL}
               className="text-sm text-smoke transition hover:text-charcoal"
             >
               Voir la boutique ↗
