@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      { source: '/conseils', destination: '/consigli', permanent: true },
+      { source: '/livraison', destination: '/consegna', permanent: true },
+    ]
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'flagcdn.com' },
