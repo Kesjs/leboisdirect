@@ -30,7 +30,13 @@ type CatalogDraft = {
   }>;
 };
 type AdminSection = "overview" | "orders" | "customers" | "products";
+type CatalogScope = "all" | "heating" | "pets";
 const supabase = createClient();
+const PET_CATEGORY_SLUGS = new Set([
+  "alimentazione",
+  "comfort",
+  "passeggiata-trasporto",
+]);
 const slugify = (value: string) =>
   value
     .toLowerCase()
@@ -55,6 +61,7 @@ export default function AdminPage() {
   const [catalogDraft, setCatalogDraft] = useState<CatalogDraft | null>(null);
   const [importing, setImporting] = useState(false);
   const [activeSection, setActiveSection] = useState<AdminSection>("overview");
+  const [catalogScope, setCatalogScope] = useState<CatalogScope>("all");
   const checkAccess = useCallback(async () => {
     const timeout = new Promise<never>((_, reject) =>
       window.setTimeout(
@@ -532,6 +539,29 @@ export default function AdminPage() {
       setImporting(false);
     }
   }
+  const catalogCounts = {
+    all: products.length,
+    heating: products.filter((product) => {
+      const category = categories.find((item) => item.id === product.category_id);
+      return !PET_CATEGORY_SLUGS.has(category?.slug || "");
+    }).length,
+    pets: products.filter((product) => {
+      const category = categories.find((item) => item.id === product.category_id);
+      return PET_CATEGORY_SLUGS.has(category?.slug || "");
+    }).length,
+  };
+  const scopedProducts = products.filter((product) => {
+    if (catalogScope === "all") return true;
+    const category = categories.find((item) => item.id === product.category_id);
+    const isPetProduct = PET_CATEGORY_SLUGS.has(category?.slug || "");
+    return catalogScope === "pets" ? isPetProduct : !isPetProduct;
+  });
+  const scopedCategoryIds = new Set(scopedProducts.map((product) => product.category_id));
+  const scopedCategories = categories.filter((category) => {
+    if (catalogScope === "all") return true;
+    return scopedCategoryIds.has(category.id) || Boolean(category.parent_id && scopedCategoryIds.has(category.parent_id));
+  });
+  const scopeLabel = catalogScope === "heating" ? "Braviko.fr · Chauffage" : catalogScope === "pets" ? "Braviko.it · Animaux" : "Vue globale · 2 boutiques";
   if (loading) return <PageSkeleton variant="admin" withHeader={false} label="Chargement de l’espace administrateur" />;
   if (!user) return <Login onSuccess={checkAccess} />;
   if (!authorized)
@@ -552,7 +582,7 @@ export default function AdminPage() {
                 Braviko / Admin
               </p>
               <h1 className="mt-1 truncate text-lg font-semibold tracking-tight sm:mt-2 sm:text-2xl">
-                Votre activité, au même endroit
+                Deux boutiques, un seul pilotage
               </h1>
             </div>
           </div>
@@ -583,8 +613,9 @@ export default function AdminPage() {
           <Link href="/boutique">Voir la boutique <span aria-hidden="true">↗</span></Link>
         </aside>
         <div className="admin-main">
+          <CatalogSwitcher scope={catalogScope} counts={catalogCounts} onChange={setCatalogScope} />
           {activeSection !== "products" && <AdminOverview section={activeSection} onNavigate={setActiveSection} />}
-          {activeSection === "products" && <div className="admin-catalog-view"><div className="admin-catalog-heading"><div><p className="admin-eyebrow">Braviko / Catalogue</p><h2>Gérer les produits</h2><p className="admin-muted">{products.length} produits, {categories.length} catégories et des images prêtes à publier.</p></div><button className="admin-button" onClick={() => setActiveSection("overview")}>Retour au tableau de bord</button></div><CatalogWorkspace products={products} categories={categories} error={error} message={message} onCreate={createProduct} onSave={saveProduct} onDelete={deleteProduct} onImportFile={readCatalogFile} catalogDraft={catalogDraft} importing={importing} onImport={importCatalogDraft} /></div>}
+          {activeSection === "products" && <div className="admin-catalog-view"><div className="admin-catalog-heading"><div><p className="admin-eyebrow">{scopeLabel}</p><h2>Gérer les produits</h2><p className="admin-muted">{scopedProducts.length} produits dans cette vue, {scopedCategories.length} catégories disponibles et des images prêtes à publier.</p></div><button className="admin-button" onClick={() => setActiveSection("overview")}>Retour au tableau de bord</button></div><CatalogWorkspace products={scopedProducts} categories={scopedCategories} error={error} message={message} onCreate={createProduct} onSave={saveProduct} onDelete={deleteProduct} onImportFile={readCatalogFile} catalogDraft={catalogDraft} importing={importing} onImport={importCatalogDraft} /></div>}
         </div>
       </div>
     </main>
@@ -619,25 +650,27 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
     <main className="grid min-h-screen bg-ivory lg:grid-cols-[1.05fr_.95fr]">
       <section className="relative isolate hidden overflow-hidden bg-charcoal lg:block">
         <Image
-          src="/images/agriculture-chainsaw.jpg"
-          alt="Attrezzatura agricola Braviko"
+          src="/images/admin-catalog-hero.png"
+          alt="Espace de travail organisé pour piloter les catalogues Braviko"
           fill
           priority
-          className="z-0 object-cover opacity-50"
+          className="z-0 object-cover opacity-70"
           sizes="50vw"
         />
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-charcoal via-charcoal/45 to-transparent" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-charcoal/90 via-charcoal/20 to-transparent" />
         <div className="absolute left-12 top-12 z-20 text-xs font-semibold uppercase tracking-[.22em] text-orange-200">
           Braviko / Administration
         </div>
         <div className="absolute bottom-12 left-12 z-20 max-w-md text-white">
           <p className="text-sm font-medium text-white/70">Espace privé</p>
           <h1 className="mt-4 text-5xl font-semibold leading-none tracking-tight">
-          Votre activité, toujours maîtrisée.
+          Deux boutiques.
+          <br />
+          Un seul pilotage.
           </h1>
           <p className="mt-5 text-sm leading-6 text-white/75">
-            Ajoutez des produits, mettez à jour les prix et préparez une boutique
-            claire pour vos clients.
+            Gérez les produits, les prix, les stocks et les commandes de Braviko.fr
+            et Braviko.it depuis le même espace.
           </p>
         </div>
       </section>
@@ -718,6 +751,54 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
     </main>
   );
 }
+
+function CatalogSwitcher({
+  scope,
+  counts,
+  onChange,
+}: {
+  scope: CatalogScope;
+  counts: Record<CatalogScope, number>;
+  onChange: (scope: CatalogScope) => void;
+}) {
+  const options: Array<{ id: CatalogScope; eyebrow: string; label: string; detail: string }> = [
+    { id: "all", eyebrow: "Pilotage", label: "Vue globale", detail: "Les deux boutiques" },
+    { id: "heating", eyebrow: "Braviko.fr", label: "Chauffage", detail: "Produits maison & chauffage" },
+    { id: "pets", eyebrow: "Braviko.it", label: "Animaux", detail: "Produits pour chiens & chats" },
+  ];
+  return (
+    <section className="border-b border-hairline bg-white/60 px-4 py-5 sm:px-10">
+      <div className="mx-auto max-w-container">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="admin-eyebrow">Périmètre du catalogue</p>
+            <h2 className="mt-1 text-xl font-semibold tracking-tight sm:text-2xl">Choisissez la boutique à piloter</h2>
+          </div>
+          <p className="text-sm text-smoke">Les nombres viennent du catalogue publié.</p>
+        </div>
+        <div className="grid gap-3 md:grid-cols-3">
+          {options.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => onChange(option.id)}
+              className={`rounded-card border p-4 text-left transition ${scope === option.id ? "border-charcoal bg-charcoal text-white shadow-sm" : "border-hairline bg-ivory hover:border-charcoal"}`}
+              aria-pressed={scope === option.id}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <span className={`text-[10px] font-semibold uppercase tracking-[.18em] ${scope === option.id ? "text-orange-200" : "text-braise"}`}>{option.eyebrow}</span>
+                <strong className="text-2xl tracking-tight">{counts[option.id]}</strong>
+              </div>
+              <span className="mt-3 block text-base font-semibold">{option.label}</span>
+              <span className={`mt-1 block text-sm ${scope === option.id ? "text-white/70" : "text-smoke"}`}>{option.detail}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function AccessDenied({
   email,
   onSignOut,
