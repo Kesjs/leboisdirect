@@ -74,12 +74,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     : catalogProducts.filter((item) => item.id !== product.id)
   ).slice(0, 6)
   const productVideo = getProductVideo(product.slug)
-  const embeddedWatermarkProducts = new Set([
-    'cheminee-electrique-purline-verre-noir-2000w',
-    'insert-bois-invicta-p947044-10-kw',
-    'ofyr-wood-storage-corten-100-range-buches',
-  ])
-  const imageHasWatermark = (src: string) => embeddedWatermarkProducts.has(product.slug) || src.includes('/watermarked-')
   const videoThumbnail = productVideo?.posterUrl || product.images[0] || product.image
   const galleryItems = [
     ...product.images.map((src) => ({ type: 'image' as const, src })),
@@ -87,6 +81,21 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   ]
   const selectedMedia = galleryItems[selectedMediaIndex] || galleryItems[0]
   const productReviews = getProductReviews(product.slug)
+  const isPetProduct = ['alimentazione', 'bisogni', 'cura-igiene', 'passeggiata-trasporto', 'comfort', 'giochi', 'piccoli-animali', 'uccelli'].includes(product.category)
+  const productFormat = product.attributes?.formatOrWeight || product.attributes?.size || productLabel(product, locale).conditioning || 'il formato indicato nella scheda'
+  const productAttributes = [
+    [locale === 'it' ? 'Marca' : locale === 'de' ? 'Marke' : 'Marque', product.attributes?.brand],
+    [locale === 'it' ? 'Tipo di prodotto' : locale === 'de' ? 'Produktart' : 'Type de produit', product.attributes?.productType],
+    [locale === 'it' ? 'Formato / peso' : locale === 'de' ? 'Format / Gewicht' : 'Format / poids', product.attributes?.formatOrWeight],
+    [locale === 'it' ? 'Dimensioni' : locale === 'de' ? 'Maße' : 'Dimensions', product.attributes?.dimensions],
+    [locale === 'it' ? 'Taglia' : locale === 'de' ? 'Größe' : 'Taille', product.attributes?.size],
+    [locale === 'it' ? 'Confezione' : locale === 'de' ? 'Verpackung' : 'Conditionnement', product.attributes?.packaging],
+    [locale === 'it' ? 'Materiali' : locale === 'de' ? 'Materialien' : 'Matériaux', product.attributes?.materials],
+    [locale === 'it' ? 'Portata / capacità' : locale === 'de' ? 'Traglast / Kapazität' : 'Charge / capacité', product.attributes?.capacity],
+    [locale === 'it' ? 'Colore' : locale === 'de' ? 'Farbe' : 'Couleur', product.attributes?.color],
+    [locale === 'it' ? 'Montaggio' : locale === 'de' ? 'Montage' : 'Montage', product.attributes?.assembly],
+    [locale === 'it' ? 'Utilizzo' : locale === 'de' ? 'Verwendung' : 'Usage', product.attributes?.use],
+  ].filter(([, value]) => Boolean(value)) as [string, string][]
 
   const reviewsCopy = {
     fr: {
@@ -117,7 +126,14 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       eyebrow: 'Avant de choisir',
       title: 'Les questions utiles',
       intro: 'Les réponses essentielles pour choisir sereinement et préparer votre livraison.',
-      questions: product.category === 'machines-agricoles'
+      questions: isPetProduct
+        ? [
+            ['Per quale uso è pensato questo prodotto?', `Questa referenza è pensata per accompagnare la routine del tuo animale: ${product.attributes?.use || 'cura, comfort, alimentazione o spostamenti quotidiani'}.`],
+            ['Quale formato devo scegliere?', `Il formato indicato per questa referenza è ${productFormat}. Verifica sempre le dimensioni e le esigenze del tuo animale prima dell’ordine.`],
+            ['Come funziona la consegna?', `La spedizione è gratuita in Italia. I tempi indicativi sono di 2–4 giorni per i prodotti disponibili. ${productLabel(product, locale).delivery}`],
+            ['Posso restituire il prodotto?', 'Puoi consultare le condizioni di reso e rimborso prima della conferma dell’ordine.'],
+          ]
+        : product.category === 'machines-agricoles'
         ? [
             ['À quel usage ce produit est-il destiné ?', 'Cette référence est sélectionnée pour les travaux courants du terrain. Consultez les caractéristiques de la fiche pour vérifier la puissance, les dimensions et l’usage adapté à votre besoin.'],
             ['Que comprend le conditionnement ?', `Le conditionnement prévu est : ${productLabel(product, locale).conditioning}.`],
@@ -135,7 +151,14 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       eyebrow: 'Vor der Auswahl',
       title: 'Wichtige Fragen',
       intro: 'Die wichtigsten Antworten für eine sichere Auswahl und eine gut vorbereitete Lieferung.',
-      questions: product.category === 'machines-agricoles'
+      questions: isPetProduct
+        ? [
+            ['Wofür ist dieses Produkt gedacht?', `Diese Referenz begleitet die tägliche Routine Ihres Tieres: ${product.attributes?.use || 'Pflege, Komfort, Ernährung oder Transport'}.`],
+            ['Welche Größe soll ich wählen?', `Das angegebene Format ist ${productFormat}. Prüfen Sie vor der Bestellung immer Maße und Bedürfnisse Ihres Tieres.`],
+            ['Wie läuft die Lieferung ab?', `Der Versand nach Italien ist kostenlos. Die Richtzeit beträgt 2–4 Tage für verfügbare Produkte. ${productLabel(product, locale).delivery}`],
+            ['Kann ich das Produkt zurückgeben?', 'Die Rückgabe- und Erstattungsbedingungen können Sie vor der Bestellbestätigung einsehen.'],
+          ]
+        : product.category === 'machines-agricoles'
         ? [
             ['Für welchen Einsatz ist das Produkt gedacht?', 'Diese Referenz eignet sich für typische Arbeiten auf dem Grundstück. Prüfen Sie Leistung, Maße und den vorgesehenen Einsatz in den Produktdetails.'],
             ['Was ist im Lieferumfang enthalten?', `Die Verpackung ist: ${productLabel(product, locale).conditioning}.`],
@@ -153,7 +176,14 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       eyebrow: 'Prima di scegliere',
       title: 'Le domande utili',
       intro: 'Le risposte essenziali per scegliere con serenità e preparare la consegna.',
-      questions: product.category === 'machines-agricoles'
+      questions: isPetProduct
+        ? [
+            ['Per quale uso è pensato questo prodotto?', `Questa referenza accompagna la routine del tuo animale: ${product.attributes?.use || 'cura, comfort, alimentazione o spostamenti quotidiani'}.`],
+            ['Quale formato devo scegliere?', `Il formato indicato per questa referenza è ${productFormat}. Verifica sempre dimensioni ed esigenze del tuo animale prima dell’ordine.`],
+            ['Come funziona la consegna?', `La spedizione è gratuita in Italia. I tempi indicativi sono di 2–4 giorni per i prodotti disponibili. ${productLabel(product, locale).delivery}`],
+            ['Posso restituire il prodotto?', 'Puoi consultare le condizioni di reso e rimborso prima della conferma dell’ordine.'],
+          ]
+        : product.category === 'machines-agricoles'
         ? [
             ['Per quale utilizzo è pensato?', 'Questa referenza è adatta ai lavori più comuni sul terreno. Verifica potenza, dimensioni e uso previsto nella scheda prodotto.'],
             ['Cosa comprende la confezione?', `Il formato previsto è: ${productLabel(product, locale).conditioning}.`],
@@ -171,7 +201,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
   const handleAddToCart = () => {
     addItem(product, quantity, selectedVariant || undefined)
-    showToast({ title: c.added, description: `${productLabel(product, locale).name} a été ajouté à votre panier.` })
+    showToast({ title: c.added, description: `${productLabel(product, locale).name} è stato aggiunto al carrello.` })
     setAdded(true)
     window.setTimeout(() => setAdded(false), 2200)
   }
@@ -188,8 +218,8 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     name: localizedProduct.name,
     description: product.longDescription || localizedProduct.description,
     image: product.images?.length ? product.images : [product.image],
-    sku: product.id,
-    brand: { '@type': 'Brand', name: 'Braviko' },
+    sku: currentVariant?.sku || product.id,
+    brand: { '@type': 'Brand', name: product.attributes?.brand || 'Braviko' },
     offers: {
       '@type': 'Offer',
       priceCurrency: 'EUR',
@@ -197,7 +227,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     availability: currentVariant && Number(currentVariant.stock ?? 0) > 0
       ? 'https://schema.org/InStock'
       : 'https://schema.org/OutOfStock',
-      url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.fr'}/produit/${encodeURIComponent(product.slug)}`,
+      url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.it'}/produit/${encodeURIComponent(product.slug)}`,
     },
   }
 
@@ -259,7 +289,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                       }}
                     />
                   ) : null}
-                  {selectedMedia?.type === 'image' && !imageHasWatermark(selectedMedia.src) && <span className="bk-detail-watermark" aria-hidden="true">BRAVIKO</span>}
                 </div>
                 {galleryItems.length > 1 && (
                   <div className="grid grid-cols-4 gap-12">
@@ -287,7 +316,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                             }
                           }}
                         />
-                        {item.type === 'image' && !imageHasWatermark(item.src) && <span className="bk-detail-thumb-watermark" aria-hidden="true">B</span>}
                         {item.type === 'video' && <span className="bk-video-thumb-play" aria-hidden="true">▶</span>}
                       </button>
                     ))}
@@ -308,12 +336,27 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 </p>
               )}
 
-              <p className="text-body-lg text-smoke mb-16 leading-relaxed">{product.longDescription || productLabel(product, locale).description}</p>
+              <p className="text-body-lg text-smoke mb-16 leading-relaxed">{product.description || productLabel(product, locale).description}</p>
               <div className="mb-32 pb-32 border-b border-hairline">
                 <div className="text-[48px] font-semibold text-charcoal tracking-tight mb-8">
                   {formatPrice(currentPrice)}
                 </div>
                 <p className="text-body-sm text-ash">{productLabel(product, locale).delivery}</p>
+              </div>
+
+              <div className="bk-product-trust" aria-label="Informazioni di acquisto">
+                <div>
+                  <span aria-hidden="true">✓</span>
+                  <p><strong>Spedizione gratuita in Italia</strong><small>Tempi indicativi: 2–4 giorni.</small></p>
+                </div>
+                <div>
+                  <span aria-hidden="true">↺</span>
+                  <p><strong>Resi trasparenti</strong><small>Condizioni consultabili prima dell’ordine.</small></p>
+                </div>
+                <div>
+                  <span aria-hidden="true">▣</span>
+                  <p><strong>Pagamento sicuro</strong><small>Carta e bonifico SEPA.</small></p>
+                </div>
               </div>
 
               {/* Variants */}
@@ -373,7 +416,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               {/* Add to Cart */}
               <div className="bk-product-actions">
                 <Button size="md" className="bk-product-buy" onClick={handleBuyNow}>
-                  Acheter maintenant — {formatPrice(currentPrice * quantity)}
+                  Acquista ora — {formatPrice(currentPrice * quantity)}
                 </Button>
                 <button type="button" className="bk-product-cart" onClick={handleAddToCart}>
                   {added ? c.added : c.add}
@@ -412,6 +455,57 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                         <dd className="text-body-sm text-smoke mt-4">{productLabel(product, locale).delivery}</dd>
                       </div>
                     )}
+                  </dl>
+                </div>
+              )}
+
+              {product.details && (
+                <div className="bk-product-description mt-32 pt-32 border-t border-hairline">
+                  <h2 className="text-heading-sm font-semibold text-charcoal mb-20">Descrizione del prodotto</h2>
+                  {product.details.overview && <p className="text-body-sm text-smoke leading-relaxed">{product.details.overview}</p>}
+                  {(product.details.usage || product.details.care || product.details.included) && (
+                    <div className="bk-product-detail-grid">
+                      {product.details.usage && (
+                        <div className="bk-product-detail-card">
+                          <h3>Come usarlo</h3>
+                          <p>{product.details.usage}</p>
+                        </div>
+                      )}
+                      {product.details.care && (
+                        <div className="bk-product-detail-card">
+                          <h3>Cura e manutenzione</h3>
+                          <p>{product.details.care}</p>
+                        </div>
+                      )}
+                      {product.details.included && (
+                        <div className="bk-product-detail-card">
+                          <h3>Contenuto della confezione</h3>
+                          <p>{product.details.included}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {product.details.safety && product.details.safety.length > 0 && (
+                    <div className="bk-product-safety">
+                      <h3>Informazioni di sicurezza</h3>
+                      <ul>
+                        {product.details.safety.map((item, index) => <li key={index}>{item}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {productAttributes.length > 0 && (
+                <div className="mt-32 pt-32 border-t border-hairline">
+                  <h2 className="text-heading-sm font-semibold text-charcoal mb-20">Caratteristiche del prodotto</h2>
+                  <dl className="bk-product-facts">
+                    {productAttributes.map(([label, value]) => (
+                      <div key={label}>
+                        <dt>{label}</dt>
+                        <dd>{value}</dd>
+                      </div>
+                    ))}
                   </dl>
                 </div>
               )}
@@ -455,7 +549,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 {productReviews.map((review, index) => (
                   <article key={`${review.author || 'review'}-${index}`} className="bk-product-review-card">
                     <div className="bk-product-review-meta">
-                      {review.rating !== undefined && <span aria-label={`${review.rating} sur 5`}>{'★'.repeat(Math.floor(review.rating))}{review.rating % 1 ? '½' : ''}</span>}
+                      {review.rating !== undefined && <span aria-label={`${review.rating} su 5`}>{'★'.repeat(Math.floor(review.rating))}{review.rating % 1 ? '½' : ''}</span>}
                     </div>
                     {review.text && <p>« {review.text} »</p>}
                     <footer>{review.author || 'Client'}{review.date ? ` · ${review.date}` : ''}</footer>

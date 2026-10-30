@@ -121,7 +121,7 @@ export default function AccountPage() {
               <summary>{c.details}<span aria-hidden="true">↘</span></summary>
               <div className="bk-order-details-grid">
                 <div><p className="bk-eyebrow">{c.orderedItems}</p>{order.braviko_order_items?.map(item => <p key={item.id}>{item.quantity} × {item.product_name}{item.variant_label ? ` — ${item.variant_label}` : ''}</p>)}</div>
-                <div><p className="bk-eyebrow">{c.delivery}</p><p>{order.address}<br />{order.postal_code} {order.city}</p>{order.phone && <p>{order.phone}</p>}<p className="bk-eyebrow" style={{ marginTop: '18px' }}>Paiement</p><p>{order.payment_status === 'paid' ? 'Payé' : order.payment_status === 'failed' ? 'Échec du paiement' : 'En attente'}{order.payment_method ? ` · ${order.payment_method === 'card' ? 'Carte bancaire' : order.payment_method}` : ''}{order.paid_at ? ` · ${new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(order.paid_at))}` : ''}</p></div>
+                <div><p className="bk-eyebrow">{c.delivery}</p><p>{order.address}<br />{order.postal_code} {order.city}</p>{order.phone && <p>{order.phone}</p>}<p className="bk-eyebrow" style={{ marginTop: '18px' }}>Pagamento</p><p>{order.payment_status === 'paid' ? 'Pagato' : order.payment_status === 'failed' ? 'Pagamento non riuscito' : 'In attesa'}{order.payment_method ? ` · ${order.payment_method === 'card' ? 'Carta di credito' : order.payment_method}` : ''}{order.paid_at ? ` · ${new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(order.paid_at))}` : ''}</p></div>
               </div>
             </details>
           </article>)}

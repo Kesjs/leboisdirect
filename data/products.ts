@@ -1,15 +1,39 @@
-export type ProductCategory = 'buches' | 'bois-compresse' | 'granules' | 'allumage' | 'allume-feu' | 'accessoires-chauffage' | 'machines-agricoles'
+export type ProductCategory = 'buches' | 'bois-compresse' | 'granules' | 'allumage' | 'allume-feu' | 'accessoires-chauffage' | 'machines-agricoles' | 'alimentazione' | 'bisogni' | 'cura-igiene' | 'passeggiata-trasporto' | 'comfort' | 'giochi' | 'piccoli-animali' | 'uccelli'
 
 export type WoodSpecies = 'chene' | 'hetre' | 'charme' | 'mixte'
 
 export type ProductVariant = {
   id: string
+  sku?: string
   length?: number // en cm
   volume?: number // en stères
   weight?: number // en kg
   price: number
   stock: number
   label?: string
+}
+
+export type ProductAttributes = {
+  brand?: string
+  productType?: string
+  formatOrWeight?: string
+  dimensions?: string
+  size?: string
+  packaging?: string
+  materials?: string
+  capacity?: string
+  color?: string
+  assembly?: string
+  use?: string
+}
+
+export type ProductDetails = {
+  overview?: string
+  benefits?: string[]
+  usage?: string
+  care?: string
+  safety?: string[]
+  included?: string
 }
 
 export type Product = {
@@ -31,6 +55,8 @@ export type Product = {
   origin?: string
   conditioning?: string
   deliveryInfo: string
+  attributes?: ProductAttributes
+  details?: ProductDetails
   translations?: {
     de?: string
     it?: string

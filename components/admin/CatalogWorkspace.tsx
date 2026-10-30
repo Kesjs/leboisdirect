@@ -32,6 +32,7 @@ export type AdminProduct = {
     storage_path: string;
     alt_text?: string | null;
     is_primary: boolean;
+    sort_order: number;
     publicUrl: string;
   }[];
 };
@@ -56,6 +57,7 @@ export type ProductValues = {
   sku: string;
   label: string;
   price: number | "";
+  stock: number | "";
   imageUrls: string[];
 };
 
@@ -75,7 +77,7 @@ type Props = {
   onImportFile: (file: File) => void;
   catalogDraft: {
     products?: {
-      name?: { fr?: string };
+      name?: { fr?: string; it?: string };
       category?: string;
       subcategory?: string;
       sku?: string;
@@ -101,47 +103,10 @@ function slugify(value: string) {
     .replace(/(^-|-$)/g, "");
 }
 
-async function addWatermark(file: File) {
-  const sourceUrl = URL.createObjectURL(file);
-  try {
-    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const element = new window.Image();
-      element.onload = () => resolve(element);
-      element.onerror = reject;
-      element.src = sourceUrl;
-    });
-    const canvas = document.createElement("canvas");
-    canvas.width = image.naturalWidth;
-    canvas.height = image.naturalHeight;
-    const context = canvas.getContext("2d");
-    if (!context) return file;
-    context.drawImage(image, 0, 0);
-    const size = Math.max(32, Math.round(Math.min(canvas.width, canvas.height) * 0.15));
-    context.save();
-    context.translate(canvas.width / 2, canvas.height / 2);
-    context.rotate(-Math.PI / 7);
-    context.font = `700 ${size}px Arial, sans-serif`;
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.fillStyle = "rgba(255,255,255,.48)";
-    context.fillText("braviko", 0, 0);
-    context.restore();
-    const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, file.type || "image/jpeg", 0.92),
-    );
-    if (!blob) return file;
-    return new File([blob], file.name, {
-      type: blob.type,
-      lastModified: Date.now(),
-    });
-  } finally {
-    URL.revokeObjectURL(sourceUrl);
-  }
-}
-
 function initialValues(product?: AdminProduct | null): ProductValues {
   const translation = (locale: string) =>
     product?.translations.find((item) => item.locale === locale);
+  const primaryTranslation = translation("it") || translation("fr") || translation("de");
   const variant = product?.variants[0];
   return {
     slug: product?.slug || "",
@@ -153,13 +118,14 @@ function initialValues(product?: AdminProduct | null): ProductValues {
       de: translation("de")?.name || "",
       it: translation("it")?.name || "",
     },
-    shortDescription: translation("fr")?.short_description || "",
-    description: translation("fr")?.description || "",
-    conditioning: translation("fr")?.conditioning || "",
-    deliveryInfo: translation("fr")?.delivery_info || "",
+    shortDescription: primaryTranslation?.short_description || "",
+    description: primaryTranslation?.description || "",
+    conditioning: primaryTranslation?.conditioning || "",
+    deliveryInfo: primaryTranslation?.delivery_info || "",
     sku: variant?.sku || "",
     label: variant?.label || "",
     price: Number(variant?.price || 0),
+    stock: Number(variant?.stock || 0),
     imageUrls: [],
   };
 }
@@ -275,11 +241,9 @@ function AdminCheckbox({
 function FileDropzone({
   files,
   onChange,
-  watermark = true,
 }: {
   files: File[];
   onChange: (files: File[]) => void;
-  watermark?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -325,8 +289,8 @@ function FileDropzone({
             <Icon name="upload" />
           </span>
           <span className="grid gap-0.5">
-            <span className="text-sm font-semibold">Ajouter des images</span>
-            <span className="text-xs text-smoke">PNG, JPG ou WebP · 6 maximum</span>
+        <span className="text-sm font-semibold">Ajouter des images</span>
+            <span className="text-xs text-smoke">PNG, JPG o WebP · massimo 6</span>
           </span>
         </button>
       </div>
@@ -342,13 +306,6 @@ function FileDropzone({
                 alt={file.name}
                 className="h-full w-full object-cover"
               />
-              {watermark && (
-                <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center">
-                  <span className="-rotate-[25deg] whitespace-nowrap text-[clamp(28px,5vw,52px)] font-bold tracking-[-.04em] text-white/50">
-                    braviko
-                  </span>
-                </div>
-              )}
               <button
                 type="button"
                 onClick={() =>
@@ -376,7 +333,6 @@ function ImageLinksPanel({
   onPendingLinksChange,
   availableSlots,
   onImportedFile,
-  watermark,
 }: {
   images: AdminProduct["images"];
   productName: string;
@@ -384,7 +340,6 @@ function ImageLinksPanel({
   onPendingLinksChange: (links: string[]) => void;
   availableSlots: number;
   onImportedFile: (file: File) => void;
-  watermark: boolean;
 }) {
   const [url, setUrl] = useState("");
   const [states, setStates] = useState<Record<string, LinkState>>({});
@@ -416,18 +371,18 @@ function ImageLinksPanel({
     const link = url.trim();
     setLinkNotice("");
     if (!/^https?:\/\//i.test(link)) {
-      setLinkNotice("Collez une adresse complète commençant par http:// ou https://.");
+      setLinkNotice("Incolla un indirizzo completo che inizi con http:// o https://.");
       return;
     }
     if (
       pendingLinks.includes(link) ||
       images.some((image) => image.storage_path === link)
     ) {
-      setLinkNotice("Ce lien est déjà présent sur la fiche.");
+      setLinkNotice("Questo link è già presente nella scheda.");
       return;
     }
     if (availableSlots <= 0) {
-      setLinkNotice("La fiche contient déjà 6 nouvelles images.");
+      setLinkNotice("La scheda contiene già 6 nuove immagini.");
       return;
     }
     setBusy(true);
@@ -441,7 +396,7 @@ function ImageLinksPanel({
         const result = (await response.json().catch(() => null)) as
           | { error?: string }
           | null;
-        throw new Error(result?.error || "L’image n’a pas pu être importée.");
+        throw new Error(result?.error || "Impossible d’importer l’image.");
       }
       const blob = await response.blob();
       const extension =
@@ -459,14 +414,10 @@ function ImageLinksPanel({
         }),
       );
       setUrl("");
-      setLinkNotice(
-        watermark
-          ? "Image récupérée. Le filigrane Braviko sera intégré automatiquement à l’enregistrement."
-          : "Image récupérée et ajoutée à la fiche.",
-      );
+      setLinkNotice("Image récupérée et ajoutée à la fiche.");
     } catch (error) {
       setLinkNotice(
-        error instanceof Error ? error.message : "L’image n’a pas pu être importée.",
+        error instanceof Error ? error.message : "Impossible d’importer l’image.",
       );
     } finally {
       setBusy(false);
@@ -478,7 +429,7 @@ function ImageLinksPanel({
         <div>
           <p className="text-sm font-semibold">Liens des images</p>
           <p className="mt-1 text-xs text-smoke">
-            Les liens sont testés avant d’être ajoutés au produit.
+          Les liens sont vérifiés avant d’être ajoutés au produit.
           </p>
         </div>
         <button
@@ -491,7 +442,7 @@ function ImageLinksPanel({
           }}
           className="shrink-0 rounded-[8px] border border-hairline px-3 py-2 text-xs font-semibold transition hover:border-charcoal disabled:opacity-50"
         >
-          {busy ? "Vérification…" : "Vérifier les liens"}
+          {busy ? "Verifica…" : "Verifica i link"}
         </button>
       </div>
       {allLinks.length > 0 && (
@@ -578,12 +529,6 @@ function ImageLinksPanel({
           {linkNotice}
         </p>
       )}
-      {watermark && (
-        <p className="text-xs text-smoke">
-          Les images fournies par URL sont copiées dans Braviko puis filigranées,
-          sans modifier le fichier du site d’origine.
-        </p>
-      )}
     </div>
   );
 }
@@ -608,9 +553,8 @@ function ProductEditor({
   );
   const [files, setFiles] = useState<File[]>([]);
   const [savingAction, setSavingAction] = useState<"save" | "publish" | "delete" | null>(null);
-  const [watermark, setWatermark] = useState(true);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [language, setLanguage] = useState<"fr" | "de" | "it">("fr");
+  const [language, setLanguage] = useState<"fr" | "de" | "it">("it");
   const update = <K extends keyof ProductValues>(
     key: K,
     value: ProductValues[K],
@@ -623,9 +567,6 @@ function ProductEditor({
   const save = async (publish = false) => {
     setSavingAction(publish ? "publish" : "save");
     try {
-      const filesToSave = watermark
-        ? await Promise.all(files.map(addWatermark))
-        : files;
       const valuesToSave = {
         ...values,
         imageUrls,
@@ -637,16 +578,16 @@ function ProductEditor({
           product.id,
           product.variants[0]?.id,
           valuesToSave,
-          filesToSave,
+          files,
         )
-        : await onCreate(valuesToSave, filesToSave);
+        : await onCreate(valuesToSave, files);
       if (saved) onClose();
     } finally {
       setSavingAction(null);
     }
   };
   const remove = async () => {
-    if (!product || !window.confirm(`Supprimer définitivement « ${values.names.fr || product.slug} » ?`)) return;
+    if (!product || !window.confirm(`Supprimer définitivement « ${values.names.it || values.names.fr || product.slug} » ?`)) return;
     setSavingAction("delete");
     try {
       if (await onDelete(product.id)) onClose();
@@ -668,11 +609,11 @@ function ProductEditor({
           <p className="text-xs font-semibold uppercase tracking-[.18em] text-braise">
             {product ? "Modifier le produit" : "Nouveau produit"}
           </p>
-          <h2 className="mt-1 truncate text-xl font-semibold tracking-tight" title={product ? values.names.fr || product.slug : undefined}>
-            {product ? values.names.fr || product.slug : "Ajouter une fiche"}
+        <h2 className="mt-1 truncate text-xl font-semibold tracking-tight" title={product ? values.names.it || values.names.fr || product.slug : undefined}>
+            {product ? values.names.it || values.names.fr || product.slug : "Ajouter une fiche"}
           </h2>
           <p className="mt-1 text-sm text-smoke">
-            Tous les champs restent lisibles, avec un aperçu avant publication.
+            Les champs restent clairs, avec un aperçu avant publication.
           </p>
         </div>
         <button
@@ -681,26 +622,26 @@ function ProductEditor({
           className="inline-flex shrink-0 items-center gap-1.5 rounded-[8px] border border-hairline px-3 py-2 text-xs font-medium text-smoke transition hover:border-charcoal hover:text-charcoal"
         >
           <Icon name="close" />
-          Fermer
+          Chiudi
         </button>
       </div>
       <div className="mt-4 grid min-w-0 gap-4 overflow-y-auto pr-1">
         {values.status !== "published" && (
           <div className="rounded-[8px] border border-amber-300/60 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
-            <p className="font-semibold">Cette fiche n’est pas visible sur la boutique</p>
-            <p className="mt-1 text-xs leading-5">Passe l’état à « Publié » pour l’afficher sur le site. Les brouillons restent visibles uniquement dans l’administration.</p>
+            <p className="font-semibold">Cette fiche n’est pas visible dans la boutique</p>
+            <p className="mt-1 text-xs leading-5">Choisissez l’état « Publié » pour l’afficher sur le site. Les brouillons restent visibles uniquement dans l’administration.</p>
           </div>
         )}
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-3">
           <label className="grid gap-2 text-sm font-medium sm:col-span-2">
             Nom du produit
             <input
               value={values.names[language]}
               onChange={(event) => updateName(event.target.value)}
-              required={language === "fr"}
+               required={language === "it"}
               placeholder={
                 language === "fr"
-                  ? "Bûches de chêne 33 cm"
+                  ? "Legna di quercia 33 cm"
                   : language === "de"
                     ? "Eichenholz 33 cm"
                     : "Legna di quercia 33 cm"
@@ -732,10 +673,10 @@ function ProductEditor({
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <AdminSelect
-            label="Catégorie"
+             label="Catégorie"
             value={values.categoryId}
             options={[
-              { value: "", label: "Choisir une catégorie" },
+               { value: "", label: "Choisir une catégorie" },
               ...categories.map((category) => ({
                 value: category.id,
                 label: category.name,
@@ -744,7 +685,7 @@ function ProductEditor({
             onChange={(value) => update("categoryId", value)}
           />
           <AdminSelect
-            label="État"
+             label="État"
             value={values.status}
             options={Object.entries(statusLabels).map(([value, label]) => ({
               value,
@@ -771,6 +712,17 @@ function ProductEditor({
               value={values.sku}
               onChange={(event) => update("sku", event.target.value)}
               required
+              className="admin-input"
+            />
+          </label>
+          <label className="grid gap-2 text-sm font-medium">
+            Stock disponible
+            <input
+              type="number"
+              min="0"
+              step="1"
+              value={values.stock}
+              onChange={(event) => update("stock", event.target.value === "" ? "" : Number(event.target.value))}
               className="admin-input"
             />
           </label>
@@ -804,36 +756,49 @@ function ProductEditor({
             onChange={(event) => update("description", event.target.value)}
             rows={12}
             className="admin-input min-h-[220px] resize-y py-2.5 leading-6"
-            placeholder={'Type : Bois de chauffage / feuillus durs\nEssences : Chêne, charme et hêtre\nQuantité : 2 stères'}
+             placeholder={'Tipo: legna da ardere / latifoglie dure\nEssenze: quercia, faggio e carpino\nQuantità: 2 steri'}
           />
         </label>
         <AdminCheckbox
           checked={values.featured}
           onChange={(value) => update("featured", value)}
         >
-          Mettre ce produit à la une
+          Mettre ce produit en avant
         </AdminCheckbox>
         <div className="grid min-w-0 gap-3 border-t border-hairline pt-4">
           <div>
             <p className="text-sm font-semibold">Images du produit</p>
             <p className="mt-1 text-xs text-smoke">
-              Le filigrane est intégré dans le fichier final de chaque nouvelle
-              image au moment de l’enregistrement.
+              Les images sont conservées sans filigrane pour présenter clairement le produit.
             </p>
           </div>
-          <AdminCheckbox checked={watermark} onChange={setWatermark}>
-            Appliquer le filigrane Braviko aux nouvelles images
-          </AdminCheckbox>
+          {product?.images.length ? (
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {[...product.images]
+                .sort((first, second) => Number(second.is_primary) - Number(first.is_primary) || first.sort_order - second.sort_order)
+                .map((image, index) => (
+                  <div key={image.id} className="relative aspect-square overflow-hidden rounded-[10px] border border-hairline bg-ivory">
+                    <img src={image.publicUrl} alt={image.alt_text || values.names.it || values.names.fr} className="h-full w-full object-cover" />
+                    <span className="absolute inset-x-1 bottom-1 rounded bg-charcoal/75 px-1.5 py-1 text-center text-[10px] font-medium text-white">
+                      {image.is_primary || index === 0 ? "Image principale" : `Image ${index + 1}`}
+                    </span>
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <p className="rounded-[10px] border border-dashed border-hairline px-3 py-3 text-xs text-smoke">
+              Aucune image enregistrée. Ajoutez au moins une photo du produit avant de publier.
+            </p>
+          )}
           <ImageLinksPanel
             images={product?.images || []}
-            productName={values.names.fr}
+            productName={values.names.it || values.names.fr}
             pendingLinks={imageUrls}
             onPendingLinksChange={setImageUrls}
             availableSlots={6 - files.length}
             onImportedFile={(file) =>
               setFiles((current) => [...current, file].slice(0, 6))
             }
-            watermark={watermark}
           />
           <FileDropzone files={files} onChange={setFiles} />
         </div>
@@ -852,10 +817,10 @@ function ProductEditor({
           className="h-[42px] min-w-0 rounded-[8px] bg-charcoal px-4 text-sm font-semibold text-white transition hover:bg-braise disabled:opacity-50"
         >
           {savingAction === "save"
-            ? "Enregistrement…"
+             ? "Enregistrement…"
             : product
-              ? "Enregistrer les modifications"
-              : "Créer le produit"}{" "}
+               ? "Enregistrer les modifications"
+               : "Créer le produit"}{" "}
           <span aria-hidden="true">↗</span>
         </button>
         {product && values.status !== "published" && (
@@ -909,8 +874,8 @@ function ProductEditorModal({
       <section
         role="dialog"
         aria-modal="true"
-        aria-label="Éditeur de produit"
-        className="admin-modal-panel max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl overflow-y-auto rounded-[16px]"
+         aria-label="Editor del prodotto"
+        className="admin-modal-panel max-h-[calc(100dvh-1.5rem)] w-full max-w-5xl overflow-y-auto rounded-[16px]"
       >
         {children}
       </section>
@@ -935,15 +900,13 @@ export default function CatalogWorkspace({
   const [creating, setCreating] = useState(false);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"all" | AdminStatus>("all");
-  const [backfilling, setBackfilling] = useState(false);
-  const [backfillNotice, setBackfillNotice] = useState("");
   const selected =
     products.find((product) => product.id === selectedId) || null;
   const filtered = useMemo(
     () =>
       products.filter((product) => {
         const name =
-          product.translations.find((item) => item.locale === "fr")?.name ||
+          product.translations.find((item) => item.locale === "it")?.name ||
           product.slug;
         return (
           (!query ||
@@ -963,64 +926,24 @@ export default function CatalogWorkspace({
     }),
     [products],
   );
-  const filterImage = (filter: "all" | AdminStatus) =>
-    products.find((product) => {
-      if (filter !== "all" && product.status !== filter) return false;
-      return product.images.some((image) => Boolean(image.publicUrl));
-    })?.images.find((image) => Boolean(image.publicUrl))?.publicUrl;
   const filterItems = [
     { value: "all" as const, label: "Tout le catalogue", count: counts.all },
-    { value: "published" as const, label: "Publié", count: counts.published },
+    { value: "published" as const, label: "Publiés", count: counts.published },
     { value: "draft" as const, label: "À compléter", count: counts.draft },
   ];
-  const backfillImages = async () => {
-    setBackfilling(true);
-    setBackfillNotice("");
-    let total = 0;
-    let hasMore = true;
-    try {
-      while (hasMore) {
-        const response = await fetch("/api/admin/watermark-images", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ limit: 24 }),
-        });
-        const result = (await response.json().catch(() => null)) as
-          | { processed?: number; hasMore?: boolean; error?: string; errors?: Array<{ message: string }> }
-          | null;
-        if (!response.ok) throw new Error(result?.error || result?.errors?.[0]?.message || "Le filigranage n’a pas pu démarrer.");
-        total += result?.processed || 0;
-        hasMore = Boolean(result?.hasMore);
-        if (result?.errors?.length) throw new Error(`${result.errors[0].message}${result.errors.length > 1 ? ` (+${result.errors.length - 1} autre${result.errors.length > 2 ? "s" : ""})` : ""}`);
-        if (!result?.processed && hasMore) throw new Error("Le traitement est bloqué sur une image.");
-      }
-      setBackfillNotice(total ? `${total} image${total > 1 ? "s" : ""} filigranée${total > 1 ? "s" : ""} et protégée${total > 1 ? "s" : ""}.` : "Toutes les images sont déjà protégées.");
-    } catch (backfillError) {
-      setBackfillNotice(backfillError instanceof Error ? backfillError.message : "Le filigranage a échoué.");
-    } finally {
-      setBackfilling(false);
-    }
-  };
+  // Legacy watermark backfill intentionally removed from the admin flow.
   return (
-    <div className="admin-workspace min-w-0">
+    <div className="admin-catalog-workspace min-w-0">
       <section className="min-w-0">
         <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[.16em] text-braise">Catalogue produits</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-              {products.length} fiche{products.length > 1 ? "s" : ""}
+              {products.length} produit{products.length > 1 ? "s" : ""}
             </h2>
-            <p className="mt-2 max-w-md text-sm leading-6 text-smoke">Gérez vos produits, leur disponibilité et leur présence dans la boutique.</p>
+            <p className="mt-2 max-w-md text-sm leading-6 text-smoke">Gérez les produits, les stocks et leur présence dans la boutique.</p>
           </div>
           <div className="grid w-full gap-2 sm:w-auto sm:grid-cols-[auto_auto]">
-            <button
-              type="button"
-              onClick={backfillImages}
-              disabled={backfilling}
-              className="inline-flex h-[42px] items-center justify-center gap-2 rounded-[8px] border border-hairline bg-white px-4 text-sm font-semibold text-charcoal transition hover:border-charcoal disabled:opacity-50"
-            >
-              {backfilling ? "Protection…" : "Protéger les images existantes"}
-            </button>
             <button
               type="button"
               onClick={() => {
@@ -1033,10 +956,9 @@ export default function CatalogWorkspace({
             </button>
           </div>
         </div>
-        {backfillNotice && <p role="status" className="mb-5 rounded-[12px] border border-forest/20 bg-forest/10 p-4 text-sm text-forest">{backfillNotice}</p>}
         <div className="mb-6 grid overflow-hidden rounded-[12px] border border-hairline bg-white sm:grid-cols-2">
           <div className="border-b border-hairline px-4 py-3.5 sm:border-b-0 sm:border-r">
-            <p className="text-xs text-smoke">Visibles en boutique</p>
+            <p className="text-xs text-smoke">Visibles dans la boutique</p>
             <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.published}</p>
           </div>
           <div className="border-b border-hairline px-4 py-3.5 sm:border-b-0 sm:border-r">
@@ -1060,7 +982,7 @@ export default function CatalogWorkspace({
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Rechercher un produit, une catégorie…"
+              placeholder="Rechercher un produit ou une catégorie…"
               className="admin-input h-[44px] w-full pl-10"
             />
             <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-smoke">
@@ -1068,10 +990,8 @@ export default function CatalogWorkspace({
             </span>
           </label>
         </div>
-        <div className="mb-6 -mx-1 overflow-x-auto px-1 pb-2">
-          <div className="flex min-w-max items-stretch gap-2.5" role="group" aria-label="Filtrer le catalogue">
-            {filterItems.map((item, index) => {
-              const image = filterImage(item.value);
+        <div className="mb-6 grid gap-2 sm:grid-cols-3" role="group" aria-label="Filtrer le catalogue">
+            {filterItems.map((item) => {
               const active = status === item.value;
               return (
                 <button
@@ -1079,28 +999,26 @@ export default function CatalogWorkspace({
                   key={item.value}
                   aria-pressed={active}
                   onClick={() => setStatus(item.value)}
-                  className={`group relative h-[76px] w-[152px] overflow-hidden rounded-[12px] border text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 ${index === 1 ? "-skew-x-2" : index === 2 ? "skew-x-2" : ""} ${active ? "border-charcoal" : "border-hairline"}`}
+                  className={`group flex min-h-[74px] items-center justify-between gap-3 rounded-[12px] border px-4 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 ${active ? "border-charcoal bg-charcoal text-white" : "border-hairline bg-white text-charcoal hover:border-charcoal"}`}
                 >
-                  {image ? <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-70 transition duration-300 group-hover:scale-105" /> : null}
-                  <span className={`absolute inset-0 ${active ? "bg-charcoal/75" : "bg-charcoal/55"}`} />
-                  <span className={`relative flex h-full skew-x-0 flex-col justify-between p-3 text-white ${index === 1 ? "transform skew-x-2" : index === 2 ? "transform -skew-x-2" : ""}`}>
-                    <span className="text-[11px] font-medium uppercase tracking-[.12em]">{item.label}</span>
-                    <span className="flex items-end justify-between gap-2"><strong className="text-xl font-semibold leading-none tabular-nums">{item.count}</strong><span className="text-[11px] text-white/75">fiches</span></span>
+                  <span className="grid gap-1">
+                    <span className={`text-[11px] font-medium uppercase tracking-[.12em] ${active ? "text-white/70" : "text-smoke"}`}>{item.label}</span>
+                    <span className="text-sm">Afficher cette vue</span>
                   </span>
+                  <strong className="text-2xl font-semibold leading-none tabular-nums">{item.count}</strong>
                 </button>
               );
             })}
-          </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.length === 0 ? (
             <div className="rounded-[16px] border border-dashed border-[#cfc9be] bg-white/60 p-12 text-center text-sm text-smoke sm:col-span-2">
-              Aucun produit ne correspond à cette recherche.
+              Aucun produit ne correspond à la recherche.
             </div>
           ) : (
             filtered.map((product) => {
               const name =
-                product.translations.find((item) => item.locale === "fr")
+                product.translations.find((item) => item.locale === "it")
                   ?.name || product.slug;
               const variant = product.variants[0];
               const image =
@@ -1144,7 +1062,7 @@ export default function CatalogWorkspace({
                     </div>
                     <div className="mt-5 flex items-center justify-between gap-3 border-t border-hairline pt-3.5 text-sm">
                       <span className="font-semibold tabular-nums">{variant ? `${Number(variant.price).toFixed(2)} €` : "Prix à définir"}</span>
-                      <span className="text-xs font-semibold text-smoke transition group-hover:text-charcoal">Ouvrir la fiche <span aria-hidden="true">→</span></span>
+                      <span className="text-xs font-semibold text-smoke transition group-hover:text-charcoal">Modifier la fiche <span aria-hidden="true">→</span></span>
                     </div>
                   </div>
                 </button>
@@ -1155,7 +1073,7 @@ export default function CatalogWorkspace({
         <details className="mt-6 rounded-[12px] border border-braise/30 bg-braise/5 p-4">
           <summary className="cursor-pointer list-none">
             <p className="text-xs font-semibold uppercase tracking-[.16em] text-braise">
-              Import rapide
+              Importation rapide
             </p>
             <h3 className="mt-1 text-lg font-semibold">
               Préremplir depuis un catalogue JSON
@@ -1186,8 +1104,8 @@ export default function CatalogWorkspace({
                   className="mt-3 rounded-full bg-charcoal px-5 py-3 text-sm font-medium text-white disabled:opacity-50"
                 >
                   {importing
-                    ? "Import en cours…"
-                    : `Importer ${catalogDraft.products.length} produits en brouillons`}
+                    ? "Importation en cours…"
+                    : `Importer ${catalogDraft.products.length} produits comme brouillons`}
                 </button>
               </>
             ) : null}

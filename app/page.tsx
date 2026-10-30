@@ -32,8 +32,8 @@ export default function Home() {
           </section>
           <section className="bk-delivery bk-section bk-container" aria-labelledby="delivery-title">
             <div className="bk-delivery-photo" data-reveal>
-              <Image src="/images/delivery-firewood-pallet.png" alt="" fill sizes="(max-width: 900px) 100vw, 50vw" className="bk-image" quality={85} />
-              <span className="bk-photo-caption">{copy.heating}</span>
+              <Image src="/images/pet-petits-animaux-habitat.png" alt="Habitat e accessori per piccoli animali" fill sizes="(max-width: 900px) 100vw, 50vw" className="bk-image" quality={85} />
+              <span className="bk-photo-caption">{copy.agriculture}</span>
             </div>
             <div>
               <div data-reveal><p className="bk-eyebrow">{copy.delivery}</p><h2 id="delivery-title" className="bk-title">{copy.deliveryTitle}</h2><p className="bk-lead">{copy.deliveryIntro}</p></div>
@@ -43,11 +43,11 @@ export default function Home() {
                 {copy.steps.map(([title, body], i) => <li key={i} data-reveal><span className="bk-step-number" aria-hidden="true">0{i + 1}</span><div><h3>{title}</h3><p>{body}</p></div></li>)}
                 </ol>
               </div>
-              <Link className="bk-text-link" href="/livraison">{copy.deliveryCta}<span aria-hidden="true">↗</span></Link>
+              <Link className="bk-text-link" href="/consegna">{copy.deliveryCta}<span aria-hidden="true">↗</span></Link>
             </div>
           </section>
           <section className="bk-final bk-container" aria-labelledby="final-title">
-            <div className="bk-final-photo" data-reveal><Image src="/images/view-woman-relaxing-home-with-warm-drink.jpg" alt="" fill sizes="(max-width: 700px) 100vw, 45vw" className="bk-image" /></div>
+            <div className="bk-final-photo" data-reveal><Image src="/images/pet-accessoires-dog.png" alt="Accessori da passeggio per cani" fill sizes="(max-width: 700px) 100vw, 45vw" className="bk-image" /></div>
             <div className="bk-final-copy" data-reveal><h2 id="final-title">{copy.finalTitle}</h2><p>{copy.finalBody}</p><Link href="/boutique" className="bk-button">{copy.finalCta}<span aria-hidden="true">↗</span></Link></div>
           </section>
         </LandingMotion>

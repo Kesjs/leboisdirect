@@ -11,14 +11,14 @@ type CatalogProduct = {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leboisdirect.vercel.app'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.it'
 
   try {
     const response = await fetch(`${baseUrl}/api/catalog?slug=${encodeURIComponent(slug)}`, { next: { revalidate: 300 } })
     const payload = response.ok ? await response.json() as { products?: CatalogProduct[] } : null
     const product = payload?.products?.[0]
     if (product) {
-      const description = (product.description || `Découvrez ${product.name} chez Braviko.`).slice(0, 160)
+      const description = (product.description || `Scopri ${product.name} su Braviko.`).slice(0, 160)
       return {
         title: `${product.name} | Braviko`,
         description,
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   return {
-    title: 'Produit | Braviko',
+    title: 'Prodotto | Braviko',
     alternates: { canonical: `/produit/${encodeURIComponent(slug)}` },
   }
 }

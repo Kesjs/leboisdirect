@@ -10,6 +10,7 @@ import CatalogWorkspace, {
   AdminProduct,
   ProductValues,
 } from "@/components/admin/CatalogWorkspace";
+import AdminOverview from "@/components/admin/AdminOverview";
 import PageSkeleton from "@/components/PageSkeleton";
 
 type CatalogDraft = {
@@ -28,7 +29,15 @@ type CatalogDraft = {
     slug?: string;
   }>;
 };
+type AdminSection = "overview" | "orders" | "customers" | "products";
+type CatalogScope = "all" | "heating" | "pets";
 const supabase = createClient();
+const STOREFRONT_URL = "https://braviko.it/";
+const PET_CATEGORY_SLUGS = new Set([
+  "alimentazione",
+  "comfort",
+  "passeggiata-trasporto",
+]);
 const slugify = (value: string) =>
   value
     .toLowerCase()
@@ -52,11 +61,13 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [catalogDraft, setCatalogDraft] = useState<CatalogDraft | null>(null);
   const [importing, setImporting] = useState(false);
+  const [activeSection, setActiveSection] = useState<AdminSection>("overview");
+  const [catalogScope, setCatalogScope] = useState<CatalogScope>("all");
   const checkAccess = useCallback(async () => {
     const timeout = new Promise<never>((_, reject) =>
       window.setTimeout(
         () =>
-          reject(new Error("La session admin met trop de temps à répondre.")),
+          reject(new Error("La sessione di amministrazione sta impiegando troppo tempo per rispondere.")),
         8000,
       ),
     );
@@ -84,7 +95,7 @@ export default function AdminPage() {
       setError(
         accessError instanceof Error
           ? accessError.message
-          : "Connexion admin indisponible.",
+          : "L’accès administrateur est indisponible.",
       );
     } finally {
       setLoading(false);
@@ -118,7 +129,7 @@ export default function AdminPage() {
     const mapped = (
       (productData || []) as unknown as Array<
         AdminProduct & {
-          braviko_categories?: { name: string }[];
+          braviko_categories?: { name: string } | { name: string }[];
           braviko_product_translations?: AdminProduct["translations"];
           braviko_product_variants?: AdminProduct["variants"];
           braviko_product_images?: Omit<
@@ -129,7 +140,9 @@ export default function AdminPage() {
       >
     ).map((product) => ({
       ...product,
-      categoryName: product.braviko_categories?.[0]?.name,
+      categoryName: Array.isArray(product.braviko_categories)
+        ? product.braviko_categories[0]?.name
+        : product.braviko_categories?.name,
       translations: product.braviko_product_translations || [],
       variants: product.braviko_product_variants || [],
       images: (product.braviko_product_images || [])
@@ -200,14 +213,14 @@ export default function AdminPage() {
   async function createProduct(values: ProductValues, files: File[]): Promise<boolean> {
     setError("");
     setMessage("");
-    if (!values.names.fr.trim() || !values.categoryId) {
-      setError("Le nom français et la catégorie sont obligatoires.");
+    if (!values.names.it.trim() || !values.categoryId) {
+      setError("Le nom principal et la catégorie sont obligatoires.");
       return false;
     }
     const { data: product, error: productError } = await supabase
       .from("braviko_products")
       .insert({
-        slug: slugify(values.slug || values.names.fr),
+        slug: slugify(values.slug || values.names.it),
         category_id: values.categoryId,
         status: values.status,
         featured: values.featured,
@@ -215,13 +228,13 @@ export default function AdminPage() {
       .select("id")
       .single();
     if (productError || !product) {
-      setError(productError?.message || "Création impossible.");
+      setError(productError?.message || "Impossible de créer le produit.");
       return false;
     }
     const translations = (["fr", "de", "it"] as const).map((locale) => ({
       product_id: product.id,
       locale,
-      name: values.names[locale] || values.names.fr,
+      name: values.names[locale] || values.names.it,
       short_description: values.shortDescription,
       description: values.description,
       conditioning: values.conditioning,
@@ -232,28 +245,27 @@ export default function AdminPage() {
         supabase.from("braviko_product_translations").insert(translations),
         supabase.from("braviko_product_variants").insert({
           product_id: product.id,
-          sku: values.sku || slugify(values.names.fr),
+          sku: values.sku || slugify(values.names.it),
           label: values.label || "Format standard",
           price: values.price,
-          // La quantité est gérée hors de cette interface de catalogue.
-          stock: 0,
+          stock: Number(values.stock || 0),
         }),
       ]);
     if (translationError || variantError) {
       setError(
         translationError?.message ||
           variantError?.message ||
-          "Le produit a été créé mais ses détails sont incomplets.",
+          "Le produit a été créé, mais ses détails sont incomplets.",
       );
       await loadCatalog();
       return false;
     }
     try {
-      await uploadImages(product.id, files, values.names.fr, false);
+      await uploadImages(product.id, files, values.names.it, false);
       await saveImageLinks(
         product.id,
         values.imageUrls,
-        values.names.fr,
+        values.names.it,
         files.length > 0,
       );
     } catch (uploadError) {
@@ -280,7 +292,7 @@ export default function AdminPage() {
     const { error: productError } = await supabase
       .from("braviko_products")
       .update({
-        slug: slugify(values.slug || values.names.fr),
+        slug: slugify(values.slug || values.names.it),
         category_id: values.categoryId,
         status: statusToSave,
         featured: values.featured,
@@ -296,7 +308,7 @@ export default function AdminPage() {
         (["fr", "de", "it"] as const).map((locale) => ({
           product_id: productId,
           locale,
-          name: values.names[locale] || values.names.fr,
+          name: values.names[locale] || values.names.it,
           short_description: values.shortDescription,
           description: values.description,
           conditioning: values.conditioning,
@@ -315,6 +327,7 @@ export default function AdminPage() {
           sku: values.sku,
           label: values.label,
           price: values.price,
+          stock: Number(values.stock || 0),
         })
         .eq("id", variantId);
       if (variantError) {
@@ -326,13 +339,13 @@ export default function AdminPage() {
       await uploadImages(
         productId,
         files,
-        values.names.fr,
+        values.names.it,
         Boolean(products.find((item) => item.id === productId)?.images.length),
       );
       await saveImageLinks(
         productId,
         values.imageUrls,
-        values.names.fr,
+        values.names.it,
         Boolean(
           products.find((item) => item.id === productId)?.images.length,
         ) || files.length > 0,
@@ -345,7 +358,7 @@ export default function AdminPage() {
       return false;
     }
     setMessage(
-      "Produit mis à jour. Les changements sont maintenant visibles dans le catalogue.",
+      "Produit mis à jour. Les modifications sont visibles dans le catalogue.",
     );
     await loadCatalog();
     return true;
@@ -406,17 +419,17 @@ export default function AdminPage() {
     try {
       const parsed = JSON.parse(await file.text()) as CatalogDraft;
       if (!Array.isArray(parsed.products) || !parsed.products.length)
-        throw new Error("Le fichier ne contient aucun produit exploitable.");
+        throw new Error("Le fichier ne contient aucun produit utilisable.");
       setCatalogDraft(parsed);
       setMessage(
-        `${parsed.products.length} produits prêts à être prévisualisés.`,
+        `${parsed.products.length} prodotti pronti per l’anteprima.`,
       );
     } catch (fileError) {
       setCatalogDraft(null);
       setError(
         fileError instanceof Error
           ? fileError.message
-          : "Fichier JSON invalide.",
+          : "File JSON non valido.",
       );
     }
   }
@@ -429,7 +442,7 @@ export default function AdminPage() {
     let imported = 0;
     try {
       for (const [index, item] of entries.entries()) {
-        const categoryName = item.category?.trim() || "Autres produits";
+        const categoryName = item.category?.trim() || "Altri prodotti";
         const categorySlug = slugify(categoryName);
         const { data: parent, error: parentError } = await supabase
           .from("braviko_categories")
@@ -441,7 +454,7 @@ export default function AdminPage() {
           .single();
         if (parentError || !parent)
           throw new Error(
-            parentError?.message || `Catégorie introuvable : ${categoryName}`,
+          parentError?.message || `Catégorie introuvable : ${categoryName}`,
           );
         const subcategoryName = item.subcategory?.trim();
         const subcategorySlug = subcategoryName
@@ -462,10 +475,10 @@ export default function AdminPage() {
           .single();
         if (categoryError || !category)
           throw new Error(
-            categoryError?.message || "Catégorie impossible à créer",
+            categoryError?.message || "Impossible de créer la catégorie",
           );
         const nameFr =
-          item.name?.fr?.trim() || item.slug || `Produit ${index + 1}`;
+          item.name?.fr?.trim() || item.name?.it?.trim() || item.slug || `Produit ${index + 1}`;
         const slug = slugify(item.slug || nameFr);
         const { data: product, error: productError } = await supabase
           .from("braviko_products")
@@ -483,7 +496,7 @@ export default function AdminPage() {
           .single();
         if (productError || !product)
           throw new Error(
-            productError?.message || `Produit impossible à créer : ${nameFr}`,
+            productError?.message || `Impossible de créer le produit : ${nameFr}`,
           );
         const { error: translationError } = await supabase
           .from("braviko_product_translations")
@@ -516,20 +529,43 @@ export default function AdminPage() {
         imported++;
       }
       setCatalogDraft(null);
-      setMessage(`${imported} produits importés en brouillons.`);
+      setMessage(`${imported} produits importés comme brouillons.`);
       await loadCatalog();
     } catch (importError) {
       setError(
         importError instanceof Error
           ? importError.message
-          : "Import impossible.",
+          : "Impossible de terminer l’importation.",
       );
       if (imported) await loadCatalog();
     } finally {
       setImporting(false);
     }
   }
-  if (loading) return <PageSkeleton variant="admin" withHeader={false} label="Chargement de l’espace admin" />;
+  const catalogCounts = {
+    all: products.length,
+    heating: products.filter((product) => {
+      const category = categories.find((item) => item.id === product.category_id);
+      return !PET_CATEGORY_SLUGS.has(category?.slug || "");
+    }).length,
+    pets: products.filter((product) => {
+      const category = categories.find((item) => item.id === product.category_id);
+      return PET_CATEGORY_SLUGS.has(category?.slug || "");
+    }).length,
+  };
+  const scopedProducts = products.filter((product) => {
+    if (catalogScope === "all") return true;
+    const category = categories.find((item) => item.id === product.category_id);
+    const isPetProduct = PET_CATEGORY_SLUGS.has(category?.slug || "");
+    return catalogScope === "pets" ? isPetProduct : !isPetProduct;
+  });
+  const scopedCategoryIds = new Set(scopedProducts.map((product) => product.category_id));
+  const scopedCategories = categories.filter((category) => {
+    if (catalogScope === "all") return true;
+    return scopedCategoryIds.has(category.id) || Boolean(category.parent_id && scopedCategoryIds.has(category.parent_id));
+  });
+  const scopeLabel = catalogScope === "heating" ? "Braviko.fr · Chauffage" : catalogScope === "pets" ? "Braviko.it · Animaux" : "Vue globale · 2 boutiques";
+  if (loading) return <PageSkeleton variant="admin" withHeader={false} label="Chargement de l’espace administrateur" />;
   if (!user) return <Login onSuccess={checkAccess} />;
   if (!authorized)
     return (
@@ -549,13 +585,13 @@ export default function AdminPage() {
                 Braviko / Admin
               </p>
               <h1 className="mt-1 truncate text-lg font-semibold tracking-tight sm:mt-2 sm:text-2xl">
-                Votre catalogue, au même endroit
+                Deux boutiques, un seul pilotage
               </h1>
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <Link
-              href="/"
+              href={STOREFRONT_URL}
               className="hidden text-sm text-smoke transition hover:text-charcoal sm:block"
             >
               Voir le site ↗
@@ -564,60 +600,26 @@ export default function AdminPage() {
               onClick={() => supabase.auth.signOut().then(() => checkAccess())}
               className="rounded-full border border-hairline px-3 py-2 text-xs transition hover:border-charcoal sm:px-4 sm:text-sm"
             >
-              Déconnexion
+              Se déconnecter
             </button>
           </div>
         </div>
       </header>
-      <div className="admin-container mx-auto px-4 pt-5 sm:px-8 sm:pt-8">
-        <section className="relative isolate overflow-hidden rounded-[16px] border border-charcoal/10 bg-charcoal px-5 py-6 text-white sm:px-8 sm:py-8">
-          <Image
-            src="/images/agriculture-chainsaw.jpg"
-            alt="Équipement Braviko au travail"
-            fill
-            priority
-            className="-z-20 object-cover opacity-[0.07]"
-            sizes="(max-width: 1200px) 100vw, 1200px"
-          />
-          <div className="absolute inset-0 -z-10 bg-charcoal/80" />
-          <div className="relative max-w-3xl">
-            <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-orange-200 sm:text-xs sm:tracking-[.22em]">
-              Braviko / espace opérations
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:mt-3 sm:text-3xl">
-              Catalogue opérationnel
-            </h2>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-white/70 sm:mt-3">
-              Contrôlez les fiches, les stocks et les publications depuis un seul poste de travail.
-            </p>
-            <div className="mt-5 grid max-w-xl grid-cols-3 divide-x divide-white/15 overflow-hidden rounded-[10px] border border-white/15 bg-white/5 text-xs sm:mt-6 sm:text-sm">
-              <span className="px-3 py-2.5 text-white/80 sm:px-4">
-                {products.length} produits suivis
-              </span>
-              <span className="px-3 py-2.5 text-white/80 sm:px-4">
-                {categories.length} catégories
-              </span>
-              <span className="px-3 py-2.5 text-white/80 sm:px-4">
-                Images avec aperçu
-              </span>
-            </div>
-          </div>
-        </section>
-      </div>
-      <div className="admin-container mx-auto px-4 py-6 sm:px-8 sm:py-10">
-        <CatalogWorkspace
-          products={products}
-          categories={categories}
-          error={error}
-          message={message}
-          onCreate={createProduct}
-          onSave={saveProduct}
-          onDelete={deleteProduct}
-          onImportFile={readCatalogFile}
-          catalogDraft={catalogDraft}
-          importing={importing}
-          onImport={importCatalogDraft}
-        />
+      <div className="admin-workspace">
+        <aside className="admin-sidebar" aria-label="Navigation administrateur">
+          <div className="admin-sidebar-label">Espace de travail</div>
+          <button className={activeSection === "overview" ? "is-active" : ""} onClick={() => setActiveSection("overview")}>Tableau de bord</button>
+          <button className={activeSection === "orders" ? "is-active" : ""} onClick={() => setActiveSection("orders")}>Commandes</button>
+          <button className={activeSection === "customers" ? "is-active" : ""} onClick={() => setActiveSection("customers")}>Clients</button>
+          <button className={activeSection === "products" ? "is-active" : ""} onClick={() => setActiveSection("products")}>Produits</button>
+          <div className="admin-sidebar-rule" />
+          <a href={STOREFRONT_URL}>Voir la boutique <span aria-hidden="true">↗</span></a>
+        </aside>
+        <div className="admin-main">
+          <CatalogSwitcher scope={catalogScope} counts={catalogCounts} onChange={setCatalogScope} />
+          {activeSection !== "products" && <AdminOverview section={activeSection} onNavigate={setActiveSection} catalogCounts={catalogCounts} />}
+          {activeSection === "products" && <div className="admin-catalog-view"><div className="admin-catalog-heading"><div><p className="admin-eyebrow">{scopeLabel}</p><h2>Gérer les produits</h2><p className="admin-muted">{scopedProducts.length} produits dans cette vue, {scopedCategories.length} catégories disponibles et des images prêtes à publier.</p></div><button className="admin-button" onClick={() => setActiveSection("overview")}>Retour au tableau de bord</button></div><CatalogWorkspace products={scopedProducts} categories={scopedCategories} error={error} message={message} onCreate={createProduct} onSave={saveProduct} onDelete={deleteProduct} onImportFile={readCatalogFile} catalogDraft={catalogDraft} importing={importing} onImport={importCatalogDraft} /></div>}
+        </div>
       </div>
     </main>
   );
@@ -635,7 +637,7 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
     setError("");
     const loginEmail = email.trim();
     if (!loginEmail || !password) {
-      setError("Renseignez votre email et votre mot de passe.");
+      setError("Saisissez votre adresse e-mail et votre mot de passe.");
       setBusy(false);
       return;
     }
@@ -651,25 +653,27 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
     <main className="grid min-h-screen bg-ivory lg:grid-cols-[1.05fr_.95fr]">
       <section className="relative isolate hidden overflow-hidden bg-charcoal lg:block">
         <Image
-          src="/images/agriculture-chainsaw.jpg"
-          alt="Équipement agricole Braviko"
+          src="/images/admin-catalog-hero.png"
+          alt="Espace de travail organisé pour piloter les catalogues Braviko"
           fill
           priority
-          className="z-0 object-cover opacity-50"
+          className="z-0 object-cover opacity-70"
           sizes="50vw"
         />
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-charcoal via-charcoal/45 to-transparent" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-charcoal/90 via-charcoal/20 to-transparent" />
         <div className="absolute left-12 top-12 z-20 text-xs font-semibold uppercase tracking-[.22em] text-orange-200">
           Braviko / Administration
         </div>
         <div className="absolute bottom-12 left-12 z-20 max-w-md text-white">
           <p className="text-sm font-medium text-white/70">Espace privé</p>
           <h1 className="mt-4 text-5xl font-semibold leading-none tracking-tight">
-            Votre catalogue, en ordre.
+          Deux boutiques.
+          <br />
+          Un seul pilotage.
           </h1>
           <p className="mt-5 text-sm leading-6 text-white/75">
-            Ajoutez vos produits, ajustez les prix et préparez une boutique
-            claire pour vos clients.
+            Gérez les produits, les prix, les stocks et les commandes de Braviko.fr
+            et Braviko.it depuis le même espace.
           </p>
         </div>
       </section>
@@ -678,7 +682,7 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
           <div className="mb-10 flex items-center justify-between gap-4">
             <Logo />
             <Link
-              href="/"
+              href={STOREFRONT_URL}
               className="text-sm text-smoke transition hover:text-charcoal"
             >
               Voir la boutique ↗
@@ -688,7 +692,7 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
             Accès administrateur
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-            Content de vous revoir.
+            Bienvenue.
           </h2>
           <p className="mt-3 max-w-sm text-sm leading-6 text-smoke">
             Connectez-vous avec votre compte administrateur Supabase.
@@ -703,12 +707,12 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
                 onChange={(event) => setEmail(event.target.value)}
                 required
                 autoComplete="email"
-                placeholder="vous@exemple.com"
+                placeholder="vous@exemple.fr"
                 className="h-[52px] min-h-[52px] rounded-card border border-hairline bg-white px-3 font-normal text-charcoal caret-braise outline-none transition placeholder:text-ash focus:border-braise focus:ring-2 focus:ring-braise/10"
               />
             </label>
             <label className="grid gap-2 text-sm font-medium">
-              Mot de passe
+              Password
               <div className="relative">
                 <input
                   name="password"
@@ -724,9 +728,9 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
                   type="button"
                   onClick={() => setShowPassword((value) => !value)}
                   aria-label={
-                    showPassword
-                      ? "Masquer le mot de passe"
-                      : "Afficher le mot de passe"
+                  showPassword
+                    ? "Masquer le mot de passe"
+                    : "Afficher le mot de passe"
                   }
                   className="absolute inset-y-0 right-0 grid w-11 place-items-center text-smoke"
                 >
@@ -740,7 +744,7 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
             disabled={busy}
             className="mt-6 h-[52px] w-full rounded-full bg-charcoal px-5 text-sm font-medium text-white transition hover:bg-braise disabled:opacity-50"
           >
-            {busy ? "Connexion…" : "Entrer dans l’espace admin"}
+            {busy ? "Connexion…" : "Accéder à l’espace administrateur"}
           </button>
           <p className="mt-5 text-center text-sm text-smoke">
             Accès réservé à l’équipe Braviko
@@ -750,6 +754,54 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
     </main>
   );
 }
+
+function CatalogSwitcher({
+  scope,
+  counts,
+  onChange,
+}: {
+  scope: CatalogScope;
+  counts: Record<CatalogScope, number>;
+  onChange: (scope: CatalogScope) => void;
+}) {
+  const options: Array<{ id: CatalogScope; eyebrow: string; label: string; detail: string }> = [
+    { id: "all", eyebrow: "Pilotage", label: "Vue globale", detail: "Les deux boutiques" },
+    { id: "heating", eyebrow: "Braviko.fr", label: "Chauffage", detail: "Produits maison & chauffage" },
+    { id: "pets", eyebrow: "Braviko.it", label: "Animaux", detail: "Produits pour chiens & chats" },
+  ];
+  return (
+    <section className="border-b border-hairline bg-white/60 px-4 py-5 sm:px-10">
+      <div className="mx-auto max-w-container">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="admin-eyebrow">Périmètre du catalogue</p>
+            <h2 className="mt-1 text-xl font-semibold tracking-tight sm:text-2xl">Choisissez la boutique à piloter</h2>
+          </div>
+          <p className="text-sm text-smoke">Les nombres viennent du catalogue publié.</p>
+        </div>
+        <div className="grid gap-3 md:grid-cols-3">
+          {options.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => onChange(option.id)}
+              className={`rounded-card border p-4 text-left transition ${scope === option.id ? "border-charcoal bg-charcoal text-white shadow-sm" : "border-hairline bg-ivory hover:border-charcoal"}`}
+              aria-pressed={scope === option.id}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <span className={`text-[10px] font-semibold uppercase tracking-[.18em] ${scope === option.id ? "text-orange-200" : "text-braise"}`}>{option.eyebrow}</span>
+                <strong className="text-2xl tracking-tight">{counts[option.id]}</strong>
+              </div>
+              <span className="mt-3 block text-base font-semibold">{option.label}</span>
+              <span className={`mt-1 block text-sm ${scope === option.id ? "text-white/70" : "text-smoke"}`}>{option.detail}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function AccessDenied({
   email,
   onSignOut,
@@ -767,8 +819,8 @@ function AccessDenied({
           Compte non autorisé
         </h1>
         <p className="mt-3 text-sm leading-6 text-smoke">
-          {email || "Ce compte"} est bien connecté, mais ne fait pas encore
-          partie des administrateurs Braviko.
+          {email || "Ce compte"} est connecté, mais n’est pas encore autorisé
+              à accéder à l’administration Braviko.
         </p>
         <button
           onClick={onSignOut}

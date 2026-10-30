@@ -52,18 +52,32 @@ export default function Hero() {
           </div>
         </div>
       </div>
-      <div className="bk-hero-worlds bk-hero-worlds--single">
-        <Link href="/boutique?universe=heating" className="bk-world bk-world-heat" data-hero-enter>
+      <div className="bk-hero-worlds">
+        <Link href="/boutique" className="bk-world bk-world-dogs" data-hero-enter>
           <div className="bk-world-media" data-hero-parallax>
-            <Image src="/images/hero-winter-stove.png" alt="" fill priority sizes="(max-width: 700px) 100vw, 58vw" className="bk-image" quality={85} />
+            <Image src="/images/pet-hero-dog.png" alt={copy.dogsAlt} fill priority sizes="(max-width: 900px) 100vw, 58vw" className="bk-image" quality={85} />
           </div>
           <div className="bk-world-shade" />
           <div className="bk-world-top"><span>{copy.home}</span><span>01</span></div>
           <div className="bk-world-bottom">
-            <div><h2>{copy.heating}</h2><p>{copy.heatingSub}</p></div>
+            <div><h2>{copy.dogsTitle}</h2><p>{copy.heatingSub}</p></div>
             <span className="bk-round-arrow" aria-hidden="true">↗</span>
           </div>
         </Link>
+        <Link href="/boutique" className="bk-world bk-world-cats" data-hero-enter>
+          <div className="bk-world-media" data-hero-parallax>
+            <Image src="/images/pet-gatti.png" alt={copy.catsAlt} fill sizes="(max-width: 900px) 100vw, 42vw" className="bk-image" quality={85} />
+          </div>
+          <div className="bk-world-shade" />
+          <div className="bk-world-top"><span>{copy.field}</span><span>02</span></div>
+          <div className="bk-world-bottom">
+            <div><h2>{copy.catsTitle}</h2><p>{copy.catsSub}</p></div>
+            <span className="bk-round-arrow" aria-hidden="true">↗</span>
+          </div>
+        </Link>
+      </div>
+      <div className="bk-hero-foot" data-hero-enter aria-label="Repères Braviko">
+        {copy.heroFoot.map((item) => <span key={item}>{item}</span>)}
       </div>
     </section>
   )

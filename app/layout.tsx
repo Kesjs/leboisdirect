@@ -16,20 +16,20 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.fr'),
-  title: 'Braviko — Les produits utiles, simplement',
-  description: 'Préparez votre chauffage au bois avec des bûches, granulés et équipements sélectionnés pour l’hiver.',
-  keywords: 'Braviko, chauffage au bois, bûches, granulés, bois compressé, hiver',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.it'),
+  title: 'Braviko — Prodotti utili, scelti con cura',
+  description: 'Braviko seleziona prodotti utili per gli animali: alimentazione, comfort, gioco e cura.',
+  keywords: 'Braviko, animali, cani, gatti, accessori, alimentazione, cura',
   alternates: { canonical: '/' },
   verification: {
-    google: 'QTU2oN2k4JNkADG259tGdDwK31jtE0WyQvbptMg46QU',
+    google: 'S-OPtyWEFmW-EvM3oH7AaghX3kcoTVXaHXL8yRyDM5w',
   },
   openGraph: {
     type: 'website',
     siteName: 'Braviko',
-    locale: 'fr_FR',
-    title: 'Braviko — Les produits utiles, simplement',
-    description: 'Préparez votre chauffage au bois avec des bûches, granulés et équipements sélectionnés pour l’hiver.',
+    locale: 'it_IT',
+    title: 'Braviko — Prodotti utili, scelti con cura',
+    description: 'Una selezione chiara di prodotti per cani, gatti, piccoli animali e uccelli.',
   },
 }
 
@@ -39,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="fr" className={inter.variable}>
+    <html lang="it" className={inter.variable}>
       <body>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-18503582950"
