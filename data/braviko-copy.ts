@@ -8,7 +8,7 @@ export const bravikoCopy = {
     intro: 'Alimentation, confort, jeu et soins : une sélection claire pour prendre soin de vos compagnons, simplement.',
     home: 'Pour les chiens', field: 'Pour les chats', dogsTitle: 'Chiens', catsTitle: 'Chats', catsSub: 'Repos, litière, jeu & soins', dogsAlt: 'Un chien dans une maison lumineuse', catsAlt: 'Un chat dans un intérieur calme', heroFoot: ['Chiens, chats et petits animaux', 'Livraison suivie en France'], heating: 'Chiens & chats', agriculture: 'Petits animaux',
     heatingSub: 'Alimentation, promenades, repos & jeu', agricultureSub: 'Cages, soins & accessoires',
-    discover: 'Explorer la collection', heroCta: 'Trouver mon produit', heroProofCta: 'Voir les avis et les preuves', shop: 'Boutique', advice: 'Conseils', delivery: 'Livraison', story: 'Notre histoire',
+    discover: 'Explorer la collection', heroCta: 'Trouver mon produit', heroProofCta: 'Voir les avis et les preuves', shop: 'Boutique', advice: 'Conseils', delivery: 'Livraison', story: 'Notre histoire', faq: 'FAQ', returns: 'Retours',
     signature: 'Le bon produit change le quotidien.', signatureIntro: 'Chaque animal a ses habitudes. Nous réunissons des essentiels utiles, lisibles et faciles à choisir.',
     chapters: [
       { label: 'Le quotidien', title: 'Tout commence par le bon choix.', body: 'Âge, taille, habitudes et niveau d’activité : les bons repères rendent chaque achat plus simple.' },
@@ -33,7 +33,7 @@ export const bravikoCopy = {
     intro: 'Futter, Komfort, Spiel und Pflege: eine klare Auswahl für Ihre tierischen Begleiter.',
     home: 'Für Hunde', field: 'Für Katzen', dogsTitle: 'Hunde', catsTitle: 'Katzen', catsSub: 'Ruhe, Katzenklo, Spiel & Pflege', dogsAlt: 'Ein Hund in einem hellen Zuhause', catsAlt: 'Eine Katze in einem ruhigen Zuhause', heroFoot: ['Hunde, Katzen und kleine Tiere', 'Sendungsverfolgung in Frankreich'], heating: 'Hunde & Katzen', agriculture: 'Kleine Tiere',
     heatingSub: 'Futter, Spaziergänge, Ruhe & Spiel', agricultureSub: 'Käfige, Pflege & Zubehör',
-    discover: 'Sortiment entdecken', heroCta: 'Produkt finden', heroProofCta: 'Bewertungen und Belege ansehen', shop: 'Shop', advice: 'Ratgeber', delivery: 'Lieferung', story: 'Unsere Geschichte',
+    discover: 'Sortiment entdecken', heroCta: 'Produkt finden', heroProofCta: 'Bewertungen und Belege ansehen', shop: 'Shop', advice: 'Ratgeber', delivery: 'Lieferung', story: 'Unsere Geschichte', faq: 'FAQ', returns: 'Rückgabe',
     signature: 'Gute Auswahl macht den Unterschied.', signatureIntro: 'Jedes Tier hat eigene Gewohnheiten. Wir bündeln nützliche Essentials, die leicht zu verstehen und auszuwählen sind.',
     chapters: [
       { label: 'Der Alltag', title: 'Alles beginnt mit der richtigen Wahl.', body: 'Alter, Größe und Gewohnheiten helfen dabei, das passende Produkt für Ihr Tier zu finden.' },
@@ -58,7 +58,7 @@ export const bravikoCopy = {
     intro: 'Alimentazione, comfort, gioco e cura: una selezione chiara per prenderti cura dei tuoi compagni, ogni giorno.',
     home: 'Per i cani', field: 'Per i gatti', dogsTitle: 'Cani', catsTitle: 'Gatti', catsSub: 'Riposo, lettiera, gioco e cura', dogsAlt: 'Un cane in una casa luminosa', catsAlt: 'Un gatto in un ambiente tranquillo', heroFoot: ['Cani, gatti e piccoli animali', 'Consegna tracciata in Italia'], heating: 'Cani e gatti', agriculture: 'Piccoli animali',
     heatingSub: 'Cibo, passeggiate, riposo e gioco', agricultureSub: 'Gabbie, cura e accessori',
-    discover: 'Esplora la selezione', heroCta: 'Trova il mio prodotto', heroProofCta: 'Vedi recensioni e prove', shop: 'Negozio', advice: 'Consigli', delivery: 'Consegna', story: 'La nostra storia',
+    discover: 'Esplora la selezione', heroCta: 'Trova il mio prodotto', heroProofCta: 'Vedi recensioni e prove', shop: 'Negozio', advice: 'Consigli', delivery: 'Consegna', story: 'La nostra storia', faq: 'FAQ', returns: 'Resi',
     signature: 'La scelta giusta fa la differenza.', signatureIntro: 'Ogni animale ha abitudini diverse. Riuniamo essenziali utili, chiari e facili da scegliere.',
     chapters: [
       { label: 'Il quotidiano', title: 'Tutto parte dalla scelta giusta.', body: 'Età, taglia, abitudini e attività aiutano a scegliere il prodotto più adatto.' },

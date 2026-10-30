@@ -43,7 +43,7 @@ export default function Home() {
                 {copy.steps.map(([title, body], i) => <li key={i} data-reveal><span className="bk-step-number" aria-hidden="true">0{i + 1}</span><div><h3>{title}</h3><p>{body}</p></div></li>)}
                 </ol>
               </div>
-              <Link className="bk-text-link" href="/livraison">{copy.deliveryCta}<span aria-hidden="true">↗</span></Link>
+              <Link className="bk-text-link" href="/consegna">{copy.deliveryCta}<span aria-hidden="true">↗</span></Link>
             </div>
           </section>
           <section className="bk-final bk-container" aria-labelledby="final-title">

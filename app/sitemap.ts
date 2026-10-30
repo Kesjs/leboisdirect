@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 
 const staticRoutes = [
-  '/', '/boutique', '/livraison', '/expedition', '/faq', '/conseils',
+  '/', '/boutique', '/consegna', '/expedition', '/faq', '/consigli',
   '/informations-produits', '/notre-histoire', '/assurance', '/contact',
   '/mentions-legales', '/conditions-generales', '/confidentialite', '/cookies',
   '/retours-remboursements', '/tva',

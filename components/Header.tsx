@@ -49,7 +49,7 @@ export default function Header() {
     return () => document.removeEventListener('pointerdown', dismiss)
   }, [])
   const links = [
-    ['/boutique', copy.shop], ['/conseils', copy.advice],
+    ['/boutique', copy.shop], ['/consigli', copy.advice], ['/consegna', copy.delivery], ['/retours-remboursements', copy.returns], ['/faq', copy.faq],
   ]
   const collapse = () => { setMobileOpen(false); setSearchOpen(false); setAccountOpen(false) }
   return (
@@ -71,7 +71,7 @@ export default function Header() {
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.9 8.2 7 10 4.1-1.8 7-5.4 7-10V6l-7-3Z" /><path d="m9 12 2 2 4-4" /></svg>{copy.infoSelection}</span>
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 8v5l3 2" /></svg>{copy.infoSupport}</span>
             </div>
-            <Link href="/livraison" onClick={collapse}>{copy.delivery}</Link>
+            <Link href="/consegna" onClick={collapse}>{copy.delivery}</Link>
           </div>
         </div>
         <div className="bk-container bk-nav">
@@ -139,7 +139,7 @@ export default function Header() {
           {mobileOpen && <motion.nav id="mobile-navigation" className="bk-mobile-nav bk-container" aria-label={copy.menu}
             initial={{ opacity: 0, y: reduced ? 0 : -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? 0 : 0.2 }}>
             <div className="bk-mobile-nav-head"><span>{copy.menu}</span><span aria-hidden="true">BRAVIKO</span></div>
-            {[...links, ['/livraison', copy.delivery], ['/notre-histoire', copy.story], ['/contact', 'Contatti']].map(([href, title]) => <Link href={href} key={href} onClick={collapse}>{title}</Link>)}
+            {[...links, ['/notre-histoire', copy.story], ['/contact', 'Contatti']].map(([href, title]) => <Link href={href} key={href} onClick={collapse}>{title}</Link>)}
           </motion.nav>}
         </AnimatePresence>
       </header>
