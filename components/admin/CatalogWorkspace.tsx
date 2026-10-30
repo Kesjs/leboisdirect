@@ -87,9 +87,9 @@ type Props = {
 };
 
 const statusLabels: Record<AdminStatus, string> = {
-  draft: "Bozza",
-  published: "Pubblicato",
-  archived: "Archiviato",
+  draft: "Brouillon",
+  published: "Publié",
+  archived: "Archivé",
 };
 
 function slugify(value: string) {
@@ -286,7 +286,7 @@ function FileDropzone({
             <Icon name="upload" />
           </span>
           <span className="grid gap-0.5">
-        <span className="text-sm font-semibold">Aggiungi immagini</span>
+        <span className="text-sm font-semibold">Ajouter des images</span>
             <span className="text-xs text-smoke">PNG, JPG o WebP · massimo 6</span>
           </span>
         </button>
@@ -393,7 +393,7 @@ function ImageLinksPanel({
         const result = (await response.json().catch(() => null)) as
           | { error?: string }
           | null;
-        throw new Error(result?.error || "Non è stato possibile importare l’immagine.");
+        throw new Error(result?.error || "Impossible d’importer l’image.");
       }
       const blob = await response.blob();
       const extension =
@@ -411,10 +411,10 @@ function ImageLinksPanel({
         }),
       );
       setUrl("");
-      setLinkNotice("Immagine recuperata e aggiunta alla scheda.");
+      setLinkNotice("Image récupérée et ajoutée à la fiche.");
     } catch (error) {
       setLinkNotice(
-        error instanceof Error ? error.message : "Non è stato possibile importare l’immagine.",
+        error instanceof Error ? error.message : "Impossible d’importer l’image.",
       );
     } finally {
       setBusy(false);
@@ -424,9 +424,9 @@ function ImageLinksPanel({
     <div className="min-w-0 grid gap-3">
       <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
         <div>
-          <p className="text-sm font-semibold">Link delle immagini</p>
+          <p className="text-sm font-semibold">Liens des images</p>
           <p className="mt-1 text-xs text-smoke">
-          I link vengono verificati prima di essere aggiunti al prodotto.
+          Les liens sont vérifiés avant d’être ajoutés au produit.
           </p>
         </div>
         <button
@@ -518,7 +518,7 @@ function ImageLinksPanel({
           disabled={busy || !url.trim() || availableSlots <= 0}
           className="h-[44px] whitespace-nowrap rounded-[8px] bg-charcoal px-4 text-sm font-semibold text-white transition hover:bg-braise disabled:opacity-50"
         >
-          {busy ? "Importazione…" : "Importa immagine"}
+          {busy ? "Importation…" : "Importer l’image"}
         </button>
       </div>
       {linkNotice && (
@@ -584,7 +584,7 @@ function ProductEditor({
     }
   };
   const remove = async () => {
-    if (!product || !window.confirm(`Eliminare definitivamente « ${values.names.it || values.names.fr || product.slug} »?`)) return;
+    if (!product || !window.confirm(`Supprimer définitivement « ${values.names.it || values.names.fr || product.slug} » ?`)) return;
     setSavingAction("delete");
     try {
       if (await onDelete(product.id)) onClose();
@@ -604,13 +604,13 @@ function ProductEditor({
       <div className="flex min-w-0 items-start justify-between gap-4 border-b border-hairline pb-4">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[.18em] text-braise">
-            {product ? "Modifica prodotto" : "Nuovo prodotto"}
+            {product ? "Modifier le produit" : "Nouveau produit"}
           </p>
         <h2 className="mt-1 truncate text-xl font-semibold tracking-tight" title={product ? values.names.it || values.names.fr || product.slug : undefined}>
-            {product ? values.names.it || values.names.fr || product.slug : "Aggiungi una scheda"}
+            {product ? values.names.it || values.names.fr || product.slug : "Ajouter une fiche"}
           </h2>
           <p className="mt-1 text-sm text-smoke">
-            Tutti i campi restano chiari, con un’anteprima prima della pubblicazione.
+            Les champs restent clairs, avec un aperçu avant publication.
           </p>
         </div>
         <button
@@ -625,13 +625,13 @@ function ProductEditor({
       <div className="mt-4 grid min-w-0 gap-4 overflow-y-auto pr-1">
         {values.status !== "published" && (
           <div className="rounded-[8px] border border-amber-300/60 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
-            <p className="font-semibold">Questa scheda non è visibile nel negozio</p>
-            <p className="mt-1 text-xs leading-5">Imposta lo stato su « Pubblicato » per mostrarla sul sito. Le bozze restano visibili solo nell’area amministratore.</p>
+            <p className="font-semibold">Cette fiche n’est pas visible dans la boutique</p>
+            <p className="mt-1 text-xs leading-5">Choisissez l’état « Publié » pour l’afficher sur le site. Les brouillons restent visibles uniquement dans l’administration.</p>
           </div>
         )}
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="grid gap-2 text-sm font-medium sm:col-span-2">
-            Nome del prodotto
+            Nom du produit
             <input
               value={values.names[language]}
               onChange={(event) => updateName(event.target.value)}
@@ -670,10 +670,10 @@ function ProductEditor({
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <AdminSelect
-             label="Categoria"
+             label="Catégorie"
             value={values.categoryId}
             options={[
-               { value: "", label: "Scegli una categoria" },
+               { value: "", label: "Choisir une catégorie" },
               ...categories.map((category) => ({
                 value: category.id,
                 label: category.name,
@@ -682,7 +682,7 @@ function ProductEditor({
             onChange={(value) => update("categoryId", value)}
           />
           <AdminSelect
-             label="Stato"
+             label="État"
             value={values.status}
             options={Object.entries(statusLabels).map(([value, label]) => ({
               value,
@@ -692,7 +692,7 @@ function ProductEditor({
           />
         </div>
         <label className="grid gap-2 text-sm font-medium">
-          Prezzo (€)
+          Prix (€)
           <input
             type="number"
             min="0"
@@ -723,19 +723,19 @@ function ProductEditor({
           </label>
         </div>
         <label className="grid gap-2 text-sm font-medium">
-           Descrizione breve
+          Description courte
           <textarea
             value={values.shortDescription}
             onChange={(event) => update("shortDescription", event.target.value)}
             rows={3}
             className="admin-input min-h-[78px] resize-y py-2.5"
-             placeholder="Una frase chiara per presentare il prodotto."
+            placeholder="Une phrase claire pour présenter le produit."
           />
         </label>
         <label className="grid gap-2 text-sm font-medium">
-           Caratteristiche del prodotto
+          Caractéristiques du produit
           <span className="text-xs font-normal leading-5 text-smoke">
-             Aggiungi i dettagli tecnici, uno per riga, nel formato « Nome: valore ».
+            Ajoutez les détails techniques, un par ligne, au format « Nom : valeur ».
           </span>
           <textarea
             value={values.description}
@@ -749,13 +749,13 @@ function ProductEditor({
           checked={values.featured}
           onChange={(value) => update("featured", value)}
         >
-          Metti questo prodotto in evidenza
+          Mettre ce produit en avant
         </AdminCheckbox>
         <div className="grid min-w-0 gap-3 border-t border-hairline pt-4">
           <div>
-             <p className="text-sm font-semibold">Immagini del prodotto</p>
+            <p className="text-sm font-semibold">Images du produit</p>
             <p className="mt-1 text-xs text-smoke">
-               Le immagini vengono conservate senza filigrana per presentare chiaramente il prodotto.
+              Les images sont conservées sans filigrane pour présenter clairement le produit.
             </p>
           </div>
           <ImageLinksPanel
@@ -777,7 +777,7 @@ function ProductEditor({
           onClick={onClose}
           className="h-[42px] rounded-[8px] border border-hairline px-4 text-sm font-medium transition hover:border-charcoal"
         >
-           Annulla
+          Annuler
         </button>
         <button
           type="submit"
@@ -785,10 +785,10 @@ function ProductEditor({
           className="h-[42px] min-w-0 rounded-[8px] bg-charcoal px-4 text-sm font-semibold text-white transition hover:bg-braise disabled:opacity-50"
         >
           {savingAction === "save"
-             ? "Salvataggio…"
+             ? "Enregistrement…"
             : product
-               ? "Salva modifiche"
-               : "Crea prodotto"}{" "}
+               ? "Enregistrer les modifications"
+               : "Créer le produit"}{" "}
           <span aria-hidden="true">↗</span>
         </button>
         {product && values.status !== "published" && (
@@ -798,7 +798,7 @@ function ProductEditor({
             onClick={() => void save(true)}
             className="h-[42px] min-w-0 rounded-[8px] bg-forest px-4 text-sm font-semibold text-white transition hover:bg-forest/80 disabled:opacity-50 sm:col-span-2 xl:col-span-1 2xl:col-span-2"
           >
-            {savingAction === "publish" ? "Pubblicazione…" : "Pubblica e salva"} <span aria-hidden="true">↗</span>
+            {savingAction === "publish" ? "Publication…" : "Publier et enregistrer"} <span aria-hidden="true">↗</span>
           </button>
         )}
         {product && (
@@ -808,7 +808,7 @@ function ProductEditor({
             onClick={() => void remove()}
             className="h-[42px] rounded-[8px] border border-red-200 px-4 text-sm font-semibold text-red-700 transition hover:border-red-400 hover:bg-red-50 disabled:opacity-50 sm:col-span-2 xl:col-span-1 2xl:col-span-2"
           >
-             {savingAction === "delete" ? "Eliminazione…" : "Elimina prodotto"}
+            {savingAction === "delete" ? "Suppression…" : "Supprimer le produit"}
           </button>
         )}
       </div>
@@ -900,9 +900,9 @@ export default function CatalogWorkspace({
       return product.images.some((image) => Boolean(image.publicUrl));
     })?.images.find((image) => Boolean(image.publicUrl))?.publicUrl;
   const filterItems = [
-    { value: "all" as const, label: "Tutto il catalogo", count: counts.all },
-    { value: "published" as const, label: "Pubblicati", count: counts.published },
-    { value: "draft" as const, label: "Da completare", count: counts.draft },
+    { value: "all" as const, label: "Tout le catalogue", count: counts.all },
+    { value: "published" as const, label: "Publiés", count: counts.published },
+    { value: "draft" as const, label: "À compléter", count: counts.draft },
   ];
   // Legacy watermark backfill intentionally removed from the admin flow.
   return (
@@ -910,11 +910,11 @@ export default function CatalogWorkspace({
       <section className="min-w-0">
         <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[.16em] text-braise">Catalogo prodotti</p>
+            <p className="text-xs font-semibold uppercase tracking-[.16em] text-braise">Catalogue produits</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
               {products.length} scheda{products.length > 1 ? "e" : ""}
             </h2>
-            <p className="mt-2 max-w-md text-sm leading-6 text-smoke">Gestisci prodotti, disponibilità e presenza nel negozio.</p>
+            <p className="mt-2 max-w-md text-sm leading-6 text-smoke">Gérez les produits, les stocks et leur présence dans la boutique.</p>
           </div>
           <div className="grid w-full gap-2 sm:w-auto sm:grid-cols-[auto_auto]">
             <button
@@ -925,17 +925,17 @@ export default function CatalogWorkspace({
               }}
               className="inline-flex h-[42px] items-center justify-center gap-2 rounded-[8px] bg-charcoal px-4 text-sm font-semibold text-white transition hover:bg-braise"
             >
-              <Icon name="plus" /> Nuovo prodotto
+              <Icon name="plus" /> Nouveau produit
             </button>
           </div>
         </div>
         <div className="mb-6 grid overflow-hidden rounded-[12px] border border-hairline bg-white sm:grid-cols-2">
           <div className="border-b border-hairline px-4 py-3.5 sm:border-b-0 sm:border-r">
-            <p className="text-xs text-smoke">Visibili nel negozio</p>
+            <p className="text-xs text-smoke">Visibles dans la boutique</p>
             <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.published}</p>
           </div>
           <div className="border-b border-hairline px-4 py-3.5 sm:border-b-0 sm:border-r">
-            <p className="text-xs text-smoke">Da completare</p>
+            <p className="text-xs text-smoke">À compléter</p>
             <p className="mt-2 text-2xl font-semibold tabular-nums">{counts.draft}</p>
           </div>
         </div>
@@ -951,11 +951,11 @@ export default function CatalogWorkspace({
         )}
         <div className="mb-4">
           <label className="relative">
-             <span className="sr-only">Cerca un prodotto</span>
+            <span className="sr-only">Rechercher un produit</span>
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-               placeholder="Cerca un prodotto o una categoria…"
+              placeholder="Rechercher un produit ou une catégorie…"
               className="admin-input h-[44px] w-full pl-10"
             />
             <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-smoke">
@@ -964,7 +964,7 @@ export default function CatalogWorkspace({
           </label>
         </div>
         <div className="mb-6 -mx-1 overflow-x-auto px-1 pb-2">
-           <div className="flex min-w-max items-stretch gap-2.5" role="group" aria-label="Filtra il catalogo">
+          <div className="flex min-w-max items-stretch gap-2.5" role="group" aria-label="Filtrer le catalogue">
             {filterItems.map((item, index) => {
               const image = filterImage(item.value);
               const active = status === item.value;
@@ -980,7 +980,7 @@ export default function CatalogWorkspace({
                   <span className={`absolute inset-0 ${active ? "bg-charcoal/75" : "bg-charcoal/55"}`} />
                   <span className={`relative flex h-full skew-x-0 flex-col justify-between p-3 text-white ${index === 1 ? "transform skew-x-2" : index === 2 ? "transform -skew-x-2" : ""}`}>
                     <span className="text-[11px] font-medium uppercase tracking-[.12em]">{item.label}</span>
-               <span className="flex items-end justify-between gap-2"><strong className="text-xl font-semibold leading-none tabular-nums">{item.count}</strong><span className="text-[11px] text-white/75">schede</span></span>
+              <span className="flex items-end justify-between gap-2"><strong className="text-xl font-semibold leading-none tabular-nums">{item.count}</strong><span className="text-[11px] text-white/75">fiches</span></span>
                   </span>
                 </button>
               );
@@ -990,7 +990,7 @@ export default function CatalogWorkspace({
         <div className="grid gap-3 sm:grid-cols-2">
           {filtered.length === 0 ? (
             <div className="rounded-[16px] border border-dashed border-[#cfc9be] bg-white/60 p-12 text-center text-sm text-smoke sm:col-span-2">
-               Nessun prodotto corrisponde alla ricerca.
+              Aucun produit ne correspond à la recherche.
             </div>
           ) : (
             filtered.map((product) => {
@@ -1022,7 +1022,7 @@ export default function CatalogWorkspace({
                       <div className="grid h-full place-items-center bg-ivory text-center text-sm text-smoke">
                         <span className="grid justify-items-center gap-2 rounded-[10px] border border-dashed border-[#cfc9be] bg-white/70 px-4 py-3">
                           <Icon name="image" />
-                           <span>Immagine da aggiungere</span>
+                          <span>Image à ajouter</span>
                         </span>
                       </div>
                     )}
@@ -1031,15 +1031,15 @@ export default function CatalogWorkspace({
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="truncate text-[15px] font-semibold">{name}</p>
-                         <p className="mt-1 truncate text-xs text-smoke">{product.categoryName || "Senza categoria"}</p>
+                        <p className="mt-1 truncate text-xs text-smoke">{product.categoryName || "Sans catégorie"}</p>
                       </div>
                       <span className={`shrink-0 rounded-full px-2 py-1 text-[11px] font-medium ${product.status === "published" ? "bg-forest/10 text-forest" : "bg-black/5 text-smoke"}`}>
                         {statusLabels[product.status]}
                       </span>
                     </div>
                     <div className="mt-5 flex items-center justify-between gap-3 border-t border-hairline pt-3.5 text-sm">
-                       <span className="font-semibold tabular-nums">{variant ? `${Number(variant.price).toFixed(2)} €` : "Prezzo da definire"}</span>
-                       <span className="text-xs font-semibold text-smoke transition group-hover:text-charcoal">Apri la scheda <span aria-hidden="true">→</span></span>
+                      <span className="font-semibold tabular-nums">{variant ? `${Number(variant.price).toFixed(2)} €` : "Prix à définir"}</span>
+                      <span className="text-xs font-semibold text-smoke transition group-hover:text-charcoal">Ouvrir la fiche <span aria-hidden="true">→</span></span>
                     </div>
                   </div>
                 </button>
@@ -1050,13 +1050,13 @@ export default function CatalogWorkspace({
         <details className="mt-6 rounded-[12px] border border-braise/30 bg-braise/5 p-4">
           <summary className="cursor-pointer list-none">
             <p className="text-xs font-semibold uppercase tracking-[.16em] text-braise">
-               Importazione rapida
+              Importation rapide
             </p>
             <h3 className="mt-1 text-lg font-semibold">
-               Precompila da un catalogo JSON
+              Préremplir depuis un catalogue JSON
             </h3>
             <p className="mt-1 text-sm text-smoke">
-               Analisi locale prima di qualsiasi scrittura in Supabase.
+              Analyse locale avant toute écriture dans Supabase.
             </p>
           </summary>
           <div className="mt-4">
@@ -1072,7 +1072,7 @@ export default function CatalogWorkspace({
             {catalogDraft?.products?.length ? (
               <>
                 <p className="mt-3 text-sm font-semibold">
-                   {catalogDraft.products.length} schede pronte
+                  {catalogDraft.products.length} fiches prêtes
                 </p>
                 <button
                   type="button"
@@ -1081,8 +1081,8 @@ export default function CatalogWorkspace({
                   className="mt-3 rounded-full bg-charcoal px-5 py-3 text-sm font-medium text-white disabled:opacity-50"
                 >
                   {importing
-                     ? "Importazione in corso…"
-                     : `Importa ${catalogDraft.products.length} prodotti come bozze`}
+                    ? "Importation en cours…"
+                    : `Importer ${catalogDraft.products.length} produits comme brouillons`}
                 </button>
               </>
             ) : null}
