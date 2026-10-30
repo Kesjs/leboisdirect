@@ -2,6 +2,7 @@
 const nextConfig = {
   async redirects() {
     return [
+      { source: '/', has: [{ type: 'host', value: 'admin.braviko.it' }], destination: '/admin', permanent: false },
       { source: '/conseils', destination: '/consigli', permanent: true },
       { source: '/livraison', destination: '/consegna', permanent: true },
     ]
