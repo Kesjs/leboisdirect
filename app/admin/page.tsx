@@ -10,6 +10,7 @@ import CatalogWorkspace, {
   AdminProduct,
   ProductValues,
 } from "@/components/admin/CatalogWorkspace";
+import AdminOverview from "@/components/admin/AdminOverview";
 import PageSkeleton from "@/components/PageSkeleton";
 
 type CatalogDraft = {
@@ -28,6 +29,7 @@ type CatalogDraft = {
     slug?: string;
   }>;
 };
+type AdminSection = "overview" | "orders" | "customers" | "products";
 const supabase = createClient();
 const slugify = (value: string) =>
   value
@@ -52,6 +54,7 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [catalogDraft, setCatalogDraft] = useState<CatalogDraft | null>(null);
   const [importing, setImporting] = useState(false);
+  const [activeSection, setActiveSection] = useState<AdminSection>("overview");
   const checkAccess = useCallback(async () => {
     const timeout = new Promise<never>((_, reject) =>
       window.setTimeout(
@@ -569,55 +572,20 @@ export default function AdminPage() {
           </div>
         </div>
       </header>
-      <div className="admin-container mx-auto px-4 pt-5 sm:px-8 sm:pt-8">
-        <section className="relative isolate overflow-hidden rounded-[16px] border border-charcoal/10 bg-charcoal px-5 py-6 text-white sm:px-8 sm:py-8">
-          <Image
-            src="/images/agriculture-chainsaw.jpg"
-              alt="Attrezzatura Braviko al lavoro"
-            fill
-            priority
-            className="-z-20 object-cover opacity-[0.07]"
-            sizes="(max-width: 1200px) 100vw, 1200px"
-          />
-          <div className="absolute inset-0 -z-10 bg-charcoal/80" />
-          <div className="relative max-w-3xl">
-            <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-orange-200 sm:text-xs sm:tracking-[.22em]">
-               Braviko / area operativa
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:mt-3 sm:text-3xl">
-               Catalogo operativo
-            </h2>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-white/70 sm:mt-3">
-              Gestisci schede, disponibilità e pubblicazioni da un’unica area di lavoro.
-            </p>
-            <div className="mt-5 grid max-w-xl grid-cols-3 divide-x divide-white/15 overflow-hidden rounded-[10px] border border-white/15 bg-white/5 text-xs sm:mt-6 sm:text-sm">
-              <span className="px-3 py-2.5 text-white/80 sm:px-4">
-                {products.length} prodotti gestiti
-              </span>
-              <span className="px-3 py-2.5 text-white/80 sm:px-4">
-                {categories.length} categorie
-              </span>
-              <span className="px-3 py-2.5 text-white/80 sm:px-4">
-                Immagini con anteprima
-              </span>
-            </div>
-          </div>
-        </section>
-      </div>
-      <div className="admin-container mx-auto px-4 py-6 sm:px-8 sm:py-10">
-        <CatalogWorkspace
-          products={products}
-          categories={categories}
-          error={error}
-          message={message}
-          onCreate={createProduct}
-          onSave={saveProduct}
-          onDelete={deleteProduct}
-          onImportFile={readCatalogFile}
-          catalogDraft={catalogDraft}
-          importing={importing}
-          onImport={importCatalogDraft}
-        />
+      <div className="admin-workspace">
+        <aside className="admin-sidebar" aria-label="Navigazione amministratore">
+          <div className="admin-sidebar-label">Workspace</div>
+          <button className={activeSection === "overview" ? "is-active" : ""} onClick={() => setActiveSection("overview")}>Panoramica</button>
+          <button className={activeSection === "orders" ? "is-active" : ""} onClick={() => setActiveSection("orders")}>Ordini</button>
+          <button className={activeSection === "customers" ? "is-active" : ""} onClick={() => setActiveSection("customers")}>Clienti</button>
+          <button className={activeSection === "products" ? "is-active" : ""} onClick={() => setActiveSection("products")}>Prodotti</button>
+          <div className="admin-sidebar-rule" />
+          <Link href="/boutique">Vedi il negozio <span aria-hidden="true">↗</span></Link>
+        </aside>
+        <div className="admin-main">
+          {activeSection !== "products" && <AdminOverview section={activeSection} onNavigate={setActiveSection} />}
+          {activeSection === "products" && <div className="admin-catalog-view"><div className="admin-catalog-heading"><div><p className="admin-eyebrow">Braviko / Catalogo</p><h2>Gestisci i prodotti</h2><p className="admin-muted">{products.length} prodotti, {categories.length} categorie e immagini pronte per la pubblicazione.</p></div><button className="admin-button" onClick={() => setActiveSection("overview")}>Torna alla panoramica</button></div><CatalogWorkspace products={products} categories={categories} error={error} message={message} onCreate={createProduct} onSave={saveProduct} onDelete={deleteProduct} onImportFile={readCatalogFile} catalogDraft={catalogDraft} importing={importing} onImport={importCatalogDraft} /></div>}
+        </div>
       </div>
     </main>
   );
