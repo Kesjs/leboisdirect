@@ -29,6 +29,45 @@ function parseFeatures(description: string) {
     .map((line) => line.replace(/^[*-]\s*/, ""));
 }
 
+const cleanImagesBySlug: Record<string, string[]> = {
+  'insert-bois-invicta-p947044-10-kw': [
+    '/images/insert-bois-invicta-p947044-10-kw-primary.jpg',
+    '/images/insert-bois-invicta-p947044-10-kw-secondary.jpg',
+    '/images/insert-bois-invicta-p947044-10-kw-tertiary.jpg',
+  ],
+  'cheminee-electrique-purline-verre-noir-2000w': [
+    '/images/cheminee-electrique-purline-verre-noir-2000w-primary.jpg',
+    '/images/cheminee-electrique-purline-verre-noir-2000w-secondary.jpg',
+  ],
+  'ofyr-wood-storage-corten-100-range-buches': [
+    '/images/ofyr-wood-storage-corten-100-range-buches-primary.jpg',
+  ],
+  'chariot-buches-le-marquier-fjord-noir': [
+    '/images/chariot-le-marquier-fjord-noir.jpg',
+    '/images/chariot-le-marquier-fjord-noir-ambiance.jpg',
+  ],
+  'chariot-le-marquier-fjord-noir': [
+    '/images/chariot-le-marquier-fjord-noir.jpg',
+    '/images/chariot-le-marquier-fjord-noir-ambiance.jpg',
+  ],
+  'chauffage-infrarouge-exterieur-frico-term-ip67-2000w': [
+    '/images/chauffage-frico-term-ip67-2000w.jpg',
+    '/images/chauffage-frico-term-ip67-2000w-ambiance.jpg',
+  ],
+  'chauffage-frico-term-ip67-2000w': [
+    '/images/chauffage-frico-term-ip67-2000w.jpg',
+    '/images/chauffage-frico-term-ip67-2000w-ambiance.jpg',
+  ],
+  'foyer-bois-panoramique-acaminetti-flat-150x50': [
+    '/images/foyer-acaminetti-flat-150x50.jpg',
+    '/images/foyer-acaminetti-flat-150x50-detail.jpg',
+  ],
+  'foyer-cheminee-acaminetti-flat-150x50': [
+    '/images/foyer-acaminetti-flat-150x50.jpg',
+    '/images/foyer-acaminetti-flat-150x50-detail.jpg',
+  ],
+};
+
 export async function GET(request: NextRequest) {
   const supabase = getCatalogClient();
   const slug = request.nextUrl.searchParams.get("slug");
@@ -62,14 +101,17 @@ export async function GET(request: NextRequest) {
     const variants = [...(item.braviko_product_variants || [])].sort(
       (a: any, b: any) => Number(a.price) - Number(b.price),
     );
-    const images = [...(item.braviko_product_images || [])]
-      .sort(
-        (a: any, b: any) =>
-          Number(b.is_primary) - Number(a.is_primary) ||
-          Number(a.sort_order) - Number(b.sort_order),
-      )
-      .map((image: any) => resolveImageUrl(image.storage_path, supabase))
-      .filter(Boolean);
+    const cleanOverrides = cleanImagesBySlug[item.slug];
+    const images = (cleanOverrides && cleanOverrides.length > 0)
+      ? cleanOverrides
+      : [...(item.braviko_product_images || [])]
+          .sort(
+            (a: any, b: any) =>
+              Number(b.is_primary) - Number(a.is_primary) ||
+              Number(a.sort_order) - Number(b.sort_order),
+          )
+          .map((image: any) => resolveImageUrl(image.storage_path, supabase))
+          .filter(Boolean);
 
     return {
       id: item.id,

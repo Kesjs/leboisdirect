@@ -268,9 +268,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                     </button>
                   </>
                 ) : null}
-                <span className="absolute top-12 left-12 bg-white/90 backdrop-blur-sm px-10 py-4 rounded-md text-[11px] font-semibold tracking-wider text-smoke uppercase border border-hairline/60">
-                  BRAVIKO
-                </span>
               </div>
             </div>
 

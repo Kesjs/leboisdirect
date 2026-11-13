@@ -129,9 +129,17 @@ function targetReviewCount(slug: string): number {
   return 2 + (hash % 5)
 }
 
+const reviewSlugAliases: Record<string, string> = {
+  'chariot-le-marquier-fjord-noir': 'chariot-buches-le-marquier-fjord-noir',
+  'chauffage-frico-term-ip67-2000w': 'chauffage-infrarouge-exterieur-frico-term-ip67-2000w',
+  'fendeur-buches-scheppach-compact-10t': 'fendeur-buches-scheppach-compact-10t-3150w',
+  'foyer-cheminee-acaminetti-flat-150x50': 'foyer-bois-panoramique-acaminetti-flat-150x50',
+}
+
 export function getProductReviews(slug: string, options: { preview?: boolean } = {}): ProductReview[] {
+  const resolved = reviewSlugAliases[slug] || slug
   const reviews = entries
-    .filter((entry) => entry.matches.includes(slug))
+    .filter((entry) => entry.matches.includes(resolved))
     .map(({ matches: _matches, ...review }) => review)
 
   const extras = extraReviewTexts(slug).map((text, index) => ({

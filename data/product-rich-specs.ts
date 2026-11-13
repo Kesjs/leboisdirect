@@ -757,6 +757,14 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
   },
 }
 
+const slugAliases: Record<string, string> = {
+  'chariot-le-marquier-fjord-noir': 'chariot-buches-le-marquier-fjord-noir',
+  'chauffage-frico-term-ip67-2000w': 'chauffage-infrarouge-exterieur-frico-term-ip67-2000w',
+  'fendeur-buches-scheppach-compact-10t': 'fendeur-buches-scheppach-compact-10t-3150w',
+  'foyer-cheminee-acaminetti-flat-150x50': 'foyer-bois-panoramique-acaminetti-flat-150x50',
+}
+
 export function getProductRichSpec(slug: string): RichProductSpec | undefined {
-  return productRichSpecs[slug]
+  const resolvedSlug = slugAliases[slug] || slug
+  return productRichSpecs[resolvedSlug]
 }

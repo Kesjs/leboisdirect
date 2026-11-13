@@ -68,8 +68,16 @@ const videosBySlug: Record<string, ProductVideo> = {
   },
 }
 
+const videoSlugAliases: Record<string, string> = {
+  'chariot-le-marquier-fjord-noir': 'chariot-buches-le-marquier-fjord-noir',
+  'chauffage-frico-term-ip67-2000w': 'chauffage-infrarouge-exterieur-frico-term-ip67-2000w',
+  'fendeur-buches-scheppach-compact-10t': 'fendeur-buches-scheppach-compact-10t-3150w',
+  'foyer-cheminee-acaminetti-flat-150x50': 'foyer-bois-panoramique-acaminetti-flat-150x50',
+}
+
 export function getProductVideo(slug: string): ProductVideo | null {
-  return videosBySlug[slug] ?? null
+  const resolved = videoSlugAliases[slug] || slug
+  return videosBySlug[resolved] ?? null
 }
 
 export function getYouTubeThumbnail(youtubeId: string): string {
