@@ -11,7 +11,7 @@ type CatalogProduct = {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leboisdirect.vercel.app'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.fr'
 
   try {
     const response = await fetch(`${baseUrl}/api/catalog?slug=${encodeURIComponent(slug)}`, { next: { revalidate: 300 } })
