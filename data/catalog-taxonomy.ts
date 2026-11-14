@@ -22,7 +22,7 @@ export const HEATING_FILTER_GROUPS: HeatingGroupConfig[] = [
       de: 'Getrocknetes Brennholz < 20 %, Briketts & Pellets',
       it: 'Legna essiccata < 20 %, tronchetti e pellet',
     },
-    image: '/images/photorealistic-perspective-wood-logs.jpg',
+    image: '/images/category-combustibles.jpg',
     categories: new Set([
       'buches',
       'bois-compresse',
