@@ -1,30 +1,54 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { createServerOrder, type OrderCustomerInput, type RequestedOrderItem } from '@/lib/server/orders'
+import { createBankRevealToken, getMaskedBankTransferDetails } from '@/lib/server/bank-transfer'
+import type { Locale } from '@/lib/i18n-context'
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: 'AUTH_REQUIRED' }, { status: 401 })
+    const body = (await request.json()) as {
+      customer?: OrderCustomerInput
+      items?: RequestedOrderItem[]
+      locale?: Locale
+    }
 
-    const body = await request.json() as { reference?: string }
-    if (!body.reference) return NextResponse.json({ error: 'INVALID_REFERENCE' }, { status: 400 })
+    const order = await createServerOrder({
+      customer: body.customer,
+      items: body.items,
+      locale: body.locale || 'fr',
+      paymentMethod: 'bank_transfer',
+      paymentStatus: 'pending',
+    })
 
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    if (!serviceKey) return NextResponse.json({ error: 'BANK_TRANSFER_NOT_CONFIGURED' }, { status: 503 })
+    const maskedDetails = getMaskedBankTransferDetails()
+    const revealToken = createBankRevealToken(order.reference)
 
-    const admin = createAdminClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceKey)
-    const { error } = await admin
-      .from('braviko_orders')
-      .update({ payment_status: 'pending', payment_method: 'bank_transfer' })
-      .eq('reference', body.reference)
-      .eq('user_id', user.id)
-
-    if (error) throw error
-    return NextResponse.json({ ok: true })
+    return NextResponse.json(
+      {
+        ok: true,
+        reference: order.reference,
+        total: order.total,
+        maskedDetails,
+        revealToken,
+      },
+      { headers: { 'Cache-Control': 'private, no-store' } },
+    )
   } catch (error) {
-    console.error('Bank transfer checkout error:', error)
-    return NextResponse.json({ error: 'BANK_TRANSFER_UNAVAILABLE' }, { status: 500 })
+    const code = error instanceof Error ? error.message : 'BANK_TRANSFER_UNAVAILABLE'
+    console.error('Bank transfer checkout error:', code, error)
+    const status =
+      code === 'ORDER_SERVICE_NOT_CONFIGURED' || code === 'GUEST_CHECKOUT_MIGRATION_REQUIRED'
+        ? 503
+        : code === 'INVALID_CUSTOMER' || code === 'INVALID_CHECKOUT' || code === 'PRODUCT_UNAVAILABLE'
+          ? 400
+          : 500
+
+    const message =
+      code === 'INVALID_CUSTOMER'
+        ? 'Vérifiez vos coordonnées et votre adresse de livraison avant de valider.'
+        : code === 'PRODUCT_UNAVAILABLE'
+          ? 'Un des produits du panier n’est plus disponible.'
+          : 'Le virement n’a pas pu être préparé. Réessayez.'
+
+    return NextResponse.json({ error: code, message }, { status })
   }
 }

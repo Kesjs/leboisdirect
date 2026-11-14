@@ -18,6 +18,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const [added, setAdded] = useState(false)
   const [animating, setAnimating] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
+  const [isSquareOrPortrait, setIsSquareOrPortrait] = useState(false)
   const [displayImage, setDisplayImage] = useState(product.image)
   const timer = useRef<ReturnType<typeof setTimeout>>()
   const copy = bravikoCopy[locale]
@@ -28,6 +29,7 @@ export default function ProductCard({ product }: { product: Product }) {
   useEffect(() => {
     setDisplayImage(product.image || fallbackImage)
     setImageLoaded(false)
+    setIsSquareOrPortrait(false)
   }, [product.image])
   const add = () => {
     addItem(product, 1, variant?.id)
@@ -42,14 +44,30 @@ export default function ProductCard({ product }: { product: Product }) {
     if (displayImage !== fallbackImage) {
       setDisplayImage(fallbackImage)
       setImageLoaded(false)
+      setIsSquareOrPortrait(false)
     }
   }
   return (
     <article className="bk-product">
       <Link href={'/produit/' + product.slug} className="bk-product-link">
-        <div className={'bk-product-photo' + (imageLoaded ? ' is-loaded' : '')}>
+        <div className={'bk-product-photo' + (imageLoaded ? ' is-loaded' : '') + (isSquareOrPortrait ? ' is-contain' : '')}>
           {!imageLoaded && <span className="bk-image-placeholder" aria-hidden="true" />}
-          <Image onLoad={() => setImageLoaded(true)} onError={handleImageError} src={displayImage} alt={label.name} fill sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw" className="bk-image bk-product-front" quality={70} />
+          <Image
+            onLoad={(event) => {
+              const img = event.currentTarget
+              if (img.naturalWidth && img.naturalHeight) {
+                setIsSquareOrPortrait(img.naturalWidth / img.naturalHeight < 1.15)
+              }
+              setImageLoaded(true)
+            }}
+            onError={handleImageError}
+            src={displayImage}
+            alt={label.name}
+            fill
+            sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className={isSquareOrPortrait ? 'bk-image bk-product-front bk-image-contain' : 'bk-image bk-product-front'}
+            quality={70}
+          />
           <span className="bk-product-view">{copy.details} <span aria-hidden="true">↗</span></span>
         </div>
         <p className="bk-product-category">{categoryLabel(product.category, locale)}</p>

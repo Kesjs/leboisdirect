@@ -31,7 +31,9 @@ function ConnectionContent() {
   const { user, isAdmin, loading: authLoading } = useAuth()
   const supabase = useMemo(() => createClient(), [])
   const requestedMode = params.get('mode')
-  const [mode, setMode] = useState<Mode>(requestedMode === 'reset' ? 'reset' : 'signup')
+  const [mode, setMode] = useState<Mode>(
+    requestedMode === 'reset' ? 'reset' : requestedMode === 'login' ? 'login' : 'signup',
+  )
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')

@@ -1,55 +1,112 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { stripeClient } from '@/lib/stripe'
-
-type RequestedItem = { productId: string; variantId?: string | null; quantity: number }
+import {
+  createServerOrder,
+  validateCustomerInput,
+  type OrderCustomerInput,
+  type RequestedOrderItem,
+} from '@/lib/server/orders'
+import type { Locale } from '@/lib/i18n-context'
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: 'AUTH_REQUIRED' }, { status: 401 })
-    const body = await request.json() as { reference?: string; items?: RequestedItem[]; locale?: 'fr' | 'de' | 'it' }
-    if (!body.reference || !body.items?.length || body.items.some(item => !item.productId || !Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 99)) return NextResponse.json({ error: 'INVALID_CHECKOUT' }, { status: 400 })
-    const variantIds = body.items.map(item => item.variantId).filter((id): id is string => Boolean(id))
-    const { data: variants, error } = await supabase.from('braviko_product_variants').select('id, product_id, price').in('id', variantIds)
-    if (error) throw error
-    const { data: translations, error: translationError } = await supabase.from('braviko_product_translations').select('product_id, locale, name').in('product_id', body.items.map(item => item.productId))
-    if (translationError) throw translationError
-    const locale = body.locale || 'fr'
-    const lineItems = body.items.map(item => {
-      const variant = variants?.find(value => value.id === item.variantId)
-      if (!variant || variant.product_id !== item.productId) throw new Error('PRODUCT_UNAVAILABLE')
-      const name = translations?.find(value => value.product_id === item.productId && value.locale === locale)?.name || translations?.find(value => value.product_id === item.productId && value.locale === 'fr')?.name
-      if (!name) throw new Error('PRODUCT_UNAVAILABLE')
-      return { price_data: { currency: 'eur', product_data: { name }, unit_amount: Math.round(Number(variant.price) * 100) }, quantity: item.quantity }
-    })
+    const body = (await request.json()) as {
+      customer?: OrderCustomerInput
+      items?: RequestedOrderItem[]
+      locale?: Locale
+    }
+
+    if (
+      !body.items?.length ||
+      body.items.some(
+        (item) =>
+          !item.productId ||
+          typeof item.productId !== 'string' ||
+          !Number.isInteger(item.quantity) ||
+          item.quantity < 1 ||
+          item.quantity > 99,
+      )
+    ) {
+      return NextResponse.json(
+        { error: 'INVALID_CHECKOUT', message: 'Votre panier est invalide ou vide.' },
+        { status: 400 },
+      )
+    }
+
+    validateCustomerInput(body.customer)
+
     const stripe = stripeClient()
+    const locale: Locale = body.locale || 'fr'
+
+    const order = await createServerOrder({
+      customer: body.customer,
+      items: body.items,
+      locale,
+      paymentMethod: 'card',
+      paymentStatus: 'pending',
+    })
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+    const admin = createAdminClient(supabaseUrl, serviceKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    })
+
     const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin
+    const orderMetadata: Record<string, string> = { reference: order.reference }
+    if (order.userId) {
+      orderMetadata.user_id = order.userId
+    }
+
     const sessionParams = {
       mode: 'payment' as const,
-      line_items: lineItems,
+      line_items: order.stripeLineItems,
       adaptive_pricing: { enabled: false },
       allowed_payment_method_types: ['card'],
       wallet_options: { link: { display: 'never' } },
-      payment_intent_data: { metadata: { reference: body.reference, user_id: user.id } },
-      customer_email: user.email,
-      metadata: { reference: body.reference, user_id: user.id },
+      payment_intent_data: { metadata: orderMetadata },
+      customer_email: order.customerEmail,
+      metadata: orderMetadata,
       success_url: `${origin}/commande/confirmation?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/checkout?payment=cancelled`,
       locale: locale === 'fr' ? 'fr' : locale === 'de' ? 'de' : 'it',
     } as unknown as Parameters<typeof stripe.checkout.sessions.create>[0]
-    const session = await stripe.checkout.sessions.create(sessionParams)
-    await supabase.from('braviko_orders').update({ payment_status: 'pending', stripe_session_id: session.id }).eq('reference', body.reference).eq('user_id', user.id)
-    return NextResponse.json({ url: session.url })
+
+    let session
+    try {
+      session = await stripe.checkout.sessions.create(sessionParams)
+    } catch (stripeError) {
+      await admin.from('braviko_orders').delete().eq('id', order.orderId)
+      throw stripeError
+    }
+
+    await admin
+      .from('braviko_orders')
+      .update({ payment_status: 'pending', stripe_session_id: session.id })
+      .eq('id', order.orderId)
+
+    return NextResponse.json({ url: session.url, reference: order.reference })
   } catch (error) {
     const code = error instanceof Error ? error.message : 'CHECKOUT_UNAVAILABLE'
-    if (error instanceof Error && 'type' in error) console.error('Stripe checkout error:', error.message)
-    const message = code === 'PRODUCT_UNAVAILABLE'
-      ? 'Un des produits du panier n’est plus disponible.'
-      : code === 'STRIPE_NOT_CONFIGURED'
-        ? 'Le paiement par carte n’est pas encore disponible.'
-        : code
-    return NextResponse.json({ error: code, message }, { status: code === 'STRIPE_NOT_CONFIGURED' ? 503 : 400 })
+    console.error('Stripe checkout error:', code, error)
+    const status =
+      code === 'STRIPE_NOT_CONFIGURED' ||
+      code === 'ORDER_SERVICE_NOT_CONFIGURED' ||
+      code === 'GUEST_CHECKOUT_MIGRATION_REQUIRED'
+        ? 503
+        : code === 'INVALID_CUSTOMER' || code === 'INVALID_CHECKOUT' || code === 'PRODUCT_UNAVAILABLE'
+          ? 400
+          : 500
+    const message =
+      code === 'INVALID_CUSTOMER'
+        ? 'Vérifiez vos coordonnées et votre adresse de livraison avant de valider.'
+        : code === 'PRODUCT_UNAVAILABLE'
+          ? 'Un des produits du panier n’est plus disponible.'
+          : code === 'STRIPE_NOT_CONFIGURED'
+            ? 'Le paiement par carte n’est pas encore disponible.'
+            : 'Le paiement n’a pas pu être lancé. Réessayez.'
+    return NextResponse.json({ error: code, message }, { status })
   }
 }
+

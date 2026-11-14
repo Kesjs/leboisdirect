@@ -19,7 +19,7 @@ export type RichProductSpec = {
 export const productRichSpecs: Record<string, RichProductSpec> = {
   'bois-de-chauffage-premium-chene-charme-hetre-2-steres-33-cm': {
     unitPriceLabel: 'Soit 104,50 € / stère (palette de 2 stères)',
-    badgeText: '● En stock — Expédié sous 48h',
+    badgeText: 'En stock — Expédié sous 48h',
     delivery: {
       delay: 'Livré sous 5 à 7 jours ouvrés sur rendez-vous',
       type: 'pallet',
@@ -56,7 +56,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'granules-bois-premium-6mm-palette-990-kg': {
     unitPriceLabel: 'Soit 0,44 € / kg (6,62 € / sac de 15 kg)',
-    badgeText: '● En stock — Expédié sous 48h',
+    badgeText: 'En stock — Expédié sous 48h',
     delivery: {
       delay: 'Livré sous 5 à 7 jours ouvrés sur rendez-vous',
       type: 'pallet',
@@ -92,7 +92,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'poele-bois-fonte-bronpi-karen-8-kw': {
     unitPriceLabel: 'TVA 20% incluse — Éligible aides rénovation',
-    badgeText: '● En stock — Expédition sous 48h',
+    badgeText: 'En stock — Expédition sous 48h',
     delivery: {
       delay: 'Livré sous 5 à 8 jours ouvrés sur rendez-vous',
       type: 'heavy_freight',
@@ -131,7 +131,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'brasero-plancha-le-bigorneau-acier-corten-100-cm': {
     unitPriceLabel: 'Complet avec socle Corten et grille centrale',
-    badgeText: '● En stock usine — Expédié sous 72h',
+    badgeText: 'En stock usine — Expédié sous 72h',
     delivery: {
       delay: 'Livré sous 5 à 8 jours ouvrés',
       type: 'heavy_freight',
@@ -167,7 +167,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'ofyr-wood-storage-corten-100-range-buches': {
     unitPriceLabel: 'Structure architecturale 100 × 216 cm',
-    badgeText: '● En stock — Expédition rapide',
+    badgeText: 'En stock — Expédition rapide',
     delivery: {
       delay: 'Livré sous 5 à 7 jours ouvrés',
       type: 'heavy_freight',
@@ -200,13 +200,13 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
   },
 
   'insert-bois-invicta-p947044-10-kw': {
-    unitPriceLabel: 'Fabrication 100% fonte française — Label Flamme Verte',
-    badgeText: '● En stock usine — Expédié sous 48h',
+    unitPriceLabel: 'Fabrication française — Label Flamme Verte 7 étoiles',
+    badgeText: 'En stock usine — Expédié sous 48h',
     delivery: {
       delay: 'Livré sous 5 à 8 jours ouvrés sur rendez-vous',
       type: 'heavy_freight',
       headline: 'Transporteur messagerie lourde avec déchargement au pas de porte',
-      carrierNotice: 'Produit de 134 kg livré sur palette renforcée. Prise de RDV téléphonique préalable.',
+      carrierNotice: 'Produit de 132 kg livré sur palette renforcée. Prise de RDV téléphonique préalable.',
     },
     usageTips: [
       'Idéal pour remplacer un foyer ouvert énergivore et multiplier par 4 le rendement thermique de votre cheminée.',
@@ -216,13 +216,13 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
       'À faire installer par un professionnel qualifié RGE pour garantir la conformité du tubage (Ø 200 mm) et bénéficier des aides d’État.',
     detailedSpecs: [
       { label: 'Marque & Origine', value: 'Invicta — Fonderie française dans les Ardennes depuis 1924' },
-      { label: 'Référence', value: 'Invicta P947044 — 10 kW' },
-      { label: 'Matériau du foyer', value: '100% fonte d’art haute qualité' },
-      { label: 'Puissance thermique', value: '10 kW (rendement > 76%)' },
-      { label: 'Longueur des bûches', value: 'Jusqu’à 69 cm (très grand foyer)' },
+      { label: 'Référence', value: 'Invicta P947044 (700 Grande Vision) — 10 kW' },
+      { label: 'Matériau du foyer', value: 'Fonte et acier haute résistance' },
+      { label: 'Puissance thermique', value: '10 kW nominale (modulation de 6,5 à 15 kW — rendement 76 %)' },
+      { label: 'Longueur des bûches', value: 'Jusqu’à 60 cm (chargement horizontal en façade)' },
       { label: 'Diamètre de tubage', value: 'Ø 200 mm' },
-      { label: 'Dimensions extérieures', value: 'L 69,2 cm × H 61,5 cm × P 46,7 cm' },
-      { label: 'Poids net', value: '134 kg' },
+      { label: 'Dimensions extérieures', value: 'L 69,2 cm × H 61,4 cm × P 45,85 cm' },
+      { label: 'Poids net', value: '132 kg' },
       { label: 'Label environnemental', value: 'Flamme Verte 7 étoiles / EcoDesign 2022' },
     ],
     warranty: 'Garantie 5 ans constructeur Invicta',
@@ -235,7 +235,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'ofyr-fire-guard-ring-100-teck': {
     unitPriceLabel: 'Accessoire officiel OFYR 100',
-    badgeText: '● En stock — Expédié sous 24h',
+    badgeText: 'En stock — Expédié sous 24h',
     delivery: {
       delay: 'Livré sous 48h à 72h',
       type: 'parcel',
@@ -266,7 +266,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'ofyr-cage-100-accessoire-cuisson': {
     unitPriceLabel: 'Accessoire officiel grillades suspendues',
-    badgeText: '● En stock — Expédié sous 24h',
+    badgeText: 'En stock — Expédié sous 24h',
     delivery: {
       delay: 'Livré sous 48h à 72h',
       type: 'parcel',
@@ -295,7 +295,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'barbecue-kamado-bee-grill-xl-luxe-ceramique': {
     unitPriceLabel: 'Pack Luxe complet tout équipé — Céramique garantie à vie',
-    badgeText: '● En stock — Expédition sous 48h',
+    badgeText: 'En stock — Expédition sous 48h',
     delivery: {
       delay: 'Livré sous 5 à 8 jours ouvrés',
       type: 'heavy_freight',
@@ -329,7 +329,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'radiateur-electrique-connecte-sauter-hekla-1500w': {
     unitPriceLabel: 'Fabrication française — Chaleur douce fonte connectée',
-    badgeText: '● En stock — Expédié sous 24/48h',
+    badgeText: 'En stock — Expédié sous 24/48h',
     delivery: {
       delay: 'Livré sous 3 à 5 jours ouvrés',
       type: 'parcel',
@@ -363,7 +363,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'radiateur-electrique-connecte-sauter-ipala-1500w': {
     unitPriceLabel: 'Inertie fluide caloporteur — Confort doux type chauffage central',
-    badgeText: '● En stock — Expédié sous 24/48h',
+    badgeText: 'En stock — Expédié sous 24/48h',
     delivery: {
       delay: 'Livré sous 3 à 5 jours ouvrés',
       type: 'parcel',
@@ -395,7 +395,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'buches-densifiees-premium-palette-1000-kg': {
     unitPriceLabel: 'Soit 0,44 € / kg (6,65 € par pack de 8 bûches)',
-    badgeText: '● En stock — Expédié sous 48h',
+    badgeText: 'En stock — Expédié sous 48h',
     delivery: {
       delay: 'Livré sous 5 à 7 jours ouvrés sur rendez-vous',
       type: 'pallet',
@@ -429,7 +429,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'buches-densifiees-nuit-eo2-palette-520-buches': {
     unitPriceLabel: 'Soit 0,86 € / bûche (longue combustion 6 à 10h)',
-    badgeText: '● En stock — Expédié sous 48h',
+    badgeText: 'En stock — Expédié sous 48h',
     delivery: {
       delay: 'Livré sous 5 à 7 jours ouvrés sur rendez-vous',
       type: 'pallet',
@@ -462,7 +462,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'poele-granules-jolly-mec-6-kw-programmable': {
     unitPriceLabel: 'Rendement exceptionnel 90% — Programmation hebdomadaire',
-    badgeText: '● En stock — Expédition sous 48/72h',
+    badgeText: 'En stock — Expédition sous 48/72h',
     delivery: {
       delay: 'Livré sous 5 à 8 jours ouvrés sur rendez-vous',
       type: 'heavy_freight',
@@ -496,7 +496,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'cheminee-electrique-purline-verre-noir-2000w': {
     unitPriceLabel: 'Effet flamme LED réglable — Façade verre trempé noir',
-    badgeText: '● En stock — Expédié sous 24h',
+    badgeText: 'En stock — Expédié sous 24h',
     delivery: {
       delay: 'Livré sous 48h à 72h',
       type: 'parcel',
@@ -528,7 +528,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'chauffage-exterieur-gaz-planika-faro-8-kw': {
     unitPriceLabel: 'Flamme visible à 360° — Autonomie jusqu’à 55 heures',
-    badgeText: '● En stock usine — Expédié sous 48h',
+    badgeText: 'En stock usine — Expédié sous 48h',
     delivery: {
       delay: 'Livré sous 4 à 6 jours ouvrés',
       type: 'heavy_freight',
@@ -536,20 +536,19 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
       carrierNotice: 'Livré sur palette sécurisée avec parois en verre trempé emballées séparément.',
     },
     usageTips: [
-      'Utilisez une bouteille de gaz Propane standard de 13 kg (qui ne gèle pas même par température négative jusqu’à -40°C).',
-      'Allumage piézo-électrique instantané avec sécurité thermo-couple coupant automatiquement le gaz si la flamme s’éteint.',
+      'Utilisez une bouteille de gaz Propane ou GPL jusqu’à 11 kg logée dans le socle (le propane résiste au gel par temps froid).',
+      'Allumage piézo-électrique instantané avec sécurité thermocouple, capteur anti-basculement et coupure automatique du gaz.',
     ],
     storageAdvice:
-      'Les roulettes avec frein permettent de rentrer l’appareil sous abri en quelques secondes en fin de soirée.',
+      'Les 4 roulettes avec freins et la housse de protection incluse permettent de déplacer et protéger l’appareil en fin de soirée.',
     detailedSpecs: [
       { label: 'Marque & Design', value: 'Planika — Référence européenne du feu décoratif' },
-      { label: 'Modèle', value: 'Faro 8 kW' },
-      { label: 'Combustible', value: 'Gaz Propane ou GPL (bouteille standard 13 kg logée dans le socle)' },
-      { label: 'Puissance calorifique', value: 'Jusqu’à 8 kW réglable' },
+      { label: 'Modèle', value: 'Faro 8,2 kW' },
+      { label: 'Combustible', value: 'Gaz Propane ou GPL (bouteille jusqu’à 11 kg logée dans le socle)' },
+      { label: 'Puissance calorifique', value: 'Jusqu’à 8,2 kW réglable (conso. max. 0,50 kg/h)' },
       { label: 'Autonomie', value: 'Jusqu’à 55 heures de fonctionnement continu' },
       { label: 'Visières', value: '4 parois en verre trempé coupe-vent' },
       { label: 'Mobilité', value: '4 roulettes pivotantes avec freins' },
-      { label: 'Dimensions', value: 'H 146 cm × L 36 cm × P 36 cm' },
       { label: 'Poids', value: '20 kg (hors bouteille)' },
       { label: 'Certifications', value: 'Norme CE / Certification Kiwa' },
     ],
@@ -562,27 +561,28 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
   },
 
   'four-pizza-ofyr-100-cuisson-feu-bois': {
-    unitPriceLabel: 'Kit complet four en fonte + pierre réfractaire + pelle',
-    badgeText: '● En stock — Expédié sous 24h',
+    unitPriceLabel: 'Kit complet : plaque fonte double face + pierre réfractaire + cloche + pelle',
+    badgeText: 'En stock — Expédié sous 24h',
     delivery: {
       delay: 'Livré sous 48h à 72h',
       type: 'parcel',
       headline: 'Colis soigné livré à domicile avec suivi',
-      carrierNotice: 'Pierre réfractaire cordiérite emballée sous protection antichoc renforcée.',
+      carrierNotice: 'Pierre réfractaire à pizza emballée sous protection antichoc renforcée.',
     },
     usageTips: [
-      'Atteint une température de 350°C à 400°C en moins de 15 minutes grâce au rayonnement du feu de bois.',
-      'Farinez légèrement la pelle à pizza avant d’enfourner pour une glisse impeccable.',
-      'Une pizza authentique napolitaine cuit en 90 secondes avec une pâte alvéolée et croustillante.',
+      'Posez la plaque en fonte double face directement sur le foyer OFYR 100, puis installez la pierre à pizza et la cloche par-dessus.',
+      'Faites pivoter le bouton sur la cloche pour ouvrir ou réduire l’entrée d’air entre ses deux parois d’acier rotatives.',
+      'Farinez légèrement la pelle à pizza fournie avant d’enfourner pour une glisse impeccable.',
     ],
-    storageAdvice: 'Nettoyer la pierre à sec avec une brosse métallique douce. Ne jamais plonger la pierre chaude dans l’eau.',
+    storageAdvice: 'Nettoyer la pierre à sec avec une brosse douce après refroidissement. Ne jamais plonger la pierre chaude dans l’eau.',
     detailedSpecs: [
       { label: 'Marque', value: 'OFYR' },
       { label: 'Modèle', value: 'Pizza Oven 100' },
       { label: 'Compatibilité', value: 'Unités de cuisson brasero OFYR 100' },
-      { label: 'Cloche', value: 'Fonte émaillée double paroi avec clapet de ventilation réglable' },
-      { label: 'Pierre de cuisson', value: 'Pierre réfractaire naturelle cordiérite Ø 35 cm' },
-      { label: 'Accessoire inclus', value: 'Pelle à pizza en aluminium anodisé alimentaire' },
+      { label: 'Cloche', value: 'Acier double paroi rotative pour ajuster la circulation d’air' },
+      { label: 'Plaque de cuisson', value: 'Plaque en fonte double face (support pierre et face cuisson)' },
+      { label: 'Pierre à pizza', value: 'Pierre réfractaire incluse posée sur la plaque en fonte' },
+      { label: 'Accessoire inclus', value: 'Pelle à pizza pratique incluse' },
       { label: 'Combustible', value: 'Feu de bois naturel' },
     ],
     warranty: 'Garantie 2 ans OFYR',
@@ -595,17 +595,17 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'abri-buches-timbela-m985-414m2': {
     unitPriceLabel: 'Surface 4,14 m² — Combiné abri à bois + remise outillage',
-    badgeText: '● En stock fabricant — Expédié sous 72h',
+    badgeText: 'En stock fabricant — Expédié sous 72h',
     delivery: {
       delay: 'Livré sous 6 à 10 jours ouvrés sur rendez-vous',
       type: 'heavy_freight',
       headline: 'Livraison par camion avec chariot embarqué / hayon',
       carrierNotice:
-        'Colis volumineux (285 kg) livré en kit complet sur palette longue. Le transporteur planifie le jour et le créneau horaire avec vous. Dépose au sol devant votre accès.',
+        'Colis volumineux (274 kg) livré en kit complet sur palette longue. Le transporteur planifie le jour et le créneau horaire avec vous. Dépose au sol devant votre accès.',
     },
     usageTips: [
       'Montez l’abri sur une dalle béton plane ou des plots en béton pour isoler la base de l’humidité du sol.',
-      'Le côté ouvert permet de ventiler jusqu’à 6 stères de bois, tandis que la partie fermée sécurise tondeuse, tronçonneuse et outillage.',
+      'Le côté ouvert permet de ventiler votre réserve de bois, tandis que la partie fermée sécurise tondeuse, tronçonneuse et outillage.',
     ],
     storageAdvice: 'Bois naturel traité autoclave. Appliquez une lasure microporeuse ou un saturateur tous les 2 à 3 ans pour préserver sa teinte.',
     detailedSpecs: [
@@ -613,10 +613,10 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
       { label: 'Modèle', value: 'M985 Combiné Abri Bois & Remise' },
       { label: 'Surface au sol totale', value: '4,14 m²' },
       { label: 'Dimensions extérieures', value: 'Largeur 345 cm × Profondeur 120 cm × Hauteur 220 cm' },
-      { label: 'Matériau', value: 'Pin sylvestre d’Europe du Nord traité autoclave classe III' },
+      { label: 'Matériau', value: 'Bois naturel d’Europe du Nord certifié FSC avec panneaux LP SmartSide / traité' },
       { label: 'Toiture', value: 'Toit étanche feutre bitumé noir hydrofuge inclus' },
-      { label: 'Capacité de bois', value: 'Jusqu’à 6 stères de bûches de 33 à 50 cm' },
-      { label: 'Poids total du kit', value: '285 kg avec visserie complète et guide de montage' },
+      { label: 'Capacité de bois', value: 'Stockage ventilé pour bûches de 33 à 50 cm' },
+      { label: 'Poids total du kit', value: '274 kg avec visserie complète et guide de montage' },
     ],
     warranty: 'Garantie fabricant 2 ans',
     relatedSlugs: [
@@ -628,7 +628,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'foyer-bois-panoramique-acaminetti-flat-150x50': {
     unitPriceLabel: 'Écran panoramique 150 cm — Foyer relevable guillotine',
-    badgeText: '● Sur commande usine — Expédié sous 5 jours',
+    badgeText: 'Sur commande usine — Expédié sous 5 jours',
     delivery: {
       delay: 'Livré sous 7 à 12 jours ouvrés sur rendez-vous',
       type: 'heavy_freight',
@@ -661,8 +661,8 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
   },
 
   'chariot-buches-le-marquier-fjord-noir': {
-    unitPriceLabel: 'Fabrication Origine France Garantie — Capacité 60 kg',
-    badgeText: '● En stock — Expédié sous 24h',
+    unitPriceLabel: 'Origine France Garantie — Acier noir epoxy',
+    badgeText: 'En stock — Expédié sous 24h',
     delivery: {
       delay: 'Livré sous 48h à 72h',
       type: 'parcel',
@@ -670,18 +670,17 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
       carrierNotice: 'Colis soigné remis contre signature.',
     },
     usageTips: [
-      'Transportez jusqu’à 60 kg de bûches depuis votre abri extérieur jusqu’au salon sans effort et sans salir vos sols grâce aux roues bandage caoutchouc.',
-      'Son design noir épuré sert également de range-bûches esthétique à côté de votre poêle ou insert.',
+      'Déplacez facilement vos bûches (jusqu’à 50 cm de longueur) depuis l’abri extérieur jusqu’au foyer grâce aux deux grandes roues.',
+      'Son design noir épuré sert également de range-bûches vertical discret à côté de votre poêle ou insert.',
     ],
-    storageAdvice: 'Structure acier traitée peinture époxy, utilisable aussi bien à l’intérieur qu’à l’extérieur.',
+    storageAdvice: 'Structure acier époxy noir, utilisable aussi bien à l’intérieur qu’à l’extérieur sous abri.',
     detailedSpecs: [
-      { label: 'Marque & Origine', value: 'Le Marquier — Fabriqué à Bayonne (Origine France Garantie)' },
-      { label: 'Modèle', value: 'Chariot Fjord Noir' },
-      { label: 'Capacité de charge', value: 'Jusqu’à 60 kg de bûches' },
-      { label: 'Matériau', value: 'Acier électrozingué avec finition peinture époxy texturée noire' },
-      { label: 'Roues', value: 'Grandes roues Ø 20 cm avec pneus caoutchouc tout-terrain silencieux' },
-      { label: 'Dimensions', value: 'Largeur 45 cm × Profondeur 48 cm × Hauteur 103 cm' },
-      { label: 'Poids net', value: '14 kg' },
+      { label: 'Marque & Origine', value: 'Le Marquier — Origine France Garantie (Ref. CRB100E13)' },
+      { label: 'Modèle', value: 'Chariot à bûches Fjord Noir' },
+      { label: 'Capacité bûches', value: 'Adapté aux bûches jusqu’à 50 cm' },
+      { label: 'Matériau', value: 'Acier finition peinture époxy noir' },
+      { label: 'Dimensions', value: 'Longueur 45 cm × Profondeur 50 cm × Hauteur 92 cm' },
+      { label: 'Poids net', value: '13,2 kg' },
     ],
     warranty: 'Garantie fabricant 2 ans',
     relatedSlugs: [
@@ -693,7 +692,7 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'chauffage-infrarouge-exterieur-frico-term-ip67-2000w': {
     unitPriceLabel: 'Qualité suédoise — 100% étanche IP67 toutes intempéries',
-    badgeText: '● En stock — Expédié sous 24h',
+    badgeText: 'En stock — Expédié sous 24h',
     delivery: {
       delay: 'Livré sous 48h à 72h',
       type: 'parcel',
@@ -724,29 +723,29 @@ export const productRichSpecs: Record<string, RichProductSpec> = {
 
   'fendeur-buches-scheppach-compact-10t-3150w': {
     unitPriceLabel: 'Puissance 10 tonnes — Moteur 3 150 W sur secteur 230 V',
-    badgeText: '● En stock — Expédié sous 48h',
+    badgeText: 'En stock — Expédié sous 48h',
     delivery: {
       delay: 'Livré sous 5 à 8 jours ouvrés sur rendez-vous',
       type: 'heavy_freight',
       headline: 'Livraison transporteur sur palette sécurisée avec hayon',
       carrierNotice:
-        'Machine de 125 kg livrée sur palette sanglée. Le transporteur vous contacte pour convenir du rendez-vous de livraison.',
+        'Machine de 134 kg livrée sur palette sanglée. Le transporteur vous contacte pour convenir du rendez-vous de livraison.',
     },
     usageTips: [
       'Commande bimanuelle de sécurité : les deux mains sont obligatoirement sur les poignées pour actionner la descente du coin.',
       'Fend aisément tous les types de bois, même les nœuds et les essences denses (chêne sec, charme, orme).',
-      'Plateau réglable permettant de fendre des bûches courtes (30 cm) comme des rondins jusqu’à 107 cm.',
+      'Plateau réglable permettant de fendre des bûches courtes comme des rondins jusqu’à 107 cm.',
     ],
     storageAdvice: 'Vérifier le niveau d’huile hydraulique une fois par an et stocker sous abri après nettoyage de la table.',
     detailedSpecs: [
-      { label: 'Marque', value: 'Scheppach (Allemagne)' },
+      { label: 'Marque', value: 'Scheppach (Allemagne — Réf. 5905423901)' },
       { label: 'Modèle', value: 'Compact 10T Vertical' },
-      { label: 'Force de fendage hydraulique', value: '10 Tonnes réelles' },
-      { label: 'Moteur électrique', value: '3 150 Watts (4,3 CV) — 230 V standard domestique' },
-      { label: 'Longueur max. de bûche', value: 'Jusqu’à 107 cm' },
-      { label: 'Diamètre max. de bûche', value: 'Jusqu’à 35 cm' },
-      { label: 'Sécurité', value: 'Double commande bimanuelle avec griffes de maintien' },
-      { label: 'Poids net', value: '125 kg (sur 2 roues de transport tout-terrain)' },
+      { label: 'Force de fendage hydraulique', value: '10 Tonnes' },
+      { label: 'Moteur électrique', value: '3 150 Watts — 230 V standard domestique' },
+      { label: 'Longueur max. de bûche', value: 'Jusqu’à 107 cm (1070 mm)' },
+      { label: 'Diamètre de bûche', value: 'De 8 à 38 cm (380 mm max.)' },
+      { label: 'Sécurité', value: 'Double commande bimanuelle avec dispositif anti-basculement' },
+      { label: 'Poids net', value: '134 kg (sur 2 roues de transport)' },
     ],
     warranty: 'Garantie constructeur 5 ans Scheppach',
     relatedSlugs: [

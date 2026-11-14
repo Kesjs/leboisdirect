@@ -4,10 +4,10 @@ interface LogoProps {
   className?: string
 }
 
-export default function Logo({ className = 'h-16 w-[180px] shrink-0' }: LogoProps) {
+export default function Logo({ className = 'h-[52px] w-[138px] sm:h-[58px] sm:w-[154px] shrink-0' }: LogoProps) {
   return (
     <div className={`flex items-center ${className}`}>
-      <Image src="/images/braviko-logo.png" alt="Braviko" width={170} height={64} className="h-auto w-full object-contain" priority />
+      <Image src="/images/braviko-logo.png" alt="Braviko" width={170} height={64} className="h-full w-auto object-contain" priority />
     </div>
   )
 }

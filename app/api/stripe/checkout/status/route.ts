@@ -14,17 +14,21 @@ export async function GET(request: Request) {
     const session = await stripeClient().checkout.sessions.retrieve(sessionId, { expand: ['line_items'] })
     const reference = session.metadata?.reference
     const userId = session.metadata?.user_id
-    if (!reference || !userId) return NextResponse.json({ error: 'ORDER_NOT_FOUND' }, { status: 404, headers })
+    if (!reference) return NextResponse.json({ error: 'ORDER_NOT_FOUND' }, { status: 404, headers })
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
     if (!serviceKey) throw new Error('ORDER_LOOKUP_UNAVAILABLE')
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     })
     const { data: order, error } = await supabase.from('braviko_orders')
-      .select('reference, payment_status, stripe_session_id')
-      .eq('reference', reference).eq('user_id', userId).maybeSingle()
+      .select('reference, user_id, payment_status, stripe_session_id')
+      .eq('reference', reference).maybeSingle()
     if (error) throw error
-    if (!order || (order.stripe_session_id && order.stripe_session_id !== session.id)) {
+    if (
+      !order ||
+      (order.stripe_session_id && order.stripe_session_id !== session.id) ||
+      (userId ? order.user_id !== userId : order.user_id !== null)
+    ) {
       return NextResponse.json({ error: 'ORDER_NOT_FOUND' }, { status: 404, headers })
     }
     // This unguessable session URL exposes only a minimal receipt, never

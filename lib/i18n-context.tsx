@@ -31,23 +31,22 @@ type I18nContextValue = { locale: Locale; setLocale: (locale: Locale) => void; t
 const I18nContext = createContext<I18nContextValue | null>(null)
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocale] = useState<Locale>('fr')
+  const locale: Locale = 'fr'
 
   useEffect(() => {
+    document.documentElement.lang = 'fr'
     try {
-      const saved = window.localStorage.getItem('braviko-locale')
-      if (saved === 'fr' || saved === 'de' || saved === 'it') setLocale(saved)
-    } catch { /* The selector still works when browser storage is unavailable. */ }
+      window.localStorage.removeItem('braviko-locale')
+    } catch {
+      /* Ignore storage access errors. */
+    }
   }, [])
 
-  useEffect(() => { document.documentElement.lang = locale }, [locale])
-
-  const changeLocale = useCallback((nextLocale: Locale) => {
-    setLocale(nextLocale)
-    try { window.localStorage.setItem('braviko-locale', nextLocale) } catch { /* Session-only choice. */ }
+  const changeLocale = useCallback((_nextLocale: Locale) => {
+    // Storefront is French-only.
   }, [])
 
-  const value = useMemo(() => ({ locale, setLocale: changeLocale, t: translations[locale] }), [locale, changeLocale])
+  const value = useMemo(() => ({ locale, setLocale: changeLocale, t: translations.fr }), [changeLocale])
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
 }
 

@@ -14,13 +14,38 @@ import { formatPrice } from '@/lib/utils'
 import { useCart } from '@/lib/cart-context'
 import { useToast } from '@/components/Toast'
 import { useI18n } from '@/lib/i18n-context'
-import { commerceCopy } from '@/data/commerce-copy'
-import { productLabel } from '@/data/product-labels'
+import { categoryLabel, productLabel } from '@/data/product-labels'
 import { uiCopy } from '@/data/ui-copy'
 import { getProductReviews } from '@/data/product-reviews'
 import { getProductVideo, getYouTubeEmbedUrl, getYouTubeThumbnail } from '@/data/product-videos'
 import { getProductRichSpec } from '@/data/product-rich-specs'
+import { computeDynamicUnitPriceLabel } from '@/lib/unit-price'
 import { PaymentBadgesRow, SecureShieldIcon, DeliveryTruckIcon } from '@/components/PaymentLogos'
+
+function StarRatingRow({ rating, size = 15 }: { rating: number; size?: number }) {
+  const filledCount = Math.max(0, Math.min(5, Math.round(rating)))
+  return (
+    <span className="inline-flex items-center gap-[2px]" aria-label={`${filledCount} sur 5`}>
+      {Array.from({ length: 5 }, (_, index) => {
+        const filled = index < filledCount
+        return (
+          <svg
+            key={index}
+            width={size}
+            height={size}
+            viewBox="0 0 20 20"
+            fill={filled ? '#FBBF24' : 'none'}
+            stroke="#B45309"
+            strokeWidth="1.4"
+            aria-hidden="true"
+          >
+            <path d="M10 2.5l2.32 4.7 5.18.75-3.75 3.65.88 5.16L10 14.32l-4.63 2.44.88-5.16L2.5 7.95l5.18-.75L10 2.5z" />
+          </svg>
+        )
+      })}
+    </span>
+  )
+}
 
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
@@ -34,12 +59,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [added, setAdded] = useState(false)
   const [activeAccordion, setActiveAccordion] = useState<string | null>('specs')
   const [isZoomOpen, setIsZoomOpen] = useState(false)
+  const [containBySrc, setContainBySrc] = useState<Record<string, boolean>>({})
 
   const { addItem } = useCart()
   const { showToast } = useToast()
   const router = useRouter()
   const { locale } = useI18n()
-  const c = commerceCopy[locale]
   const ui = uiCopy[locale]
 
   useEffect(() => {
@@ -52,6 +77,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
         setCatalogProducts(list)
         const current = list.find((item: Product) => item.slug === slug)
         setProduct(current || null)
+        setSelectedMediaIndex(0)
         setLoading(false)
       })
       .catch(() => {
@@ -68,6 +94,15 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     }
   }, [product])
 
+  useEffect(() => {
+    if (!isZoomOpen) return
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsZoomOpen(false)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isZoomOpen])
+
   if (loading && !product) return <PageSkeleton variant="product" label={ui.product.loading} />
 
   if (!product) {
@@ -78,7 +113,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const currentVariant = product.variants?.find((v) => v.id === selectedVariant)
   const currentPrice = currentVariant?.price || product.price
 
-  // Cross-selling : priorité aux slugs complémentaires spécifiés, sinon produits de la même catégorie
   let relatedProducts: Product[] = []
   if (richSpec?.relatedSlugs && richSpec.relatedSlugs.length > 0) {
     relatedProducts = richSpec.relatedSlugs
@@ -97,11 +131,50 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const videoThumbnail = productVideo?.posterUrl || product.images[0] || product.image
   const galleryItems = [
     ...product.images.map((src) => ({ type: 'image' as const, src })),
-    ...(productVideo ? [{ type: 'video' as const, src: productVideo.youtubeId ? getYouTubeThumbnail(productVideo.youtubeId) : videoThumbnail }] : []),
+    ...(productVideo
+      ? [
+          {
+            type: 'video' as const,
+            src: productVideo.youtubeId ? getYouTubeThumbnail(productVideo.youtubeId) : videoThumbnail,
+          },
+        ]
+      : []),
   ]
   const selectedMedia = galleryItems[selectedMediaIndex] || galleryItems[0]
   const productReviews = getProductReviews(product.slug)
+  const reviewCount = productReviews.length
+  const averageRating =
+    reviewCount > 0
+      ? productReviews.reduce((sum, review) => sum + (review.rating ?? 5), 0) / reviewCount
+      : 0
+  const formattedRating = averageRating.toFixed(1).replace('.', ',')
+  const dynamicUnitPriceLabel = computeDynamicUnitPriceLabel(
+    product,
+    currentVariant,
+    currentPrice,
+    richSpec,
+  )
   const localizedProduct = productLabel(product, locale)
+
+  const recordImageAspect = (src: string, img: HTMLImageElement) => {
+    if (!img.naturalWidth || !img.naturalHeight) return
+    const shouldContain = img.naturalWidth / img.naturalHeight < 1.15
+    setContainBySrc((prev) => (prev[src] === shouldContain ? prev : { ...prev, [src]: shouldContain }))
+  }
+
+  const keyPoints = richSpec?.detailedSpecs?.length
+    ? richSpec.detailedSpecs.slice(0, 4)
+    : product.features
+        .map((line) => {
+          const separator = line.indexOf(':')
+          return separator > 0
+            ? { label: line.slice(0, separator).trim(), value: line.slice(separator + 1).trim() }
+            : null
+        })
+        .filter((item): item is { label: string; value: string } => Boolean(item))
+        .slice(0, 4)
+
+  const statusText = (richSpec?.badgeText || 'En stock — Expédié rapidement').replace(/^●\s*/, '')
 
   const handleAddToCart = () => {
     addItem(product, quantity, selectedVariant || undefined)
@@ -122,7 +195,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     setActiveAccordion((curr) => (curr === id ? null : id))
   }
 
-  // Schema.org enrichi
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.fr'
   const productSchema = {
     '@context': 'https://schema.org',
@@ -140,11 +212,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       url: `${baseUrl}/produit/${encodeURIComponent(product.slug)}`,
       seller: { '@type': 'Organization', name: 'Braviko' },
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      reviewCount: '18',
-    },
   }
 
   const breadcrumbSchema = {
@@ -156,6 +223,8 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       { '@type': 'ListItem', position: 3, name: localizedProduct.name, item: `${baseUrl}/produit/${product.slug}` },
     ],
   }
+
+  const isMainContain = selectedMedia?.src ? Boolean(containBySrc[selectedMedia.src]) : false
 
   return (
     <>
@@ -169,324 +238,395 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       />
       <Header />
 
-      <main id="main-content" className="min-h-screen bg-[#FAF9F6] text-charcoal pb-64">
+      <main id="main-content" className="min-h-screen bg-[#FAF9F6] text-[#252823] pb-64">
         {/* Fil d'Ariane */}
-        <div className="border-b border-hairline bg-white/80 backdrop-blur-sm sticky top-0 z-10">
-          <div className="container-custom py-14">
-            <nav className="flex items-center gap-8 text-xs text-smoke flex-wrap" aria-label="Fil d'Ariane">
-              <Link href="/" className="hover:text-braise transition-colors">
+        <div className="border-b border-[#DEDFD6] bg-white">
+          <div className="container-custom py-[12px]">
+            <nav className="flex items-center gap-[8px] text-[12px] text-[#64685F] flex-wrap" aria-label="Fil d'Ariane">
+              <Link href="/" className="hover:text-[#995033] transition-colors">
                 Accueil
               </Link>
-              <span className="text-ash" aria-hidden="true">/</span>
-              <Link href="/boutique" className="hover:text-braise transition-colors">
+              <span className="text-[#A3A3A3]" aria-hidden="true">/</span>
+              <Link href="/boutique" className="hover:text-[#995033] transition-colors">
                 Boutique
               </Link>
-              <span className="text-ash" aria-hidden="true">/</span>
-              <span className="text-charcoal font-medium truncate max-w-[280px] sm:max-w-md">
+              <span className="text-[#A3A3A3]" aria-hidden="true">/</span>
+              <span className="text-[#252823] font-medium truncate max-w-[260px] sm:max-w-[440px]">
                 {localizedProduct.name}
               </span>
             </nav>
           </div>
         </div>
 
-        {/* HERO PRODUIT : 2 Colonnes équilibrées (Visuels à gauche + Achat à droite) */}
-        <div className="container-custom pt-32 pb-48">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-32 lg:gap-48 items-start">
-            
-            {/* COLONNE GAUCHE (7 cols) : Miniatures verticales + Photo principale */}
-            <div className="lg:col-span-7 flex flex-col-reverse sm:flex-row gap-16 items-start">
-              
-              {/* Miniatures verticales à gauche */}
-              {galleryItems.length > 1 && (
-                <div className="flex sm:flex-col gap-10 overflow-x-auto sm:overflow-y-auto max-h-[540px] w-full sm:w-20 shrink-0 pb-4 sm:pb-0 scrollbar-thin">
-                  {galleryItems.map((item, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setSelectedMediaIndex(idx)}
-                      aria-label={`Photo ${idx + 1}`}
-                      className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 transition-all shrink-0 bg-white ${
-                        selectedMediaIndex === idx
-                          ? 'border-braise shadow-md ring-2 ring-braise/20 scale-[1.02]'
-                          : 'border-hairline hover:border-smoke opacity-80 hover:opacity-100'
-                      }`}
-                    >
+        {/* HERO PRODUIT : 2 Colonnes équilibrées (Galerie + Points clés à gauche / Achat à droite) */}
+        <div className="container-custom pt-[28px] lg:pt-[36px] pb-[48px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-[28px] lg:gap-[40px] items-start">
+            {/* COLONNE GAUCHE (7 cols) : Galerie + Points clés */}
+            <div className="lg:col-span-7 lg:sticky lg:top-[104px] min-w-0 flex flex-col gap-[16px]">
+              <div className="flex flex-col-reverse sm:flex-row gap-[12px] sm:gap-[16px] items-start">
+                {galleryItems.length > 1 && (
+                  <div
+                    className="flex flex-row sm:flex-col gap-[8px] sm:gap-[10px] w-full sm:w-[88px] shrink-0 overflow-x-auto sm:overflow-y-auto sm:max-h-[480px] pb-[4px] sm:pb-0 scrollbar-hide"
+                    aria-label="Galerie d'images du produit"
+                  >
+                    {galleryItems.map((item, idx) => {
+                      const thumbContain = containBySrc[item.src]
+                      const isActive = selectedMediaIndex === idx
+                      return (
+                        <button
+                          key={`${item.src}-${idx}`}
+                          type="button"
+                          onClick={() => setSelectedMediaIndex(idx)}
+                          aria-label={item.type === 'video' ? 'Lire la vidéo du produit' : `Afficher la photo ${idx + 1}`}
+                          aria-pressed={isActive}
+                          className={`relative w-[68px] h-[68px] sm:w-[88px] sm:h-[88px] rounded-[8px] overflow-hidden shrink-0 bg-white transition-all ${
+                            isActive
+                              ? 'border-2 border-[#995033] ring-2 ring-[#995033]/15 opacity-100'
+                              : 'border border-[#DEDFD6] opacity-75 hover:opacity-100 hover:border-[#64685F]'
+                          }`}
+                        >
+                          <Image
+                            src={item.src}
+                            alt={`${localizedProduct.name} — vue ${idx + 1}`}
+                            fill
+                            onLoad={(e) => recordImageAspect(item.src, e.currentTarget)}
+                            className={thumbContain ? 'object-contain p-[6px]' : 'object-cover'}
+                            sizes="88px"
+                          />
+                          {item.type === 'video' && (
+                            <span className="absolute inset-0 bg-[#252823]/40 flex items-center justify-center text-white">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M8 5.5v13l10-6.5-10-6.5z" />
+                              </svg>
+                            </span>
+                          )}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+
+                <div className="relative flex-1 w-full aspect-[4/3] rounded-[8px] overflow-hidden bg-white border border-[#DEDFD6] group">
+                  {selectedMedia?.type === 'video' && productVideo?.mp4Url ? (
+                    <video
+                      className="w-full h-full object-cover"
+                      src={productVideo.mp4Url}
+                      poster={videoThumbnail}
+                      controls
+                      playsInline
+                      preload="metadata"
+                    />
+                  ) : selectedMedia?.type === 'video' && productVideo?.youtubeId ? (
+                    <iframe
+                      className="w-full h-full"
+                      src={getYouTubeEmbedUrl(productVideo.youtubeId)}
+                      title={productVideo.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : selectedMedia ? (
+                    <>
                       <Image
-                        src={item.src}
-                        alt={`${localizedProduct.name} vue ${idx + 1}`}
+                        key={selectedMedia.src}
+                        src={selectedMedia.src}
+                        alt={localizedProduct.name}
                         fill
-                        className="object-cover"
-                        sizes="80px"
+                        priority
+                        onLoad={(e) => recordImageAspect(selectedMedia.src, e.currentTarget)}
+                        className={
+                          isMainContain
+                            ? 'object-contain p-[16px] sm:p-[24px] cursor-zoom-in transition-transform duration-300 group-hover:scale-[1.02]'
+                            : 'object-cover cursor-zoom-in transition-transform duration-300 group-hover:scale-[1.02]'
+                        }
+                        sizes="(max-width: 1024px) 100vw, 55vw"
+                        onClick={() => setIsZoomOpen(true)}
                       />
-                      {item.type === 'video' && (
-                        <span className="absolute inset-0 bg-black/30 flex items-center justify-center text-white text-xs font-bold">
-                          ▶
-                        </span>
-                      )}
-                    </button>
-                  ))}
+                      <button
+                        type="button"
+                        onClick={() => setIsZoomOpen(true)}
+                        className="absolute bottom-[12px] right-[12px] inline-flex items-center gap-[6px] min-h-[38px] px-[12px] py-[6px] rounded-[4px] bg-white/95 hover:bg-white text-[#252823] border border-[#DEDFD6] hover:border-[#252823] text-[12px] font-medium transition-colors"
+                        aria-label="Agrandir l'image"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                          <circle cx="8.5" cy="8.5" r="5.5" />
+                          <path d="m13 13 4 4M8.5 6v5M6 8.5h5" strokeLinecap="round" />
+                        </svg>
+                        <span>Agrandir</span>
+                      </button>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+
+              {keyPoints.length > 0 && (
+                <div className="rounded-[8px] border border-[#DEDFD6] bg-white overflow-hidden">
+                  <div className="flex items-center justify-between gap-[12px] px-[16px] py-[10px] border-b border-[#DEDFD6] bg-[#FAF9F6]">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64685F]">
+                      Points clés · {categoryLabel(product.category, locale)}
+                    </span>
+                    <a
+                      href="#details-fiche"
+                      className="text-[12px] font-medium text-[#995033] hover:underline underline-offset-4 whitespace-nowrap"
+                    >
+                      Fiche complète
+                    </a>
+                  </div>
+                  <dl className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 divide-[#DEDFD6]">
+                    {keyPoints.map((spec, idx) => (
+                      <div
+                        key={spec.label}
+                        className={`px-[16px] py-[12px] ${idx >= 2 ? 'sm:border-t sm:border-[#DEDFD6]' : ''} ${idx % 2 === 1 ? 'sm:border-l sm:border-[#DEDFD6]' : ''}`}
+                      >
+                        <dt className="text-[11px] uppercase tracking-[0.08em] text-[#64685F]">
+                          {spec.label}
+                        </dt>
+                        <dd className="mt-[4px] text-[13px] font-medium text-[#252823] leading-snug">
+                          {spec.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
                 </div>
               )}
-
-              {/* Photo principale grand format */}
-              <div className="relative flex-1 w-full aspect-[4/3] rounded-2xl overflow-hidden bg-white border border-hairline shadow-sm group">
-                {selectedMedia?.type === 'video' && productVideo?.mp4Url ? (
-                  <video
-                    className="w-full h-full object-cover"
-                    src={productVideo.mp4Url}
-                    poster={videoThumbnail}
-                    controls
-                    playsInline
-                    preload="metadata"
-                  />
-                ) : selectedMedia?.type === 'video' && productVideo?.youtubeId ? (
-                  <iframe
-                    className="w-full h-full"
-                    src={getYouTubeEmbedUrl(productVideo.youtubeId)}
-                    title={productVideo.title}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                ) : selectedMedia ? (
-                  <>
-                    <Image
-                      src={selectedMedia.src}
-                      alt={localizedProduct.name}
-                      fill
-                      className="object-cover cursor-zoom-in transition-transform duration-300 group-hover:scale-[1.02]"
-                      sizes="(max-width: 1024px) 100vw, 55vw"
-                      priority
-                      onClick={() => setIsZoomOpen(true)}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setIsZoomOpen(true)}
-                      className="absolute bottom-12 right-12 bg-white/90 hover:bg-white text-charcoal px-12 py-6 rounded-lg text-xs font-medium shadow-md backdrop-blur-sm transition-all"
-                      aria-label="Agrandir l'image"
-                    >
-                      🔍 Agrandir
-                    </button>
-                  </>
-                ) : null}
-              </div>
             </div>
 
             {/* COLONNE DROITE (5 cols) : Informations & Bloc de Conversion */}
-            <div className="lg:col-span-5 flex flex-col gap-20">
-              
-              {/* Titre & Note */}
+            <div className="lg:col-span-5 min-w-0 flex flex-col gap-[16px]">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-charcoal leading-snug">
+                <h1 className="text-[26px] sm:text-[32px] font-semibold tracking-tight text-[#252823] leading-[1.16] text-balance">
                   {localizedProduct.name}
                 </h1>
 
-                {/* Badge disponibilité & étoiles */}
-                <div className="flex items-center gap-12 mt-10 text-xs flex-wrap">
-                  <span className="inline-flex items-center gap-6 px-10 py-4 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">
-                    <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-                    {richSpec?.badgeText || '● En stock — Expédié rapidement'}
-                  </span>
-                  <div className="flex items-center gap-4 text-amber-500 text-sm font-semibold">
-                    <span>★★★★★</span>
-                    <span className="text-smoke text-xs font-normal">(4.9/5 · 18 avis vérifiés)</span>
+                {reviewCount > 0 && (
+                  <div className="mt-[10px]">
+                    <a
+                      href="#details-fiche"
+                      onClick={() => setActiveAccordion('reviews')}
+                      className="inline-flex items-center gap-[8px] px-[10px] py-[6px] rounded-[6px] bg-white border border-[#DEDFD6] hover:border-[#FBBF24] transition-colors"
+                    >
+                      <StarRatingRow rating={averageRating} size={16} />
+                      <strong className="text-[13px] font-semibold text-[#252823] tabular-nums">
+                        {formattedRating}/5
+                      </strong>
+                      <span className="text-[12px] text-[#64685F]">
+                        ({reviewCount} avis d’illustration)
+                      </span>
+                    </a>
                   </div>
+                )}
+
+                <div className="flex items-center gap-[10px] mt-[10px] text-[12px] flex-wrap">
+                  <span className="inline-flex items-center gap-[8px] px-[10px] py-[4px] rounded-[4px] bg-[#EEEEE7] text-[#252823] border border-[#DEDFD6] font-medium">
+                    <span className="w-[8px] h-[8px] rounded-full bg-[#34483A] shrink-0" aria-hidden="true" />
+                    <span>{statusText}</span>
+                  </span>
+                  {richSpec?.warranty && (
+                    <span className="text-[#64685F] font-medium">
+                      {richSpec.warranty}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              {/* Bloc Prix conforme & unitaire */}
-              <div className="p-16 rounded-xl bg-white border border-hairline shadow-sm">
-                <div className="flex items-baseline gap-10">
-                  <span className="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">
+              <div className="p-[18px] sm:p-[20px] rounded-[8px] bg-white border border-[#DEDFD6]">
+                <div className="flex items-baseline gap-[10px] flex-wrap">
+                  <span className="text-[34px] sm:text-[42px] font-bold leading-none text-[#252823] tracking-tight tabular-nums">
                     {formatPrice(currentPrice)}
                   </span>
-                  <span className="text-sm font-bold text-braise tracking-wide uppercase">
+                  <span className="text-[12px] font-semibold text-[#995033] tracking-[0.08em] uppercase">
                     TTC
                   </span>
                 </div>
-                {richSpec?.unitPriceLabel ? (
-                  <p className="text-xs font-medium text-emerald-800 mt-6 bg-emerald-50/70 inline-block px-8 py-3 rounded">
-                    {richSpec.unitPriceLabel}
-                  </p>
-                ) : (
-                  <p className="text-xs text-smoke mt-4">TVA incluse · Paiement sécurisé</p>
-                )}
+                <p className="mt-[10px] inline-flex items-center gap-[6px] px-[10px] py-[5px] rounded-[4px] bg-[#EEEEE7] border border-[#DEDFD6] text-[13px] font-semibold text-[#34483A] tabular-nums">
+                  {dynamicUnitPriceLabel}
+                </p>
+                <p className="text-[12px] text-[#64685F] mt-[8px] tabular-nums">
+                  {quantity > 1
+                    ? `Total pour ${quantity} unités : ${formatPrice(currentPrice * quantity)} TTC · TVA incluse`
+                    : 'TVA incluse · Livraison en France'}
+                </p>
               </div>
 
-              {/* Description courte d'accroche */}
-              <p className="text-sm text-smoke leading-relaxed">
+              <p className="text-[14px] sm:text-[15px] text-[#64685F] leading-[1.6]">
                 {product.description || localizedProduct.description}
               </p>
 
-              {/* Sélecteur de variantes si plusieurs options */}
               {product.variants && product.variants.length > 1 && (
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-smoke mb-8">
-                    Sélectionnez votre format :
-                  </label>
-                  <div className="grid grid-cols-2 gap-8">
-                    {product.variants.map((v) => (
-                      <button
-                        key={v.id}
-                        type="button"
-                        onClick={() => setSelectedVariant(v.id)}
-                        className={`p-12 rounded-xl border-2 text-left transition-all ${
-                          selectedVariant === v.id
-                            ? 'border-charcoal bg-charcoal text-white shadow-sm'
-                            : 'border-hairline bg-white text-charcoal hover:border-smoke'
-                        }`}
-                      >
-                        <div className="font-semibold text-xs leading-tight">
-                          {v.label || (v.volume ? `${v.volume} stère(s)` : 'Format')}
-                        </div>
-                        <div className={`text-xs mt-4 ${selectedVariant === v.id ? 'text-gray-300' : 'text-smoke'}`}>
-                          {formatPrice(v.price)} TTC
-                        </div>
-                      </button>
-                    ))}
+                  <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64685F] mb-[8px]">
+                    Format
+                  </span>
+                  <div className="grid grid-cols-2 gap-[8px]">
+                    {product.variants.map((v) => {
+                      const active = selectedVariant === v.id
+                      return (
+                        <button
+                          key={v.id}
+                          type="button"
+                          onClick={() => setSelectedVariant(v.id)}
+                          aria-pressed={active}
+                          className={`min-h-[52px] p-[12px] rounded-[4px] border text-left transition-colors ${
+                            active
+                              ? 'border-[#252823] bg-[#252823] text-white'
+                              : 'border-[#DEDFD6] bg-white text-[#252823] hover:border-[#64685F]'
+                          }`}
+                        >
+                          <div className="font-medium text-[13px] leading-tight">
+                            {v.label || (v.volume ? `${v.volume} stère(s)` : 'Format')}
+                          </div>
+                          <div className={`text-[12px] mt-[4px] tabular-nums ${active ? 'text-white/80' : 'text-[#64685F]'}`}>
+                            {formatPrice(v.price)} TTC
+                          </div>
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               )}
 
               {/* Quantité & Boutons d'action */}
-              <div className="flex flex-col gap-12 pt-4">
-                <div className="flex items-center gap-12">
-                  <span className="text-xs font-semibold text-smoke">Quantité :</span>
-                  <div className="flex items-center rounded-xl border border-hairline bg-white shadow-sm overflow-hidden">
+              <div className="flex flex-col gap-[12px] pt-[4px]">
+                <div className="flex items-center gap-[12px]">
+                  <span className="text-[13px] font-medium text-[#64685F] whitespace-nowrap">Quantité</span>
+                  <div className="inline-flex items-center rounded-[4px] border border-[#DEDFD6] bg-white">
                     <button
                       type="button"
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="w-36 h-36 flex items-center justify-center hover:bg-mist text-charcoal font-bold text-base transition-colors"
+                      className="w-[44px] h-[44px] flex items-center justify-center hover:bg-[#EEEEE7] text-[#252823] transition-colors"
                       aria-label="Diminuer la quantité"
                     >
-                      −
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+                        <path d="M3 8h10" strokeLinecap="round" />
+                      </svg>
                     </button>
-                    <span className="w-40 text-center font-bold text-sm text-charcoal">
+                    <span className="w-[44px] text-center font-semibold text-[14px] text-[#252823] tabular-nums">
                       {quantity}
                     </span>
                     <button
                       type="button"
                       onClick={() => setQuantity(quantity + 1)}
-                      className="w-36 h-36 flex items-center justify-center hover:bg-mist text-charcoal font-bold text-base transition-colors"
+                      className="w-[44px] h-[44px] flex items-center justify-center hover:bg-[#EEEEE7] text-[#252823] transition-colors"
                       aria-label="Augmenter la quantité"
                     >
-                      +
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+                        <path d="M8 3v10M3 8h10" strokeLinecap="round" />
+                      </svg>
                     </button>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-[10px]">
                   <button
                     type="button"
                     onClick={handleAddToCart}
-                    className="w-full py-14 px-20 rounded-xl bg-charcoal hover:bg-black text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-8 active:scale-[0.98]"
+                    className="min-h-[48px] w-full px-[16px] py-[12px] rounded-[4px] border border-[#252823] bg-white hover:bg-[#EEEEE7] text-[#252823] font-medium text-[14px] transition-colors active:translate-y-[1px] flex items-center justify-center gap-[8px]"
                   >
-                    <span>{added ? '✓ Ajouté au panier !' : 'Ajouter au Panier'}</span>
+                    {added && (
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                        <path d="m3.5 8.5 3 3 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                    <span>{added ? 'Ajouté au panier' : 'Ajouter au panier'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleBuyNow}
-                    className="w-full py-14 px-20 rounded-xl bg-braise hover:bg-braise-dark text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-8 active:scale-[0.98]"
+                    className="min-h-[48px] w-full px-[16px] py-[12px] rounded-[4px] bg-[#252823] hover:bg-[#995033] text-white font-medium text-[14px] transition-colors active:translate-y-[1px] flex items-center justify-center gap-[8px] tabular-nums"
                   >
                     <span>Commander — {formatPrice(currentPrice * quantity)}</span>
                   </button>
                 </div>
               </div>
 
-              {/* ENCADRÉ DE RÉASSURANCE DÉDIÉ (Conforme à votre maquette) */}
-              <div className="rounded-2xl p-20 bg-[#F6F4EE] border border-[#E7E2D8] text-xs flex flex-col gap-16 mt-8">
-                
-                {/* 🚚 Livraison adaptée */}
-                <div className="flex items-start gap-12">
-                  <span className="p-8 rounded-lg bg-white text-braise shadow-2xs shrink-0 mt-2">
-                    <DeliveryTruckIcon className="w-5 h-5" />
+              {/* Encadré de réassurance */}
+              <div className="rounded-[8px] p-[16px] bg-[#EEEEE7] border border-[#DEDFD6] text-[12px] flex flex-col gap-[12px] mt-[4px]">
+                <div className="flex items-start gap-[12px]">
+                  <span className="p-[8px] rounded-[4px] bg-white border border-[#DEDFD6] text-[#995033] shrink-0">
+                    <DeliveryTruckIcon className="w-[20px] h-[20px]" />
                   </span>
-                  <div>
-                    <strong className="block font-semibold text-charcoal text-[13px]">
+                  <div className="min-w-0">
+                    <strong className="block font-semibold text-[#252823] text-[13px]">
                       {richSpec?.delivery.delay || 'Livraison sous 5 à 7 jours ouvrés'}
                     </strong>
-                    <p className="text-smoke mt-2 leading-relaxed">
+                    <p className="text-[#64685F] mt-[4px] leading-[1.5]">
                       {richSpec?.delivery.headline || 'Livraison soignée avec prise de rendez-vous préalable.'}
                     </p>
                   </div>
                 </div>
 
-                {/* 🔒 Paiement sécurisé avec vrais logos CB, Visa, Mastercard */}
-                <div className="flex items-start gap-12 border-t border-[#E7E2D8] pt-14">
-                  <span className="p-8 rounded-lg bg-white text-emerald-700 shadow-2xs shrink-0 mt-2">
-                    <SecureShieldIcon className="w-5 h-5" />
+                <div className="flex items-start gap-[12px] border-t border-[#DEDFD6] pt-[12px]">
+                  <span className="p-[8px] rounded-[4px] bg-white border border-[#DEDFD6] text-[#34483A] shrink-0">
+                    <SecureShieldIcon className="w-[20px] h-[20px]" />
                   </span>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between gap-8 flex-wrap">
-                      <strong className="font-semibold text-charcoal text-[13px]">
-                        Paiement 100% sécurisé
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-[8px] flex-wrap">
+                      <strong className="font-semibold text-[#252823] text-[13px]">
+                        Paiement sécurisé
                       </strong>
-                      <PaymentBadgesRow className="flex items-center gap-6" />
+                      <PaymentBadgesRow className="flex items-center gap-[6px]" />
                     </div>
-                    <p className="text-smoke mt-2 leading-relaxed">
-                      Transactions chiffrées SSL 256-bit par Carte Bancaire, Visa, Mastercard ou virement.
+                    <p className="text-[#64685F] mt-[4px] leading-[1.5]">
+                      Carte Bancaire, Visa, Mastercard ou virement SEPA avec chiffrement SSL.
                     </p>
                   </div>
                 </div>
 
-                {/* 🛡️ Service & Garantie */}
-                <div className="flex items-center gap-12 border-t border-[#E7E2D8] pt-12 text-smoke">
-                  <span className="text-braise font-bold text-sm">✓</span>
+                <div className="flex items-center gap-[10px] border-t border-[#DEDFD6] pt-[12px] text-[#64685F]">
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-[#34483A] shrink-0" aria-hidden="true">
+                    <path d="m3.5 8.5 3 3 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                   <span>{richSpec?.warranty || 'Garantie légale de conformité 2 ans'} · Support client en France</span>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
 
-        {/* SECTION INfÉRIEURE PLEINE LARGEUR : Onglets / Accordéons Riches & SEO */}
-        <div className="container-custom pt-16">
-          <div className="bg-white rounded-3xl border border-hairline shadow-sm overflow-hidden divide-y divide-hairline">
-            
+        {/* ACCORDÉONS : Fiche complète, utilisation, logistique, engagements */}
+        <div id="details-fiche" className="container-custom pt-[16px] scroll-mt-[100px]">
+          <div className="bg-white rounded-[8px] border border-[#DEDFD6] overflow-hidden divide-y divide-[#DEDFD6]">
             {/* 1. Description & Spécifications techniques */}
-            <div className="p-24 sm:p-32">
+            <div className="px-[20px] py-[16px] sm:px-[28px] sm:py-[20px]">
               <button
                 type="button"
                 onClick={() => toggleAccordion('specs')}
-                className="w-full flex items-center justify-between text-left group"
+                className="w-full min-h-[48px] flex items-center justify-between text-left gap-[16px] group"
                 aria-expanded={activeAccordion === 'specs'}
               >
-                <div>
-                  <span className="text-xs uppercase tracking-wider text-braise font-bold block mb-4">
-                    Fiche détaillée
-                  </span>
-                  <h2 className="text-lg sm:text-xl font-bold text-charcoal group-hover:text-braise transition-colors">
-                    Description & Caractéristiques techniques
-                  </h2>
-                </div>
-                <span className="w-32 h-32 rounded-full border border-hairline flex items-center justify-center font-bold text-smoke group-hover:border-braise group-hover:text-braise transition-all shrink-0 ml-16">
-                  {activeAccordion === 'specs' ? '−' : '+'}
+                <h2 className="text-[17px] sm:text-[19px] font-semibold text-[#252823] group-hover:text-[#995033] transition-colors">
+                  Description & caractéristiques techniques
+                </h2>
+                <span className="w-[40px] h-[40px] rounded-full border border-[#DEDFD6] flex items-center justify-center text-[#64685F] group-hover:border-[#995033] group-hover:text-[#995033] transition-colors shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+                    <path d="M3 8h10" strokeLinecap="round" />
+                    {activeAccordion !== 'specs' && <path d="M8 3v10" strokeLinecap="round" />}
+                  </svg>
                 </span>
               </button>
 
               {activeAccordion === 'specs' && (
-                <div className="pt-24 mt-16 border-t border-hairline/60">
-                  <div className="prose max-w-none text-smoke text-sm leading-relaxed mb-24 whitespace-pre-line">
+                <div className="pt-[20px] mt-[16px] border-t border-[#DEDFD6]">
+                  <div className="max-w-[68ch] text-[#64685F] text-[14px] leading-[1.65] mb-[20px] whitespace-pre-line">
                     {product.longDescription || product.description}
                   </div>
 
                   {richSpec?.detailedSpecs && richSpec.detailedSpecs.length > 0 && (
-                    <div className="mt-20">
-                      <h3 className="text-sm font-bold text-charcoal uppercase tracking-wider mb-12">
-                        Tableau des spécifications :
+                    <div className="mt-[16px]">
+                      <h3 className="text-[12px] font-semibold text-[#64685F] uppercase tracking-[0.12em] mb-[10px]">
+                        Spécifications détaillées
                       </h3>
-                      <div className="rounded-xl border border-hairline overflow-hidden">
-                        <table className="w-full text-left text-xs sm:text-sm">
+                      <div className="rounded-[8px] border border-[#DEDFD6] overflow-hidden">
+                        <table className="w-full text-left text-[13px]">
                           <tbody>
                             {richSpec.detailedSpecs.map((spec, i) => (
                               <tr
                                 key={i}
                                 className={i % 2 === 0 ? 'bg-[#FAF9F6]' : 'bg-white'}
                               >
-                                <td className="py-10 px-16 font-semibold text-charcoal w-1/3 border-b border-hairline/50">
+                                <td className="py-[10px] px-[16px] font-medium text-[#252823] w-1/3 border-b border-[#DEDFD6]">
                                   {spec.label}
                                 </td>
-                                <td className="py-10 px-16 text-smoke border-b border-hairline/50">
+                                <td className="py-[10px] px-[16px] text-[#64685F] border-b border-[#DEDFD6] tabular-nums">
                                   {spec.value}
                                 </td>
                               </tr>
@@ -501,35 +641,35 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             </div>
 
             {/* 2. Conseils d'utilisation & Stockage */}
-            <div className="p-24 sm:p-32">
+            <div className="px-[20px] py-[16px] sm:px-[28px] sm:py-[20px]">
               <button
                 type="button"
                 onClick={() => toggleAccordion('usage')}
-                className="w-full flex items-center justify-between text-left group"
+                className="w-full min-h-[48px] flex items-center justify-between text-left gap-[16px] group"
                 aria-expanded={activeAccordion === 'usage'}
               >
-                <div>
-                  <span className="text-xs uppercase tracking-wider text-forest font-bold block mb-4">
-                    Guide pratique
-                  </span>
-                  <h2 className="text-lg sm:text-xl font-bold text-charcoal group-hover:text-forest transition-colors">
-                    Conseils d’utilisation & Stockage optimal
-                  </h2>
-                </div>
-                <span className="w-32 h-32 rounded-full border border-hairline flex items-center justify-center font-bold text-smoke group-hover:border-forest group-hover:text-forest transition-all shrink-0 ml-16">
-                  {activeAccordion === 'usage' ? '−' : '+'}
+                <h2 className="text-[17px] sm:text-[19px] font-semibold text-[#252823] group-hover:text-[#995033] transition-colors">
+                  Conseils d’utilisation & stockage optimal
+                </h2>
+                <span className="w-[40px] h-[40px] rounded-full border border-[#DEDFD6] flex items-center justify-center text-[#64685F] group-hover:border-[#995033] group-hover:text-[#995033] transition-colors shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+                    <path d="M3 8h10" strokeLinecap="round" />
+                    {activeAccordion !== 'usage' && <path d="M8 3v10" strokeLinecap="round" />}
+                  </svg>
                 </span>
               </button>
 
               {activeAccordion === 'usage' && (
-                <div className="pt-24 mt-16 border-t border-hairline/60 text-sm text-smoke flex flex-col gap-20">
+                <div className="pt-[20px] mt-[16px] border-t border-[#DEDFD6] text-[14px] text-[#64685F] flex flex-col gap-[16px]">
                   {richSpec?.usageTips && richSpec.usageTips.length > 0 && (
                     <div>
-                      <h4 className="font-bold text-charcoal mb-10">Bonnes pratiques d’utilisation :</h4>
-                      <ul className="space-y-8 pl-4">
+                      <h3 className="font-semibold text-[#252823] mb-[10px]">Bonnes pratiques d’utilisation</h3>
+                      <ul className="space-y-[8px]">
                         {richSpec.usageTips.map((tip, idx) => (
-                          <li key={idx} className="flex items-start gap-10">
-                            <span className="text-forest font-bold">✓</span>
+                          <li key={idx} className="flex items-start gap-[10px]">
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-[#34483A] shrink-0 mt-[4px]" aria-hidden="true">
+                              <path d="m3.5 8.5 3 3 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
                             <span>{tip}</span>
                           </li>
                         ))}
@@ -538,9 +678,9 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   )}
 
                   {richSpec?.storageAdvice && (
-                    <div className="p-16 rounded-xl bg-[#F4F6F4] border border-[#DCE4DC] text-forest-dark">
-                      <strong className="block font-semibold mb-4 text-forest">Conseils de conservation :</strong>
-                      <p className="text-xs leading-relaxed">{richSpec.storageAdvice}</p>
+                    <div className="p-[16px] rounded-[8px] bg-[#EEEEE7] border border-[#DEDFD6] text-[#252823]">
+                      <strong className="block font-semibold mb-[4px] text-[#34483A]">Conseils de conservation</strong>
+                      <p className="text-[13px] leading-[1.6] text-[#64685F]">{richSpec.storageAdvice}</p>
                     </div>
                   )}
                 </div>
@@ -548,113 +688,119 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             </div>
 
             {/* 3. Modalités & Conditions de transport */}
-            <div className="p-24 sm:p-32">
+            <div className="px-[20px] py-[16px] sm:px-[28px] sm:py-[20px]">
               <button
                 type="button"
                 onClick={() => toggleAccordion('delivery')}
-                className="w-full flex items-center justify-between text-left group"
+                className="w-full min-h-[48px] flex items-center justify-between text-left gap-[16px] group"
                 aria-expanded={activeAccordion === 'delivery'}
               >
-                <div>
-                  <span className="text-xs uppercase tracking-wider text-braise font-bold block mb-4">
-                    Logistique
-                  </span>
-                  <h2 className="text-lg sm:text-xl font-bold text-charcoal group-hover:text-braise transition-colors">
-                    Modalités de livraison & Accès transporteur
-                  </h2>
-                </div>
-                <span className="w-32 h-32 rounded-full border border-hairline flex items-center justify-center font-bold text-smoke group-hover:border-braise group-hover:text-braise transition-all shrink-0 ml-16">
-                  {activeAccordion === 'delivery' ? '−' : '+'}
+                <h2 className="text-[17px] sm:text-[19px] font-semibold text-[#252823] group-hover:text-[#995033] transition-colors">
+                  Modalités de livraison & accès transporteur
+                </h2>
+                <span className="w-[40px] h-[40px] rounded-full border border-[#DEDFD6] flex items-center justify-center text-[#64685F] group-hover:border-[#995033] group-hover:text-[#995033] transition-colors shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+                    <path d="M3 8h10" strokeLinecap="round" />
+                    {activeAccordion !== 'delivery' && <path d="M8 3v10" strokeLinecap="round" />}
+                  </svg>
                 </span>
               </button>
 
               {activeAccordion === 'delivery' && (
-                <div className="pt-24 mt-16 border-t border-hairline/60 text-sm text-smoke flex flex-col gap-16 leading-relaxed">
-                  <p className="font-medium text-charcoal">
+                <div className="pt-[20px] mt-[16px] border-t border-[#DEDFD6] text-[14px] text-[#64685F] flex flex-col gap-[14px] leading-[1.6]">
+                  <p className="font-medium text-[#252823]">
                     {richSpec?.delivery.headline}
                   </p>
                   <p>{richSpec?.delivery.carrierNotice}</p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mt-8">
-                    <div className="p-14 rounded-xl bg-mist border border-hairline">
-                      <span className="font-bold text-charcoal block mb-4">1. Prise de rendez-vous</span>
-                      <p className="text-xs">Le transporteur vous contacte par téléphone/SMS pour valider le jour exact de livraison selon vos disponibilités.</p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px] mt-[4px]">
+                    <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                      <span className="font-semibold text-[#252823] block mb-[4px]">01. Prise de rendez-vous</span>
+                      <p className="text-[12px] leading-[1.5]">Le transporteur vous contacte par téléphone ou SMS pour fixer le jour exact selon vos disponibilités.</p>
                     </div>
-                    <div className="p-14 rounded-xl bg-mist border border-hairline">
-                      <span className="font-bold text-charcoal block mb-4">2. Accès camion</span>
-                      <p className="text-xs">Camion porteur 19T. L’accès doit être carrossable et dégagé (pas de voie interdite aux poids lourds sans dérogation).</p>
+                    <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                      <span className="font-semibold text-[#252823] block mb-[4px]">02. Accès véhicule</span>
+                      <p className="text-[12px] leading-[1.5]">Porteur adapté avec hayon. L’accès doit être carrossable et dégagé jusqu’au point de dépose.</p>
                     </div>
-                    <div className="p-14 rounded-xl bg-mist border border-hairline">
-                      <span className="font-bold text-charcoal block mb-4">3. Déchargement sécurisé</span>
-                      <p className="text-xs">Le chauffeur dépose la palette au sol au transpalette sur sol plat et dur (goudron, béton, enrobé).</p>
+                    <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                      <span className="font-semibold text-[#252823] block mb-[4px]">03. Déchargement sécurisé</span>
+                      <p className="text-[12px] leading-[1.5]">Dépose soignée au transpalette sur surface stable et plane (goudron, béton ou pavés).</p>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* 4. Avis clients & Expérience */}
-            <div className="p-24 sm:p-32">
+            {/* 4. Engagements qualité & Retours */}
+            <div className="px-[20px] py-[16px] sm:px-[28px] sm:py-[20px]">
               <button
                 type="button"
                 onClick={() => toggleAccordion('reviews')}
-                className="w-full flex items-center justify-between text-left group"
+                className="w-full min-h-[48px] flex items-center justify-between text-left gap-[16px] group"
                 aria-expanded={activeAccordion === 'reviews'}
               >
-                <div>
-                  <span className="text-xs uppercase tracking-wider text-amber-600 font-bold block mb-4">
-                    Retours d’expérience
-                  </span>
-                  <h2 className="text-lg sm:text-xl font-bold text-charcoal group-hover:text-amber-600 transition-colors">
-                    Avis clients & Engagements qualité
-                  </h2>
-                </div>
-                <span className="w-32 h-32 rounded-full border border-hairline flex items-center justify-center font-bold text-smoke group-hover:border-amber-600 group-hover:text-amber-600 transition-all shrink-0 ml-16">
-                  {activeAccordion === 'reviews' ? '−' : '+'}
+                <h2 className="text-[17px] sm:text-[19px] font-semibold text-[#252823] group-hover:text-[#995033] transition-colors">
+                  Engagements qualité & retours produit
+                </h2>
+                <span className="w-[40px] h-[40px] rounded-full border border-[#DEDFD6] flex items-center justify-center text-[#64685F] group-hover:border-[#995033] group-hover:text-[#995033] transition-colors shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+                    <path d="M3 8h10" strokeLinecap="round" />
+                    {activeAccordion !== 'reviews' && <path d="M8 3v10" strokeLinecap="round" />}
+                  </svg>
                 </span>
               </button>
 
               {activeAccordion === 'reviews' && (
-                <div className="pt-24 mt-16 border-t border-hairline/60">
+                <div className="pt-[20px] mt-[16px] border-t border-[#DEDFD6]">
                   {productReviews.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                      {productReviews.map((rev, i) => (
-                        <div key={i} className="p-16 rounded-xl bg-[#FAF9F6] border border-hairline">
-                          <div className="text-amber-500 font-bold mb-6">{'★'.repeat(Math.floor(rev.rating || 5))}</div>
-                          <p className="text-xs italic text-charcoal">« {rev.text} »</p>
-                          <span className="text-[11px] text-smoke block mt-8 font-medium">— {rev.author} {rev.date ? `· ${rev.date}` : ''}</span>
-                        </div>
-                      ))}
-                    </div>
+                    <>
+                      <div className="mb-[12px] flex items-center justify-between gap-[12px] flex-wrap">
+                        <span className="text-[12px] text-[#64685F]">
+                          Retours d’illustration catalogue
+                        </span>
+                        <span className="text-[11px] px-[8px] py-[2px] rounded-[4px] bg-[#EEEEE7] text-[#64685F] border border-[#DEDFD6]">
+                          Avis de démonstration
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-[12px]">
+                        {productReviews.map((rev, i) => (
+                          <div key={i} className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                            <div className="mb-[8px]">
+                              <StarRatingRow rating={rev.rating || 5} />
+                            </div>
+                            <p className="text-[13px] text-[#252823] leading-[1.55]">« {rev.text} »</p>
+                            <span className="text-[11px] text-[#64685F] block mt-[8px] font-medium">
+                              {rev.author} {rev.date ? `· ${rev.date}` : ''}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
                   ) : (
-                    <div className="p-20 rounded-2xl bg-[#FBF9F5] border border-[#EDE7DC] text-center max-w-xl mx-auto">
-                      <div className="text-amber-500 text-lg mb-6">★★★★★</div>
-                      <h4 className="font-bold text-charcoal text-sm mb-6">Engagement Qualité Contrôlée Braviko</h4>
-                      <p className="text-xs text-smoke leading-relaxed">
-                        Chaque référence fait l’objet d’un contrôle rigoureux du taux d’humidité et du conditionnement avant expédition. Les avis certifiés de nos clients sont publiés après livraison effective de chaque commande.
+                    <div className="p-[20px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6] max-w-[60ch]">
+                      <h3 className="font-semibold text-[#252823] text-[14px] mb-[6px]">Contrôle qualité avant expédition</h3>
+                      <p className="text-[13px] text-[#64685F] leading-[1.6]">
+                        Chaque référence sélectionnée par Braviko est vérifiée sur ses caractéristiques techniques, son conditionnement et sa conformité avant départ entrepôt.
                       </p>
                     </div>
                   )}
                 </div>
               )}
             </div>
-
           </div>
         </div>
 
-        {/* SECTION CROSS-SELLING : VOUS AIMEREZ AUSSI... */}
+        {/* SECTION CROSS-SELLING */}
         {relatedProducts.length > 0 && (
-          <section className="container-custom pt-64" aria-labelledby="cross-selling-title">
-            <div className="text-center mb-36">
-              <span className="text-xs font-bold uppercase tracking-widest text-braise">
-                Complétez votre équipement
-              </span>
-              <h2 id="cross-selling-title" className="text-2xl sm:text-3xl font-extrabold text-charcoal tracking-tight mt-6">
-                VOUS AIMEREZ AUSSI...
+          <section className="container-custom pt-[56px]" aria-labelledby="cross-selling-title">
+            <div className="mb-[24px]">
+              <p className="bk-eyebrow">Complétez votre équipement</p>
+              <h2 id="cross-selling-title" className="text-[26px] sm:text-[34px] font-medium text-[#252823] tracking-tight">
+                Dans le même univers
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-20">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[20px]">
               {relatedProducts.map((rel) => (
                 <ProductCard key={rel.id} product={rel} />
               ))}
@@ -665,20 +811,29 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
         {/* MODAL ZOOM PHOTO */}
         {isZoomOpen && selectedMedia?.type === 'image' && (
           <div
-            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-16 backdrop-blur-sm animate-fade-in"
+            role="dialog"
+            aria-modal="true"
+            aria-label={localizedProduct.name}
+            className="fixed inset-0 z-50 bg-[#252823]/85 flex items-center justify-center p-[16px] backdrop-blur-sm"
             onClick={() => setIsZoomOpen(false)}
           >
-            <div className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center">
+            <div
+              className="relative max-w-4xl max-h-[90dvh] w-full h-full flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
               <button
                 type="button"
                 onClick={() => setIsZoomOpen(false)}
-                className="absolute top-12 right-12 z-10 w-40 h-40 rounded-full bg-white text-charcoal font-bold text-xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
-                aria-label="Fermer le zoom"
+                className="absolute top-[12px] right-[12px] z-10 w-[44px] h-[44px] rounded-full bg-white border border-[#DEDFD6] text-[#252823] hover:bg-[#EEEEE7] flex items-center justify-center transition-colors"
+                aria-label="Fermer l'agrandissement"
               >
-                ✕
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+                  <path d="M4 4l10 10M14 4L4 14" strokeLinecap="round" />
+                </svg>
               </button>
               <div className="relative w-full h-full">
                 <Image
+                  key={selectedMedia.src}
                   src={selectedMedia.src}
                   alt={localizedProduct.name}
                   fill
@@ -690,7 +845,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             </div>
           </div>
         )}
-
       </main>
       <Footer />
     </>

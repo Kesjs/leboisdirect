@@ -6,6 +6,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import PageSkeleton from '@/components/PageSkeleton'
 import { useI18n } from '@/lib/i18n-context'
+import { useAuth } from '@/lib/auth-context'
 import { uiCopy } from '@/data/ui-copy'
 
 type Receipt = {
@@ -30,6 +31,7 @@ export default function OrderConfirmationPage() {
   const [missing, setMissing] = useState(false)
   const [attempt, setAttempt] = useState(0)
   const { locale } = useI18n()
+  const { user, loading: authLoading } = useAuth()
   const c = uiCopy[locale].confirmation
   const trackedConversion = useRef<string | null>(null)
 
@@ -99,11 +101,19 @@ export default function OrderConfirmationPage() {
         </div>
         {amount && <div className="bk-order-receipt-total"><span>{c.total}</span><strong>{amount}</strong></div>}
     </section>}
-    <div className="flex flex-wrap gap-16">
+    <div className="flex flex-wrap items-center gap-16">
       {(error || (receipt && !receipt.paid && !receipt.failed && !receipt.refunded)) &&
         <button className="bk-button" type="button" onClick={() => setAttempt(value => value + 1)}>{c.retry}</button>}
-      <Link href="/compte" className="bk-button">{c.account}<span aria-hidden="true">↗</span></Link>
-      <Link href="/boutique" className="bk-text-link">{c.continue}</Link>
+      {!authLoading && user ? (
+        <Link href="/compte" className="bk-button">{c.account}<span aria-hidden="true">↗</span></Link>
+      ) : (
+        <Link href="/boutique" className="bk-button">{c.continue}<span aria-hidden="true">↗</span></Link>
+      )}
+      {!authLoading && user ? (
+        <Link href="/boutique" className="bk-text-link">{c.continue}</Link>
+      ) : (
+        <Link href="/connexion?mode=signup&next=/compte" className="bk-text-link">Créer un compte (facultatif)<span aria-hidden="true">↗</span></Link>
+      )}
     </div>
   </main><Footer /></>
 }
