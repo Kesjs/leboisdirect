@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { cleanImagesBySlug } from "@/data/clean-product-images";
 import { isHeatingCategory } from "@/data/catalog-taxonomy";
+import {
+  getItalianProductOverride,
+  translateVariantLabel,
+} from "@/data/product-italian-overrides";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +26,7 @@ export async function GET(request: NextRequest) {
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   if (!url || !key) {
-    return new NextResponse("Catalogue indisponible", { status: 500 });
+    return new NextResponse("Catalogo non disponibile", { status: 500 });
   }
 
   const supabase = createClient(url, key);
@@ -34,7 +38,7 @@ export async function GET(request: NextRequest) {
     .eq("status", "published")
     .order("sort_order", { ascending: true });
 
-  if (error) return new NextResponse("Erreur catalogue", { status: 500 });
+  if (error) return new NextResponse("Errore catalogo", { status: 500 });
 
   const rows = [
     [
@@ -48,7 +52,8 @@ export async function GET(request: NextRequest) {
     const categorySlug = (product as any).braviko_categories?.slug || "";
     if (!isHeatingCategory(categorySlug)) continue;
     const translations = (product.braviko_product_translations || []) as any[];
-    const fr = translations.find((item) => item.locale === "fr") || translations[0] || {};
+    const it = translations.find((item) => item.locale === "it") || translations[0] || {};
+    const override = getItalianProductOverride(product.slug);
     const variants = ((product.braviko_product_variants || []) as any[]).sort(
       (a, b) => Number(a.price) - Number(b.price),
     );
@@ -67,18 +72,23 @@ export async function GET(request: NextRequest) {
             ? `${baseUrl}/${images[0].storage_path.replace(/^\//, "")}`
             : supabase.storage.from("braviko-product-media").getPublicUrl(images[0].storage_path).data.publicUrl
         : "";
-    const description = fr.short_description || fr.description || "";
+    const description = override?.description || it.short_description || it.description || "";
+    const baseName = override?.name || it.name || product.slug;
 
     // Merchant Center must never receive a fabricated zero price. Products without
     // a real purchasable variant are omitted until the catalogue is complete.
-    for (const variant of variants) {
+    for (const [index, variant] of variants.entries()) {
       if (variant.price == null || Number(variant.price) <= 0) continue;
       const id = variant.sku || `${product.id}-${variant.id}`;
-      const title = [fr.name || product.slug, variant.label].filter(Boolean).join(" - ");
+      const localizedVariantLabel =
+        index === 0 && override?.variantLabel
+          ? override.variantLabel
+          : translateVariantLabel(variant.label, product.slug);
+      const title = [baseName, localizedVariantLabel].filter(Boolean).join(" - ");
       rows.push([
         id, title, description, `${baseUrl}/produit/${product.slug}`, image,
         `${Number(variant.price).toFixed(2)} EUR`, Number(variant.stock || 0) > 0 ? "in_stock" : "out_of_stock",
-        "Braviko", "new", (product as any).braviko_categories?.name || "Home & Garden",
+        "Braviko", "new", override?.googleCategory || "Casa e giardino > Riscaldamento",
       ]);
     }
   }

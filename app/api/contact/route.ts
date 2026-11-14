@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   const orderRef = String(payload.orderRef ?? '').trim().slice(0, 100)
   const locale = ['fr', 'de', 'it'].includes(String(payload.locale))
     ? String(payload.locale)
-    : 'fr'
+    : 'it'
 
   if (!name || !EMAIL_PATTERN.test(email) || !subject || message.length < 5) {
     return NextResponse.json({ error: 'invalid_fields' }, { status: 400 })

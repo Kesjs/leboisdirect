@@ -28,5 +28,5 @@ export default function NavigationProgress() {
     return () => window.clearTimeout(finish)
   }, [pathname, loading])
 
-  return <div className={'bk-navigation-progress' + (loading ? ' is-loading' : '')} role="progressbar" aria-label="Chargement de la page" aria-hidden={!loading} />
+  return <div className={'bk-navigation-progress' + (loading ? ' is-loading' : '')} role="progressbar" aria-label="Caricamento della pagina" aria-hidden={!loading} />
 }

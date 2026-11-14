@@ -15,9 +15,9 @@ import { accountCopy } from '@/data/account-copy'
 type Mode = 'login' | 'signup' | 'reset'
 
 const countries = [
+  { code: '+39', short: 'IT', flag: 'it' },
   { code: '+33', short: 'FR', flag: 'fr' },
   { code: '+49', short: 'DE', flag: 'de' },
-  { code: '+39', short: 'IT', flag: 'it' },
   { code: '+32', short: 'BE', flag: 'be' },
   { code: '+41', short: 'CH', flag: 'ch' },
   { code: '+352', short: 'LU', flag: 'lu' },
@@ -38,7 +38,7 @@ function ConnectionContent() {
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const [phoneCountry, setPhoneCountry] = useState('+33')
+  const [phoneCountry, setPhoneCountry] = useState('+39')
   const [phone, setPhone] = useState('')
   const [message, setMessage] = useState(params.get('reason') === 'checkout' ? c.checkoutRequired : '')
   const [error, setError] = useState('')
@@ -131,7 +131,7 @@ function ConnectionContent() {
     <Header />
     <main id="main-content" className="bk-home bk-auth-page">
       <section className="bk-auth-intro">
-        <Image className="bk-auth-intro-image" src="/images/login-wood-fired-heater.jpg" alt="Poêle à bois dans une maison chaleureuse" fill priority sizes="(max-width: 900px) 100vw, 52vw" />
+        <Image className="bk-auth-intro-image" src="/images/login-wood-fired-heater.jpg" alt="Stufa a legna in una casa accogliente" fill priority sizes="(max-width: 900px) 100vw, 52vw" />
         <div className="bk-auth-intro-shade" aria-hidden="true" />
         <p className="bk-eyebrow">BRAVIKO / {c.account}</p>
         <h1 className="sr-only">{signup ? c.signupTitle : c.loginTitle}</h1>
@@ -144,7 +144,7 @@ function ConnectionContent() {
         <form onSubmit={submit} className="bk-account-form" noValidate>
           {signup && <>
             <div className="bk-form-row"><label htmlFor="first-name">{c.firstName}<input id="first-name" name="firstName" value={firstName} onChange={event => setFirstName(event.target.value)} required autoComplete="given-name" /></label><label htmlFor="last-name">{c.lastName}<input id="last-name" name="lastName" value={lastName} onChange={event => setLastName(event.target.value)} required autoComplete="family-name" /></label></div>
-            <div className="bk-field"><label htmlFor="phone">{c.phone} <span className="text-smoke">({c.optional})</span></label><span className="bk-phone-field"><span className="bk-country-select"><span className={`bk-country-flag bk-flag-${selectedCountry.flag}`} aria-hidden="true" /><select id="phone-country" name="phoneCountry" value={phoneCountry} onChange={event => setPhoneCountry(event.target.value)} aria-label={c.phoneCountry}>{countries.map(country => <option key={country.code} value={country.code}>{country.short} {country.code}</option>)}</select></span><input id="phone" name="phone" value={phone} onChange={event => setPhone(event.target.value.replace(/[^\d ]/g, ''))} aria-label={c.phone} inputMode="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" /></span></div>
+            <div className="bk-field"><label htmlFor="phone">{c.phone} <span className="text-smoke">({c.optional})</span></label><span className="bk-phone-field"><span className="bk-country-select"><span className={`bk-country-flag bk-flag-${selectedCountry.flag}`} aria-hidden="true" /><select id="phone-country" name="phoneCountry" value={phoneCountry} onChange={event => setPhoneCountry(event.target.value)} aria-label={c.phoneCountry}>{countries.map(country => <option key={country.code} value={country.code}>{country.short} {country.code}</option>)}</select></span><input id="phone" name="phone" value={phone} onChange={event => setPhone(event.target.value.replace(/[^\d ]/g, ''))} aria-label={c.phone} inputMode="tel" autoComplete="tel-national" placeholder="333 123 4567" /></span></div>
           </>}
           {(!user || mode !== 'reset') && <label htmlFor="email">{c.email}<input id="email" name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" /></label>}
           {mode !== 'reset' || user ? <div className="bk-field"><label htmlFor="password">{c.password}</label><span className="bk-password-field"><input id="password" name="password" type={showPassword ? 'text' : 'password'} value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete={signup || mode === 'reset' ? 'new-password' : 'current-password'} aria-describedby="password-hint" /><button className="bk-password-toggle" type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? c.hidePassword : c.showPassword}>{showPassword ? c.hidePassword : c.showPassword}</button></span><span id="password-hint" className="bk-form-hint">{c.passwordHint}</span></div> : null}
@@ -164,5 +164,5 @@ function ConnectionContent() {
 }
 
 export default function ConnectionPage() {
-  return <Suspense fallback={<PageSkeleton variant="auth" label="Chargement de la connexion" />}><ConnectionContent /></Suspense>
+  return <Suspense fallback={<PageSkeleton variant="auth" label="Caricamento accesso" />}><ConnectionContent /></Suspense>
 }

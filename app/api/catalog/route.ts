@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { cleanImagesBySlug } from "@/data/clean-product-images";
+import {
+  getItalianProductOverride,
+  translateVariantLabel,
+} from "@/data/product-italian-overrides";
 
 function getCatalogClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   if (!url || !key)
-    throw new Error("La configuration du catalogue est absente.");
+    throw new Error("Configurazione del catalogo mancante.");
   return createClient(url, key);
 }
 
@@ -59,7 +63,8 @@ export async function GET(request: NextRequest) {
         translation,
       ]),
     );
-    const fr = translations.fr || translations.de || translations.it || {};
+    const it = translations.it || translations.fr || translations.de || {};
+    const override = getItalianProductOverride(item.slug);
     const variants = [...(item.braviko_product_variants || [])].sort(
       (a: any, b: any) => Number(a.price) - Number(b.price),
     );
@@ -75,47 +80,61 @@ export async function GET(request: NextRequest) {
           .map((image: any) => resolveImageUrl(image.storage_path, supabase))
           .filter(Boolean);
 
+    const localizedVariants = variants.map((variant: any, index: number) => ({
+      id: variant.id,
+      price: Number(variant.price),
+      label:
+        index === 0 && override?.variantLabel
+          ? override.variantLabel
+          : translateVariantLabel(variant.label, item.slug),
+    }));
+
+    const localizedName = override?.name || it.name || item.slug;
+    const localizedDescription = override?.description || it.short_description || it.description || "";
+    const localizedFeatures = override?.features || parseFeatures(it.description || "");
+    const localizedLongDescription =
+      override?.longDescription ||
+      (override?.features.length ? override.features.join("\n") : "") ||
+      it.description ||
+      localizedDescription;
+    const localizedConditioning =
+      override?.conditioning || it.conditioning || localizedVariants[0]?.label || "";
+    const localizedDelivery = override?.deliveryInfo || it.delivery_info || "";
+
     return {
       id: item.id,
       slug: item.slug,
       featured: Boolean(item.featured),
-      name: fr.name || item.slug,
+      name: localizedName,
       category: item.braviko_categories?.slug || "buches",
-      description: fr.short_description || fr.description || "",
-      features: parseFeatures(fr.description || ""),
-      longDescription: fr.description || fr.short_description || "",
+      description: localizedDescription,
+      features: localizedFeatures,
+      longDescription: localizedLongDescription,
       price: Number(variants[0]?.price || 0),
       image: images[0] || "/images/photorealistic-perspective-wood-logs.jpg",
       images: images.length
         ? images
         : ["/images/photorealistic-perspective-wood-logs.jpg"],
-      conditioning: fr.conditioning || variants[0]?.label || "",
-      deliveryInfo: fr.delivery_info || "",
-      variants: variants.map((variant: any) => ({
-        id: variant.id,
-        price: Number(variant.price),
-        label: variant.label,
-      })),
+      conditioning: localizedConditioning,
+      deliveryInfo: localizedDelivery,
+      variants: localizedVariants,
       translations: {
-        de: translations.de?.name || fr.name || item.slug,
-        it: translations.it?.name || fr.name || item.slug,
+        de: translations.de?.name || localizedName,
+        it: localizedName,
         description: {
           de:
             translations.de?.short_description ||
             translations.de?.description ||
-            "",
-          it:
-            translations.it?.short_description ||
-            translations.it?.description ||
-            "",
+            localizedDescription,
+          it: localizedDescription,
         },
         conditioning: {
-          de: translations.de?.conditioning || "",
-          it: translations.it?.conditioning || "",
+          de: translations.de?.conditioning || localizedConditioning,
+          it: localizedConditioning,
         },
         delivery: {
-          de: translations.de?.delivery_info || "",
-          it: translations.it?.delivery_info || "",
+          de: translations.de?.delivery_info || localizedDelivery,
+          it: localizedDelivery,
         },
       },
     };

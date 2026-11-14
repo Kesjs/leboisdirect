@@ -50,7 +50,7 @@ export function validateCustomerInput(input?: OrderCustomerInput) {
   const phone = cleanText(input?.phone, 40)
   const street = cleanText(input?.address, 160)
   const complement = cleanText(input?.addressComplement, 120)
-  const country = cleanText(input?.country, 60) || 'France'
+  const country = cleanText(input?.country, 60) || 'Italia'
   const postalCode = cleanText(input?.postalCode, 16)
   const city = cleanText(input?.city, 100)
 
@@ -85,7 +85,7 @@ export async function createServerOrder(params: {
   paymentMethod: 'card' | 'bank_transfer'
   paymentStatus: 'pending' | 'unpaid'
 }): Promise<CreatedServerOrder> {
-  const { items, locale = 'fr', paymentMethod, paymentStatus } = params
+  const { items, locale = 'it', paymentMethod, paymentStatus } = params
 
   if (
     !items?.length ||
@@ -125,20 +125,31 @@ export async function createServerOrder(params: {
   })
 
   const productIds = [...new Set(items.map((item) => item.productId))]
-  const [{ data: variants, error: variantError }, { data: translations, error: translationError }] =
-    await Promise.all([
-      admin
-        .from('braviko_product_variants')
-        .select('id, product_id, price, label')
-        .in('product_id', productIds),
-      admin
-        .from('braviko_product_translations')
-        .select('product_id, locale, name')
-        .in('product_id', productIds),
-    ])
+  const [
+    { data: dbProducts, error: productError },
+    { data: variants, error: variantError },
+    { data: translations, error: translationError },
+  ] = await Promise.all([
+    admin
+      .from('braviko_products')
+      .select('id, slug')
+      .in('id', productIds),
+    admin
+      .from('braviko_product_variants')
+      .select('id, product_id, price, label')
+      .in('product_id', productIds),
+    admin
+      .from('braviko_product_translations')
+      .select('product_id, locale, name')
+      .in('product_id', productIds),
+  ])
 
+  if (productError) throw productError
   if (variantError) throw variantError
   if (translationError) throw translationError
+
+  const { getItalianProductOverride, translateVariantLabel } = await import('@/data/product-italian-overrides')
+  const slugByProductId = new Map((dbProducts || []).map((p) => [p.id, p.slug]))
 
   const resolvedItems = items.map((item) => {
     const productVariants = (variants || [])
@@ -153,8 +164,13 @@ export async function createServerOrder(params: {
       throw new Error('PRODUCT_UNAVAILABLE')
     }
 
+    const slug = slugByProductId.get(item.productId)
+    const override = getItalianProductOverride(slug)
     const name =
+      (locale === 'it' ? override?.name : undefined) ||
       translations?.find((t) => t.product_id === item.productId && t.locale === locale)?.name ||
+      override?.name ||
+      translations?.find((t) => t.product_id === item.productId && t.locale === 'it')?.name ||
       translations?.find((t) => t.product_id === item.productId && t.locale === 'fr')?.name
     if (!name) {
       throw new Error('PRODUCT_UNAVAILABLE')
@@ -167,7 +183,7 @@ export async function createServerOrder(params: {
       product_id: item.productId,
       variant_id: variant.id,
       product_name: name,
-      variant_label: variant.label || null,
+      variant_label: variant.label ? translateVariantLabel(variant.label, slug) : null,
       quantity: item.quantity,
       unit_price: unitPrice,
       line_total: lineTotal,

@@ -8,63 +8,63 @@ export type ProductVideo = {
 const videosBySlug: Record<string, ProductVideo> = {
   'four-pizza-ofyr-100-cuisson-feu-bois': {
     youtubeId: 'AY-xZIPpXm8',
-    title: 'Four à pizza OFYR 100 – Cuisson au feu de bois',
+    title: 'Forno per pizza OFYR 100 – Cottura a legna',
   },
   'fendeur-buches-scheppach-compact-10t-3150w': {
     mp4Url: '/videos/fendeur-buches-scheppach-compact-10t-3150w.mp4',
-    title: 'Fendeur de bûches Scheppach Compact 10T – 3150 W',
+    title: 'Spaccalegna Scheppach Compact 10T – 3150 W',
   },
   'brasero-plancha-le-bigorneau-acier-corten-100-cm': {
     mp4Url: '/videos/brasero-plancha-le-bigorneau-acier-corten-100-cm.mp4',
-    title: 'Brasero Plancha Le Bigorneau – Acier Corten Ø100 cm',
+    title: 'Braciere Plancha Le Bigorneau – Acciaio Corten Ø100 cm',
   },
   'chauffage-exterieur-gaz-planika-faro-8-kw': {
     mp4Url: '/videos/chauffage-exterieur-gaz-planika-faro-8-kw.mp4',
-    title: 'Chauffage extérieur à gaz Planika Faro – 8 kW',
+    title: 'Riscaldatore da esterno a gas Planika Faro – 8 kW',
   },
   'insert-bois-invicta-p947044-10-kw': {
     mp4Url: '/videos/insert-bois-invicta-p947044-10-kw.mp4',
-    title: 'Insert à bois Invicta P947044 – 10 kW',
+    title: 'Inserto a legna Invicta P947044 – 10 kW',
   },
   'chauffage-infrarouge-exterieur-frico-term-ip67-2000w': {
     mp4Url: '/videos/chauffage-infrarouge-exterieur-frico-term-ip67-2000w.mp4',
-    title: 'Chauffage infrarouge extérieur FRICO Term IP67 – 2000 W',
+    title: 'Riscaldatore a infrarossi FRICO Term IP67 – 2000 W',
   },
   'chariot-buches-le-marquier-fjord-noir': {
     mp4Url: '/videos/chariot-buches-le-marquier-fjord-noir.mp4',
-    title: 'Chariot à bûches Le Marquier Fjord – Noir',
+    title: 'Carrello portalegna Le Marquier Fjord – Nero',
   },
   'foyer-bois-panoramique-acaminetti-flat-150x50': {
     mp4Url: '/videos/foyer-bois-panoramique-acaminetti-flat-150x50.mp4',
-    title: 'Foyer à bois panoramique A.Caminetti Flat 150 × 50',
+    title: 'Focolare panoramico a legna A.Caminetti Flat 150 × 50',
   },
   'cheminee-electrique-purline-verre-noir-2000w': {
     mp4Url: '/videos/cheminee-electrique-purline-verre-noir-2000w.mp4',
-    title: 'Cheminée électrique Purline – Verre trempé noir 2000 W',
+    title: 'Camino elettrico Purline – Vetro temperato nero 2000 W',
   },
   'bois-de-chauffage-premium-chene-charme-hetre-2-steres-33-cm': {
     mp4Url: '/videos/bois-de-chauffage-premium-chene-charme-hetre-2-steres.mp4',
-    title: 'Bois de chauffage Premium – Chêne, Charme & Hêtre – Palette 2 stères',
+    title: 'Legna da ardere Premium – Quercia, Carpino & Faggio – Bancale da 2 steri',
   },
   'buches-densifiees-premium-palette-1000-kg': {
     mp4Url: '/videos/buches-densifiees-premium-palette-1000-kg.mp4',
-    title: 'Bûches densifiées Premium – Palette 1 000 kg',
+    title: 'Tronchetti di legno densificato Premium – Bancale 1.000 kg',
   },
   'poele-bois-fonte-bronpi-karen-8-kw': {
     mp4Url: '/videos/poele-bois-fonte-bronpi-karen-8-kw.mp4',
-    title: 'Poêle à bois en fonte Bronpi KAREN – 8 kW',
+    title: 'Stufa a legna in ghisa Bronpi KAREN – 8 kW',
   },
   'abri-buches-timbela-m985-414m2': {
     mp4Url: '/videos/abri-buches-timbela-m985-414m2.mp4',
-    title: 'Abri à bûches avec remise TIMBELA M985 – 4,14 m²',
+    title: 'Legnaia con ripostiglio TIMBELA M985 – 4,14 m²',
   },
   'radiateur-electrique-connecte-sauter-hekla-1500w': {
     mp4Url: '/videos/radiateur-electrique-connecte-sauter-hekla-1500w.mp4',
-    title: 'Radiateur électrique connecté Sauter Hekla – 1500 W',
+    title: 'Radiatore elettrico connesso Sauter Hekla – 1500 W',
   },
   'ofyr-cage-100-accessoire-cuisson': {
     mp4Url: '/videos/ofyr-cage-100-accessoire-cuisson.mp4',
-    title: 'Cage de cuisson OFYR 100 – Accessoire brasero premium',
+    title: 'OFYR Cage 100 – Accessorio premium per braciere',
   },
 }
 

@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     if (!reference || !revealToken || !verifyBankRevealToken(reference, revealToken)) {
       return NextResponse.json(
-        { error: 'INVALID_REVEAL_TOKEN', message: 'Jeton d’accès expiré ou invalide.' },
+        { error: 'INVALID_REVEAL_TOKEN', message: 'Token di accesso scaduto o non valido.' },
         { status: 403, headers: { 'Cache-Control': 'private, no-store' } },
       )
     }

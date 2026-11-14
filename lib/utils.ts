@@ -5,14 +5,14 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat('fr-FR', {
+  return new Intl.NumberFormat('it-IT', {
     style: 'currency',
     currency: 'EUR',
   }).format(price)
 }
 
 export function formatDate(date: Date | string): string {
-  return new Intl.DateTimeFormat('fr-FR', {
+  return new Intl.DateTimeFormat('it-IT', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

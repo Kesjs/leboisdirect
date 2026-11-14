@@ -155,17 +155,22 @@ export function productLabel(product: Product, locale: Locale) {
   }
   const index = locale === 'de' ? 0 : 1
   const quantities: Record<string, [string, string]> = {
+    'Bancale da 1 stero': ['Palette mit 1 Raummeter', 'Bancale da 1 stero'],
+    'Bancale da 96 tronchetti (10 kg)': ['Palette mit 96 Briketts (10 kg)', 'Bancale da 96 tronchetti (10 kg)'],
+    'Bancale da 1 tonnellata (66 sacchi da 15 kg)': ['Palette 1 Tonne (66 Säcke à 15 kg)', 'Bancale da 1 tonnellata (66 sacchi da 15 kg)'],
+    'Cassetta da 40 litri': ['40-Liter-Kiste', 'Cassetta da 40 litri'],
+    'Scatola da 32 pezzi': ['Packung mit 32 Stück', 'Scatola da 32 pezzi'],
     'Palette de 1 stère': ['Palette mit 1 Raummeter', 'Bancale da 1 stero'],
     'Palette de 96 bûches (10 kg)': ['Palette mit 96 Briketts (10 kg)', 'Bancale da 96 bricchetti (10 kg)'],
     'Palette de 1 tonne (66 sacs de 15 kg)': ['Palette 1 Tonne (66 Säcke à 15 kg)', 'Bancale da 1 tonnellata (66 sacchi da 15 kg)'],
     'Caisse de 40 litres': ['40-Liter-Kiste', 'Cassetta da 40 litri'],
     'Boîte de 32 unités': ['Packung mit 32 Stück', 'Scatola da 32 pezzi'],
   }
-  const days = product.deliveryInfo.match(/\d+-\d+/)?.[0]
+  const days = product.deliveryInfo.match(/\d+[–-]\d+/)?.[0]
   return {
     name: names[product.id]?.[index] ?? product.name,
     description: product.description,
     conditioning: quantities[product.conditioning ?? '']?.[index] ?? product.conditioning,
-    delivery: days ? (locale === 'de' ? `Lieferung in ${days} Tagen` : `Consegna in ${days} giorni`) : '',
+    delivery: days ? (locale === 'de' ? `Lieferung in ${days} Tagen` : `Consegna in ${days} giorni lavorativi`) : product.deliveryInfo,
   }
 }

@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     const order = await createServerOrder({
       customer: body.customer,
       items: body.items,
-      locale: body.locale || 'fr',
+      locale: body.locale || 'it',
       paymentMethod: 'bank_transfer',
       paymentStatus: 'pending',
     })
@@ -44,10 +44,10 @@ export async function POST(request: Request) {
 
     const message =
       code === 'INVALID_CUSTOMER'
-        ? 'Vérifiez vos coordonnées et votre adresse de livraison avant de valider.'
+        ? 'Verifica i tuoi dati e l’indirizzo di consegna prima di confermare.'
         : code === 'PRODUCT_UNAVAILABLE'
-          ? 'Un des produits du panier n’est plus disponible.'
-          : 'Le virement n’a pas pu être préparé. Réessayez.'
+          ? 'Uno dei prodotti nel carrello non è più disponibile.'
+          : 'Impossibile preparare il bonifico. Riprova.'
 
     return NextResponse.json({ error: code, message }, { status })
   }

@@ -51,7 +51,7 @@ export default function Header() {
     ['/livraison', copy.delivery],
     ['/conseils', copy.advice],
     ['/faq', 'FAQ'],
-    ['/contact', 'Contact'],
+    ['/contact', 'Contatti'],
   ]
   const collapse = () => { setMobileOpen(false); setSearchOpen(false) }
   return (

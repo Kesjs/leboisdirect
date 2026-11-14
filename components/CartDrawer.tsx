@@ -19,7 +19,7 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
   const dialog = useRef<HTMLDialogElement>(null)
   const closeButton = useRef<HTMLButtonElement>(null)
   const lastFocus = useRef<HTMLElement | null>(null)
-  const money = (value: number) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(value)
+  const money = (value: number) => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(value)
   useEffect(() => {
     let frame = 0
     let closeTimer = 0
@@ -58,7 +58,7 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
             return <article className="bk-cart-item" key={item.product.id + '-' + (item.variantId ?? 'base')}>
               <Link onClick={onClose} href={'/produit/' + item.product.slug} className="bk-cart-item-photo"><Image src={item.product.image} alt={label.name} fill sizes="88px" className="bk-image" /></Link>
               <div><Link onClick={onClose} href={'/produit/' + item.product.slug}><h3>{label.name}</h3></Link>
-                <p>{variant?.volume ? variant.volume + ({ fr: ' stère(s)', de: ' Raummeter', it: ' steri' }[locale]) : label.conditioning}</p><strong>{money(variant?.price ?? item.product.price)}</strong>
+                <p>{variant?.volume ? variant.volume + ({ fr: ' steri', de: ' Raummeter', it: ' steri' }[locale]) : label.conditioning}</p><strong>{money(variant?.price ?? item.product.price)}</strong>
                 <div className="bk-cart-item-controls"><div className="bk-quantity"><button onClick={() => updateQuantity(item.product.id, item.quantity - 1, item.variantId)} aria-label={copy.decrease + ' : ' + label.name}>−</button><span>{item.quantity}</span><button onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.variantId)} aria-label={copy.increase + ' : ' + label.name}>+</button></div><button className="bk-remove" onClick={() => removeItem(item.product.id, item.variantId)}>{copy.remove}</button></div>
               </div>
             </article>

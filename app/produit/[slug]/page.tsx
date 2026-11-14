@@ -141,13 +141,13 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
         .filter((item): item is { label: string; value: string } => Boolean(item))
         .slice(0, 4)
 
-  const statusText = (richSpec?.badgeText || 'En stock — Expédié rapidement').replace(/^●\s*/, '')
+  const statusText = (richSpec?.badgeText || 'Disponibile — Spedizione rapida').replace(/^●\s*/, '')
 
   const handleAddToCart = () => {
     addItem(product, quantity, selectedVariant || undefined)
     showToast({
-      title: 'Ajouté au panier',
-      description: `${localizedProduct.name} a été ajouté à votre panier.`,
+      title: 'Aggiunto al carrello',
+      description: `${localizedProduct.name} è stato aggiunto al carrello.`,
     })
     setAdded(true)
     window.setTimeout(() => setAdded(false), 2400)
@@ -185,8 +185,8 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Accueil', item: `${baseUrl}/` },
-      { '@type': 'ListItem', position: 2, name: 'Boutique', item: `${baseUrl}/boutique` },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${baseUrl}/` },
+      { '@type': 'ListItem', position: 2, name: 'Negozio', item: `${baseUrl}/boutique` },
       { '@type': 'ListItem', position: 3, name: localizedProduct.name, item: `${baseUrl}/produit/${product.slug}` },
     ],
   }
@@ -209,13 +209,13 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
         {/* Fil d'Ariane */}
         <div className="border-b border-[#DEDFD6] bg-white">
           <div className="container-custom py-[12px]">
-            <nav className="flex items-center gap-[8px] text-[12px] text-[#64685F] flex-wrap" aria-label="Fil d'Ariane">
+            <nav className="flex items-center gap-[8px] text-[12px] text-[#64685F] flex-wrap" aria-label="Percorso di navigazione">
               <Link href="/" className="hover:text-[#995033] transition-colors">
-                Accueil
+                Home
               </Link>
               <span className="text-[#A3A3A3]" aria-hidden="true">/</span>
               <Link href="/boutique" className="hover:text-[#995033] transition-colors">
-                Boutique
+                Negozio
               </Link>
               <span className="text-[#A3A3A3]" aria-hidden="true">/</span>
               <span className="text-[#252823] font-medium truncate max-w-[260px] sm:max-w-[440px]">
@@ -225,16 +225,15 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
           </div>
         </div>
 
-        {/* HERO PRODUIT : 2 Colonnes équilibrées (Galerie + Points clés à gauche / Achat à droite) */}
+        {/* HERO PRODOTTO : 2 colonne bilanciate */}
         <div className="container-custom pt-[28px] lg:pt-[36px] pb-[48px]">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-[28px] lg:gap-[40px] items-start">
-            {/* COLONNE GAUCHE (7 cols) : Galerie + Points clés */}
             <div className="lg:col-span-7 lg:sticky lg:top-[104px] min-w-0 flex flex-col gap-[16px]">
               <div className="flex flex-col-reverse sm:flex-row gap-[12px] sm:gap-[16px] items-start">
                 {galleryItems.length > 1 && (
                   <div
                     className="flex flex-row sm:flex-col gap-[8px] sm:gap-[10px] w-full sm:w-[88px] shrink-0 overflow-x-auto sm:overflow-y-auto sm:max-h-[480px] pb-[4px] sm:pb-0 scrollbar-hide"
-                    aria-label="Galerie d'images du produit"
+                    aria-label="Galleria immagini del prodotto"
                   >
                     {galleryItems.map((item, idx) => {
                       const thumbContain = containBySrc[item.src]
@@ -244,7 +243,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                           key={`${item.src}-${idx}`}
                           type="button"
                           onClick={() => setSelectedMediaIndex(idx)}
-                          aria-label={item.type === 'video' ? 'Lire la vidéo du produit' : `Afficher la photo ${idx + 1}`}
+                          aria-label={item.type === 'video' ? 'Riproduci il video del prodotto' : `Mostra foto ${idx + 1}`}
                           aria-pressed={isActive}
                           className={`relative w-[68px] h-[68px] sm:w-[88px] sm:h-[88px] rounded-[8px] overflow-hidden shrink-0 bg-white transition-all ${
                             isActive
@@ -254,7 +253,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                         >
                           <Image
                             src={item.src}
-                            alt={`${localizedProduct.name} — vue ${idx + 1}`}
+                            alt={`${localizedProduct.name} — vista ${idx + 1}`}
                             fill
                             onLoad={(e) => recordImageAspect(item.src, e.currentTarget)}
                             className={thumbContain ? 'object-contain p-[6px]' : 'object-cover'}
@@ -312,13 +311,13 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                         type="button"
                         onClick={() => setIsZoomOpen(true)}
                         className="absolute bottom-[12px] right-[12px] inline-flex items-center gap-[6px] min-h-[38px] px-[12px] py-[6px] rounded-[4px] bg-white/95 hover:bg-white text-[#252823] border border-[#DEDFD6] hover:border-[#252823] text-[12px] font-medium transition-colors"
-                        aria-label="Agrandir l'image"
+                        aria-label="Ingrandisci immagine"
                       >
                         <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
                           <circle cx="8.5" cy="8.5" r="5.5" />
                           <path d="m13 13 4 4M8.5 6v5M6 8.5h5" strokeLinecap="round" />
                         </svg>
-                        <span>Agrandir</span>
+                        <span>Ingrandisci</span>
                       </button>
                     </>
                   ) : null}
@@ -329,13 +328,13 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 <div className="rounded-[8px] border border-[#DEDFD6] bg-white overflow-hidden">
                   <div className="flex items-center justify-between gap-[12px] px-[16px] py-[10px] border-b border-[#DEDFD6] bg-[#FAF9F6]">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64685F]">
-                      Points clés · {categoryLabel(product.category, locale)}
+                      Punti chiave · {categoryLabel(product.category, locale)}
                     </span>
                     <a
                       href="#details-fiche"
                       className="text-[12px] font-medium text-[#995033] hover:underline underline-offset-4 whitespace-nowrap"
                     >
-                      Fiche complète
+                      Scheda completa
                     </a>
                   </div>
                   <dl className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 divide-[#DEDFD6]">
@@ -376,7 +375,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   )}
                 </div>
                 <p className="mt-[8px] text-[12px] text-[#64685F]">
-                  Livraison offerte en France métropolitaine · Paiement sécurisé Stripe ou virement SEPA · Retour 14 jours
+                  Spedizione gratuita in tutta Italia · Pagamento sicuro Stripe o bonifico SEPA · Reso 14 giorni
                 </p>
               </div>
 
@@ -386,7 +385,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                     {formatPrice(currentPrice)}
                   </span>
                   <span className="text-[12px] font-semibold text-[#995033] tracking-[0.08em] uppercase">
-                    TTC
+                    IVA incl.
                   </span>
                 </div>
                 <p className="mt-[10px] inline-flex items-center gap-[6px] px-[10px] py-[5px] rounded-[4px] bg-[#EEEEE7] border border-[#DEDFD6] text-[13px] font-semibold text-[#34483A] tabular-nums">
@@ -394,8 +393,8 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 </p>
                 <p className="text-[12px] text-[#64685F] mt-[8px] tabular-nums">
                   {quantity > 1
-                    ? `Total pour ${quantity} unités : ${formatPrice(currentPrice * quantity)} TTC · TVA incluse`
-                    : 'TVA incluse · Livraison en France'}
+                    ? `Totale per ${quantity} unità: ${formatPrice(currentPrice * quantity)} IVA inclusa`
+                    : 'IVA inclusa · Spedizione in tutta Italia'}
                 </p>
               </div>
 
@@ -406,7 +405,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               {product.variants && product.variants.length > 1 && (
                 <div>
                   <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64685F] mb-[8px]">
-                    Format
+                    Formato
                   </span>
                   <div className="grid grid-cols-2 gap-[8px]">
                     {product.variants.map((v) => {
@@ -424,10 +423,10 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                           }`}
                         >
                           <div className="font-medium text-[13px] leading-tight">
-                            {v.label || (v.volume ? `${v.volume} stère(s)` : 'Format')}
+                            {v.label || (v.volume ? `${v.volume} ${v.volume > 1 ? 'steri' : 'stero'}` : 'Formato')}
                           </div>
                           <div className={`text-[12px] mt-[4px] tabular-nums ${active ? 'text-white/80' : 'text-[#64685F]'}`}>
-                            {formatPrice(v.price)} TTC
+                            {formatPrice(v.price)} IVA incl.
                           </div>
                         </button>
                       )
@@ -436,16 +435,16 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 </div>
               )}
 
-              {/* Quantité & Boutons d'action */}
+              {/* Quantità e azioni */}
               <div className="flex flex-col gap-[12px] pt-[4px]">
                 <div className="flex items-center gap-[12px]">
-                  <span className="text-[13px] font-medium text-[#64685F] whitespace-nowrap">Quantité</span>
+                  <span className="text-[13px] font-medium text-[#64685F] whitespace-nowrap">Quantità</span>
                   <div className="inline-flex items-center rounded-[4px] border border-[#DEDFD6] bg-white">
                     <button
                       type="button"
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       className="w-[44px] h-[44px] flex items-center justify-center hover:bg-[#EEEEE7] text-[#252823] transition-colors"
-                      aria-label="Diminuer la quantité"
+                      aria-label="Diminuisci quantità"
                     >
                       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
                         <path d="M3 8h10" strokeLinecap="round" />
@@ -458,7 +457,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                       type="button"
                       onClick={() => setQuantity(quantity + 1)}
                       className="w-[44px] h-[44px] flex items-center justify-center hover:bg-[#EEEEE7] text-[#252823] transition-colors"
-                      aria-label="Augmenter la quantité"
+                      aria-label="Aumenta quantità"
                     >
                       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
                         <path d="M8 3v10M3 8h10" strokeLinecap="round" />
@@ -478,19 +477,18 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                         <path d="m3.5 8.5 3 3 6-6" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     )}
-                    <span>{added ? 'Ajouté au panier' : 'Ajouter au panier'}</span>
+                    <span>{added ? 'Aggiunto al carrello' : 'Aggiungi al carrello'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleBuyNow}
                     className="min-h-[48px] w-full px-[16px] py-[12px] rounded-[4px] bg-[#252823] hover:bg-[#995033] text-white font-medium text-[14px] transition-colors active:translate-y-[1px] flex items-center justify-center gap-[8px] tabular-nums"
                   >
-                    <span>Commander — {formatPrice(currentPrice * quantity)}</span>
+                    <span>Acquista ora — {formatPrice(currentPrice * quantity)}</span>
                   </button>
                 </div>
               </div>
 
-              {/* Encadré de réassurance */}
               <div className="rounded-[8px] p-[16px] bg-[#EEEEE7] border border-[#DEDFD6] text-[12px] flex flex-col gap-[12px] mt-[4px]">
                 <div className="flex items-start gap-[12px]">
                   <span className="p-[8px] rounded-[4px] bg-white border border-[#DEDFD6] text-[#995033] shrink-0">
@@ -498,10 +496,10 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   </span>
                   <div className="min-w-0">
                     <strong className="block font-semibold text-[#252823] text-[13px]">
-                      {richSpec?.delivery.delay || 'Livraison sous 5 à 7 jours ouvrés'}
+                      {richSpec?.delivery.delay || 'Consegna in 5–8 giorni lavorativi'}
                     </strong>
                     <p className="text-[#64685F] mt-[4px] leading-[1.5]">
-                      {richSpec?.delivery.headline || 'Livraison soignée avec prise de rendez-vous préalable.'}
+                      {richSpec?.delivery.headline || 'Consegna accurata con appuntamento telefonico.'}
                     </p>
                   </div>
                 </div>
@@ -513,12 +511,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-[8px] flex-wrap">
                       <strong className="font-semibold text-[#252823] text-[13px]">
-                        Paiement sécurisé
+                        Pagamento sicuro
                       </strong>
                       <PaymentBadgesRow className="flex items-center gap-[6px]" />
                     </div>
                     <p className="text-[#64685F] mt-[4px] leading-[1.5]">
-                      Carte Bancaire, Visa, Mastercard ou virement SEPA avec chiffrement SSL.
+                      Carta bancaria, Visa, Mastercard o bonifico SEPA con crittografia SSL.
                     </p>
                   </div>
                 </div>
@@ -527,17 +525,15 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-[#34483A] shrink-0" aria-hidden="true">
                     <path d="m3.5 8.5 3 3 6-6" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                  <span>{richSpec?.warranty || 'Garantie légale de conformité 2 ans'} · Support client en France</span>
+                  <span>{richSpec?.warranty || 'Garanzia legale di conformità 2 anni'} · Assistenza clienti in italiano</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ACCORDÉONS : Fiche complète, utilisation, logistique, engagements */}
         <div id="details-fiche" className="container-custom pt-[16px] scroll-mt-[100px]">
           <div className="bg-white rounded-[8px] border border-[#DEDFD6] overflow-hidden divide-y divide-[#DEDFD6]">
-            {/* 1. Description & Spécifications techniques */}
             <div className="px-[20px] py-[16px] sm:px-[28px] sm:py-[20px]">
               <button
                 type="button"
@@ -546,7 +542,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 aria-expanded={activeAccordion === 'specs'}
               >
                 <h2 className="text-[17px] sm:text-[19px] font-semibold text-[#252823] group-hover:text-[#995033] transition-colors">
-                  Description & caractéristiques techniques
+                  Descrizione e caratteristiche tecniche
                 </h2>
                 <span className="w-[40px] h-[40px] rounded-full border border-[#DEDFD6] flex items-center justify-center text-[#64685F] group-hover:border-[#995033] group-hover:text-[#995033] transition-colors shrink-0">
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
@@ -565,7 +561,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   {richSpec?.detailedSpecs && richSpec.detailedSpecs.length > 0 && (
                     <div className="mt-[16px]">
                       <h3 className="text-[12px] font-semibold text-[#64685F] uppercase tracking-[0.12em] mb-[10px]">
-                        Spécifications détaillées
+                        Specifiche dettagliate
                       </h3>
                       <div className="rounded-[8px] border border-[#DEDFD6] overflow-hidden">
                         <table className="w-full text-left text-[13px]">
@@ -592,7 +588,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               )}
             </div>
 
-            {/* 2. Conseils d'utilisation & Stockage */}
             <div className="px-[20px] py-[16px] sm:px-[28px] sm:py-[20px]">
               <button
                 type="button"
@@ -601,7 +596,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 aria-expanded={activeAccordion === 'usage'}
               >
                 <h2 className="text-[17px] sm:text-[19px] font-semibold text-[#252823] group-hover:text-[#995033] transition-colors">
-                  Conseils d’utilisation & stockage optimal
+                  Consigli d’uso e conservazione ottimale
                 </h2>
                 <span className="w-[40px] h-[40px] rounded-full border border-[#DEDFD6] flex items-center justify-center text-[#64685F] group-hover:border-[#995033] group-hover:text-[#995033] transition-colors shrink-0">
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
@@ -615,7 +610,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 <div className="pt-[20px] mt-[16px] border-t border-[#DEDFD6] text-[14px] text-[#64685F] flex flex-col gap-[16px]">
                   {richSpec?.usageTips && richSpec.usageTips.length > 0 && (
                     <div>
-                      <h3 className="font-semibold text-[#252823] mb-[10px]">Bonnes pratiques d’utilisation</h3>
+                      <h3 className="font-semibold text-[#252823] mb-[10px]">Buone pratiche di utilizzo</h3>
                       <ul className="space-y-[8px]">
                         {richSpec.usageTips.map((tip, idx) => (
                           <li key={idx} className="flex items-start gap-[10px]">
@@ -631,7 +626,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
                   {richSpec?.storageAdvice && (
                     <div className="p-[16px] rounded-[8px] bg-[#EEEEE7] border border-[#DEDFD6] text-[#252823]">
-                      <strong className="block font-semibold mb-[4px] text-[#34483A]">Conseils de conservation</strong>
+                      <strong className="block font-semibold mb-[4px] text-[#34483A]">Consigli di conservazione</strong>
                       <p className="text-[13px] leading-[1.6] text-[#64685F]">{richSpec.storageAdvice}</p>
                     </div>
                   )}
@@ -639,7 +634,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               )}
             </div>
 
-            {/* 3. Modalités & Conditions de transport */}
             <div className="px-[20px] py-[16px] sm:px-[28px] sm:py-[20px]">
               <button
                 type="button"
@@ -648,7 +642,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 aria-expanded={activeAccordion === 'delivery'}
               >
                 <h2 className="text-[17px] sm:text-[19px] font-semibold text-[#252823] group-hover:text-[#995033] transition-colors">
-                  Modalités de livraison & accès transporteur
+                  Modalità di consegna e accesso corriere
                 </h2>
                 <span className="w-[40px] h-[40px] rounded-full border border-[#DEDFD6] flex items-center justify-center text-[#64685F] group-hover:border-[#995033] group-hover:text-[#995033] transition-colors shrink-0">
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
@@ -667,23 +661,22 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px] mt-[4px]">
                     <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                      <span className="font-semibold text-[#252823] block mb-[4px]">01. Prise de rendez-vous</span>
-                      <p className="text-[12px] leading-[1.5]">Le transporteur vous contacte par téléphone ou SMS pour fixer le jour exact selon vos disponibilités.</p>
+                      <span className="font-semibold text-[#252823] block mb-[4px]">01. Appuntamento preventivo</span>
+                      <p className="text-[12px] leading-[1.5]">Il corriere ti contatta telefonicamente o via SMS per concordare il giorno esatto di consegna.</p>
                     </div>
                     <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                      <span className="font-semibold text-[#252823] block mb-[4px]">02. Accès véhicule</span>
-                      <p className="text-[12px] leading-[1.5]">Porteur adapté avec hayon. L’accès doit être carrossable et dégagé jusqu’au point de dépose.</p>
+                      <span className="font-semibold text-[#252823] block mb-[4px]">02. Accesso veicolo</span>
+                      <p className="text-[12px] leading-[1.5]">Camion dotato di sponda idraulica. L’accesso deve essere carrabile e libero fino al punto di scarico.</p>
                     </div>
                     <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                      <span className="font-semibold text-[#252823] block mb-[4px]">03. Déchargement sécurisé</span>
-                      <p className="text-[12px] leading-[1.5]">Dépose soignée au transpalette sur surface stable et plane (goudron, béton ou pavés).</p>
+                      <span className="font-semibold text-[#252823] block mb-[4px]">03. Scarico sicuro</span>
+                      <p className="text-[12px] leading-[1.5]">Scarico accurato con transpallet su superficie stabile e piana (asfalto, cemento o autobloccanti).</p>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* 4. Engagements qualité & Retours */}
             <div className="px-[20px] py-[16px] sm:px-[28px] sm:py-[20px]">
               <button
                 type="button"
@@ -692,7 +685,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 aria-expanded={activeAccordion === 'reviews'}
               >
                 <h2 className="text-[17px] sm:text-[19px] font-semibold text-[#252823] group-hover:text-[#995033] transition-colors">
-                  Engagements qualité & retours produit
+                  Impegni qualità e resi prodotto
                 </h2>
                 <span className="w-[40px] h-[40px] rounded-full border border-[#DEDFD6] flex items-center justify-center text-[#64685F] group-hover:border-[#995033] group-hover:text-[#995033] transition-colors shrink-0">
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
@@ -706,21 +699,21 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 <div className="pt-[20px] mt-[16px] border-t border-[#DEDFD6]">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px]">
                     <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                      <span className="font-semibold text-[#252823] text-[13px] block mb-[6px]">01. Contrôle qualité avant départ</span>
+                      <span className="font-semibold text-[#252823] text-[13px] block mb-[6px]">01. Controllo qualità prima della partenza</span>
                       <p className="text-[12px] text-[#64685F] leading-[1.55]">
-                        Chaque référence sélectionnée par Braviko est vérifiée sur son conditionnement, ses caractéristiques techniques et ses accessoires avant remise au transporteur.
+                        Ogni referenza selezionata da Braviko viene verificata su imballaggio, dati tecnici e accessori prima dell’affidamento al corriere.
                       </p>
                     </div>
                     <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                      <span className="font-semibold text-[#252823] text-[13px] block mb-[6px]">02. Garanties légales & constructeurs</span>
+                      <span className="font-semibold text-[#252823] text-[13px] block mb-[6px]">02. Garanzie legali e del produttore</span>
                       <p className="text-[12px] text-[#64685F] leading-[1.55]">
-                        {richSpec?.warranty ? `${richSpec.warranty}. ` : ''}Tous nos appareils et équipements neufs bénéficient de la garantie légale de conformité de 2 ans.
+                        {richSpec?.warranty ? `${richSpec.warranty}. ` : ''}Tutti i nostri apparecchi e attrezzature nuove beneficiano della garanzia legale di conformità di 2 anni.
                       </p>
                     </div>
                     <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                      <span className="font-semibold text-[#252823] text-[13px] block mb-[6px]">03. Rétractation & support 14 jours</span>
+                      <span className="font-semibold text-[#252823] text-[13px] block mb-[6px]">03. Recesso e assistenza 14 giorni</span>
                       <p className="text-[12px] text-[#64685F] leading-[1.55]">
-                        Droit de rétractation légal de 14 jours calendaires après réception sur produit non utilisé et complet, avec service client joignable sur contact@braviko.fr.
+                        Diritto di recesso legale di 14 giorni di calendario dalla consegna su prodotto integro e non utilizzato, con assistenza clienti su contact@braviko.fr.
                       </p>
                     </div>
                   </div>
@@ -730,13 +723,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
           </div>
         </div>
 
-        {/* SECTION CROSS-SELLING */}
         {relatedProducts.length > 0 && (
           <section className="container-custom pt-[56px]" aria-labelledby="cross-selling-title">
             <div className="mb-[24px]">
-              <p className="bk-eyebrow">Complétez votre équipement</p>
+              <p className="bk-eyebrow">Completa la tua dotazione</p>
               <h2 id="cross-selling-title" className="text-[26px] sm:text-[34px] font-medium text-[#252823] tracking-tight">
-                Dans le même univers
+                Della stessa selezione
               </h2>
             </div>
 
@@ -748,7 +740,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
           </section>
         )}
 
-        {/* MODAL ZOOM PHOTO */}
         {isZoomOpen && selectedMedia?.type === 'image' && (
           <div
             role="dialog"
@@ -765,7 +756,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 type="button"
                 onClick={() => setIsZoomOpen(false)}
                 className="absolute top-[12px] right-[12px] z-10 w-[44px] h-[44px] rounded-full bg-white border border-[#DEDFD6] text-[#252823] hover:bg-[#EEEEE7] flex items-center justify-center transition-colors"
-                aria-label="Fermer l'agrandissement"
+                aria-label="Chiudi ingrandimento"
               >
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
                   <path d="M4 4l10 10M14 4L4 14" strokeLinecap="round" />

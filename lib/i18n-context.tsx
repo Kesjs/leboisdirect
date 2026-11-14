@@ -19,9 +19,9 @@ const translations = {
   },
   it: {
     language: 'Italiano',
-    nav: { shop: 'Negozio', heating: 'Riscaldamento', delivery: 'Consegna', advice: 'Consigli', story: 'La nostra storia', agriculture: 'Agricoltura' },
-    hero: { eyebrow: 'Casa · terreno · quotidiano', title: 'Prodotti utili, scelti con cura', body: 'Dalla legna da ardere alle attrezzature agricole, Braviko ti aiuta a trovare ciò che serve senza perdere tempo.', primary: 'Scopri i prodotti', secondary: 'Come funziona' },
-    home: { eyebrow: 'Due mondi, la stessa attenzione', title: 'Scegli ciò che ti serve.', heating: 'Riscaldamento', heatingBody: 'Legna, pellet e accendifuoco per un calore facile da ordinare.', agriculture: 'Agricoltura', agricultureBody: 'Macchine, utensili e attrezzature per il lavoro quotidiano.', explore: 'Scopri il mondo', selection: 'Una selezione fatta per durare', selectionBody: 'Prodotti affidabili, informazioni chiare e consegna organizzata in tutta la Francia.', allProducts: 'Vedi tutti i prodotti', quality: ['Legna essiccata sotto il 20% di umidità', 'Essiccazione naturale per una combustione efficiente e meno fumo.', 'Ordina in 3 clic', 'Scegli la legna, paga online e ricevi subito la conferma.', 'Consegna in Île-de-France da 48 ore', 'Scarico incluso. Consegna in tutta la Francia.', 'Schede tecniche complete', 'Essenza, confezione e potere calorifico per scegliere meglio.'], deliveryEyebrow: 'Dalla scelta al calore', deliveryTitle: 'La legna, consegnata semplicemente a casa tua', deliveryBody: 'Scegli il formato giusto. Prepariamo il tuo ordine e lo consegniamo con scarico incluso.', deliverySteps: ['Scegli', 'Seleziona essenza, formato e quantità adatti al tuo focolare.', 'Ordina', 'Il tuo ordine viene confermato subito e seguito con chiarezza.', 'Ricevi', 'Consegna rapida nel punto che hai indicato.'], deliveryLink: 'Scopri di più', winterTitle: 'Preparati all’inverno', winterBody: 'Ordina subito legna di qualità per tutta la stagione fredda.', winterCta: 'Ordina ora' },
+    nav: { shop: 'Negozio', heating: 'Riscaldamento', delivery: 'Consegna', advice: 'Consigli', story: 'La nostra storia', agriculture: 'Riscaldamento' },
+    hero: { eyebrow: 'Casa · calore · inverno', title: 'Prodotti utili, scelti con cura', body: 'Legna da ardere, pellet, tronchetti compressi e apparecchi affidabili: Braviko ti aiuta a preparare il riscaldamento senza perdere tempo.', primary: 'Scopri i prodotti', secondary: 'Come funziona' },
+    home: { eyebrow: 'Selezione invernale', title: 'Scegli ciò che ti serve.', heating: 'Riscaldamento', heatingBody: 'Legna, pellet, tronchetti e stufe per un calore facile da ordinare.', agriculture: 'Riscaldamento', agricultureBody: 'Apparecchi, bracieri e attrezzature per l’uso quotidiano.', explore: 'Esplora la selezione', selection: 'Una selezione fatta per durare', selectionBody: 'Prodotti affidabili, informazioni chiare e consegna organizzata in tutta Italia.', allProducts: 'Vedi tutti i prodotti', quality: ['Legna essiccata sotto il 20% di umidità', 'Essiccazione controllata per una combustione efficiente e meno fumo.', 'Ordina in 3 clic', 'Scegli il formato, paga online e ricevi subito la conferma.', 'Consegna organizzata in tutta Italia', 'Scarico con sponda idraulica incluso per bancali e stufe.', 'Schede tecniche complete', 'Essenza, confezione e potere calorifico per scegliere meglio.'], deliveryEyebrow: 'Dalla scelta al calore', deliveryTitle: 'La legna, consegnata semplicemente a casa tua', deliveryBody: 'Scegli il formato giusto. Prepariamo il tuo ordine e lo consegniamo con scarico incluso.', deliverySteps: ['Scegli', 'Seleziona essenza, formato e quantità adatti al tuo focolare.', 'Ordina', 'Il tuo ordine viene confermato subito e seguito con chiarezza.', 'Ricevi', 'Consegna rapida su appuntamento nel punto indicato.'], deliveryLink: 'Scopri di più', winterTitle: 'Preparati all’inverno', winterBody: 'Ordina subito legna e apparecchi di qualità per tutta la stagione fredda.', winterCta: 'Ordina ora' },
   },
 } as const
 
@@ -31,10 +31,10 @@ type I18nContextValue = { locale: Locale; setLocale: (locale: Locale) => void; t
 const I18nContext = createContext<I18nContextValue | null>(null)
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const locale: Locale = 'fr'
+  const locale: Locale = 'it'
 
   useEffect(() => {
-    document.documentElement.lang = 'fr'
+    document.documentElement.lang = 'it'
     try {
       window.localStorage.removeItem('braviko-locale')
     } catch {
@@ -43,10 +43,10 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const changeLocale = useCallback((_nextLocale: Locale) => {
-    // Storefront is French-only.
+    // Storefront is Italian-only.
   }, [])
 
-  const value = useMemo(() => ({ locale, setLocale: changeLocale, t: translations.fr }), [changeLocale])
+  const value = useMemo(() => ({ locale, setLocale: changeLocale, t: translations.it }), [changeLocale])
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
 }
 

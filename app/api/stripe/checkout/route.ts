@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       )
     ) {
       return NextResponse.json(
-        { error: 'INVALID_CHECKOUT', message: 'Votre panier est invalide ou vide.' },
+        { error: 'INVALID_CHECKOUT', message: 'Il carrello non è valido o è vuoto.' },
         { status: 400 },
       )
     }
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     validateCustomerInput(body.customer)
 
     const stripe = stripeClient()
-    const locale: Locale = body.locale || 'fr'
+    const locale: Locale = body.locale || 'it'
 
     const order = await createServerOrder({
       customer: body.customer,
@@ -100,12 +100,12 @@ export async function POST(request: Request) {
           : 500
     const message =
       code === 'INVALID_CUSTOMER'
-        ? 'Vérifiez vos coordonnées et votre adresse de livraison avant de valider.'
+        ? 'Verifica i tuoi dati e l’indirizzo di consegna prima di confermare.'
         : code === 'PRODUCT_UNAVAILABLE'
-          ? 'Un des produits du panier n’est plus disponible.'
+          ? 'Uno dei prodotti nel carrello non è più disponibile.'
           : code === 'STRIPE_NOT_CONFIGURED'
-            ? 'Le paiement par carte n’est pas encore disponible.'
-            : 'Le paiement n’a pas pu être lancé. Réessayez.'
+            ? 'Il pagamento con carta non è ancora disponibile.'
+            : 'Impossibile avviare il pagamento. Riprova.'
     return NextResponse.json({ error: code, message }, { status })
   }
 }

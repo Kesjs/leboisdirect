@@ -88,7 +88,8 @@ export default function FeaturedProducts({
       <div className="bk-selection-context">
         <span>{HEATING_FILTER_GROUPS.find(group => group.id === selectedGroup)?.label[locale]}</span>
         <span>
-          {displayedProducts.length} / {filteredProducts.length} {ui.shop.product}{filteredProducts.length > 1 ? 's' : ''}
+          {displayedProducts.length} / {filteredProducts.length}{' '}
+          {filteredProducts.length === 1 ? ui.shop.product : ui.shop.products}
         </span>
       </div>
       <motion.div key={selectedGroup} initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduced ? 0 : 0.22 }}>

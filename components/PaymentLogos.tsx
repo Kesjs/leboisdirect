@@ -8,7 +8,7 @@ export function CbLogo({ className = 'h-[24px] w-auto' }: { className?: string }
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
-      aria-label="Carte Bancaire (CB)"
+      aria-label="Carta Bancaire (CB)"
     >
       <rect width="120" height="80" rx="6" fill="url(#braviko-cb-grad)" />
       <path
@@ -146,7 +146,7 @@ export function DeliveryTruckIcon({ className = 'w-[20px] h-[20px]' }: { classNa
 
 export function PaymentBadgesRow({ className = 'flex items-center gap-[8px]' }: { className?: string }) {
   return (
-    <div className={className} aria-label="Moyens de paiement acceptés">
+    <div className={className} aria-label="Metodi di pagamento accettati">
       <CbLogo className="h-[26px] w-auto rounded-[4px]" />
       <VisaLogo className="h-[26px] w-auto rounded-[4px]" />
       <MastercardLogo className="h-[26px] w-auto rounded-[4px]" />

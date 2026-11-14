@@ -112,7 +112,7 @@ export default function OrderConfirmationPage() {
       {!authLoading && user ? (
         <Link href="/boutique" className="bk-text-link">{c.continue}</Link>
       ) : (
-        <Link href="/connexion?mode=signup&next=/compte" className="bk-text-link">Créer un compte (facultatif)<span aria-hidden="true">↗</span></Link>
+        <Link href="/connexion?mode=signup&next=/compte" className="bk-text-link">Crea un account (facoltativo)<span aria-hidden="true">↗</span></Link>
       )}
     </div>
   </main><Footer /></>

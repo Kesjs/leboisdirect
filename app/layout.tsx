@@ -17,9 +17,9 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.fr'),
-  title: 'Braviko — Les produits utiles, simplement',
-  description: 'Préparez votre chauffage au bois avec des bûches, granulés et équipements sélectionnés pour l’hiver.',
-  keywords: 'Braviko, chauffage au bois, bûches, granulés, bois compressé, hiver',
+  title: 'Braviko — Riscaldamento a legna e soluzioni per l’inverno',
+  description: 'Prepara il riscaldamento a legna per l’inverno: legna da ardere, pellet, tronchetti compressi, stufe e bracieri con spedizione gratuita in Italia.',
+  keywords: 'Braviko, legna da ardere, pellet, tronchetti compressi, stufe a legna, inserti camino, bracieri, riscaldamento, Italia',
   alternates: { canonical: '/' },
   verification: {
     google: 'QTU2oN2k4JNkADG259tGdDwK31jtE0WyQvbptMg46QU',
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'Braviko',
-    locale: 'fr_FR',
-    title: 'Braviko — Les produits utiles, simplement',
-    description: 'Préparez votre chauffage au bois avec des bûches, granulés et équipements sélectionnés pour l’hiver.',
+    locale: 'it_IT',
+    title: 'Braviko — Riscaldamento a legna e soluzioni per l’inverno',
+    description: 'Prepara il riscaldamento a legna per l’inverno: legna da ardere, pellet, tronchetti compressi, stufe e bracieri con spedizione gratuita in Italia.',
   },
 }
 
@@ -39,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="fr" className={inter.variable}>
+    <html lang="it" className={inter.variable}>
       <body>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-18503582950"

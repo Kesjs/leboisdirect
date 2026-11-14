@@ -37,13 +37,13 @@ export const legalCopy: Record<'mentions-legales' | 'confidentialite' | 'conditi
     it: {
       eyebrow: 'BRAVIKO / INFORMAZIONI LEGALI',
       title: 'Note legali',
-      intro: 'Informazioni su editore, hosting e contatti del sito braviko.fr.',
+      intro: 'Informazioni su editore, hosting e modalità di contatto del sito braviko.fr.',
       updated: 'Aggiornato il 14 novembre 2026',
       sections: [
-        { title: 'Editore', body: 'Il sito braviko.fr è gestito da Braviko — impresa individuale francese (EI), 32 rue Jean Jacob, 59116 Houplines, Francia. Contatto: contact@braviko.fr.' },
-        { title: 'Hosting e infrastruttura', body: 'Il sito è ospitato su infrastruttura Hostinger (Hostinger International Ltd., 61 Lordou Vironos Street, 6023 Larnaca, Cipro). Database e file multimediali sono ospitati su Supabase.' },
-        { title: 'Pagamenti e sicurezza', body: 'I pagamenti con carta sono gestiti da Stripe secondo gli standard PCI-DSS. È disponibile anche il bonifico SEPA.' },
-        { title: 'Proprietà intellettuale', body: 'Testi, schede tecniche, immagini e marchi presenti sul sito sono protetti e non possono essere riprodotti senza autorizzazione.' },
+        { title: 'Editore del sito', body: 'Il sito braviko.fr è gestito da Braviko — impresa individuale francese (EI), con sede legale al 32 rue Jean Jacob, 59116 Houplines, Francia. Contatto amministrativo e assistenza clienti: contact@braviko.fr.' },
+        { title: 'Hosting e infrastruttura', body: 'L’applicazione web braviko.fr è ospitata su infrastruttura Hostinger (Hostinger International Ltd., 61 Lordou Vironos Street, 6023 Larnaca, Cipro). Il database e i file multimediali sono ospitati su Supabase.' },
+        { title: 'Pagamenti e sicurezza', body: 'I pagamenti con carta sono elaborati tramite l’infrastruttura certificata PCI-DSS di Stripe. Braviko non memorizza alcun dato completo delle carte sui propri server. È disponibile anche il pagamento tramite bonifico bancario SEPA.' },
+        { title: 'Proprietà intellettuale', body: 'Tutti i testi, le schede tecniche, le immagini, gli elementi grafici e i marchi presenti sul sito sono protetti dalle leggi sulla proprietà intellettuale e non possono essere riutilizzati senza autorizzazione preventiva.' },
       ],
     },
   },
@@ -117,7 +117,7 @@ export const legalCopy: Record<'mentions-legales' | 'confidentialite' | 'conditi
       updated: 'Aggiornato il 14 novembre 2026',
       sections: [
         { title: 'Ordine ospite o con account', body: 'È possibile acquistare direttamente come ospite senza registrazione oppure tramite il proprio account cliente.' },
-        { title: 'Prezzi e pagamenti', body: 'I prezzi sono espressi in euro IVA inclusa con spedizione gratuita in Francia continentale. Pagamento immediato con carta via Stripe o tramite bonifico SEPA.' },
+        { title: 'Prezzi e pagamenti', body: 'I prezzi sono espressi in euro IVA inclusa con spedizione gratuita in tutta Italia. Pagamento immediato con carta via Stripe o tramite bonifico SEPA.' },
         { title: 'Spedizione e consegna', body: 'Spedizione in 48 ore lavorative per i prodotti a stock; consegna in 3–12 giorni lavorativi in base al formato previo appuntamento con il corriere e scarico con sponda idraulica.' },
         { title: 'Recesso (14 giorni) e garanzie', body: 'Diritto di recesso entro 14 giorni dalla consegna per articoli integri e non utilizzati (contact@braviko.fr), oltre alle garanzie legali e del produttore.' },
       ],

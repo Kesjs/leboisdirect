@@ -3,8 +3,11 @@ import type { RichProductSpec } from '@/data/product-rich-specs'
 import { formatPrice } from '@/lib/utils'
 
 function parseNumericToken(raw: string): number | null {
-  const cleaned = raw.replace(/\s+/g, '').replace(',', '.')
-  const num = Number(cleaned)
+  const compact = raw.replace(/\s+/g, '')
+  const normalized = /^\d{1,3}(?:\.\d{3})+(?:,\d+)?$/.test(compact)
+    ? compact.replaceAll('.', '').replace(',', '.')
+    : compact.replace(',', '.')
+  const num = Number(normalized)
   return Number.isFinite(num) && num > 0 ? num : null
 }
 
@@ -29,42 +32,42 @@ export function computeDynamicUnitPriceLabel(
   richSpec?: RichProductSpec,
 ): string {
   if (!Number.isFinite(currentPrice) || currentPrice <= 0) {
-    return richSpec?.unitPriceLabel || 'Prix unitaire TTC · Livraison en France'
+    return richSpec?.unitPriceLabel || 'Prezzo unitario IVA inclusa · Spedizione in Italia'
   }
 
   const primarySource = variant?.label || product.conditioning || ''
   const combinedSource = normalizeTextSources(product, variant)
 
-  // 1. Vente au stère (priorité à la variante sélectionnée)
+  // 1. Vendita a stero
   const variantVolume =
     typeof variant?.volume === 'number' && variant.volume > 0
       ? variant.volume
       : null
   const stereMatch =
-    primarySource.match(/(\d+(?:[.,]\d+)?)\s*st[eè]res?/i) ||
-    combinedSource.match(/(\d+(?:[.,]\d+)?)\s*st[eè]res?/i)
+    primarySource.match(/(\d+(?:[.,]\d+)?)\s*st(?:er[oi]|[eè]res?)/i) ||
+    combinedSource.match(/(\d+(?:[.,]\d+)?)\s*st(?:er[oi]|[eè]res?)/i)
   const steres =
     variantVolume || (stereMatch ? parseNumericToken(stereMatch[1]) : null)
 
   if (
     steres &&
     (product.category === 'buches' ||
-      /st[eè]re/i.test(primarySource) ||
+      /st(?:er[oi]|[eè]res?)/i.test(primarySource) ||
       variantVolume !== null)
   ) {
     const perStere = currentPrice / steres
     const stereText = Number.isInteger(steres)
       ? `${steres}`
       : steres.toString().replace('.', ',')
-    return `Soit ${formatPrice(perStere)} / stère (palette de ${stereText} stère${steres > 1 ? 's' : ''})`
+    return `Ovvero ${formatPrice(perStere)} / stero (bancale da ${stereText} ${steres > 1 ? 'steri' : 'stero'})`
   }
 
-  // 2. Vente au poids (granulés / bûches densifiées au kg ou packs)
+  // 2. Vendita a peso (pellet / tronchetti densificati a kg o confezioni)
   const isFuelWeightProduct =
     product.category === 'granules' ||
     product.category === 'bois-compresse' ||
     typeof variant?.weight === 'number' ||
-    /\b(kg|tonnes?)\b/i.test(primarySource)
+    /\b(kg|tonnellat[ae]|tonnes?)\b/i.test(primarySource)
 
   if (isFuelWeightProduct) {
     const variantWeight =
@@ -73,12 +76,12 @@ export function computeDynamicUnitPriceLabel(
         : null
 
     const packMultiplierMatch = combinedSource.match(
-      /(\d[\d\s]*)\s*(sacs?|packs?|cartons?|ballots?)\s*(?:de\s*(\d+(?:[.,]\d+)?)\s*kg)?/i,
+      /(\d[\d\s.]*)\s*(sacch[oi]|confezion[ei]|pacc[ohi]|sacs?|packs?|cartons?|ballots?)\s*(?:d[ae]\s*(\d+(?:[.,]\d+)?)\s*kg)?/i,
     )
     const paletteKgMatch =
-      primarySource.match(/(?:palette\s*(?:de\s*)?)?(\d[\d\s.,]*)\s*kg/i) ||
+      primarySource.match(/(?:(?:bancale|palette)\s*(?:d[ae]\s*)?)?(\d[\d\s.,]*)\s*kg/i) ||
       combinedSource.match(/(\d[\d\s.,]*)\s*kg/i)
-    const tonneMatch = combinedSource.match(/(\d+(?:[.,]\d+)?)\s*tonnes?\b/i)
+    const tonneMatch = combinedSource.match(/(\d+(?:[.,]\d+)?)\s*(?:tonnellat[ae]|tonnes?)\b/i)
 
     let totalKg = variantWeight
     if (!totalKg && paletteKgMatch) {
@@ -104,41 +107,48 @@ export function computeDynamicUnitPriceLabel(
       ? parseNumericToken(packMultiplierMatch[1])
       : null
     const packKind = packMultiplierMatch?.[2]?.toLowerCase()
-    const singularKind = packKind?.startsWith('sac')
-      ? 'sac'
-      : packKind?.startsWith('pack')
-        ? 'pack'
-        : packKind?.startsWith('carton')
-          ? 'carton'
-          : packKind
-            ? packKind.replace(/s$/, '')
-            : null
+    const singularKind = packKind?.startsWith('sacc') || packKind?.startsWith('sac')
+      ? 'sacco'
+      : packKind?.startsWith('confezion') || packKind?.startsWith('pack')
+        ? 'confezione'
+        : packKind?.startsWith('pacc')
+          ? 'pacco'
+          : packKind?.startsWith('carton')
+            ? 'cartone'
+            : packKind
+              ? packKind.replace(/s$/, '')
+              : null
 
     if (totalKg && totalKg > 0) {
       const perKg = formatPrice(currentPrice / totalKg)
       if (packCount && packCount > 1 && singularKind) {
         const perUnit = formatPrice(currentPrice / packCount)
         const packWeightSuffix =
-          packMultiplierMatch?.[3] && singularKind === 'sac'
-            ? ` de ${packMultiplierMatch[3]} kg`
+          packMultiplierMatch?.[3] && singularKind === 'sacco'
+            ? ` da ${packMultiplierMatch[3]} kg`
             : ''
-        return `Soit ${perKg} / kg (${perUnit} / ${singularKind}${packWeightSuffix})`
+        return `Ovvero ${perKg} / kg (${perUnit} / ${singularKind}${packWeightSuffix})`
       }
-      return `Soit ${perKg} / kg (${Math.round(totalKg).toLocaleString('fr-FR')} kg)`
+      return `Ovvero ${perKg} / kg (${Math.round(totalKg).toLocaleString('it-IT')} kg)`
     }
   }
 
-  // 3. Vente à la bûche / lot quantifié (ex: EO2 520 bûches)
-  if (product.category === 'bois-compresse' || /\bb[uû]ches?\b/i.test(primarySource)) {
+  // 3. Vendita a tronchetto / lotto quantificato (es. EO2 520 tronchetti)
+  if (
+    product.category === 'bois-compresse' ||
+    /\b(?:b[uû]ches?|tronchett[oi]|pezz[oi])\b/i.test(primarySource)
+  ) {
     const extractLogTotal = (source: string): number | null => {
-      const explicitTotals = [...source.matchAll(/(\d[\d\s]*)\s*b[uû]ches?\b/gi)]
+      const explicitTotals = [
+        ...source.matchAll(/(\d[\d\s.]*)\s*(?:b[uû]ches?|tronchett[oi]|pezz[oi])\b/gi),
+      ]
         .map((match) => parseNumericToken(match[1]))
         .filter((value): value is number => Boolean(value && value >= 10))
       if (explicitTotals.length > 0) {
         return Math.max(...explicitTotals)
       }
       const packLogs = source.match(
-        /(\d[\d\s]*)\s*(?:packs?|cartons?|sacs?)\s*(?:de\s*)?(\d+)\s*b[uû]ches?\b/i,
+        /(\d[\d\s.]*)\s*(?:confezioni|pacchi|sacchi|packs?|cartons?|sacs?)\s*(?:d[ae]\s*)?(\d+)\s*(?:b[uû]ches?|tronchett[oi]|pezz[oi])\b/i,
       )
       if (packLogs) {
         const packs = parseNumericToken(packLogs[1])
@@ -150,18 +160,18 @@ export function computeDynamicUnitPriceLabel(
 
     const count = extractLogTotal(primarySource) ?? extractLogTotal(combinedSource)
     if (count && count >= 10) {
-      return `Soit ${formatPrice(currentPrice / count)} / bûche (lot de ${Math.round(count).toLocaleString('fr-FR')} bûches)`
+      return `Ovvero ${formatPrice(currentPrice / count)} / tronchetto (lotto da ${Math.round(count).toLocaleString('it-IT')} tronchetti)`
     }
   }
 
-  // 4. Appareils, poêles, braseros, machines & accessoires : valeur unitaire clé + contexte
+  // 4. Apparecchi, stufe, bracieri, macchine e accessori
   if (richSpec?.unitPriceLabel) {
     return richSpec.unitPriceLabel
   }
 
   if (variant?.label && product.variants && product.variants.length > 1) {
-    return `${formatPrice(currentPrice)} / unité — ${variant.label}`
+    return `${formatPrice(currentPrice)} / unità — ${variant.label}`
   }
 
-  return 'Prix unitaire TTC · TVA incluse · Livraison suivie'
+  return 'Prezzo unitario IVA inclusa · Spedizione tracciata'
 }

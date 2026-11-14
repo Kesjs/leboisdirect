@@ -59,30 +59,30 @@ export default function CheckoutPage() {
   const exitingCheckout = useRef(false)
 
   const paymentCopy = {
-    error: 'Le paiement n’a pas pu être lancé. Réessayez.',
-    unavailable: 'Le paiement par carte n’est pas encore disponible.',
-    card: 'Paiement par carte',
-    cardBody: 'Paiement sécurisé',
-    bank: 'Virement SEPA',
-    bankBody: 'Recevez votre référence et vos coordonnées sur demande sécurisée.',
-    bankTitle: 'Votre virement SEPA',
-    bankIntro: 'Commande enregistrée. Effectuez le virement du montant total en indiquant la référence ci-dessous dans le libellé.',
-    holder: 'Titulaire du compte',
+    error: 'Impossibile avviare il pagamento. Riprova.',
+    unavailable: 'Il pagamento con carta non è ancora disponibile.',
+    card: 'Pagamento con carta',
+    cardBody: 'Pagamento sicuro',
+    bank: 'Bonifico SEPA',
+    bankBody: 'Ricevi riferimento e coordinate bancarie su richiesta sicura.',
+    bankTitle: 'Il tuo bonifico SEPA',
+    bankIntro: 'Ordine registrato. Effettua il bonifico dell’importo totale indicando il riferimento qui sotto nella causale.',
+    holder: 'Intestatario del conto',
     iban: 'IBAN',
     bic: 'BIC / SWIFT',
-    reference: 'Référence du virement',
-    copy: 'Copier',
-    copied: 'Copié',
-    close: 'Fermer et retourner à la boutique',
-    backToShop: 'Terminer et retourner à la boutique',
-    revealButton: 'Afficher les coordonnées bancaires',
-    revealing: 'Affichage sécurisé…',
-    hideButton: 'Masquer les coordonnées',
-    maskedNotice: 'Par confidentialité, les coordonnées bancaires sont masquées par défaut.',
-    revealError: 'Impossible d’afficher les coordonnées pour le moment. Réessayez.',
-    processingTitle: 'Délai de traitement',
-    processingBody: 'Un virement SEPA classique peut prendre 1 à 2 jours ouvrés. Pour une livraison plus rapide, privilégiez un virement instantané si votre banque le propose.',
-    bankError: 'Le virement n’a pas pu être préparé. Réessayez.',
+    reference: 'Riferimento del bonifico',
+    copy: 'Copia',
+    copied: 'Copiato',
+    close: 'Chiudi e torna al negozio',
+    backToShop: 'Termina e torna al negozio',
+    revealButton: 'Mostra le coordinate bancarie',
+    revealing: 'Caricamento sicuro…',
+    hideButton: 'Nascondi coordinate',
+    maskedNotice: 'Per riservatezza, le coordinate bancarie sono nascoste per impostazione predefinita.',
+    revealError: 'Impossibile mostrare le coordinate al momento. Riprova.',
+    processingTitle: 'Tempi di accredito',
+    processingBody: 'Un bonifico SEPA ordinario richiede 1–2 giorni lavorativi. Per una spedizione più rapida, scegli il bonifico istantaneo se offerto dalla tua banca.',
+    bankError: 'Impossibile preparare il bonifico. Riprova.',
   }
   const [formData, setFormData] = useState({
     email: '',
@@ -90,12 +90,12 @@ export default function CheckoutPage() {
     lastName: '',
     address: '',
     addressComplement: '',
-    country: 'France',
+    country: 'Italia',
     city: '',
     postalCode: '',
     phone: '',
-    phoneCountry: 'FR',
-    phoneCode: '+33',
+    phoneCountry: 'IT',
+    phoneCode: '+39',
   })
 
   useEffect(() => {
@@ -138,7 +138,7 @@ export default function CheckoutPage() {
     }))
   }, [user])
 
-  if (!cartHydrated) return <PageSkeleton variant="checkout" label="Chargement de la commande" />
+  if (!cartHydrated) return <PageSkeleton variant="checkout" label="Caricamento dell'ordine" />
   if (items.length === 0 && !bankTransferOrder) return null
 
   const buildCustomerPayload = () => ({
@@ -158,7 +158,7 @@ export default function CheckoutPage() {
     const phoneDigits = formData.phone.replace(/\D/g, '')
     if (!emailOk || !formData.firstName.trim() || !formData.lastName.trim() || phoneDigits.length < 6) {
       setStep(1)
-      setFormError('Veuillez vérifier votre adresse e-mail, votre nom complet et votre numéro de téléphone.')
+      setFormError('Verifica il tuo indirizzo email, nome, cognome e numero di telefono.')
       return false
     }
     return true
@@ -167,7 +167,7 @@ export default function CheckoutPage() {
   const validateBeforePayment = () => {
     if (!validateStep1()) return false
     if (!formData.address.trim() || !formData.postalCode.trim() || !formData.city.trim()) {
-      setFormError('Veuillez renseigner votre adresse, votre code postal et votre ville de livraison.')
+      setFormError('Inserisci indirizzo, CAP e città di consegna.')
       return false
     }
     return true
@@ -208,7 +208,7 @@ export default function CheckoutPage() {
     } catch (error) {
       const code = error instanceof Error ? error.message : 'CHECKOUT_UNAVAILABLE'
       const userMessage = error instanceof Error && 'userMessage' in error ? (error as Error & { userMessage?: string }).userMessage : undefined
-      setFormError(userMessage || (code === 'STRIPE_NOT_CONFIGURED' ? paymentCopy.unavailable : code === 'PRODUCT_UNAVAILABLE' ? 'Un des produits du panier n’est plus disponible.' : paymentCopy.error))
+      setFormError(userMessage || (code === 'STRIPE_NOT_CONFIGURED' ? paymentCopy.unavailable : code === 'PRODUCT_UNAVAILABLE' ? 'Uno dei prodotti nel carrello non è più disponibile.' : paymentCopy.error))
       setSubmitting(false)
       paymentLock.current = false
     }
@@ -344,14 +344,14 @@ export default function CheckoutPage() {
             {/* Form */}
             <div className="min-w-0 lg:col-span-7">
               {/* Progress */}
-              <div className="flex items-center justify-between gap-12 mb-32" aria-label="Progression de la commande">
+              <div className="flex items-center justify-between gap-12 mb-32" aria-label="Avanzamento dell'ordine">
                 {[1, 2].map((s) => (
                   <div key={s} className={`flex items-center ${s === 1 ? 'min-w-0 flex-1' : 'shrink-0'}`}>
                     <button
                       type="button"
                       onClick={() => s < step && setStep(s)}
                       aria-current={s === step ? 'step' : undefined}
-                      aria-label={s < step ? `Revenir à l’étape ${s}` : `Étape ${s}`}
+                      aria-label={s < step ? `Torna al passaggio ${s}` : `Passaggio ${s}`}
                       className={`h-40 w-40 shrink-0 rounded-full flex items-center justify-center text-body-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 ${
                         s <= step
                           ? 'bg-charcoal text-white'
@@ -383,17 +383,17 @@ export default function CheckoutPage() {
                     </h2>
                     {!user ? (
                       <p className="mb-20 text-body-sm text-smoke">
-                        Commande rapide sans création de compte. Déjà client ?{' '}
+                        Ordine rapido senza registrazione. Già cliente?{' '}
                         <Link
                           href="/connexion?mode=login&next=/checkout"
                           className="font-medium text-braise underline underline-offset-4 hover:text-charcoal"
                         >
-                          Se connecter
+                          Accedi
                         </Link>
                       </p>
                     ) : (
                       <p className="mb-20 text-body-sm text-smoke">
-                        Connecté en tant que <strong className="font-medium text-charcoal">{user.email}</strong>.
+                        Connesso come <strong className="font-medium text-charcoal">{user.email}</strong>.
                       </p>
                     )}
                     {formError && (
@@ -416,7 +416,7 @@ export default function CheckoutPage() {
                           autoComplete="email"
                           maxLength={160}
                           className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"
-                          placeholder="votre@email.fr"
+                          placeholder="nome@email.it"
                         />
                       </div>
                       <div className="grid grid-cols-1 gap-20 sm:grid-cols-2">
@@ -465,18 +465,18 @@ export default function CheckoutPage() {
                               name="phoneCountry"
                               value={formData.phoneCountry}
                               onChange={(event) => {
-                                const codes: Record<string, string> = { FR: '+33', BE: '+32', CH: '+41', LU: '+352', DE: '+49', IT: '+39' }
-                                setFormData({ ...formData, phoneCountry: event.target.value, phoneCode: codes[event.target.value] ?? '+33' })
+                                const codes: Record<string, string> = { IT: '+39', FR: '+33', BE: '+32', CH: '+41', LU: '+352', DE: '+49' }
+                                setFormData({ ...formData, phoneCountry: event.target.value, phoneCode: codes[event.target.value] ?? '+39' })
                               }}
-                              aria-label="Pays du téléphone"
+                              aria-label="Prefisso telefonico"
                               className="w-full px-12 py-12 border border-hairline rounded-card bg-white text-body text-charcoal focus:border-braise focus:outline-none"
                             >
-                            <option value="FR">FR +33</option>
-                            <option value="BE">BE +32</option>
-                            <option value="CH">CH +41</option>
-                            <option value="LU">LU +352</option>
-                            <option value="DE">DE +49</option>
                             <option value="IT">IT +39</option>
+                            <option value="FR">FR +33</option>
+                            <option value="CH">CH +41</option>
+                            <option value="DE">DE +49</option>
+                            <option value="BE">BE +32</option>
+                            <option value="LU">LU +352</option>
                             </select>
                           </span>
                           <input
@@ -491,10 +491,10 @@ export default function CheckoutPage() {
                             maxLength={24}
                             aria-describedby="phone-hint"
                             className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none"
-                            placeholder="06 12 34 56 78"
+                            placeholder="333 123 4567"
                           />
                         </div>
-                        <p id="phone-hint" className="mt-8 text-body-sm text-smoke">Choisissez votre pays, puis indiquez votre numéro de téléphone.</p>
+                        <p id="phone-hint" className="mt-8 text-body-sm text-smoke">Scegli il prefisso internazionale e inserisci il tuo numero di telefono.</p>
                       </div>
                     </div>
                     <Button type="submit" size="lg" className="w-full mt-32 rounded-card">
@@ -509,12 +509,12 @@ export default function CheckoutPage() {
                       <h2 className="text-heading-sm font-semibold text-charcoal mb-8">
                       {c.deliveryAddress}
                     </h2>
-                    <p className="text-body-sm text-smoke mb-24">Indiquez l’adresse complète où votre commande doit être livrée.</p>
+                    <p className="text-body-sm text-smoke mb-24">Indica l’indirizzo completo per la consegna del tuo ordine.</p>
                     <div className="space-y-20">
                       <div>
-                        <label htmlFor="country" className="block text-body-sm font-medium text-charcoal mb-8">Pays de livraison</label>
+                        <label htmlFor="country" className="block text-body-sm font-medium text-charcoal mb-8">Paese di consegna</label>
                         <select id="country" name="country" value={formData.country} onChange={handleInputChange} required autoComplete="country-name" className="w-full px-16 py-12 border border-hairline rounded-card bg-white text-body text-charcoal focus:border-braise focus:outline-none">
-                          <option>France</option><option>Belgique</option><option>Luxembourg</option><option>Suisse</option><option>Allemagne</option><option>Italie</option>
+                          <option>Italia</option><option>Francia</option><option>Svizzera</option><option>Germania</option><option>Belgio</option><option>Lussemburgo</option>
                         </select>
                       </div>
                       <div>
@@ -531,12 +531,12 @@ export default function CheckoutPage() {
                           autoComplete="street-address"
                           maxLength={160}
                           className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none"
-                          placeholder="12 rue de la République"
+                          placeholder="Via Roma 12"
                         />
                       </div>
                       <div>
-                        <label htmlFor="addressComplement" className="block text-body-sm font-medium text-charcoal mb-8">Complément d’adresse <span className="text-smoke">(facultatif)</span></label>
-                        <input type="text" id="addressComplement" name="addressComplement" value={formData.addressComplement} onChange={handleInputChange} autoComplete="address-line2" maxLength={120} className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none" placeholder="Appartement, bâtiment, étage, portail…" />
+                        <label htmlFor="addressComplement" className="block text-body-sm font-medium text-charcoal mb-8">Complemento indirizzo <span className="text-smoke">(facoltativo)</span></label>
+                        <input type="text" id="addressComplement" name="addressComplement" value={formData.addressComplement} onChange={handleInputChange} autoComplete="address-line2" maxLength={120} className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none" placeholder="Interno, edificio, scala, citofono…" />
                       </div>
                       <div className="grid grid-cols-1 gap-20 sm:grid-cols-2">
                         <div>
@@ -553,7 +553,7 @@ export default function CheckoutPage() {
                             autoComplete="postal-code"
                             maxLength={12}
                             className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none"
-                            placeholder="75001"
+                            placeholder="00100"
                           />
                         </div>
                         <div>
@@ -570,7 +570,7 @@ export default function CheckoutPage() {
                             autoComplete="address-level2"
                             maxLength={100}
                             className="w-full px-16 py-12 border border-hairline rounded-card text-body text-charcoal focus:border-braise focus:outline-none"
-                            placeholder="Paris"
+                            placeholder="Roma"
                           />
                         </div>
                       </div>
@@ -579,13 +579,13 @@ export default function CheckoutPage() {
                     <div className="bk-checkout-payment mt-32 space-y-12" aria-label={c.payment}>
                       <div className="bk-checkout-payment-heading">
                         <h3 className="text-heading-sm font-semibold text-charcoal">{c.payment}</h3>
-                        <p className="mt-8 text-body-sm text-smoke">Choisissez une option pour terminer votre commande.</p>
+                        <p className="mt-8 text-body-sm text-smoke">Scegli una modalità per completare l’ordine.</p>
                       </div>
                       <div className="grid gap-12 sm:grid-cols-2">
                         <button type="submit" className="min-h-[72px] w-full rounded-card bg-charcoal px-20 py-12 text-left text-white transition-colors hover:bg-charcoal/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60" disabled={submitting || bankSubmitting} aria-busy={submitting}>
                           <span className="flex w-full items-center justify-between gap-16">
                             <span>
-                              <span className="block font-semibold">{submitting ? 'Ouverture du paiement…' : paymentCopy.card}</span>
+                              <span className="block font-semibold">{submitting ? 'Apertura del pagamento…' : paymentCopy.card}</span>
                               <span className="mt-4 block text-body-sm text-white/70">{paymentCopy.cardBody}</span>
                             </span>
                           </span>
@@ -593,7 +593,7 @@ export default function CheckoutPage() {
                         <button type="button" className="min-h-[72px] w-full rounded-card border border-charcoal bg-white px-20 py-12 text-left text-charcoal transition-colors hover:bg-mist focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleBankTransfer} disabled={submitting || bankSubmitting} aria-busy={bankSubmitting}>
                           <span className="flex items-center gap-16">
                             <span>
-                              <span className="block font-semibold">{bankSubmitting ? 'Préparation du virement…' : paymentCopy.bank}</span>
+                              <span className="block font-semibold">{bankSubmitting ? 'Preparazione bonifico…' : paymentCopy.bank}</span>
                               <span className="mt-4 block text-body-sm text-smoke">{paymentCopy.bankBody}</span>
                             </span>
                           </span>
@@ -706,7 +706,7 @@ export default function CheckoutPage() {
               </div>
             ) : (
               <div className="mb-16 flex items-center justify-between gap-12 rounded-card border border-emerald-200 bg-emerald-50 px-16 py-[10px] text-body-sm text-emerald-900">
-                <span>Coordonnées bancaires affichées</span>
+                <span>Coordinate bancarie visibili</span>
                 <button
                   type="button"
                   onClick={() => setRevealedBankDetails(null)}
@@ -758,7 +758,7 @@ export default function CheckoutPage() {
                     </button>
                   ) : (
                     <span className="shrink-0 rounded-[4px] bg-mist px-[10px] py-[4px] text-[11px] font-medium text-smoke">
-                      Masqué
+                      Nascosto
                     </span>
                   )}
                 </div>

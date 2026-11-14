@@ -86,8 +86,8 @@ export default function ContactPage() {
 
     const mailBody = [
       message,
-      orderRef ? `Référence : ${orderRef}` : '',
-      `De : ${name} (${email})`,
+      orderRef ? `Riferimento: ${orderRef}` : '',
+      `Da: ${name} (${email})`,
     ]
       .filter(Boolean)
       .join('\n\n')
