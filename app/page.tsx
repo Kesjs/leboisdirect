@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -11,20 +12,22 @@ import TrustSignals from '@/components/TrustSignals'
 import LandingMotion from '@/components/motion/LandingMotion'
 import { useI18n } from '@/lib/i18n-context'
 import { bravikoCopy } from '@/data/braviko-copy'
+import type { HeatingGroupId } from '@/data/catalog-taxonomy'
 
 export default function Home() {
   const { locale } = useI18n()
   const copy = bravikoCopy[locale]
+  const [selectedGroup, setSelectedGroup] = useState<HeatingGroupId>('all')
   return (
     <>
       <Header />
       <main id="main-content" className="bk-home">
         <Hero />
         <LandingMotion>
-          <TrustSignals />
-          <FeaturedProducts />
+          <TrustSignals activeGroup={selectedGroup} onSelectGroup={setSelectedGroup} />
+          <FeaturedProducts selectedGroup={selectedGroup} onSelectGroup={setSelectedGroup} />
           <StorytellingSection />
-          <section className="bk-quality bk-section bk-container" aria-labelledby="quality-title">
+          <section id="preuves" className="bk-quality bk-section bk-container" aria-labelledby="quality-title">
             <div className="bk-section-heading" data-reveal><h2 className="bk-title" id="quality-title">{copy.qualityTitle}</h2><p className="bk-lead">{copy.qualityIntro}</p></div>
             <div className="bk-quality-grid">
               {copy.qualities.map(([title, body], i) => <article data-reveal key={i}><span className="bk-quality-index" aria-hidden="true">0{i + 1}</span><h3>{title}</h3><p>{body}</p></article>)}

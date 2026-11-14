@@ -228,20 +228,25 @@
 .bk-hero-foot > span { letter-spacing: .1em; flex-shrink: 0; }
 .bk-hero-foot p { text-align: center; }
 
-/* Trust signals: concrete proof before the product selection. */
-.bk-trust-signals { display: grid; grid-template-columns: minmax(260px, .8fr) minmax(0, 1.7fr); gap: 32px 64px; padding-block: clamp(56px, 7vw, 96px); border-bottom: 1px solid var(--bk-line); }
-.bk-trust-heading { max-width: 410px; }
-.bk-trust-heading h2 { margin-top: 12px; font-size: clamp(30px, 4vw, 48px); line-height: 1.05; letter-spacing: -.045em; font-weight: 500; text-wrap: balance; }
-.bk-trust-heading > p:last-child { margin-top: 16px; color: var(--bk-muted); line-height: 1.7; max-width: 48ch; }
-.bk-trust-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-self: end; border-top: 1px solid var(--bk-line); border-bottom: 1px solid var(--bk-line); }
-.bk-trust-metric { display: grid; align-content: start; gap: 10px; min-height: 128px; padding: 22px 20px 20px 0; border-right: 1px solid var(--bk-line); }
-.bk-trust-metric:nth-child(2n) { border-right: 0; padding-left: 20px; padding-right: 0; }
-.bk-trust-metric:nth-child(n + 3) { border-top: 1px solid var(--bk-line); }
-.bk-trust-metric strong { color: var(--bk-ink); font-size: clamp(25px, 3vw, 42px); font-weight: 500; letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
-.bk-trust-metric span { color: var(--bk-muted); font-size: 11px; line-height: 1.45; }
-.bk-trust-source { grid-column: 2; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 4px; }
-.bk-trust-source p { max-width: 62ch; color: var(--bk-muted); font-size: 12px; line-height: 1.6; }
-.bk-trust-source .bk-text-link { flex-shrink: 0; }
+/* Visual category access cards before the product selection. */
+.bk-category-showcase { padding-block: clamp(40px, 5vw, 68px); border-bottom: 1px solid var(--bk-line); }
+.bk-category-showcase-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+.bk-category-showcase-head h2 { margin-top: 8px; font-size: clamp(26px, 3vw, 38px); line-height: 1.08; letter-spacing: -.04em; font-weight: 500; }
+.bk-category-showcase-head > .bk-text-link { flex-shrink: 0; }
+.bk-category-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.bk-category-card { display: flex; flex-direction: column; overflow: hidden; text-align: left; background: var(--bk-surface); border: 1px solid var(--bk-line); border-radius: var(--bk-radius); transition: border-color .25s var(--bk-ease), transform .25s var(--bk-ease), box-shadow .25s var(--bk-ease); }
+.bk-category-card:hover { border-color: var(--bk-ink); transform: translateY(-2px); box-shadow: 0 12px 28px rgb(22 22 20 / .06); }
+.bk-category-card.is-active { border-color: var(--bk-accent); box-shadow: 0 0 0 1px var(--bk-accent); }
+.bk-category-media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--bk-soft); }
+.bk-category-media img { transition: transform .7s var(--bk-ease); }
+.bk-category-card:hover .bk-category-media img { transform: scale(1.04); }
+.bk-category-body { display: grid; gap: 6px; padding: 14px 16px 16px; }
+.bk-category-title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--bk-ink); font-size: 16px; font-weight: 500; letter-spacing: -.02em; }
+.bk-category-title-row span[aria-hidden] { color: var(--bk-muted); font-size: 15px; transition: transform .2s var(--bk-ease), color .2s; }
+.bk-category-card:hover .bk-category-title-row span[aria-hidden],
+.bk-category-card.is-active .bk-category-title-row span[aria-hidden] { color: var(--bk-accent); transform: translateX(3px); }
+.bk-category-body p { color: var(--bk-muted); font-size: 12px; line-height: 1.45; }
+#preuves { scroll-margin-top: 96px; }
 
 /* Selection and real product cards. */
 #selection { scroll-margin-top: 100px; }
@@ -656,9 +661,7 @@
   .bk-hero h1 { font-size: clamp(42px, 8.5vw, 72px); }
   .bk-hero-intro { max-width: 560px; justify-self: start; padding-top: 0; }
   .bk-hero-intro p { max-width: 470px; }
-  .bk-trust-signals { grid-template-columns: 1fr; gap: 32px; }
-  .bk-trust-heading { max-width: 600px; }
-  .bk-trust-source { grid-column: 1; }
+  .bk-category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .bk-quality-grid { grid-template-columns: repeat(2, 1fr); }
   .bk-delivery { gap: 32px; }
   .bk-story-panel { gap: 32px; }
@@ -742,12 +745,12 @@
   .bk-story-step-media { min-height: 260px; }
   .bk-hero-foot > span:last-child { display: none; }
   .bk-selection-heading { display: block; }
-  .bk-trust-signals { padding-block: 56px; }
-  .bk-trust-metrics { grid-template-columns: 1fr; }
-  .bk-trust-metric { border-right: 0; padding: 18px 0; min-height: 0; }
-  .bk-trust-metric:nth-child(2n) { padding-left: 0; }
-  .bk-trust-metric + .bk-trust-metric { border-top: 1px solid var(--bk-line); }
-  .bk-trust-source { display: grid; align-items: start; gap: 16px; }
+  .bk-category-showcase { padding-block: 36px; }
+  .bk-category-showcase-head { flex-direction: column; align-items: flex-start; gap: 14px; margin-bottom: 18px; }
+  .bk-category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .bk-category-body { padding: 11px 12px 12px; gap: 4px; }
+  .bk-category-title-row { font-size: 14px; }
+  .bk-category-body p { font-size: 11px; }
   .bk-selection-heading > .bk-text-link { margin-top: 20px; }
   .bk-related-heading { display: block; }
   .bk-related-heading > .bk-text-link { display: inline-block; margin-top: 20px; }
@@ -831,5 +834,5 @@
 @media (prefers-reduced-motion: reduce) {
   :is(.bk-home, .bk-header, .bk-footer, .bk-cart-dialog, .bk-toast) *, :is(.bk-home, .bk-header) *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
   .bk-header ~ main { animation: none !important; }
-  .bk-world:hover .bk-world-media img, .bk-product-link:hover img, .bk-button:active, .bk-product-add:active { transform: none; }
+  .bk-world:hover .bk-world-media img, .bk-category-card:hover, .bk-category-card:hover .bk-category-media img, .bk-product-link:hover img, .bk-button:active, .bk-product-add:active { transform: none; }
 }
