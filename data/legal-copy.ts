@@ -94,7 +94,7 @@ export const legalCopy: Record<'mentions-legales' | 'confidentialite' | 'conditi
       sections: [
         { title: 'Commande sans compte ou avec compte', body: 'Vous pouvez commander librement en mode invité sans créer de compte préalable, ou vous connecter à votre espace client pour conserver l’historique de vos commandes et factures. Toute commande suppose l’acceptation des présentes conditions.' },
         { title: 'Prix & modalités de paiement', body: 'Les prix sont affichés en euros TTC, hors frais de livraison offerts en France métropolitaine. Le règlement s’effectue en ligne par carte bancaire via Stripe (confirmation immédiate) ou par virement bancaire SEPA (expédition déclenchée à réception des fonds).' },
-        { title: 'Expédition, prise de RDV & réception', body: 'Les articles en stock sont expédiés sous 48 h ouvrées. La livraison intervient généralement sous 3 à 8 jours ouvrés en France métropolitaine. Pour les palettes et appareils lourds, le transporteur fixe un rendez-vous préalable et décharge au hayon sur sol stable et carrossable. Tout défaut ou avarie doit être signalé par réserves précises sur le bon de livraison.' },
+        { title: 'Expédition, prise de RDV & réception', body: 'Les articles en stock sont expédiés sous 48 h ouvrées. La livraison intervient généralement sous 3 à 12 jours ouvrés selon gabarit en France métropolitaine (3 à 5 jours en colis, 5 à 12 jours sur rendez-vous pour palettes, abris et appareils lourds). Pour les palettes et appareils lourds, le transporteur fixe un rendez-vous préalable et décharge au hayon sur sol stable et carrossable. Tout défaut ou avarie doit être signalé par réserves précises sur le bon de livraison.' },
         { title: 'Droit de rétractation (14 jours) & garanties', body: 'Conformément aux articles L221-18 et suivants du Code de la consommation, vous disposez de 14 jours calendaires à compter de la réception pour exercer votre droit de rétractation auprès de contact@braviko.fr, sur un produit non utilisé, complet et dans son emballage d’origine. Tous nos équipements bénéficient en outre de la garantie légale de conformité (2 ans), de la garantie des vices cachés et des garanties constructeurs indiquées sur les fiches.' },
       ],
     },
@@ -106,7 +106,7 @@ export const legalCopy: Record<'mentions-legales' | 'confidentialite' | 'conditi
       sections: [
         { title: 'Bestellung als Gast oder mit Konto', body: 'Bestellungen sind ohne vorherige Registrierung als Gast oder über ein Kundenkonto möglich.' },
         { title: 'Preise & Zahlung', body: 'Alle Preise in Euro inkl. MwSt. Der Versand innerhalb des französischen Festlands ist kostenlos. Zahlung per Karte über Stripe oder SEPA-Überweisung.' },
-        { title: 'Versand & Annahme', body: 'Lagerware wird binnen 48 Werkstunden versendet (Lieferzeit ca. 3–8 Werktage nach Terminabstimmung). Transportschäden sind bei Annahme konkret auf dem Lieferschein zu vermerken.' },
+        { title: 'Versand & Annahme', body: 'Lagerware wird binnen 48 Werkstunden versendet (Lieferzeit ca. 3–12 Werktage je nach Größe nach Terminabstimmung). Transportschäden sind bei Annahme konkret auf dem Lieferschein zu vermerken.' },
         { title: 'Widerruf (14 Tage) & Gewährleistung', body: 'Sie haben ein 14-tägiges gesetzliches Widerrufsrecht für unbenutzte Artikel in Originalverpackung (contact@braviko.fr). Es gelten die gesetzlichen sowie herstellerspezifischen Gewährleistungsrechte.' },
       ],
     },
@@ -118,7 +118,7 @@ export const legalCopy: Record<'mentions-legales' | 'confidentialite' | 'conditi
       sections: [
         { title: 'Ordine ospite o con account', body: 'È possibile acquistare direttamente come ospite senza registrazione oppure tramite il proprio account cliente.' },
         { title: 'Prezzi e pagamenti', body: 'I prezzi sono espressi in euro IVA inclusa con spedizione gratuita in Francia continentale. Pagamento immediato con carta via Stripe o tramite bonifico SEPA.' },
-        { title: 'Spedizione e consegna', body: 'Spedizione in 48 ore lavorative per i prodotti a stock; consegna in 3–8 giorni lavorativi previo appuntamento con il corriere e scarico con sponda idraulica.' },
+        { title: 'Spedizione e consegna', body: 'Spedizione in 48 ore lavorative per i prodotti a stock; consegna in 3–12 giorni lavorativi in base al formato previo appuntamento con il corriere e scarico con sponda idraulica.' },
         { title: 'Recesso (14 giorni) e garanzie', body: 'Diritto di recesso entro 14 giorni dalla consegna per articoli integri e non utilizzati (contact@braviko.fr), oltre alle garanzie legali e del produttore.' },
       ],
     },

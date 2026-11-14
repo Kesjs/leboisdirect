@@ -55,7 +55,7 @@ export const commerceInfoCopy: Record<'retours-remboursements' | 'expedition' | 
       updated: 'Mise à jour : 14 novembre 2026',
       sections: [
         { title: 'Livraison offerte en France métropolitaine', body: 'Toutes les références du catalogue bénéficient de la livraison incluse en France métropolitaine, sans supplément caché au moment du paiement.' },
-        { title: 'Délais de préparation & d’acheminement', body: 'Les produits en stock sont expédiés sous 48 h ouvrées. Comptez ensuite 3 à 5 jours ouvrés pour la messagerie colis et 5 à 8 jours ouvrés sur rendez-vous pour les palettes de bois, granulés et appareils lourds.' },
+        { title: 'Délais de préparation & d’acheminement', body: 'Les produits en stock sont expédiés sous 48 h ouvrées. Comptez ensuite 3 à 5 jours ouvrés pour la messagerie colis et 5 à 12 jours ouvrés selon gabarit sur rendez-vous pour les palettes de bois, granulés, abris et appareils lourds.' },
         { title: 'Rendez-vous & accès camion hayon', body: 'Avant passage d’une palette ou d’un poêle, le transporteur vous contacte par téléphone ou SMS pour fixer le créneau. Prévoyez un accès carrossable, dégagé et une surface plane et dure (béton, enrobé, pavés) pour le déchargement au transpalette.' },
         { title: 'Contrôle à la réception', body: 'Vérifiez l’état du filmage, du colis ou de l’appareil en présence du chauffeur. En cas d’avarie visible, mentionnez des réserves détaillées sur le récépissé et prévenez contact@braviko.fr sous 48 h.' },
       ],
@@ -67,7 +67,7 @@ export const commerceInfoCopy: Record<'retours-remboursements' | 'expedition' | 
       updated: 'Aktualisiert am 14. November 2026',
       sections: [
         { title: 'Kostenlose Lieferung', body: 'Keine zusätzlichen Versandkosten innerhalb des französischen Festlands.' },
-        { title: 'Lieferzeiten', body: 'Versand binnen 48 Werkstunden; Zustellung in 3–5 Werktagen (Paket) bzw. 5–8 Werktagen nach Terminabstimmung (Palette/Ofen).' },
+        { title: 'Lieferzeiten', body: 'Versand binnen 48 Werkstunden; Zustellung in 3–5 Werktagen (Paket) bzw. 5–12 Werktagen je nach Größe nach Terminabstimmung (Palette/Ofen/Holzunterstand).' },
         { title: 'Zufahrt & Hebebühne', body: 'Für Paletten und Öfen ist eine befestigte Zufahrt und ein fester, ebener Untergrund für den Hubwagen erforderlich.' },
         { title: 'Kontrolle bei Annahme', body: 'Prüfen Sie Verpackung und Ware direkt beim Fahrer und dokumentieren Sie sichtbare Schäden exakt auf dem Lieferschein.' },
       ],
@@ -79,7 +79,7 @@ export const commerceInfoCopy: Record<'retours-remboursements' | 'expedition' | 
       updated: 'Aggiornato il 14 novembre 2026',
       sections: [
         { title: 'Consegna gratuita', body: 'Consegna inclusa senza costi nascosti in Francia continentale.' },
-        { title: 'Tempi di consegna', body: 'Spedizione in 48 h lavorative; consegna in 3–5 giorni lavorativi per pacchi o 5–8 giorni su appuntamento per bancali e stufe.' },
+        { title: 'Tempi di consegna', body: 'Spedizione in 48 h lavorative; consegna in 3–5 giorni lavorativi per pacchi o 5–12 giorni in base al formato su appuntamento per bancali, stufe e legnaie.' },
         { title: 'Accesso e sponda idraulica', body: 'Assicurati di avere accesso carrabile e superficie stabile e piana per lo scarico con transpallet.' },
         { title: 'Controllo alla ricezione', body: 'Verifica imballo e prodotto davanti al corriere e annota eventuali riserve specifiche sul documento di trasporto.' },
       ],
