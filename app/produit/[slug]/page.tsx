@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, use } from 'react'
+import { useEffect, useRef, useState, use } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -34,6 +34,8 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [activeAccordion, setActiveAccordion] = useState<string | null>('specs')
   const [isZoomOpen, setIsZoomOpen] = useState(false)
   const [containBySrc, setContainBySrc] = useState<Record<string, boolean>>({})
+  const [showStickyBar, setShowStickyBar] = useState(false)
+  const buyActionsRef = useRef<HTMLDivElement>(null)
 
   const { addItem } = useCart()
   const { showToast } = useToast()
@@ -76,6 +78,18 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isZoomOpen])
+
+  // Barre d'achat mobile : visible seulement quand les vrais boutons sont hors écran
+  useEffect(() => {
+    const target = buyActionsRef.current
+    if (!target || typeof IntersectionObserver === 'undefined') return
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyBar(!entry.isIntersecting),
+      { threshold: 0 }
+    )
+    observer.observe(target)
+    return () => observer.disconnect()
+  }, [product])
 
   if (loading && !product) return <PageSkeleton variant="product" label={ui.product.loading} />
 
@@ -510,7 +524,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-[10px]">
+                <div ref={buyActionsRef} className="grid grid-cols-1 sm:grid-cols-2 gap-[10px]">
                   <button
                     type="button"
                     onClick={handleAddToCart}
@@ -864,6 +878,38 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             </div>
           </div>
         )}
+
+        {/* Espace pour que la barre mobile ne cache pas le bas de page */}
+        <div className="h-[72px] lg:hidden" aria-hidden="true" />
+
+        {/* Barre d'achat collante (mobile uniquement) */}
+        <div
+          aria-hidden={!showStickyBar}
+          className={`lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white border-t border-[#DEDFD6] px-[16px] pt-[10px] flex items-center gap-[12px] transition-transform duration-200 ${
+            showStickyBar ? 'translate-y-0' : 'translate-y-full pointer-events-none'
+          }`}
+          style={{ paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))' }}
+        >
+          <div className="min-w-0 shrink-0 tabular-nums">
+            <div className="text-[18px] font-semibold text-[#252823] leading-tight">
+              {formatPrice(currentPrice * quantity)}
+            </div>
+            <div className="text-[11px] text-[#64685F]">IVA incl.</div>
+          </div>
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            tabIndex={showStickyBar ? 0 : -1}
+            className="min-h-[48px] flex-1 px-[16px] rounded-[4px] bg-[#252823] hover:bg-[#995033] text-white font-medium text-[14px] transition-colors active:translate-y-[1px] flex items-center justify-center gap-[8px]"
+          >
+            {added && (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                <path d="m3.5 8.5 3 3 6-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+            <span>{added ? 'Aggiunto al carrello' : 'Aggiungi al carrello'}</span>
+          </button>
+        </div>
       </main>
       <Footer />
     </>
