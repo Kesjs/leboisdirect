@@ -94,8 +94,6 @@ export async function GET(request: NextRequest) {
     const localizedFeatures = override?.features || parseFeatures(it.description || "");
     const localizedLongDescription =
       override?.longDescription ||
-      (override?.features.length ? override.features.join("\n") : "") ||
-      it.description ||
       localizedDescription;
     const localizedConditioning =
       override?.conditioning || it.conditioning || localizedVariants[0]?.label || "";

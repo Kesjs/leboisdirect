@@ -14,6 +14,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Legna da ardere Premium – Quercia, Carpino & Faggio – Bancale da 2 steri',
     description:
       'Legna da ardere premium di latifoglie dure selezionate — quercia, carpino e faggio — essiccata in forno e pronta all’uso. Confezionata su bancale da 2 steri con ceppi da 33 cm.',
+    longDescription:
+      'Una miscela equilibrata di quercia, carpino e faggio pensata per chi cerca brace compatte, fiamma costante e alto potere calorifico. Essiccata in forno al di sotto del 20 % di umidità residua, la legna si accende rapidamente, sporca meno vetro e canna fumaria e sviluppa calore regolare fin dal primo utilizzo.\n\nTagliata in ceppi versatili da 33 cm compatibili con la maggior parte di stufe a legna, inserti e camini chiusi, arriva ordinata e protetta su bancale da 2 steri (circa 1,4 m³) per un rapido stoccaggio al coperto.',
     features: [
       'Tipo: Legna da ardere / latifoglie dure',
       'Essenze: Quercia, carpino e faggio',
@@ -38,6 +40,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Pellet di legno Premium 6 mm – Bancale 990 kg',
     description:
       'Pellet di legno premium da 6 mm progettato per offrire combustione regolare, alto rendimento e minima produzione di cenere. Confezionato in 66 sacchi da 15 kg per alimentare stufa o caldaia a pellet durante la stagione fredda.',
+    longDescription:
+      'Formulato da legno resinoso vergine con calibro uniforme da 6 mm, questo pellet garantisce alimentazione fluida nella coclea e combustione pulita giorno dopo giorno. Le certificazioni ENplus A1 e DINplus assicurano basso residuo di cenere, elevato potere calorifico e protezione della camera di combustione.\n\nIl bancale comprende 66 sacchi maneggevoli da 15 kg (990 kg complessivi), facili da movimentare e riporre al riparo dall’umidità per coprire l’intera stagione invernale.',
     features: [
       'Tipo: Pellet di legno',
       'Quantità: 990 kg',
@@ -60,6 +64,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Stufa a legna in ghisa Bronpi KAREN – 8 kW',
     description:
       'Stufa a legna ermetica interamente in ghisa, progettata per offrire calore duraturo e combustione ad alte prestazioni. Potenza nominale di 8 kW, sistema a tripla combustione e camera adatta a ceppi fino a 50 cm.',
+    longDescription:
+      'Costruita interamente in ghisa massiccia da 157 kg, la Bronpi KAREN accumula il calore e lo rilascia per irraggiamento anche dopo lo spegnimento della fiamma. Il sistema a tripla combustione e la presa d’aria canalizzabile dall’esterno portano il rendimento all’82 % in classe energetica A+, riducendo i consumi a circa 2,2 kg/h.\n\nL’ampia camera accoglie ceppi fino a 50 cm e permette di configurare l’uscita fumi da Ø150 mm superiormente o posteriormente in base all’impianto domestico.',
     features: [
       'Combustibile: Ceppi di legna',
       'Potenza nominale: 8 kW',
@@ -86,6 +92,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Braciere Plancha Le Bigorneau – Acciaio Corten Ø100 cm',
     description:
       'Braciere-plancha di fascia alta a legna che unisce focolare da esterno e ampia piastra di cottura. Base in acciaio Corten e plancha circolare da 100 cm per cucinare attorno al fuoco per 10–15 ospiti.',
+    longDescription:
+      'Progettato per vivere il giardino tutto l’anno, Le Bigorneau combina la solidità dell’acciaio Corten autopatinante con un’ampia piastra plancha circolare da Ø100 cm e spessore 10 mm in acciaio smaltato. Le zone a temperatura differenziata consentono di rosolare ad alta temperatura verso l’interno e mantenere in caldo sul bordo.\n\nCompleto di griglia centrale da Ø44,5 cm e base stabile alta 92 cm (135 kg totali), permette di cucinare comodamente alla brace per 10–15 persone.',
     features: [
       'Tipo: Braciere + plancha',
       'Combustibile: Legna',
@@ -113,6 +121,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'OFYR Wood Storage Corten 100 – Portalegna',
     description:
       'Struttura premium in acciaio Corten progettata per trasformare lo stoccaggio della legna in un elemento architettonico da esterno, con vano superiore integrato per utensili e accessori.',
+    longDescription:
+      'Realizzato in acciaio Corten spessorato, il modulo OFYR Wood Storage Corten 100 organizza la scorta di ceppi lungo la parete sviluppandosi in altezza (216 × 100 × 45 cm) senza ingombrare la terrazza. Nel tempo la superficie sviluppa la caratteristica patina calda color ruggine protettiva resistente agli agenti atmosferici.\n\nIl vano superiore integrato offre uno spazio dedicato a spatole, guanti e accessori di cottura o accensione, ed è predisposto per l’abbinamento modulare di più elementi con fissaggio a muro.',
     features: [
       'Tipo: Portalegna verticale premium',
       'Marca: OFYR',
@@ -137,6 +147,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Inserto a legna Invicta P947044 – 10 kW',
     description:
       'Inserto a legna Invicta progettato per trasformare un camino aperto in un impianto di riscaldamento efficiente. Focolare da 10 kW e frontale lineare per godere del calore e della vista fuoco.',
+    longDescription:
+      'Studiato per riqualificare un focolare aperto esistente migliorando nettamente rendimento e sicurezza, l’inserto Invicta P947044 unisce una robusta struttura in acciaio a un corpo scaldante interamente in ghisa da 134 kg.\n\nCon 10 kW di potenza nominale, frontale lineare panoramico, imbocco per ceppi fino a 69 cm e uscita fumi da Ø200 mm, trasforma il camino tradizionale in una vera fonte di calore domestico controllato.',
     features: [
       'Tipo: Inserto a legna',
       'Potenza: 10 kW',
@@ -161,6 +173,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'OFYR Fire Guard Ring 100 – Anello protettivo in teak',
     description:
       'Anello protettivo in teak pensato per mettere in sicurezza il bordo della piastra di cottura OFYR 100, aggiungendo una pratica superficie d’appoggio periferica da 12,5 cm.',
+    longDescription:
+      'L’anello periferico in legno di teak da 12,5 cm crea una barriera naturale intorno alla piastra bollente dei bracieri OFYR 100, aumentando il comfort degli ospiti quando ci si riunisce attorno al fuoco.\n\nOltre alla protezione termica, funge da comodo piano d’appoggio per piatti, salse e utensili e si aggancia o rimuove in pochi gesti tramite i 6 morsetti dedicati in acciaio.',
     features: [
       'Tipo: Protezione per braciere',
       'Marca: OFYR',
@@ -182,6 +196,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'OFYR Cage 100 – Accessorio premium per braciere',
     description:
       'Accessorio di cottura verticale dedicato alle unità OFYR compatibili, ideale per appendere e cuocere gli alimenti direttamente sopra e attorno al fuoco.',
+    longDescription:
+      'Pensata per espandere le tecniche di cucina sul braciere OFYR 100, la gabbia OFYR Cage 100 introduce la cottura verticale e lenta a sospensione sopra le braci e lungo la corona di calore.\n\nConsente di appendere grandi tagli di carne, ortaggi o preparazioni a fiamma viva lasciando allo stesso tempo libera l’intera piastra circolare sottostante per contorni e rosolature.',
     features: [
       'Tipo: Accessorio di cottura',
       'Marca: OFYR',
@@ -189,7 +205,7 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
       'Compatibilità: Gamma OFYR 100',
       'Uso: Cottura all’aperto',
       'Installazione: Su unità di cottura compatibile',
-      'Linea: Premium outdoor cooking',
+      'Gamma: Cottura esterna premium',
       'Categoria: Accessori cucina esterna',
       'SKU: BRV-OFYR-CAGE-100',
     ],
@@ -202,6 +218,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Barbecue Kamado Bee Grill XL Luxe – Ceramica',
     description:
       'Kamado premium in ceramica spessa per grigliare, arrostire, brasare, cuocere e affumicare con elevata inerzia termica e dotazione completa con carrello, telo e deflettore.',
+    longDescription:
+      'Con guscio in ceramica spessa ad alta tenuta termica, struttura in acciaio inox satinato nero e griglia da Ø47 cm, il Kamado Bee Grill XL Luxe mantiene la temperatura stabile per ore con un consumo minimo di carbone di legna.\n\nFornito pronto per cucinare con carrello robusto su ruote, ripiani laterali in noce, deflettore di calore per cotture indirette o affumicatura e telo di protezione incluso.',
     features: [
       'Tipo: Barbecue Kamado',
       'Combustibile: Carbone di legna',
@@ -228,6 +246,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Radiatore elettrico connesso Sauter Hekla – 1500 W',
     description:
       'Radiatore elettrico connesso Sauter Hekla da 1.500 W con doppio nucleo riscaldante in ghisa, calore dolce e rapido, gestione smart e illuminazione LED d’ambiente per ambienti fino a 15 m².',
+    longDescription:
+      'Il radiatore connesso Sauter Hekla abbina una facciata reattiva per una salita rapida in temperatura a un nucleo interno in ghisa ad alta inerzia, garantendo calore uniforme senza sbalzi né aria secca in stanze fino a circa 15 m².\n\nDotato di funzione di auto-apprendimento delle abitudini settimanali, illuminazione LED inferiore regolabile su 4 intensità e programmazione intelligente connessa, ottimizza i consumi elettrici quotidiani.',
     features: [
       'Tipo: Radiatore elettrico connesso',
       'Potenza: 1.500 W',
@@ -249,6 +269,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Radiatore elettrico connesso a inerzia fluida Sauter Ipala – 1500 W',
     description:
       'Radiatore elettrico connesso Sauter Ipala da 1.500 W a inerzia fluida, progettato per mantenere un calore dolce, regolare e silenzioso negli ambienti domestici.',
+    longDescription:
+      'Grazie al circuito a fluido termovettore ad alta inerzia, il Sauter Ipala da 1.500 W diffonde un calore avvolgente, silenzioso e molto simile a quello di un impianto idronico tradizionale.\n\nPensato per camere da letto, studi e zone giorno con installazione a parete compatta, integra programmazione smart connessa per regolare la temperatura ambiente al grado.',
     features: [
       'Tipo: Radiatore elettrico',
       'Potenza: 1.500 W',
@@ -268,6 +290,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Tronchetti di legno densificato Premium – Bancale 1.000 kg',
     description:
       'Tronchetti di legno densificato prodotti da segatura e trucioli asciutti ad alta compressione senza colla né additivi. Bassa umidità e alta densità per una combustione regolare.',
+    longDescription:
+      'Ottenuti per pura compressione meccanica di segatura e trucioli vergini senza colle né leganti chimici, questi tronchetti densificati presentano una densità di 1.000 kg/m³ e un tasso di umidità inferiore al 12 %, offrendo resa calorica costante e residuo minimo.\n\nIl formato cilindrico da 30 × 9 cm permette di dosare con precisione ogni ricarica di stufa, inserto o camino. Consegnato su bancale da 1.000 kg suddiviso in 66 confezioni pulite da 8 pezzi (circa 15,2 kg ciascuna).',
     features: [
       'Tipo: Tronchetti / bricchetti di legno densificato',
       'Peso totale: 1.000 kg',
@@ -293,6 +317,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Tronchetti densificati da notte EO2 – Bancale da 520 pezzi',
     description:
       'Tronchetti densificati studiati per prolungare la combustione durante la notte o le assenze. Ottenuti da cortecce selezionate senza leganti per mantenere vive le braci e facilitare la riaccensione.',
+    longDescription:
+      'Studiati appositamente per le ore notturne o le assenze giornaliere, i tronchetti da notte EO2 impiegano corteccia selezionata e compressa senza alcun additivo: rilasciano braci lente e durature per 6–10 ore con due soli pezzi.\n\nCon umidità inferiore all’11 % e ceneri ridotte sotto il 3 %, evitano lo spegnimento completo del focolare e facilitano la ripartenza al mattino. Il bancale contiene 520 tronchetti ripartiti in 104 pacchi compatti da 5 pezzi.',
     features: [
       'Tipo: Tronchetti densificati da notte',
       'Quantità: 520 tronchetti',
@@ -317,6 +343,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Stufa a pellet Jolly Mec – 6 kW programmabile',
     description:
       'Stufa a pellet Jolly Mec compatta e programmabile con potenza di 6 kW e rendimento dichiarato del 90 %. Serbatoio da 18 kg, regolazione elettronica e programmazione automatica.',
+    longDescription:
+      'Compatta, stagna e canalizzabile, questa stufa a pellet Jolly Mec da 6 kW raggiunge un rendimento dichiarato del 90 % (classe energetica A+) modulando automaticamente la potenza tra 2,9 e 6,7 kW secondo la temperatura desiderata.\n\nIl serbatoio da 18 kg offre ampia autonomia, mentre telecomando incluso, modalità silenziosa e programmazione giornaliera, settimanale o weekend semplificano la gestione termica quotidiana.',
     features: [
       'Combustibile: Pellet di legno',
       'Potenza: 6 kW',
@@ -346,6 +374,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Camino elettrico Purline – Vetro temperato nero 2000 W',
     description:
       'Camino elettrico decorativo con frontale in vetro temperato nero ed effetto fiamma, senza legna, fumo né cenere. Potenza fino a 2.000 W ideale per ambienti fino a circa 20 m².',
+    longDescription:
+      'Progettato per portare l’atmosfera del focolare in salotto o in camera senza canna fumaria, lavori murari né residui di cenere, il camino Purline combina un pannello frontale lucido in vetro temperato nero con un realistico effetto fiamma regolabile.\n\nLa potenza fino a 2.000 W riscalda rapidamente ambienti fino a circa 20 m² e può essere comandata comodamente a distanza tramite il telecomando in dotazione.',
     features: [
       'Tipo: Camino elettrico',
       'Potenza: 2000 W',
@@ -368,6 +398,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Riscaldatore da esterno a gas Planika Faro – 8 kW',
     description:
       'Riscaldatore da esterno a gas dal design contemporaneo con fiamma visibile a 360° e ruote con freno, ideale per scaldare terrazze, giardini e spazi aperti.',
+    longDescription:
+      'Con colonna in vetro temperato che valorizza la fiamma naturale a 360° e bruciatore GPL fino a 8 kW, il Planika Faro trasforma terrazze, verande aperte e giardini in ambienti accoglienti dalla mezza stagione all’inverno.\n\nOffre fino a 55 ore di autonomia dichiarata con una bombola standard protetta all’interno del basamento, con ruote dotate di freno e certificazione di sicurezza Kiwa.',
     features: [
       'Tipo: Riscaldatore da esterno a gas',
       'Marca: Planika',
@@ -394,6 +426,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Forno per pizza OFYR 100 – Cottura a legna',
     description:
       'Accessorio di cottura premium che trasforma un braciere OFYR compatibile in forno per pizza alimentato a legna, con pietra refrattaria, pala e campana a doppia parete.',
+    longDescription:
+      'Progettato su misura per i bracieri OFYR 100, questo kit trasforma in pochi istanti il focolare a legna in un autentico forno per pizza da esterno. La piastra inferiore in ghisa doppia faccia trasmette il calore direttamente alla pietra refrattaria garantendo basi croccanti e cotture rapide a fuoco vivo.\n\nLa campana superiore a doppia parete con pomello rotante permette di regolare il flusso d’aria e il calore interno con precisione, ed è fornita insieme alla pala dedicata per infornare e sfornare in sicurezza.',
     features: [
       'Tipo: Forno per pizza da esterno',
       'Energia: Calore del fuoco OFYR',
@@ -416,12 +450,14 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Legnaia con ripostiglio TIMBELA M985 – 4,14 m²',
     description:
       'Ampia legnaia da esterno che unisce uno spazio coperto per la legna da ardere e un ripostiglio chiuso su 4,14 m² complessivi per proteggere combustibile e attrezzi.',
+    longDescription:
+      'Soluzione due-in-uno su una superficie totale di 4,14 m² (120 × 345 × 220 cm), la struttura TIMBELA M985 affianca un’ampia tettoia laterale ventilata per mantenere asciutta la scorta di ceppi a una rimessa chiusa per spaccalegna, attrezzi da giardino o pacchi di pellet.\n\nProgettata per l’installazione esterna in giardino, permette di tenere combustibile e attrezzatura invernale protetti da pioggia e umidità in un unico volume ordinato.',
     features: [
       'Tipo: Legnaia + ripostiglio',
       'Modello: TIMBELA M985',
       'Superficie: 4,14 m²',
       'Dimensioni: 120 × 345 × 220 cm',
-      'Colore: Terra Brown',
+      'Colore: Marrone naturale (Terra Brown)',
       'Uso: Esterno',
       'Funzione: Stoccaggio legna + rimessa',
       'Codice modello: M985-TERRA BROWN',
@@ -437,6 +473,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Focolare panoramico a legna A.Caminetti Flat 150 × 50',
     description:
       'Focolare panoramico a legna di grande formato per progetti di camini di design, con vetro ceramico resistente fino a 800 °C e potenza termica elevata per ampi volumi.',
+    longDescription:
+      'Con luce frontale panoramica da 150 × 50 cm e potenza compresa tra 17 e 25 kW, il focolare A.Caminetti Flat nasce per grandi living e progetti architettonici su misura che uniscono forte presenza scenica della fiamma e resa termica elevata (81 % dichiarato, certificazione Ecodesign).\n\nCostruito con massa termica da 461 kg, vetro ceramico resistente fino a 800 °C, presa d’aria Ø160 mm e uscita fumi Ø250 mm, beneficia di una garanzia dichiarata del produttore di 5 anni.',
     features: [
       'Tipo: Focolare panoramico a legna',
       'Combustibile: Legna / bricchetti',
@@ -461,6 +499,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Carrello portalegna Le Marquier Fjord – Nero',
     description:
       'Carrello portalegna dal design contemporaneo progettato per trasportare comodamente la legna dal deposito e riporla con eleganza vicino al camino o alla stufa.',
+    longDescription:
+      'Prodotto in Francia con finitura sobria nera opaca, il carrello Le Marquier Fjord facilita il trasporto dei ceppi dal punto di stoccaggio esterno direttamente accanto alla stufa o al camino senza sporcare il pavimento.\n\nLe linee verticali essenziali si integrano con naturalezza negli interni contemporanei, fungendo sia da pratico carrello su ruote sia da portalegna fisso accanto al focolare.',
     features: [
       'Tipo: Carrello / portalegna',
       'Modello: Fjord',
@@ -480,12 +520,14 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Riscaldatore a infrarossi FRICO Term IP67 – 2000 W',
     description:
       'Riscaldatore a infrarossi da parete da 2.000 W per terrazze e spazi esterni con grado di protezione impermeabile IP67 e tecnologia a ridotta emissione di luce rossa.',
+    longDescription:
+      'Compatto, leggero (2,3 kg) e resistente alle intemperie grazie al corpo in alluminio certificato IP67, il FRICO Term 2000 W trasmette calore radiante immediato a onde corte coprendo fino a 8 m² su terrazze, pergole e dehor.\n\nLa lampada Ultra Low Glare abbatte fino all’80 % l’abbagliamento rosso rispetto agli apparecchi tradizionali, mantenendo un comfort visivo discreto durante le serate all’aperto.',
     features: [
       'Tipo: Riscaldatore a infrarossi',
       'Potenza: 2000 W',
       'Alimentazione: 230 V',
       'Protezione: IP67',
-      'Tecnologia: Ultra Low Glare',
+      'Tecnologia: Ultra Low Glare (basso abbagliamento)',
       'Riduzione luce rossa dichiarata: Fino all’80 %',
       'Copertura massima dichiarata: 8 m²',
       'Corpo: Alluminio',
@@ -505,6 +547,8 @@ export const ITALIAN_PRODUCT_OVERRIDES: Record<string, ItalianProductOverride> =
     name: 'Spaccalegna Scheppach Compact 10T – 3150 W',
     description:
       'Spaccalegna verticale elettrico da 10 tonnellate a 230 V, progettato per lavorare ceppi fino a 107 cm di lunghezza e 38 cm di diametro.',
+    longDescription:
+      'Pensato per preparare in autonomia scorte consistenti di legna da ardere, lo Scheppach Compact 10T sviluppa 10 tonnellate di spinta idraulica (256 bar) alimentato su comune presa domestica monofase a 230 V tramite motore da 3.150 W.\n\nLa struttura verticale compatta accoglie tronchi fino a 107 cm di lunghezza e 38 cm di diametro, consentendo di ridurre rapidamente ceppi di quercia, faggio o carpino nelle pezzature ideali per stufa e camino.',
     features: [
       'Marca: Scheppach',
       'Modello: Compact 10T',

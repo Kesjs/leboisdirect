@@ -12,7 +12,12 @@ import type { Product } from '@/data/products'
 import { useI18n } from '@/lib/i18n-context'
 import { categoryLabel, productLabel } from '@/data/product-labels'
 import { uiCopy } from '@/data/ui-copy'
-import { isHeatingCategory } from '@/data/catalog-taxonomy'
+import {
+  HEATING_FILTER_GROUPS,
+  isHeatingCategory,
+  matchesHeatingGroup,
+  type HeatingGroupId,
+} from '@/data/catalog-taxonomy'
 
 type SortOption = 'relevance' | 'price-asc' | 'price-desc' | 'name'
 type ViewMode = 'grid' | 'list'
@@ -30,6 +35,7 @@ function shuffle<T>(items: T[]) {
 function ShopContent() {
   const searchParams = useSearchParams()
   const universe = searchParams.get('universe')
+  const groupParam = searchParams.get('group')
   const query = searchParams.get('q')?.trim().toLocaleLowerCase() ?? ''
   const { locale } = useI18n()
   const copy = uiCopy[locale]
@@ -38,6 +44,7 @@ function ShopContent() {
   const [catalogError, setCatalogError] = useState(false)
   const [sortBy, setSortBy] = useState<SortOption>('relevance')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [selectedGroup, setSelectedGroup] = useState<HeatingGroupId>('all')
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false)
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [page, setPage] = useState(1)
@@ -51,11 +58,13 @@ function ShopContent() {
     return () => { active = false }
   }, [])
 
-  const isHeating = true
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = catalogProducts.filter(product => {
       return isHeatingCategory(product.category)
     })
+    if (selectedGroup !== 'all') {
+      filtered = filtered.filter(product => matchesHeatingGroup(product.category, selectedGroup))
+    }
     if (selectedCategory !== 'all') filtered = filtered.filter(product => product.category === selectedCategory)
     if (query) filtered = filtered.filter(product =>
       (productLabel(product, locale).name + ' ' + product.name + ' ' + product.category).toLocaleLowerCase().includes(query)
@@ -66,7 +75,7 @@ function ShopContent() {
       case 'name': filtered.sort((a, b) => a.name.localeCompare(b.name, 'it')); break
     }
     return filtered
-  }, [catalogProducts, locale, query, selectedCategory, sortBy])
+  }, [catalogProducts, locale, query, selectedCategory, selectedGroup, sortBy])
 
   const availableCategories = useMemo(() => Array.from(new Set(catalogProducts
     .filter(product => isHeatingCategory(product.category))
@@ -80,11 +89,21 @@ function ShopContent() {
   const pageCount = Math.max(1, Math.ceil(filteredAndSortedProducts.length / PRODUCTS_PER_PAGE))
   const pageProducts = filteredAndSortedProducts.slice((page - 1) * PRODUCTS_PER_PAGE, page * PRODUCTS_PER_PAGE)
 
-  useEffect(() => { setPage(1); setSelectedCategory('all') }, [universe])
+  useEffect(() => {
+    setPage(1)
+    setSelectedCategory('all')
+    const validGroup = HEATING_FILTER_GROUPS.some((group) => group.id === groupParam)
+      ? (groupParam as HeatingGroupId)
+      : 'all'
+    setSelectedGroup(validGroup)
+  }, [universe, groupParam])
   useEffect(() => { if (page > pageCount) setPage(pageCount) }, [page, pageCount])
 
-  const title = copy.shop.heating
-  const intro = copy.shop.heatingIntro
+  const activeGroupConfig = selectedGroup !== 'all'
+    ? HEATING_FILTER_GROUPS.find((group) => group.id === selectedGroup)
+    : undefined
+  const title = activeGroupConfig ? activeGroupConfig.label[locale] : copy.shop.heating
+  const intro = activeGroupConfig?.description?.[locale] || copy.shop.heatingIntro
 
   return <>
     <Header />
@@ -97,7 +116,7 @@ function ShopContent() {
       <div className="bg-white border-b border-hairline"><div className="container-custom py-20"><nav className="flex items-center gap-12 text-body-sm"><Link href="/" className="text-smoke hover:text-braise transition-colors">{copy.common.home}</Link><span className="text-ash">/</span><span className="text-charcoal font-medium">{title}</span></nav></div></div>
       <section className="bk-boutique-content container-custom py-48">
         <div className="grid gap-32 lg:grid-cols-[220px_minmax(0,1fr)]">
-          {catalogLoading ? <aside className="bk-category-filter bk-category-filter-skeleton border-t border-hairline pt-20" aria-hidden="true"><span className="bk-skeleton-line bk-category-skeleton-kicker" /><span className="bk-skeleton-line bk-category-skeleton-title" /><div className="bk-category-skeleton-list"><span className="bk-skeleton-line" /><span className="bk-skeleton-line" /><span className="bk-skeleton-line" /><span className="bk-skeleton-line" /><span className="bk-skeleton-line" /></div></aside> : availableCategories.length > 1 && <aside className={'bk-category-filter border-t border-hairline pt-20' + (mobileCategoriesOpen ? ' is-mobile-open' : '')}><p className="bk-eyebrow">{copy.shop.filter}</p><h2 className="text-heading-sm font-semibold text-charcoal mt-8 mb-16">{copy.shop.categories}</h2><button type="button" className="bk-mobile-category-trigger" aria-expanded={mobileCategoriesOpen} aria-controls="mobile-category-options" onClick={() => setMobileCategoriesOpen(current => !current)}><span>{copy.shop.categories}</span><span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true" className={'transition-transform ' + (mobileCategoriesOpen ? 'rotate-180' : '')}><path d="m4 6 4 4 4-4" /></svg></span></button><div id="mobile-category-options" className="bk-category-filter-content"><div className="grid gap-20"><button type="button" onClick={() => { setSelectedCategory('all'); setMobileCategoriesOpen(false) }} className={'text-left py-8 text-body-sm transition-colors ' + (selectedCategory === 'all' ? 'font-semibold text-charcoal' : 'text-smoke hover:text-charcoal')}>{copy.shop.allProducts}</button>{groupedCategories.map(group => <details key={group.key} open className="bk-category-group"><summary>{group.title}<span className="bk-category-chevron" aria-hidden="true" /></summary><div className="grid gap-4 pt-8">{group.categories.map(category => <button key={category} type="button" onClick={() => { setSelectedCategory(category); setMobileCategoriesOpen(false) }} className={'text-left py-8 text-body-sm transition-colors ' + (selectedCategory === category ? 'font-semibold text-charcoal' : 'text-smoke hover:text-charcoal')}>{categoryLabel(category, locale)}</button>)}</div></details>)}</div></div></aside>}
+          {catalogLoading ? <aside className="bk-category-filter bk-category-filter-skeleton border-t border-hairline pt-20" aria-hidden="true"><span className="bk-skeleton-line bk-category-skeleton-kicker" /><span className="bk-skeleton-line bk-category-skeleton-title" /><div className="bk-category-skeleton-list"><span className="bk-skeleton-line" /><span className="bk-skeleton-line" /><span className="bk-skeleton-line" /><span className="bk-skeleton-line" /><span className="bk-skeleton-line" /></div></aside> : availableCategories.length > 1 && <aside className={'bk-category-filter border-t border-hairline pt-20' + (mobileCategoriesOpen ? ' is-mobile-open' : '')}><p className="bk-eyebrow">{copy.shop.filter}</p><h2 className="text-heading-sm font-semibold text-charcoal mt-8 mb-16">{copy.shop.categories}</h2><button type="button" className="bk-mobile-category-trigger" aria-expanded={mobileCategoriesOpen} aria-controls="mobile-category-options" onClick={() => setMobileCategoriesOpen(current => !current)}><span>{copy.shop.categories}</span><span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true" className={'transition-transform ' + (mobileCategoriesOpen ? 'rotate-180' : '')}><path d="m4 6 4 4 4-4" /></svg></span></button><div id="mobile-category-options" className="bk-category-filter-content"><div className="grid gap-20"><button type="button" onClick={() => { setSelectedCategory('all'); setSelectedGroup('all'); setMobileCategoriesOpen(false) }} className={'text-left py-8 text-body-sm transition-colors ' + (selectedCategory === 'all' && selectedGroup === 'all' ? 'font-semibold text-charcoal' : 'text-smoke hover:text-charcoal')}>{copy.shop.allProducts}</button>{groupedCategories.map(group => <details key={group.key} open className="bk-category-group"><summary>{group.title}<span className="bk-category-chevron" aria-hidden="true" /></summary><div className="grid gap-4 pt-8">{group.categories.map(category => <button key={category} type="button" onClick={() => { setSelectedCategory(category); setSelectedGroup('all'); setMobileCategoriesOpen(false) }} className={'text-left py-8 text-body-sm transition-colors ' + (selectedCategory === category ? 'font-semibold text-charcoal' : 'text-smoke hover:text-charcoal')}>{categoryLabel(category, locale)}</button>)}</div></details>)}</div></div></aside>}
           <div>
             <div className="bk-boutique-toolbar flex flex-wrap items-center justify-end gap-16 mb-32 pb-24 border-b border-hairline">
               <div className="flex items-center gap-12"><div className="flex rounded-card border border-hairline" aria-label={copy.shop.display}><button type="button" onClick={() => setViewMode('grid')} aria-pressed={viewMode === 'grid'} className={'px-12 py-8 text-body-sm ' + (viewMode === 'grid' ? 'bg-charcoal text-white' : 'text-smoke')}>{copy.shop.grid}</button><button type="button" onClick={() => setViewMode('list')} aria-pressed={viewMode === 'list'} className={'px-12 py-8 text-body-sm ' + (viewMode === 'list' ? 'bg-charcoal text-white' : 'text-smoke')}>{copy.shop.list}</button></div><label htmlFor="sort" className="text-body-sm text-smoke">{copy.shop.sort}</label><select id="sort" value={sortBy} onChange={(event) => setSortBy(event.target.value as SortOption)} className="px-16 py-8 bg-white border border-hairline rounded-card text-body-sm text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal"><option value="relevance">{copy.shop.relevance}</option><option value="price-asc">{copy.shop.lowPrice}</option><option value="price-desc">{copy.shop.highPrice}</option><option value="name">{copy.shop.name}</option></select></div>

@@ -129,17 +129,61 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     setContainBySrc((prev) => (prev[src] === shouldContain ? prev : { ...prev, [src]: shouldContain }))
   }
 
-  const keyPoints = richSpec?.detailedSpecs?.length
-    ? richSpec.detailedSpecs.slice(0, 4)
-    : product.features
-        .map((line) => {
-          const separator = line.indexOf(':')
-          return separator > 0
-            ? { label: line.slice(0, separator).trim(), value: line.slice(separator + 1).trim() }
-            : null
-        })
-        .filter((item): item is { label: string; value: string } => Boolean(item))
-        .slice(0, 4)
+  const normalizeSpecKey = (label: string) => {
+    const clean = label.toLowerCase().trim()
+    if (clean.startsWith('marca')) return 'marca'
+    if (clean === 'combustibile' || clean === 'energia') return 'combustibile'
+    if (clean.startsWith('piastra')) return 'piastra'
+    if (clean.startsWith('sku')) return 'sku'
+    if (clean.startsWith('categoria')) return 'categoria'
+    if (clean.startsWith('potenza')) return 'potenza'
+    if (clean.startsWith('lunghezza')) return 'lunghezza'
+    if (clean.startsWith('diametro')) return 'diametro'
+    if (clean.startsWith('umidit')) return 'umidita'
+    if (clean.startsWith('garanzia')) return 'garanzia'
+    if (clean.startsWith('uscita') || clean.startsWith('scarico')) return 'uscita_fumi'
+    return clean.replace(/[^a-z0-9]/g, '')
+  }
+
+  const parsedFeatureSpecs = product.features
+    .map((line) => {
+      const separator = line.indexOf(':')
+      return separator > 0
+        ? { label: line.slice(0, separator).trim(), value: line.slice(separator + 1).trim() }
+        : null
+    })
+    .filter((item): item is { label: string; value: string } => Boolean(item))
+
+  const mergedSpecs: Array<{ label: string; value: string }> = []
+  const seenSpecKeys = new Set<string>()
+  for (const spec of [...(richSpec?.detailedSpecs || []), ...parsedFeatureSpecs]) {
+    const key = normalizeSpecKey(spec.label)
+    if (key === 'categoria' || seenSpecKeys.has(key)) continue
+    seenSpecKeys.add(key)
+    mergedSpecs.push(spec)
+  }
+
+  const keyPoints = mergedSpecs.slice(0, 4)
+
+  const rawLongDesc = product.longDescription || ''
+  const isKeyValueDump = rawLongDesc
+    .split('\n')
+    .filter((line) => line.trim().length > 0)
+    .every((line) => /^[^:]{2,40}:\s+\S/.test(line.trim()))
+
+  const editorialSource = !isKeyValueDump && rawLongDesc.trim()
+    ? rawLongDesc
+    : product.description || localizedProduct.description
+
+  const descriptionParagraphs = editorialSource
+    .split(/\n\n+/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+
+  const summaryHighlights = [
+    richSpec?.unitPriceLabel,
+    ...mergedSpecs.slice(0, 3).map((s) => `${s.label}: ${s.value}`),
+  ].filter((item, idx, arr): item is string => Boolean(item) && arr.indexOf(item) === idx).slice(0, 4)
 
   const statusText = (richSpec?.badgeText || 'Disponibile — Spedizione rapida').replace(/^●\s*/, '')
 
@@ -167,7 +211,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: localizedProduct.name,
-    description: product.longDescription || localizedProduct.description,
+    description: editorialSource.replace(/\s+/g, ' ').trim(),
     image: product.images?.length ? product.images : [product.image],
     sku: product.id,
     brand: { '@type': 'Brand', name: 'Braviko' },
@@ -553,37 +597,62 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               </button>
 
               {activeAccordion === 'specs' && (
-                <div className="pt-[20px] mt-[16px] border-t border-[#DEDFD6]">
-                  <div className="max-w-[68ch] text-[#64685F] text-[14px] leading-[1.65] mb-[20px] whitespace-pre-line">
-                    {product.longDescription || product.description}
-                  </div>
-
-                  {richSpec?.detailedSpecs && richSpec.detailedSpecs.length > 0 && (
-                    <div className="mt-[16px]">
-                      <h3 className="text-[12px] font-semibold text-[#64685F] uppercase tracking-[0.12em] mb-[10px]">
-                        Specifiche dettagliate
+                <div className="pt-[24px] mt-[16px] border-t border-[#DEDFD6]">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-[28px] lg:gap-[40px] items-start">
+                    <div className="lg:col-span-5 min-w-0">
+                      <h3 className="text-[11px] font-semibold text-[#995033] uppercase tracking-[0.12em] mb-[12px]">
+                        Descrizione
                       </h3>
-                      <div className="rounded-[8px] border border-[#DEDFD6] overflow-hidden">
-                        <table className="w-full text-left text-[13px]">
-                          <tbody>
-                            {richSpec.detailedSpecs.map((spec, i) => (
-                              <tr
-                                key={i}
-                                className={i % 2 === 0 ? 'bg-[#FAF9F6]' : 'bg-white'}
-                              >
-                                <td className="py-[10px] px-[16px] font-medium text-[#252823] w-1/3 border-b border-[#DEDFD6]">
-                                  {spec.label}
-                                </td>
-                                <td className="py-[10px] px-[16px] text-[#64685F] border-b border-[#DEDFD6] tabular-nums">
-                                  {spec.value}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                      <div className="space-y-[12px] max-w-[58ch] text-[#3F433B] text-[14px] sm:text-[15px] leading-[1.7]">
+                        {descriptionParagraphs.map((paragraph, idx) => (
+                          <p key={idx}>{paragraph}</p>
+                        ))}
                       </div>
+
+                      {summaryHighlights.length > 0 && (
+                        <div className="mt-[22px] pt-[18px] border-t border-[#DEDFD6]">
+                          <h4 className="text-[11px] font-semibold text-[#64685F] uppercase tracking-[0.12em] mb-[10px]">
+                            In sintesi
+                          </h4>
+                          <ul className="space-y-[8px]">
+                            {summaryHighlights.map((item, idx) => (
+                              <li key={idx} className="flex items-start gap-[10px] text-[13px] text-[#252823] leading-[1.5]">
+                                <span className="w-[14px] h-[1px] bg-[#995033] shrink-0 mt-[10px]" aria-hidden="true" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
-                  )}
+
+                    {mergedSpecs.length > 0 && (
+                      <div className="lg:col-span-7 min-w-0">
+                        <h3 className="text-[11px] font-semibold text-[#64685F] uppercase tracking-[0.12em] mb-[12px]">
+                          Specifiche tecniche
+                        </h3>
+                        <div className="rounded-[8px] border border-[#DEDFD6] overflow-hidden bg-white">
+                          <table className="w-full text-left text-[13px]">
+                            <tbody>
+                              {mergedSpecs.map((spec, i) => (
+                                <tr
+                                  key={`${spec.label}-${i}`}
+                                  className={i % 2 === 0 ? 'bg-[#FAF9F6]' : 'bg-white'}
+                                >
+                                  <td className="py-[10px] px-[16px] font-medium text-[#252823] w-[42%] border-b border-[#DEDFD6] align-top">
+                                    {spec.label}
+                                  </td>
+                                  <td className="py-[10px] px-[16px] text-[#52564E] border-b border-[#DEDFD6] tabular-nums">
+                                    {spec.value}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -660,18 +729,37 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   <p>{richSpec?.delivery.carrierNotice}</p>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px] mt-[4px]">
-                    <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                      <span className="font-semibold text-[#252823] block mb-[4px]">01. Appuntamento preventivo</span>
-                      <p className="text-[12px] leading-[1.5]">Il corriere ti contatta telefonicamente o via SMS per concordare il giorno esatto di consegna.</p>
-                    </div>
-                    <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                      <span className="font-semibold text-[#252823] block mb-[4px]">02. Accesso veicolo</span>
-                      <p className="text-[12px] leading-[1.5]">Camion dotato di sponda idraulica. L’accesso deve essere carrabile e libero fino al punto di scarico.</p>
-                    </div>
-                    <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                      <span className="font-semibold text-[#252823] block mb-[4px]">03. Scarico sicuro</span>
-                      <p className="text-[12px] leading-[1.5]">Scarico accurato con transpallet su superficie stabile e piana (asfalto, cemento o autobloccanti).</p>
-                    </div>
+                    {richSpec?.delivery.type === 'parcel' ? (
+                      <>
+                        <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                          <span className="font-semibold text-[#252823] block mb-[4px]">01. Imballo protetto</span>
+                          <p className="text-[12px] leading-[1.5]">Preparazione entro 48 ore lavorative con imballaggio rinforzato e protezione antiurto.</p>
+                        </div>
+                        <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                          <span className="font-semibold text-[#252823] block mb-[4px]">02. Tracciamento corriere</span>
+                          <p className="text-[12px] leading-[1.5]">Ricevi i riferimenti di tracciamento appena il collo parte verso l’indirizzo indicato.</p>
+                        </div>
+                        <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                          <span className="font-semibold text-[#252823] block mb-[4px]">03. Recapito a domicilio</span>
+                          <p className="text-[12px] leading-[1.5]">Consegna gratuita in tutta Italia in 3–5 giorni lavorativi senza costi aggiuntivi.</p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                          <span className="font-semibold text-[#252823] block mb-[4px]">01. Appuntamento preventivo</span>
+                          <p className="text-[12px] leading-[1.5]">Il corriere ti contatta telefonicamente o via SMS per concordare il giorno esatto di consegna.</p>
+                        </div>
+                        <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                          <span className="font-semibold text-[#252823] block mb-[4px]">02. Accesso veicolo</span>
+                          <p className="text-[12px] leading-[1.5]">Camion dotato di sponda idraulica. L’accesso deve essere carrabile e libero fino al punto di scarico.</p>
+                        </div>
+                        <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                          <span className="font-semibold text-[#252823] block mb-[4px]">03. Scarico sicuro</span>
+                          <p className="text-[12px] leading-[1.5]">Scarico accurato con transpallet su superficie stabile e piana (asfalto, cemento o autobloccanti).</p>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
