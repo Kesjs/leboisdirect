@@ -903,3 +903,13 @@
 
   .bk-product-skeleton-grid .bk-skeleton-media { aspect-ratio: 1; }
 }
+
+/* ===== Fix mobile : la page boutique ne doit pas s'élargir au-delà de l'écran ===== */
+@media (max-width: 1023px) {
+  .bk-boutique-content > .grid { grid-template-columns: minmax(0, 1fr); }
+  .bk-boutique-content > .grid > * { min-width: 0; }
+  .bk-boutique-toolbar { justify-content: flex-start; }
+}
+
+/* ===== Badge panier : collé au coin de l'icône ===== */
+.bk-cart-trigger > span { top: 3px; right: 3px; }
