@@ -913,3 +913,22 @@
 
 /* ===== Badge panier : collé au coin de l'icône ===== */
 .bk-cart-trigger > span { top: 3px; right: 3px; }
+
+/* ===== Pagination mobile : flèches à la place de Précédent / Suivant ===== */
+@media (max-width: 700px) {
+  .bk-boutique-content nav.justify-center { flex-wrap: wrap; gap: 8px; }
+  .bk-boutique-content nav.justify-center > button {
+    flex: 0 0 44px; width: 44px; height: 44px; padding: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  /* texte masqué (reste lisible par les lecteurs d'écran), flèche affichée */
+  .bk-boutique-content nav.justify-center > button:first-child,
+  .bk-boutique-content nav.justify-center > button:last-child { font-size: 0; }
+  .bk-boutique-content nav.justify-center > button:first-child::before,
+  .bk-boutique-content nav.justify-center > button:last-child::before {
+    content: ""; width: 18px; height: 18px; background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 3.5 5.5 9 11 14.5'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 3.5 5.5 9 11 14.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  .bk-boutique-content nav.justify-center > button:last-child::before { transform: scaleX(-1); }
+}
