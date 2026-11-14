@@ -61,10 +61,6 @@ export default function Footer() {
           </nav>
         </div>
 
-        <div className="bk-footer-wordmark" aria-hidden="true">
-          braviko<span>.</span>
-        </div>
-
         <div className="bk-footer-bottom">
           <p>
             © {new Date().getFullYear()} Braviko. {copy.rights}
