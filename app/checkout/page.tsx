@@ -83,6 +83,11 @@ export default function CheckoutPage() {
     processingTitle: 'Tempi di accredito',
     processingBody: 'Un bonifico SEPA ordinario richiede 1–2 giorni lavorativi. Per una spedizione più rapida, scegli il bonifico istantaneo se offerto dalla tua banca.',
     bankError: 'Impossibile preparare il bonifico. Riprova.',
+    proofTitle: 'Dopo il bonifico',
+    proofBody: 'Una volta effettuato il bonifico, invia la ricevuta o la prova di pagamento a',
+    proofBodyEnd: 'indicando il riferimento dell’ordine. Spediremo dopo la conferma dell’accredito.',
+    proofEmail: 'contact@braviko.fr',
+    proofSubject: 'Prova di pagamento',
   }
   const [formData, setFormData] = useState({
     email: '',
@@ -770,6 +775,22 @@ export default function CheckoutPage() {
                 {paymentCopy.processingTitle}
               </p>
               <p className="mt-[6px]">{paymentCopy.processingBody}</p>
+            </div>
+            <div className="mt-12 rounded-card border border-hairline bg-white p-12 text-body-sm leading-relaxed text-charcoal">
+              <p className="flex items-center gap-8 font-semibold">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>
+                {paymentCopy.proofTitle}
+              </p>
+              <p className="mt-[6px]">
+                {paymentCopy.proofBody}{' '}
+                <a
+                  className="break-all font-medium underline underline-offset-4 hover:text-braise"
+                  href={`mailto:${paymentCopy.proofEmail}?subject=${encodeURIComponent(`${paymentCopy.proofSubject} – ${bankTransferOrder.reference}`)}`}
+                >
+                  {paymentCopy.proofEmail}
+                </a>{' '}
+                {paymentCopy.proofBodyEnd}
+              </p>
             </div>
             <button type="button" className="mx-auto mt-16 block min-h-[42px] w-fit whitespace-nowrap rounded-card border border-charcoal bg-white px-16 py-8 text-center text-body-sm font-medium leading-none text-charcoal hover:bg-mist focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2" onClick={finishBankTransfer}>{paymentCopy.backToShop}</button>
           </div>
