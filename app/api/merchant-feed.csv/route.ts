@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { cleanImagesBySlug } from "@/data/clean-product-images";
+import { isHeatingCategory } from "@/data/catalog-taxonomy";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +29,7 @@ export async function GET(request: NextRequest) {
   const { data, error } = await supabase
     .from("braviko_products")
     .select(
-      "id, slug, status, braviko_categories(name), braviko_product_translations(locale, name, short_description, description), braviko_product_variants(id, sku, label, price, stock), braviko_product_images(storage_path, is_primary, sort_order)",
+      "id, slug, status, braviko_categories(slug, name), braviko_product_translations(locale, name, short_description, description), braviko_product_variants(id, sku, label, price, stock), braviko_product_images(storage_path, is_primary, sort_order)",
     )
     .eq("status", "published")
     .order("sort_order", { ascending: true });
@@ -43,21 +45,28 @@ export async function GET(request: NextRequest) {
   const baseUrl = siteUrl(request);
 
   for (const product of data || []) {
+    const categorySlug = (product as any).braviko_categories?.slug || "";
+    if (!isHeatingCategory(categorySlug)) continue;
     const translations = (product.braviko_product_translations || []) as any[];
     const fr = translations.find((item) => item.locale === "fr") || translations[0] || {};
     const variants = ((product.braviko_product_variants || []) as any[]).sort(
       (a, b) => Number(a.price) - Number(b.price),
     );
+    const cleanOverrides = cleanImagesBySlug[product.slug];
     const images = ((product.braviko_product_images || []) as any[]).sort(
       (a, b) => Number(b.is_primary) - Number(a.is_primary) || Number(a.sort_order) - Number(b.sort_order),
     );
-    const image = images[0]?.storage_path
-      ? images[0].storage_path.startsWith("http")
-        ? images[0].storage_path
-        : images[0].storage_path.startsWith("images/") || images[0].storage_path.startsWith("/images/")
-          ? `${baseUrl}/${images[0].storage_path.replace(/^\//, "")}`
-          : supabase.storage.from("braviko-product-media").getPublicUrl(images[0].storage_path).data.publicUrl
-      : "";
+    const image = cleanOverrides?.[0]
+      ? cleanOverrides[0].startsWith("http")
+        ? cleanOverrides[0]
+        : `${baseUrl}/${cleanOverrides[0].replace(/^\//, "")}`
+      : images[0]?.storage_path
+        ? images[0].storage_path.startsWith("http")
+          ? images[0].storage_path
+          : images[0].storage_path.startsWith("images/") || images[0].storage_path.startsWith("/images/")
+            ? `${baseUrl}/${images[0].storage_path.replace(/^\//, "")}`
+            : supabase.storage.from("braviko-product-media").getPublicUrl(images[0].storage_path).data.publicUrl
+        : "";
     const description = fr.short_description || fr.description || "";
 
     // Merchant Center must never receive a fabricated zero price. Products without

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { cleanImagesBySlug } from "@/data/clean-product-images";
 
 function getCatalogClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -28,45 +29,6 @@ function parseFeatures(description: string) {
     .filter((line) => /^[^:]{2,40}:\s*\S+/.test(line))
     .map((line) => line.replace(/^[*-]\s*/, ""));
 }
-
-const cleanImagesBySlug: Record<string, string[]> = {
-  'insert-bois-invicta-p947044-10-kw': [
-    '/images/insert-bois-invicta-p947044-10-kw-primary.jpg',
-    '/images/insert-bois-invicta-p947044-10-kw-secondary.jpg',
-    '/images/insert-bois-invicta-p947044-10-kw-tertiary.jpg',
-  ],
-  'cheminee-electrique-purline-verre-noir-2000w': [
-    '/images/cheminee-electrique-purline-verre-noir-2000w-primary.jpg',
-    '/images/cheminee-electrique-purline-verre-noir-2000w-secondary.jpg',
-  ],
-  'ofyr-wood-storage-corten-100-range-buches': [
-    '/images/ofyr-wood-storage-corten-100-range-buches-primary.jpg',
-  ],
-  'chariot-buches-le-marquier-fjord-noir': [
-    '/images/chariot-le-marquier-fjord-noir.jpg',
-    '/images/chariot-le-marquier-fjord-noir-ambiance.jpg',
-  ],
-  'chariot-le-marquier-fjord-noir': [
-    '/images/chariot-le-marquier-fjord-noir.jpg',
-    '/images/chariot-le-marquier-fjord-noir-ambiance.jpg',
-  ],
-  'chauffage-infrarouge-exterieur-frico-term-ip67-2000w': [
-    '/images/chauffage-frico-term-ip67-2000w.jpg',
-    '/images/chauffage-frico-term-ip67-2000w-ambiance.jpg',
-  ],
-  'chauffage-frico-term-ip67-2000w': [
-    '/images/chauffage-frico-term-ip67-2000w.jpg',
-    '/images/chauffage-frico-term-ip67-2000w-ambiance.jpg',
-  ],
-  'foyer-bois-panoramique-acaminetti-flat-150x50': [
-    '/images/foyer-acaminetti-flat-150x50.jpg',
-    '/images/foyer-acaminetti-flat-150x50-detail.jpg',
-  ],
-  'foyer-cheminee-acaminetti-flat-150x50': [
-    '/images/foyer-acaminetti-flat-150x50.jpg',
-    '/images/foyer-acaminetti-flat-150x50-detail.jpg',
-  ],
-};
 
 export async function GET(request: NextRequest) {
   const supabase = getCatalogClient();

@@ -4,15 +4,84 @@ type Content = { eyebrow: string; title: string; intro: string; sections: Array<
 
 export const contentPages: Record<Locale, { advice: Content; story: Content }> = {
   fr: {
-    advice: { eyebrow: 'Conseils', title: 'Bien choisir. Bien conserver. Bien chauffer.', intro: 'Des repères simples pour commander un bois adapté à votre foyer et l’utiliser dans de bonnes conditions.', sections: [['Choisir son bois', 'Choisissez l’essence, la longueur et le conditionnement selon votre appareil et votre usage. Les fiches produit rassemblent les informations disponibles pour comparer.'], ['Préparer le stockage', 'Conservez le bois dans un endroit sec, ventilé et protégé de la pluie. Surélevez-le du sol pour préserver la circulation de l’air.'], ['Utiliser avec attention', 'Respectez les consignes de votre appareil, entretenez le conduit et privilégiez un bois sec pour une combustion plus régulière.']], cta: 'Une question sur votre besoin ?', ctaLabel: 'Voir la FAQ' },
-    story: { eyebrow: 'BRAVIKO · Notre histoire', title: 'La matière fait la différence.', intro: 'Avant de trouver sa place chez vous, chaque produit a une histoire. Voici celle de nos essentiels pour l’hiver.', sections: [['Partir du besoin réel', 'Un foyer, un stockage et une saison de chauffe n’ont pas les mêmes contraintes. Nous organisons les produits autour de besoins concrets.'], ['Rester clair', 'Formats, conditionnements, prix et informations de livraison doivent rester lisibles avant de commander.'], ['Préparer l’hiver', 'Bûches, granulés, bois compressé et équipements pour préparer le chauffage avant les premiers froids.']], cta: 'Voir la sélection chauffage', ctaLabel: 'Voir la boutique' },
+    advice: {
+      eyebrow: 'BRAVIKO / GUIDES PRATIQUES',
+      title: 'Bien choisir. Bien stocker. Bien chauffer.',
+      intro: 'Des repères concrets pour sélectionner votre combustible, dimensionner votre appareil et préparer le passage du transporteur.',
+      sections: [
+        ['Choisir son bois & son format', 'Le chêne et le charme garantissent une chaleur longue durée ; le hêtre ravive les flammes rapidement. Privilégiez le 33 cm pour la majorité des poêles et l’insert 50 cm uniquement pour les grands foyers.'],
+        ['Exiger un taux d’humidité bas', 'Un bois séché à moins de 20 % d’humidité ou un granulé ENplus A1 (< 8 %) dégage jusqu’à deux fois plus d’énergie utile qu’un bois humide et encrasse nettement moins votre vitre et votre conduit.'],
+        ['Stocker au sec & aéré', 'Entreposez les palettes surélevées du sol sous abri ouvert sur les côtés pour laisser l’air circuler. Évitez de bâcher hermétiquement le bois sec sous peine de créer de la condensation.'],
+        ['Anticiper l’accès transporteur', 'Pour une palette ou un poêle, assurez-vous d’une voie d’accès dégagée et d’une zone plane en béton, goudron ou pavés afin que le chauffeur puisse déposer votre commande au transpalette avec hayon.'],
+      ],
+      cta: 'Une question sur votre installation ou votre accès ?',
+      ctaLabel: 'Consulter la FAQ',
+    },
+    story: {
+      eyebrow: 'BRAVIKO · NOTRE HISTOIRE',
+      title: 'La matière fait la différence.',
+      intro: 'Avant de trouver sa place chez vous, chaque produit répond à une exigence simple : chauffer efficacement et durablement.',
+      sections: [
+        ['Partir du besoin réel', 'Chaque maison, chaque appareil et chaque hiver imposent des contraintes différentes. Nous sélectionnons des essences dures, des granulés normés et des appareils reconnus pour leur rendement réel.'],
+        ['Afficher les faits sans détours', 'Taux d’humidité, puissance en kW, poids exact de la palette, délais de rendez-vous et coût unitaire : chaque fiche rassemble les données utiles avant de commander.'],
+        ['Un seul interlocuteur jusqu’à la réception', 'Expédition depuis nos partenaires sous 48 h ouvrées, prise de rendez-vous transporteur et service client réactif basé dans le Nord (Houplines).'],
+      ],
+      cta: 'Explorer le catalogue chauffage & extérieur',
+      ctaLabel: 'Voir la boutique',
+    },
   },
   de: {
-    advice: { eyebrow: 'Ratgeber', title: 'Gut wählen. Gut lagern. Gut heizen.', intro: 'Einfache Orientierung, um passendes Brennholz auszuwählen und richtig zu verwenden.', sections: [['Brennholz auswählen', 'Wählen Sie Holzart, Länge und Verpackung passend zu Ihrem Gerät und Bedarf. Die Produktseiten bündeln die verfügbaren Vergleichsinformationen.'], ['Lagerung vorbereiten', 'Lagern Sie Holz trocken, belüftet und vor Regen geschützt. Halten Sie Abstand zum Boden für gute Luftzirkulation.'], ['Sorgfältig verwenden', 'Beachten Sie die Vorgaben Ihres Geräts, warten Sie den Schornstein und verwenden Sie trockenes Holz für eine gleichmäßigere Verbrennung.']], cta: 'Fragen zu Ihrem Bedarf?', ctaLabel: 'FAQ ansehen' },
-    story: { eyebrow: 'Unsere Geschichte', title: 'Nützliche Produkte leichter auswählbar machen.', intro: 'Braviko vereint Produkte für Zuhause und Gelände mit einer klaren Idee: die richtigen Informationen ohne Umwege geben.', sections: [['Vom echten Bedarf ausgehen', 'Ofen, Lagerung, Saison oder Einsatzort haben unterschiedliche Anforderungen. Unsere Bereiche geben konkrete Orientierung.'], ['Klar bleiben', 'Formate, Verpackungen und Lieferinformationen müssen vor der Bestellung verständlich sein. Das ist die Grundlage jeder Braviko-Produktseite.'], ['Die nächste Etappe bauen', 'Heizung und Landwirtschaft sind jetzt in einem gemeinsamen Katalog vereint: nützliche Produkte, klare Daten und eine Auswahl, die weiter wachsen kann.']], cta: 'Unsere beiden Bereiche entdecken', ctaLabel: 'Zum Shop' },
+    advice: {
+      eyebrow: 'BRAVIKO / RATGEBER',
+      title: 'Gut wählen. Gut lagern. Gut heizen.',
+      intro: 'Klare Orientierung für Brennstoffe, Kaminöfen und eine reibungslose Anlieferung.',
+      sections: [
+        ['Holzart und Scheitlänge wählen', 'Eiche und Hainbuche liefern langanhaltende Glut, Buche schnelle Flammen. 33 cm passt in die meisten Kaminöfen.'],
+        ['Auf niedrige Restfeuchte achten', 'Kammergetrocknetes Holz unter 20 % Feuchte sowie ENplus-A1-Pellets sorgen für hohen Heizwert und saubere Scheiben.'],
+        ['Trocken und belüftet lagern', 'Holz leicht erhöht und überdacht mit seitlicher Belüftung lagern, um Kondensfeuchte zu vermeiden.'],
+        ['Zufahrt für die Hebebühne prüfen', 'Für Paletten und Öfen wird ein fester, ebener Untergrund für den Hubwagen benötigt.'],
+      ],
+      cta: 'Fragen vor dem Kauf?',
+      ctaLabel: 'FAQ ansehen',
+    },
+    story: {
+      eyebrow: 'BRAVIKO · ÜBER UNS',
+      title: 'Qualität, die zuverlässig wärmt.',
+      intro: 'Braviko wählt Brennstoffe, Öfen und Outdoor-Feuerstellen mit klaren technischen Daten und planbarer Lieferung.',
+      sections: [
+        ['Praxisnahe Auswahl', 'Jedes Produkt wird nach Heizleistung, Materialqualität und Alltagstauglichkeit ausgewählt.'],
+        ['Transparente Produktdaten', 'Heizwert, Abmessungen, Verpackung und Lieferablauf stehen offen vor der Bestellung bereit.'],
+        ['Begleitung bis zur Lieferung', 'Versand innerhalb von 48 Werkstunden und feste Terminabstimmung bei schweren Gütern.'],
+      ],
+      cta: 'Sortiment entdecken',
+      ctaLabel: 'Zum Shop',
+    },
   },
   it: {
-    advice: { eyebrow: 'Consigli', title: 'Scegliere bene. Conservare bene. Riscaldare bene.', intro: 'Indicazioni semplici per scegliere la legna adatta e utilizzarla nelle condizioni corrette.', sections: [['Scegliere la legna', 'Scegli essenza, lunghezza e confezione in base al tuo apparecchio e al tuo uso. Le schede raccolgono le informazioni disponibili per confrontare.'], ['Preparare lo stoccaggio', 'Conserva la legna in un luogo asciutto, ventilato e protetto dalla pioggia. Sollevala dal suolo per favorire l’aria.'], ['Usare con attenzione', 'Rispetta le istruzioni dell’apparecchio, cura la canna fumaria e usa legna asciutta per una combustione più regolare.']], cta: 'Hai domande sulle tue esigenze?', ctaLabel: 'Vedi le FAQ' },
-    story: { eyebrow: 'La nostra storia', title: 'Rendere più semplice scegliere prodotti utili.', intro: 'Braviko riunisce prodotti per casa e terreno attorno a un’idea semplice: fornire le informazioni giuste, senza giri di parole.', sections: [['Partire dall’esigenza reale', 'Focolare, stoccaggio, stagione o cantiere hanno vincoli diversi. Organizziamo gli universi per offrire riferimenti concreti.'], ['Restare chiari', 'Formati, confezioni e informazioni di consegna devono essere leggibili prima dell’ordine. È la base di ogni scheda Braviko.'], ['Costruire il seguito', 'Il riscaldamento e l’agricoltura sono ora riuniti in un unico catalogo: prodotti utili, dati chiari e una selezione pronta a crescere.']], cta: 'Scopri i nostri due universi', ctaLabel: 'Vai al negozio' },
+    advice: {
+      eyebrow: 'BRAVIKO / CONSIGLI',
+      title: 'Scegliere bene. Conservare bene. Riscaldare bene.',
+      intro: 'Indicazioni pratiche per scegliere combustibili, stufe e preparare lo scarico della consegna.',
+      sections: [
+        ['Scegliere essenza e formato', 'Quercia e carpino offrono brace duratura, faggio fiamme vive. I ceppi da 33 cm si adattano alla maggior parte delle stufe.'],
+        ['Controllare l’umidità', 'Legna essiccata sotto il 20 % e pellet certificati ENplus A1 garantiscono massima resa termica e minore fuliggine.'],
+        ['Stoccaggio asciutto e ventilato', 'Riponi la legna sollevata da terra e coperta solo superiormente per favorire la circolazione d’aria.'],
+        ['Verificare l’accesso del corriere', 'Assicurati di avere una superficie piana e rigida per lo scarico con sponda idraulica e transpallet.'],
+      ],
+      cta: 'Hai domande prima dell’ordine?',
+      ctaLabel: 'Vedi le FAQ',
+    },
+    story: {
+      eyebrow: 'BRAVIKO · LA NOSTRA STORIA',
+      title: 'Sostanza prima di tutto.',
+      intro: 'Braviko seleziona legna, pellet, stufe e bracieri con dati tecnici trasparenti e spedizione organizzata.',
+      sections: [
+        ['Partire dall’esigenza reale', 'Ogni focolare richiede il formato, l’essenza e la potenza più adatti.'],
+        ['Chiarezza prima dell’acquisto', 'Umidità, potenza in kW, peso netto e modalità di scarico sono chiaramente indicati prima di pagare.'],
+        ['Assistenza continua', 'Spedizione in 48 ore lavorative e supporto clienti dedicato fino alla consegna.'],
+      ],
+      cta: 'Scopri la selezione completa',
+      ctaLabel: 'Vai al negozio',
+    },
   },
 }

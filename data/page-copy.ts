@@ -1,7 +1,139 @@
 import type { Locale } from '@/lib/i18n-context'
 
 export const pageCopy = {
-    fr: { delivery: { eyebrow:'Livraison', title:'Comment fonctionne la livraison', intro:'Nous livrons votre bois partout en France avec déchargement inclus.', steps:[['Vous commandez en ligne','Choisissez votre bois, votre format et votre quantité. Validez en quelques clics.'],['Nous préparons votre commande','Votre commande est préparée et contrôlée avant le chargement.'],['Nous organisons le créneau','Nous vous contactons pour choisir ensemble le jour et la plage horaire.'],['Nous livrons et déchargeons','Le bois est déposé à l’emplacement convenu : garage, abri ou allée.']], zones:'Zones de livraison', zonesBody:'Nous livrons partout en France métropolitaine. Les délais varient selon votre localisation.', unload:'Déchargement inclus', unloadBody:'Le déchargement est inclus. Indiquez simplement l’emplacement souhaité.', delays:'Délais de livraison', delaysBody:'La livraison est généralement organisée sous 3 jours selon votre zone et la disponibilité.', questions:'Questions ?', questionsBody:'Consultez notre FAQ ou contactez-nous directement.', faq:'Voir la FAQ →' }, faq:{eyebrow:'FAQ', title:'Les réponses à vos questions', intro:'Tout ce qu’il faut savoir sur nos produits, la commande, la livraison et le stockage.', categories:[['Produits',[['Quel bois choisir pour mon foyer ?','Le chêne offre une combustion longue, le hêtre des flammes vives et le charme des braises durables. Le bon choix dépend de votre installation.'],['Quelle longueur choisir ?','Les bûches de 33 cm conviennent à la plupart des foyers. Les grands appareils peuvent accueillir du 50 cm.'],['Quel est le taux d’humidité ?','Nos fiches produits indiquent les informations disponibles pour chaque référence.']]],['Commande et livraison',[['Comment passer commande ?','Choisissez vos produits, ajoutez-les au panier et suivez les étapes de commande.'],['Quels sont les délais ?','La livraison intervient généralement sous 3 jours selon la zone et la disponibilité.'],['Le déchargement est-il inclus ?','Oui, le déchargement est inclus dans nos tarifs.']]],['Stockage et utilisation',[['Comment stocker le bois ?','Conservez-le dans un endroit sec et ventilé, à l’abri de la pluie et surélevé du sol.'],['Puis-je conserver le bois ?','Oui, s’il reste protégé de l’humidité avec une bonne circulation de l’air.']]]], contact:'Une autre question ?', contactBody:'Notre équipe vous répond avec plaisir.', contactCta:'Nous contacter →' } },
-  de: { delivery: { eyebrow:'Lieferung', title:'So funktioniert die Lieferung', intro:'Wir liefern Ihr Brennholz in ganz Frankreich inklusive Abladen.', steps:[['Online bestellen','Wählen Sie Holzart, Format und Menge und schließen Sie Ihre Bestellung ab.'],['Wir bereiten vor','Ihre Bestellung wird vor dem Verladen vorbereitet und kontrolliert.'],['Wir planen den Termin','Wir kontaktieren Sie, um gemeinsam Tag und Zeitfenster festzulegen.'],['Wir liefern und laden ab','Das Holz wird am vereinbarten Ort abgeladen: Garage, Unterstand oder Zufahrt.']], zones:'Liefergebiete', zonesBody:'Wir liefern in ganz Frankreich. Die Lieferzeit hängt von Ihrem Standort ab.', unload:'Abladen inklusive', unloadBody:'Das Abladen ist in unseren Preisen enthalten. Geben Sie den gewünschten Ort an.', delays:'Lieferzeiten', delaysBody:'Je nach Region und Verfügbarkeit rechnen Sie meist mit 5 bis 10 Tagen.', questions:'Fragen?', questionsBody:'Lesen Sie unsere FAQ oder kontaktieren Sie uns direkt.', faq:'FAQ ansehen →' }, faq:{eyebrow:'FAQ', title:'Antworten auf Ihre Fragen', intro:'Alles über Produkte, Bestellung, Lieferung und Lagerung.', categories:[['Produkte',[['Welches Holz passt zu meinem Ofen?','Eiche brennt lange, Buche gibt lebhafte Flammen und Hainbuche hält die Glut.'],['Welche Scheitlänge?','33 cm passen zu den meisten Öfen. Große Geräte können 50 cm aufnehmen.'],['Wie feucht ist das Holz?','Die verfügbaren Angaben finden Sie auf der jeweiligen Produktseite.']]],['Bestellung und Lieferung',[['Wie bestelle ich?','Wählen Sie Produkte, legen Sie sie in den Warenkorb und folgen Sie den Bestellschritten.'],['Wie lange dauert die Lieferung?','Je nach Region und Verfügbarkeit meist 5 bis 10 Tage.'],['Ist das Abladen inklusive?','Ja, das Abladen ist in unseren Preisen enthalten.']]],['Lagerung und Nutzung',[['Wie lagere ich Holz richtig?','Trocken, belüftet, regengeschützt und nicht direkt auf dem Boden.'],['Wie lange kann ich Holz lagern?','Bei Schutz vor Feuchtigkeit und guter Belüftung mehrere Jahre.']]]], contact:'Noch eine Frage?', contactBody:'Unser Team hilft Ihnen gerne weiter.', contactCta:'Kontakt aufnehmen →' } },
-  it: { delivery: { eyebrow:'Consegna', title:'Come funziona la consegna', intro:'Consegniamo la tua legna in tutta la Francia, scarico incluso.', steps:[['Ordini online','Scegli legna, formato e quantità e completa l’ordine in pochi passaggi.'],['Prepariamo l’ordine','Prepariamo e controlliamo la tua selezione prima del carico.'],['Organizziamo il giorno','Ti contattiamo per scegliere insieme giorno e fascia oraria.'],['Consegniamo e scarichiamo','La legna viene lasciata nel punto concordato: garage, riparo o vialetto.']], zones:'Zone di consegna', zonesBody:'Consegniamo in tutta la Francia metropolitana. I tempi dipendono dalla località.', unload:'Scarico incluso', unloadBody:'Lo scarico è incluso. Indica semplicemente il punto desiderato.', delays:'Tempi di consegna', delaysBody:'In genere 5-10 giorni, secondo zona e disponibilità.', questions:'Domande?', questionsBody:'Consulta le FAQ o contattaci direttamente.', faq:'Vedi le FAQ →' }, faq:{eyebrow:'FAQ', title:'Le risposte alle tue domande', intro:'Tutto su prodotti, ordine, consegna e conservazione.', categories:[['Prodotti',[['Quale legna scegliere?','La quercia brucia a lungo, il faggio offre fiamme vive e il carpino una brace duratura.'],['Quale lunghezza scegliere?','I ceppi da 33 cm sono adatti alla maggior parte dei focolari. I grandi apparecchi possono usare 50 cm.'],['Qual è l’umidità della legna?','Le informazioni disponibili sono indicate in ogni scheda prodotto.']]],['Ordine e consegna',[['Come ordinare?','Scegli i prodotti, aggiungili al carrello e segui i passaggi dell’ordine.'],['Quali sono i tempi?','In genere 5-10 giorni secondo zona e disponibilità.'],['Lo scarico è incluso?','Sì, lo scarico è incluso nei nostri prezzi.']]],['Conservazione e utilizzo',[['Come conservare la legna?','In un luogo asciutto e ventilato, protetto dalla pioggia e sollevato da terra.'],['Quanto si conserva?','Per anni se resta protetta dall’umidità e ben ventilata.']]]], contact:'Hai un’altra domanda?', contactBody:'Il nostro team è a tua disposizione.', contactCta:'Contattaci →' } },
+  fr: {
+    delivery: {
+      eyebrow: 'BRAVIKO / LIVRAISON FRANCE',
+      title: 'Une livraison organisée avec vous, jusqu’à votre domicile.',
+      intro: 'La livraison est offerte en France métropolitaine. Expédition sous 48 h ouvrées et prise de rendez-vous préalable pour toutes les palettes et appareils lourds.',
+      steps: [
+        ['Commande confirmée en ligne', 'Réglez en toute sécurité par carte bancaire Stripe ou virement SEPA, sans obligation de créer un compte.'],
+        ['Préparation & contrôle sous 48 h', 'Votre palette, votre appareil ou votre colis est vérifié, cerclé et remis au transporteur adapté sous 48 h ouvrées.'],
+        ['Prise de rendez-vous téléphonique', 'Pour les palettes et gros équipements, le transporteur vous contacte par téléphone ou SMS afin de fixer le jour de passage.'],
+        ['Déchargement au hayon & transpalette', 'Dépose soignée au pas de porte ou sur allée plane et carrossable (béton, goudron, pavés) en 3 à 8 jours ouvrés selon la zone.'],
+      ],
+      zones: 'Zone couverte',
+      zonesBody: 'Livraison offerte sur l’ensemble de la France métropolitaine, sans minimum d’achat et sans frais cachés au paiement.',
+      unload: 'Accès & déchargement',
+      unloadBody: 'Porteur avec hayon élévateur et transpalette manuel (charges jusqu’à 1,1 t). Prévoir un accès dégagé sur sol dur et plat.',
+      delays: 'Délais indicatifs',
+      delaysBody: 'Expédition sous 48 h ouvrées. Comptez 3 à 5 jours ouvrés en messagerie colis et 5 à 8 jours ouvrés sur rendez-vous pour palettes et poêles.',
+      questions: 'Une contrainte d’accès ?',
+      questionsBody: 'Rue étroite, graviers, forte pente ? Consultez notre FAQ ou contactez notre équipe avant ou après commande.',
+      faq: 'Voir la FAQ livraison →',
+    },
+    faq: {
+      eyebrow: 'BRAVIKO / QUESTIONS FRÉQUENTES',
+      title: 'Les réponses claires avant de commander.',
+      intro: 'Combustibles, poêles et inserts, paiement sécurisé, accès transporteur et retours sous 14 jours.',
+      categories: [
+        ['Bois, granulés & appareils', [
+          ['Quel bois de chauffage choisir pour mon foyer ?', 'Le chêne et le charme brûlent lentement avec des braises très chaudes ; le hêtre offre des flammes vives. Notre mélange chêne/charme/hêtre séché à moins de 20 % est prêt à brûler dès réception.'],
+          ['Quelle longueur de bûches choisir (33 cm ou 50 cm) ?', 'Le format 33 cm convient à la quasi-totalité des poêles à bois modernes et inserts compacts. Choisissez 50 cm si la chambre de combustion de votre foyer mesure au moins 55 cm de large.'],
+          ['Comment connaître l’humidité et les certifications ?', 'Chaque fiche technique détaille le taux d’humidité garanti (< 20 % pour nos bûches séchées en séchoir, ≤ 8 % pour nos granulés certifiés ENplus A1 / DINplus) et la garantie constructeur.'],
+        ]],
+        ['Commande, paiement & sécurité', [
+          ['Faut-il créer un compte pour commander ?', 'Non. Vous pouvez finaliser votre achat directement en mode invité avec votre adresse email, ou créer un compte pour retrouver l’historique de vos commandes.'],
+          ['Quels moyens de paiement acceptez-vous ?', 'Carte bancaire (CB, Visa, Mastercard via Stripe 3D Secure) pour une validation immédiate, ou virement bancaire SEPA (expédition déclenchée dès réception des fonds).'],
+          ['Les prix affichés incluent-ils la TVA et la livraison ?', 'Oui. Les tarifs sont indiqués TTC en euros et la livraison en France métropolitaine est incluse sans supplément au panier.'],
+        ]],
+        ['Livraison, accès & retours', [
+          ['Quels sont les délais de livraison ?', 'Les articles en stock sont expédiés sous 48 h ouvrées. La livraison intervient en 3 à 5 jours ouvrés pour les colis et en 5 à 8 jours ouvrés sur rendez-vous téléphonique pour les palettes et appareils.'],
+          ['Le camion avec hayon peut-il accéder partout ?', 'Le porteur (jusqu’à 19 tonnes) décharge au transpalette au plus près de votre domicile sur sol plat et dur (goudron, béton, pavés). Le transpalette ne roule pas sur graviers épais, pelouse ou pente raide.'],
+          ['Puis-je me rétracter ou retourner un produit ?', 'Oui. Vous bénéficiez d’un délai légal de 14 jours calendaires après réception pour retourner tout produit neuf, complet, non utilisé et dans son emballage d’origine via contact@braviko.fr.'],
+        ]],
+      ],
+      contact: 'Une autre question avant d’acheter ?',
+      contactBody: 'Notre équipe répond à vos questions techniques ou d’accès livraison sous 24 h ouvrées.',
+      contactCta: 'Contacter Braviko →',
+    },
+  },
+  de: {
+    delivery: {
+      eyebrow: 'BRAVIKO / LIEFERUNG',
+      title: 'Planbare Lieferung bis vor Ihre Haustür.',
+      intro: 'Kostenlose Lieferung innerhalb des französischen Festlands. Versand binnen 48 Werkstunden und telefonische Terminabsprache für Paletten und Öfen.',
+      steps: [
+        ['Bestellung online bestätigen', 'Sicher per Karte über Stripe oder SEPA-Überweisung bestellen – auch als Gast.'],
+        ['Prüfung & Versand binnen 48 h', 'Ware wird verpackt, geprüft und innerhalb von 48 Werkstunden übergeben.'],
+        ['Telefonische Terminabsprache', 'Der Spediteur stimmt den genauen Liefertag vorab per Telefon oder SMS mit Ihnen ab.'],
+        ['Entladung per Hebebühne', 'Zustellung in 3–8 Werktagen auf festem, ebenem Untergrund mit Hubwagen.'],
+      ],
+      zones: 'Liefergebiet',
+      zonesBody: 'Kostenlose Lieferung innerhalb des französischen Festlands ohne versteckte Gebühren.',
+      unload: 'Zufahrt & Abladen',
+      unloadBody: 'Lkw mit Hebebühne und Hubwagen. Bitte befestigte Zufahrt und festen Boden sicherstellen.',
+      delays: 'Lieferzeiten',
+      delaysBody: '3–5 Werktage bei Paketen, 5–8 Werktage nach Terminabstimmung bei Paletten und Kaminöfen.',
+      questions: 'Besondere Zufahrt?',
+      questionsBody: 'Lesen Sie unsere FAQ oder schreiben Sie uns vorab.',
+      faq: 'FAQ ansehen →',
+    },
+    faq: {
+      eyebrow: 'BRAVIKO / FAQ',
+      title: 'Klare Antworten vor dem Kauf.',
+      intro: 'Brennstoffe, Kaminöfen, Zahlung, Lieferung und 14 Tage Widerrufsrecht.',
+      categories: [
+        ['Holz, Pellets & Öfen', [
+          ['Welches Brennholz passt zu meinem Ofen?', 'Eiche und Hainbuche brennen ruhig und lange, Buche sorgt für lebhafte Flammen. Unsere getrockneten Scheite (< 20 % Restfeuchte) sind sofort einsatzbereit.'],
+          ['33 cm oder 50 cm Scheitlänge?', '33 cm passt in nahezu alle modernen Kaminöfen; 50 cm eignet sich für breite Feuerräume ab ca. 55 cm.'],
+        ]],
+        ['Bestellung & Zahlung', [
+          ['Ist eine Bestellung ohne Konto möglich?', 'Ja, Gastbestellungen ohne Konto sind jederzeit möglich.'],
+          ['Welche Zahlungsarten werden akzeptiert?', 'Kreditkarte über Stripe (3D Secure) oder SEPA-Banküberweisung.'],
+        ]],
+        ['Lieferung & Rückgabe', [
+          ['Wie lange dauert die Lieferung?', 'Versand binnen 48 Werkstunden, Zustellung in 3–8 Werktagen je nach Produktgewicht.'],
+          ['Habe ich ein Widerrufsrecht?', 'Ja, 14 Kalendertage gesetzliches Widerrufsrecht auf unbenutzte Artikel in Originalverpackung.'],
+        ]],
+      ],
+      contact: 'Noch eine Frage?',
+      contactBody: 'Unser Team hilft Ihnen innerhalb von 24 Werkstunden weiter.',
+      contactCta: 'Kontakt aufnehmen →',
+    },
+  },
+  it: {
+    delivery: {
+      eyebrow: 'BRAVIKO / CONSEGNA',
+      title: 'Consegna organizzata su appuntamento fino a casa tua.',
+      intro: 'Spedizione gratuita in Francia continentale, partenza entro 48 h lavorative e scarico con sponda idraulica incluso.',
+      steps: [
+        ['Conferma online', 'Paga in sicurezza con carta tramite Stripe o bonifico SEPA, anche senza registrazione.'],
+        ['Preparazione in 48 h', 'Controlliamo e spediamo ogni prodotto entro 48 ore lavorative.'],
+        ['Appuntamento telefonico', 'Per bancali e stufe, il corriere concorda con te il giorno di consegna.'],
+        ['Scarico con sponda idraulica', 'Consegna in 3–8 giorni lavorativi con transpallet su superficie piana e stabile.'],
+      ],
+      zones: 'Zone servite',
+      zonesBody: 'Consegna inclusa su tutta la Francia continentale senza costi aggiuntivi.',
+      unload: 'Accesso e scarico',
+      unloadBody: 'Camion con sponda idraulica e transpallet. Necessario accesso carrabile su terreno stabile.',
+      delays: 'Tempi indicativi',
+      delaysBody: '3–5 giorni lavorativi per pacchi, 5–8 giorni su appuntamento per bancali e stufe.',
+      questions: 'Domande sull’accesso?',
+      questionsBody: 'Consulta le FAQ o scrivici prima dell’ordine.',
+      faq: 'Vedi le FAQ →',
+    },
+    faq: {
+      eyebrow: 'BRAVIKO / FAQ',
+      title: 'Risposte chiare prima dell’acquisto.',
+      intro: 'Combustibili, stufe, pagamenti sicuri, consegne e recesso di 14 giorni.',
+      categories: [
+        ['Legna, pellet e stufe', [
+          ['Quale legna scegliere?', 'Quercia e carpino offrono brace duratura, faggio fiamme vive. La nostra miscela essiccata (< 20 % umidità) è pronta all’uso.'],
+          ['Meglio 33 cm o 50 cm?', 'I ceppi da 33 cm sono adatti alla maggior parte delle stufe moderne; 50 cm per camere di combustione ampie.'],
+        ]],
+        ['Ordini e pagamenti', [
+          ['Serve un account per acquistare?', 'No, puoi ordinare rapidamente anche come ospite.'],
+          ['Quali pagamenti accettate?', 'Carta di credito via Stripe (3D Secure) o bonifico SEPA.'],
+        ]],
+        ['Consegna e resi', [
+          ['Quali sono i tempi di consegna?', 'Partenza entro 48 h lavorative e consegna in 3–8 giorni lavorativi.'],
+          ['È previsto il diritto di recesso?', 'Sì, hai 14 giorni di calendario dalla consegna per articoli integri e non usati.'],
+        ]],
+      ],
+      contact: 'Altre domande?',
+      contactBody: 'Il nostro team risponde entro 24 h lavorative.',
+      contactCta: 'Contattaci →',
+    },
+  },
 } satisfies Record<Locale, unknown>

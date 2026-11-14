@@ -10,80 +10,152 @@ export const legalNavigation = {
 
 export const legalCopy: Record<'mentions-legales' | 'confidentialite' | 'conditions-generales' | 'cookies', Record<Locale, LegalDocument>> = {
   'mentions-legales': {
-    fr: { eyebrow: 'BRAVIKO / INFORMATIONS', title: 'Mentions légales', intro: 'Les informations essentielles concernant l’édition et l’utilisation du site Braviko.', updated: 'Mise à jour : 1 octobre 2026', sections: [
-      { title: 'Éditeur du site', body: 'Braviko — entreprise individuelle (EI). Adresse : 32 rue Jean Jacob, 59116 Houplines, France. Pour toute question administrative ou demande relative à l’éditeur, écrivez à contact@braviko.fr.' },
-      { title: 'Hébergement', body: 'Le site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis. Les données applicatives sont hébergées auprès de Supabase.' },
-      { title: 'Propriété intellectuelle', body: 'Les textes, visuels, marques, éléments graphiques et contenus du site ne peuvent pas être reproduits ou exploités sans autorisation préalable, sauf exceptions prévues par la loi.' },
-      { title: 'Contact', body: 'Pour signaler une erreur, exercer un droit ou poser une question, contactez-nous à contact@braviko.fr.' },
-    ] },
-    de: { eyebrow: 'BRAVIKO / INFORMATIONEN', title: 'Impressum', intro: 'Wesentliche Informationen zur Herausgabe und Nutzung der Braviko-Website.', updated: 'Aktualisiert am 1. Oktober 2026', sections: [
-      { title: 'Anbieter', body: 'Braviko — französisches Einzelunternehmen (EI). Anschrift: 32 rue Jean Jacob, 59116 Houplines, Frankreich. Administrative Anfragen richten Sie an contact@braviko.fr.' },
-      { title: 'Hosting', body: 'Hosting durch Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA. Anwendungsdaten werden bei Supabase gehostet.' },
-      { title: 'Geistiges Eigentum', body: 'Texte, Bilder, Marken und grafische Inhalte dürfen ohne vorherige Genehmigung nicht vervielfältigt oder verwertet werden, soweit das Gesetz nichts anderes erlaubt.' },
-      { title: 'Kontakt', body: 'Fehler, Rechtsanfragen und Fragen senden Sie an contact@braviko.fr.' },
-    ] },
-    it: { eyebrow: 'BRAVIKO / INFORMAZIONI', title: 'Note legali', intro: 'Le informazioni essenziali sulla pubblicazione e l’uso del sito Braviko.', updated: 'Aggiornato il 1 ottobre 2026', sections: [
-      { title: 'Editore', body: 'Braviko — impresa individuale francese (EI). Indirizzo: 32 rue Jean Jacob, 59116 Houplines, Francia. Per richieste amministrative scrivere a contact@braviko.fr.' },
-      { title: 'Hosting', body: 'Il sito è ospitato da Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, Stati Uniti. I dati applicativi sono ospitati presso Supabase.' },
-      { title: 'Proprietà intellettuale', body: 'Testi, immagini, marchi e contenuti grafici non possono essere riprodotti o sfruttati senza autorizzazione, salvo quanto consentito dalla legge.' },
-      { title: 'Contatti', body: 'Per segnalazioni, richieste relative ai propri diritti o domande: contact@braviko.fr.' },
-    ] },
+    fr: {
+      eyebrow: 'BRAVIKO / INFORMATIONS LÉGALES',
+      title: 'Mentions légales',
+      intro: 'Les informations relatives à l’éditeur, à l’hébergement et aux modalités de contact du site braviko.fr.',
+      updated: 'Mise à jour : 14 novembre 2026',
+      sections: [
+        { title: 'Éditeur du site', body: 'Le site braviko.fr est édité par Braviko — entreprise individuelle (EI), établie au 32 rue Jean Jacob, 59116 Houplines, France. Contact administratif et service client : contact@braviko.fr.' },
+        { title: 'Hébergement & infrastructure', body: 'Le site applicatif braviko.fr est hébergé sur infrastructure Hostinger (Hostinger International Ltd., 61 Lordou Vironos Street, 6023 Larnaca, Chypre). La base de données et les médias associés sont hébergés sur Supabase.' },
+        { title: 'Paiements & sécurité', body: 'Les paiements par carte bancaire sont traités via l’infrastructure certifiée PCI-DSS de Stripe. Braviko ne stocke aucune donnée complète de carte bancaire sur ses propres serveurs. Le règlement par virement SEPA est également proposé.' },
+        { title: 'Propriété intellectuelle', body: 'L’ensemble des textes, fiches techniques, visuels, éléments graphiques et marques reproduits sur le site est protégé au titre de la propriété intellectuelle et ne peut être réutilisé sans accord préalable.' },
+      ],
+    },
+    de: {
+      eyebrow: 'BRAVIKO / RECHTLICHES',
+      title: 'Impressum',
+      intro: 'Angaben zu Anbieter, Hosting und Kontaktmöglichkeiten für braviko.fr.',
+      updated: 'Aktualisiert am 14. November 2026',
+      sections: [
+        { title: 'Anbieter', body: 'braviko.fr wird betrieben von Braviko — französisches Einzelunternehmen (EI), 32 rue Jean Jacob, 59116 Houplines, Frankreich. Kontakt: contact@braviko.fr.' },
+        { title: 'Hosting & Infrastruktur', body: 'Die Anwendung wird bei Hostinger (Hostinger International Ltd., 61 Lordou Vironos Street, 6023 Larnaca, Zypern) gehostet. Datenbank und Medien werden über Supabase bereitgestellt.' },
+        { title: 'Zahlungsabwicklung', body: 'Kartenzahlungen erfolgen sicher über Stripe (PCI-DSS). Alternativ steht die SEPA-Überweisung zur Verfügung.' },
+        { title: 'Urheberrecht', body: 'Texte, technische Angaben, Bilder und grafische Inhalte unterliegen dem Urheberrecht und dürfen ohne Genehmigung nicht vervielfältigt werden.' },
+      ],
+    },
+    it: {
+      eyebrow: 'BRAVIKO / INFORMAZIONI LEGALI',
+      title: 'Note legali',
+      intro: 'Informazioni su editore, hosting e contatti del sito braviko.fr.',
+      updated: 'Aggiornato il 14 novembre 2026',
+      sections: [
+        { title: 'Editore', body: 'Il sito braviko.fr è gestito da Braviko — impresa individuale francese (EI), 32 rue Jean Jacob, 59116 Houplines, Francia. Contatto: contact@braviko.fr.' },
+        { title: 'Hosting e infrastruttura', body: 'Il sito è ospitato su infrastruttura Hostinger (Hostinger International Ltd., 61 Lordou Vironos Street, 6023 Larnaca, Cipro). Database e file multimediali sono ospitati su Supabase.' },
+        { title: 'Pagamenti e sicurezza', body: 'I pagamenti con carta sono gestiti da Stripe secondo gli standard PCI-DSS. È disponibile anche il bonifico SEPA.' },
+        { title: 'Proprietà intellettuale', body: 'Testi, schede tecniche, immagini e marchi presenti sul sito sono protetti e non possono essere riprodotti senza autorizzazione.' },
+      ],
+    },
   },
   confidentialite: {
-    fr: { eyebrow: 'BRAVIKO / VOS DONNÉES', title: 'Politique de confidentialité', intro: 'Nous collectons uniquement les données nécessaires au compte client, à la commande et à la relation de service.', updated: 'Mise à jour : 1 octobre 2026', sections: [
-      { title: 'Données traitées', body: 'Lors de la création d’un compte ou d’une commande, nous traitons notamment votre email, votre identité, votre téléphone, votre adresse de livraison et le contenu de vos commandes.' },
-      { title: 'Finalités et bases légales', body: 'Ces données servent à authentifier votre compte, enregistrer et suivre vos commandes, organiser la livraison, répondre à vos demandes et respecter nos obligations légales. Le traitement repose sur l’exécution du contrat, nos obligations légales et, lorsque nécessaire, votre consentement.' },
-      { title: 'Conservation et destinataires', body: 'Les données sont accessibles aux personnes et prestataires nécessaires au fonctionnement du service, notamment Supabase et Vercel. Elles sont conservées pendant la durée utile à la relation commerciale et aux obligations comptables ou légales.' },
-      { title: 'Vos droits', body: 'Vous pouvez demander l’accès, la rectification, l’effacement, la limitation ou la portabilité de vos données, et vous opposer à certains traitements. Écrivez à contact@braviko.fr. Vous pouvez également saisir l’autorité de contrôle compétente.' },
-    ] },
-    de: { eyebrow: 'BRAVIKO / IHRE DATEN', title: 'Datenschutzerklärung', intro: 'Wir verarbeiten nur Daten, die für Kundenkonto, Bestellung und Service erforderlich sind.', updated: 'Aktualisiert am 1. Oktober 2026', sections: [
-      { title: 'Verarbeitete Daten', body: 'Bei Kontoerstellung oder Bestellung verarbeiten wir insbesondere E-Mail, Identität, Telefonnummer, Lieferanschrift und Bestellinhalt.' },
-      { title: 'Zwecke und Rechtsgrundlagen', body: 'Die Daten dienen Anmeldung, Bestellabwicklung, Lieferung, Support und gesetzlichen Pflichten. Grundlage sind Vertragserfüllung, gesetzliche Pflichten und gegebenenfalls Ihre Einwilligung.' },
-      { title: 'Speicherung und Empfänger', body: 'Zugriff erhalten nur erforderliche Personen und Dienstleister, insbesondere Supabase und Vercel. Die Speicherung erfolgt für die Geschäftsbeziehung und gesetzliche Aufbewahrungsfristen.' },
-      { title: 'Ihre Rechte', body: 'Sie können Auskunft, Berichtigung, Löschung, Einschränkung oder Übertragbarkeit verlangen und bestimmten Verarbeitungen widersprechen. Kontakt: contact@braviko.fr.' },
-    ] },
-    it: { eyebrow: 'BRAVIKO / I TUOI DATI', title: 'Informativa sulla privacy', intro: 'Trattiamo solo i dati necessari per account, ordini e assistenza.', updated: 'Aggiornato il 1 ottobre 2026', sections: [
-      { title: 'Dati trattati', body: 'Durante la creazione dell’account o dell’ordine trattiamo email, identità, telefono, indirizzo di consegna e contenuto degli ordini.' },
-      { title: 'Finalità e basi giuridiche', body: 'I dati servono per autenticazione, gestione degli ordini, consegna, assistenza e obblighi di legge. Le basi sono esecuzione del contratto, obblighi legali e, quando necessario, consenso.' },
-      { title: 'Conservazione e destinatari', body: 'I dati sono accessibili solo alle persone e ai fornitori necessari, in particolare Supabase e Vercel, e conservati per il rapporto commerciale e gli obblighi di legge.' },
-      { title: 'I tuoi diritti', body: 'Puoi chiedere accesso, rettifica, cancellazione, limitazione o portabilità e opporti ad alcuni trattamenti. Scrivi a contact@braviko.fr.' },
-    ] },
+    fr: {
+      eyebrow: 'BRAVIKO / DONNÉES PERSONNELLES',
+      title: 'Politique de confidentialité',
+      intro: 'Braviko traite uniquement les données nécessaires à la préparation, au paiement et à la livraison de vos commandes.',
+      updated: 'Mise à jour : 14 novembre 2026',
+      sections: [
+        { title: 'Données collectées', body: 'Lors d’une commande (avec ou sans création de compte), d’une prise de contact ou d’une inscription à la newsletter, nous collectons vos nom, prénom, adresse email, numéro de téléphone pour le rendez-vous transporteur, adresse de livraison et historique de commande.' },
+        { title: 'Finalités & base légale', body: 'Ces données permettent l’exécution du contrat de vente, la prise de rendez-vous de livraison avec le transporteur, le traitement comptable et la gestion du service après-vente. Les opérations de mesure ou de consentement newsletter reposent sur votre accord.' },
+        { title: 'Sous-traitants & conservation', body: 'Vos données sont traitées par Hostinger (hébergement), Supabase (base de données), Stripe (paiement) et les transporteurs chargés de l’acheminement. Elles sont conservées pendant la durée utile au suivi client et aux obligations légales comptables.' },
+        { title: 'Vos droits (RGPD)', body: 'Conformément au RGPD, vous disposez d’un droit d’accès, de rectification, d’effacement, de limitation et d’opposition en écrivant à contact@braviko.fr. Vous pouvez également saisir la CNIL en cas de réclamation.' },
+      ],
+    },
+    de: {
+      eyebrow: 'BRAVIKO / DATENSCHUTZ',
+      title: 'Datenschutzerklärung',
+      intro: 'Wir verarbeiten nur die Daten, die für Bestellung, Zahlung, Transport und Kundenservice nötig sind.',
+      updated: 'Aktualisiert am 14. November 2026',
+      sections: [
+        { title: 'Erhobene Daten', body: 'Bei Bestellungen (auch als Gast), Kontaktanfragen oder Newsletter-Anmeldungen erfassen wir Name, E-Mail-Adresse, Telefonnummer für den Liefertermin, Lieferanschrift und Bestelldaten.' },
+        { title: 'Zwecke & Rechtsgrundlage', body: 'Verarbeitung zur Vertragserfüllung, Terminabstimmung mit dem Frachtführer, Rechnungslegung und gesetzlichen Aufbewahrungspflichten.' },
+        { title: 'Dienstleister & Dauer', body: 'Eingebundene Dienstleister sind Hostinger, Supabase, Stripe sowie beauftragte Transportunternehmen.' },
+        { title: 'Ihre Rechte', body: 'Sie haben jederzeit das Recht auf Auskunft, Berichtigung, Löschung und Widerspruch unter contact@braviko.fr.' },
+      ],
+    },
+    it: {
+      eyebrow: 'BRAVIKO / PRIVACY',
+      title: 'Informativa sulla privacy',
+      intro: 'Trattiamo esclusivamente i dati necessari a ordine, pagamento, consegna e assistenza clienti.',
+      updated: 'Aggiornato il 14 novembre 2026',
+      sections: [
+        { title: 'Dati trattati', body: 'In caso di ordine (anche come ospite), richiesta di contatto o newsletter raccogliamo nome, email, telefono per l’appuntamento di consegna, indirizzo e dettagli ordine.' },
+        { title: 'Finalità e basi giuridiche', body: 'I dati servono per l’esecuzione del contratto, la pianificazione della consegna, l’assistenza post-vendita e gli obblighi contabili.' },
+        { title: 'Fornitori e conservazione', body: 'I servizi utilizzati includono Hostinger, Supabase, Stripe e i corrieri incaricati del trasporto.' },
+        { title: 'I tuoi diritti', body: 'Puoi richiedere accesso, rettifica, cancellazione o opposizione scrivendo a contact@braviko.fr.' },
+      ],
+    },
   },
   'conditions-generales': {
-    fr: { eyebrow: 'BRAVIKO / VENTE ET UTILISATION', title: 'Conditions générales', intro: 'Ces conditions encadrent l’utilisation du site et les demandes de commande passées auprès de Braviko.', updated: 'Mise à jour : 1 octobre 2026', sections: [
-      { title: 'Compte et commande', body: 'Vous pouvez remplir librement votre panier. Un compte est nécessaire pour enregistrer une demande de commande. Vous êtes responsable de l’exactitude des informations communiquées et de la confidentialité de votre mot de passe.' },
-      { title: 'Prix et confirmation', body: 'Les prix sont indiqués en euros. Tant que le paiement en ligne n’est pas activé, la validation du panier constitue une demande et non un paiement. La commande devient définitive après confirmation des produits, des frais de livraison et des modalités convenues.' },
-      { title: 'Livraison', body: 'Les délais et conditions de livraison dépendent du produit, de la destination, de l’accès et du déchargement. Les informations définitives sont communiquées avant confirmation.' },
-      { title: 'Rétractation, garanties et litiges', body: 'Les droits de rétractation et garanties légales s’appliquent selon la nature du produit et la réglementation applicable. Contactez-nous d’abord à contact@braviko.fr afin de rechercher une solution amiable.' },
-    ] },
-    de: { eyebrow: 'BRAVIKO / VERKAUF UND NUTZUNG', title: 'Allgemeine Bedingungen', intro: 'Diese Bedingungen regeln die Website-Nutzung und Bestellanfragen bei Braviko.', updated: 'Aktualisiert am 1. Oktober 2026', sections: [
-      { title: 'Konto und Bestellung', body: 'Der Warenkorb ist ohne Anmeldung nutzbar. Für eine Bestellanfrage ist ein Konto erforderlich. Sie sind für richtige Angaben und den Schutz Ihres Passworts verantwortlich.' },
-      { title: 'Preise und Bestätigung', body: 'Preise werden in Euro angegeben. Solange Online-Zahlung nicht aktiv ist, gilt die Warenkorbbestätigung als Anfrage. Verbindlich wird die Bestellung nach Bestätigung von Produkten, Lieferung und Bedingungen.' },
-      { title: 'Lieferung', body: 'Fristen und Bedingungen hängen von Produkt, Zielort, Zufahrt und Abladen ab. Endgültige Angaben werden vor der Bestätigung mitgeteilt.' },
-      { title: 'Widerruf, Gewährleistung und Streitfälle', body: 'Gesetzliche Widerrufs- und Gewährleistungsrechte gelten abhängig vom Produkt. Kontaktieren Sie zunächst contact@braviko.fr für eine einvernehmliche Lösung.' },
-    ] },
-    it: { eyebrow: 'BRAVIKO / VENDITA E UTILIZZO', title: 'Condizioni generali', intro: 'Queste condizioni regolano l’uso del sito e le richieste d’ordine inviate a Braviko.', updated: 'Aggiornato il 1 ottobre 2026', sections: [
-      { title: 'Account e ordine', body: 'Il carrello è utilizzabile senza account. Per registrare una richiesta d’ordine è necessario accedere. Sei responsabile dell’esattezza dei dati e della riservatezza della password.' },
-      { title: 'Prezzi e conferma', body: 'I prezzi sono in euro. Finché il pagamento online non è attivo, la conferma del carrello è una richiesta e non un pagamento. L’ordine diventa definitivo dopo la conferma di prodotti, consegna e condizioni.' },
-      { title: 'Consegna', body: 'Tempi e condizioni dipendono dal prodotto, dalla destinazione, dall’accesso e dallo scarico. Le informazioni definitive sono comunicate prima della conferma.' },
-      { title: 'Recesso, garanzie e controversie', body: 'Si applicano i diritti di recesso e le garanzie previsti dalla legge. Contatta prima contact@braviko.fr per cercare una soluzione amichevole.' },
-    ] },
+    fr: {
+      eyebrow: 'BRAVIKO / CONDITIONS DE VENTE',
+      title: 'Conditions générales de vente',
+      intro: 'Ces conditions s’appliquent à toute commande passée sur le site braviko.fr à destination de la France métropolitaine.',
+      updated: 'Mise à jour : 14 novembre 2026',
+      sections: [
+        { title: 'Commande sans compte ou avec compte', body: 'Vous pouvez commander librement en mode invité sans créer de compte préalable, ou vous connecter à votre espace client pour conserver l’historique de vos commandes et factures. Toute commande suppose l’acceptation des présentes conditions.' },
+        { title: 'Prix & modalités de paiement', body: 'Les prix sont affichés en euros TTC, hors frais de livraison offerts en France métropolitaine. Le règlement s’effectue en ligne par carte bancaire via Stripe (confirmation immédiate) ou par virement bancaire SEPA (expédition déclenchée à réception des fonds).' },
+        { title: 'Expédition, prise de RDV & réception', body: 'Les articles en stock sont expédiés sous 48 h ouvrées. La livraison intervient généralement sous 3 à 8 jours ouvrés en France métropolitaine. Pour les palettes et appareils lourds, le transporteur fixe un rendez-vous préalable et décharge au hayon sur sol stable et carrossable. Tout défaut ou avarie doit être signalé par réserves précises sur le bon de livraison.' },
+        { title: 'Droit de rétractation (14 jours) & garanties', body: 'Conformément aux articles L221-18 et suivants du Code de la consommation, vous disposez de 14 jours calendaires à compter de la réception pour exercer votre droit de rétractation auprès de contact@braviko.fr, sur un produit non utilisé, complet et dans son emballage d’origine. Tous nos équipements bénéficient en outre de la garantie légale de conformité (2 ans), de la garantie des vices cachés et des garanties constructeurs indiquées sur les fiches.' },
+      ],
+    },
+    de: {
+      eyebrow: 'BRAVIKO / AGB',
+      title: 'Allgemeine Geschäftsbedingungen',
+      intro: 'Diese Bedingungen gelten für alle Bestellungen über braviko.fr.',
+      updated: 'Aktualisiert am 14. November 2026',
+      sections: [
+        { title: 'Bestellung als Gast oder mit Konto', body: 'Bestellungen sind ohne vorherige Registrierung als Gast oder über ein Kundenkonto möglich.' },
+        { title: 'Preise & Zahlung', body: 'Alle Preise in Euro inkl. MwSt. Der Versand innerhalb des französischen Festlands ist kostenlos. Zahlung per Karte über Stripe oder SEPA-Überweisung.' },
+        { title: 'Versand & Annahme', body: 'Lagerware wird binnen 48 Werkstunden versendet (Lieferzeit ca. 3–8 Werktage nach Terminabstimmung). Transportschäden sind bei Annahme konkret auf dem Lieferschein zu vermerken.' },
+        { title: 'Widerruf (14 Tage) & Gewährleistung', body: 'Sie haben ein 14-tägiges gesetzliches Widerrufsrecht für unbenutzte Artikel in Originalverpackung (contact@braviko.fr). Es gelten die gesetzlichen sowie herstellerspezifischen Gewährleistungsrechte.' },
+      ],
+    },
+    it: {
+      eyebrow: 'BRAVIKO / CONDIZIONI DI VENDITA',
+      title: 'Condizioni generali di vendita',
+      intro: 'Le presenti condizioni regolano gli acquisti effettuati sul sito braviko.fr.',
+      updated: 'Aggiornato il 14 novembre 2026',
+      sections: [
+        { title: 'Ordine ospite o con account', body: 'È possibile acquistare direttamente come ospite senza registrazione oppure tramite il proprio account cliente.' },
+        { title: 'Prezzi e pagamenti', body: 'I prezzi sono espressi in euro IVA inclusa con spedizione gratuita in Francia continentale. Pagamento immediato con carta via Stripe o tramite bonifico SEPA.' },
+        { title: 'Spedizione e consegna', body: 'Spedizione in 48 ore lavorative per i prodotti a stock; consegna in 3–8 giorni lavorativi previo appuntamento con il corriere e scarico con sponda idraulica.' },
+        { title: 'Recesso (14 giorni) e garanzie', body: 'Diritto di recesso entro 14 giorni dalla consegna per articoli integri e non utilizzati (contact@braviko.fr), oltre alle garanzie legali e del produttore.' },
+      ],
+    },
   },
   cookies: {
-    fr: { eyebrow: 'BRAVIKO / NAVIGATION', title: 'Politique relative aux cookies', intro: 'Braviko utilise le stockage strictement nécessaire au fonctionnement du panier, de la langue et de la session.', updated: 'Mise à jour : 1 octobre 2026', sections: [
-      { title: 'Stockage nécessaire', body: 'Le panier et la langue choisie sont conservés localement dans votre navigateur. Supabase utilise les éléments techniques nécessaires pour maintenir une session sécurisée.' },
-      { title: 'Mesure et publicité', body: 'Aucun cookie publicitaire ou de profilage n’est nécessaire au fonctionnement actuel du site. Si un outil de mesure optionnel est ajouté, votre choix sera demandé avant son activation lorsque la réglementation l’exige.' },
-      { title: 'Vos choix', body: 'Vous pouvez effacer les données du site depuis les réglages de votre navigateur. La suppression du stockage nécessaire peut vider le panier ou vous déconnecter.' },
-    ] },
-    de: { eyebrow: 'BRAVIKO / NAVIGATION', title: 'Cookie-Richtlinie', intro: 'Braviko nutzt nur Speicher, der für Warenkorb, Sprache und Sitzung erforderlich ist.', updated: 'Aktualisiert am 1. Oktober 2026', sections: [
-      { title: 'Erforderlicher Speicher', body: 'Warenkorb und Sprache werden lokal im Browser gespeichert. Supabase nutzt technische Elemente für eine sichere Sitzung.' },
-      { title: 'Analyse und Werbung', body: 'Für den aktuellen Betrieb sind keine Werbe- oder Profiling-Cookies erforderlich. Bei optionaler Analyse wird vorher eine Einwilligung eingeholt, sofern vorgeschrieben.' },
-      { title: 'Ihre Auswahl', body: 'Sie können Websitedaten im Browser löschen. Dadurch können Warenkorb und Anmeldung verloren gehen.' },
-    ] },
-    it: { eyebrow: 'BRAVIKO / NAVIGAZIONE', title: 'Politica sui cookie', intro: 'Braviko usa solo l’archiviazione necessaria per carrello, lingua e sessione.', updated: 'Aggiornato il 1 ottobre 2026', sections: [
-      { title: 'Archiviazione necessaria', body: 'Carrello e lingua vengono salvati localmente nel browser. Supabase usa gli elementi tecnici necessari per mantenere una sessione sicura.' },
-      { title: 'Misurazione e pubblicità', body: 'Il sito non richiede attualmente cookie pubblicitari o di profilazione. Se verrà aggiunta una misurazione opzionale, chiederemo il consenso quando previsto.' },
-      { title: 'Le tue scelte', body: 'Puoi cancellare i dati del sito dalle impostazioni del browser. La cancellazione può svuotare il carrello o disconnetterti.' },
-    ] },
+    fr: {
+      eyebrow: 'BRAVIKO / COOKIES & TRACEURS',
+      title: 'Politique relative aux cookies',
+      intro: 'Informations sur le stockage local, les traceurs techniques et la mesure d’audience publicitaire utilisés sur braviko.fr.',
+      updated: 'Mise à jour : 14 novembre 2026',
+      sections: [
+        { title: 'Traceurs strictement nécessaires', body: 'Votre navigateur enregistre localement l’état du panier et la langue sélectionnée. Supabase et Stripe utilisent également des traceurs techniques indispensables à la sécurité de session et au traitement du paiement.' },
+        { title: 'Mesure de conversion publicitaire', body: 'La boutique intègre la balise Google Ads (identifiant AW-18503582950) afin de mesurer l’efficacité des campagnes d’annonces sans revente de données personnelles à des tiers.' },
+        { title: 'Gestion depuis votre navigateur', body: 'Vous pouvez à tout moment bloquer, limiter ou effacer les cookies et données de site dans les paramètres de votre navigateur. La suppression du stockage technique peut réinitialiser le panier en cours.' },
+      ],
+    },
+    de: {
+      eyebrow: 'BRAVIKO / COOKIES',
+      title: 'Cookie-Richtlinie',
+      intro: 'Informationen zur Speicherung von Warenkorbdaten, Sicherheits-Cookies und Werbemessung.',
+      updated: 'Aktualisiert am 14. November 2026',
+      sections: [
+        { title: 'Technisch notwendiger Speicher', body: 'Warenkorb und Sprache werden lokal gespeichert. Supabase und Stripe nutzen technische Sitzungs- und Sicherheits-Cookies.' },
+        { title: 'Conversion-Messung', body: 'Für die Auswertung unserer Anzeigen wird das Google-Ads-Tag (AW-18503582950) eingesetzt.' },
+        { title: 'Browsereinstellungen', body: 'Sie können Cookies jederzeit in den Einstellungen Ihres Browsers löschen oder einschränken.' },
+      ],
+    },
+    it: {
+      eyebrow: 'BRAVIKO / COOKIE',
+      title: 'Politica sui cookie',
+      intro: 'Dettagli su archiviazione tecnica, sicurezza dei pagamenti e misurazione pubblicitaria.',
+      updated: 'Aggiornato il 14 novembre 2026',
+      sections: [
+        { title: 'Archiviazione necessaria', body: 'Il carrello e la lingua vengono salvati localmente. Supabase e Stripe utilizzano cookie tecnici essenziali per sessione e pagamento.' },
+        { title: 'Misurazione pubblicitaria', body: 'Il sito utilizza il tag Google Ads (AW-18503582950) per valutare l’efficacia delle campagne senza cessione di dati a terzi.' },
+        { title: 'Gestione del browser', body: 'Puoi limitare o eliminare i cookie dalle impostazioni del browser in qualsiasi momento.' },
+      ],
+    },
   },
 }

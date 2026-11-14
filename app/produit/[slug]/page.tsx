@@ -16,36 +16,10 @@ import { useToast } from '@/components/Toast'
 import { useI18n } from '@/lib/i18n-context'
 import { categoryLabel, productLabel } from '@/data/product-labels'
 import { uiCopy } from '@/data/ui-copy'
-import { getProductReviews } from '@/data/product-reviews'
 import { getProductVideo, getYouTubeEmbedUrl, getYouTubeThumbnail } from '@/data/product-videos'
 import { getProductRichSpec } from '@/data/product-rich-specs'
 import { computeDynamicUnitPriceLabel } from '@/lib/unit-price'
 import { PaymentBadgesRow, SecureShieldIcon, DeliveryTruckIcon } from '@/components/PaymentLogos'
-
-function StarRatingRow({ rating, size = 15 }: { rating: number; size?: number }) {
-  const filledCount = Math.max(0, Math.min(5, Math.round(rating)))
-  return (
-    <span className="inline-flex items-center gap-[2px]" aria-label={`${filledCount} sur 5`}>
-      {Array.from({ length: 5 }, (_, index) => {
-        const filled = index < filledCount
-        return (
-          <svg
-            key={index}
-            width={size}
-            height={size}
-            viewBox="0 0 20 20"
-            fill={filled ? '#FBBF24' : 'none'}
-            stroke="#B45309"
-            strokeWidth="1.4"
-            aria-hidden="true"
-          >
-            <path d="M10 2.5l2.32 4.7 5.18.75-3.75 3.65.88 5.16L10 14.32l-4.63 2.44.88-5.16L2.5 7.95l5.18-.75L10 2.5z" />
-          </svg>
-        )
-      })}
-    </span>
-  )
-}
 
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
@@ -141,13 +115,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       : []),
   ]
   const selectedMedia = galleryItems[selectedMediaIndex] || galleryItems[0]
-  const productReviews = getProductReviews(product.slug)
-  const reviewCount = productReviews.length
-  const averageRating =
-    reviewCount > 0
-      ? productReviews.reduce((sum, review) => sum + (review.rating ?? 5), 0) / reviewCount
-      : 0
-  const formattedRating = averageRating.toFixed(1).replace('.', ',')
   const dynamicUnitPriceLabel = computeDynamicUnitPriceLabel(
     product,
     currentVariant,
@@ -397,24 +364,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   {localizedProduct.name}
                 </h1>
 
-                {reviewCount > 0 && (
-                  <div className="mt-[10px]">
-                    <a
-                      href="#details-fiche"
-                      onClick={() => setActiveAccordion('reviews')}
-                      className="inline-flex items-center gap-[8px] px-[10px] py-[6px] rounded-[6px] bg-white border border-[#DEDFD6] hover:border-[#FBBF24] transition-colors"
-                    >
-                      <StarRatingRow rating={averageRating} size={16} />
-                      <strong className="text-[13px] font-semibold text-[#252823] tabular-nums">
-                        {formattedRating}/5
-                      </strong>
-                      <span className="text-[12px] text-[#64685F]">
-                        ({reviewCount} avis d’illustration)
-                      </span>
-                    </a>
-                  </div>
-                )}
-
                 <div className="flex items-center gap-[10px] mt-[10px] text-[12px] flex-wrap">
                   <span className="inline-flex items-center gap-[8px] px-[10px] py-[4px] rounded-[4px] bg-[#EEEEE7] text-[#252823] border border-[#DEDFD6] font-medium">
                     <span className="w-[8px] h-[8px] rounded-full bg-[#34483A] shrink-0" aria-hidden="true" />
@@ -426,6 +375,9 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                     </span>
                   )}
                 </div>
+                <p className="mt-[8px] text-[12px] text-[#64685F]">
+                  Livraison offerte en France métropolitaine · Paiement sécurisé Stripe ou virement SEPA · Retour 14 jours
+                </p>
               </div>
 
               <div className="p-[18px] sm:p-[20px] rounded-[8px] bg-white border border-[#DEDFD6]">
@@ -752,38 +704,26 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
               {activeAccordion === 'reviews' && (
                 <div className="pt-[20px] mt-[16px] border-t border-[#DEDFD6]">
-                  {productReviews.length > 0 ? (
-                    <>
-                      <div className="mb-[12px] flex items-center justify-between gap-[12px] flex-wrap">
-                        <span className="text-[12px] text-[#64685F]">
-                          Retours d’illustration catalogue
-                        </span>
-                        <span className="text-[11px] px-[8px] py-[2px] rounded-[4px] bg-[#EEEEE7] text-[#64685F] border border-[#DEDFD6]">
-                          Avis de démonstration
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-[12px]">
-                        {productReviews.map((rev, i) => (
-                          <div key={i} className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                            <div className="mb-[8px]">
-                              <StarRatingRow rating={rev.rating || 5} />
-                            </div>
-                            <p className="text-[13px] text-[#252823] leading-[1.55]">« {rev.text} »</p>
-                            <span className="text-[11px] text-[#64685F] block mt-[8px] font-medium">
-                              {rev.author} {rev.date ? `· ${rev.date}` : ''}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="p-[20px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6] max-w-[60ch]">
-                      <h3 className="font-semibold text-[#252823] text-[14px] mb-[6px]">Contrôle qualité avant expédition</h3>
-                      <p className="text-[13px] text-[#64685F] leading-[1.6]">
-                        Chaque référence sélectionnée par Braviko est vérifiée sur ses caractéristiques techniques, son conditionnement et sa conformité avant départ entrepôt.
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px]">
+                    <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                      <span className="font-semibold text-[#252823] text-[13px] block mb-[6px]">01. Contrôle qualité avant départ</span>
+                      <p className="text-[12px] text-[#64685F] leading-[1.55]">
+                        Chaque référence sélectionnée par Braviko est vérifiée sur son conditionnement, ses caractéristiques techniques et ses accessoires avant remise au transporteur.
                       </p>
                     </div>
-                  )}
+                    <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                      <span className="font-semibold text-[#252823] text-[13px] block mb-[6px]">02. Garanties légales & constructeurs</span>
+                      <p className="text-[12px] text-[#64685F] leading-[1.55]">
+                        {richSpec?.warranty ? `${richSpec.warranty}. ` : ''}Tous nos appareils et équipements neufs bénéficient de la garantie légale de conformité de 2 ans.
+                      </p>
+                    </div>
+                    <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                      <span className="font-semibold text-[#252823] text-[13px] block mb-[6px]">03. Rétractation & support 14 jours</span>
+                      <p className="text-[12px] text-[#64685F] leading-[1.55]">
+                        Droit de rétractation légal de 14 jours calendaires après réception sur produit non utilisé et complet, avec service client joignable sur contact@braviko.fr.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

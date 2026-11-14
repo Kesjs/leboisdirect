@@ -6,22 +6,173 @@ import Footer from '@/components/Footer'
 import { useI18n } from '@/lib/i18n-context'
 
 const copy = {
-  fr: { eyebrow: 'CONTACT', title: 'Parlons de votre besoin.', intro: 'Une question sur un produit, une livraison ou un équipement ? Écrivez-nous, nous vous répondrons avec les informations utiles.', emailLabel: 'Écrire par e-mail', emailIntro: 'Pour une demande de bois ou de matériel agricole, indiquez votre besoin et les détails importants.', formTitle: 'Envoyer un message', name: 'Nom', email: 'E-mail', subject: 'Objet', message: 'Votre message', send: 'Préparer mon e-mail', note: 'Votre logiciel de messagerie s’ouvrira avec le message préparé.', sent: 'Votre message est prêt à être envoyé.' },
-  de: { eyebrow: 'KONTAKT', title: 'Sprechen wir über Ihren Bedarf.', intro: 'Fragen zu einem Produkt, zur Lieferung oder zu Ausrüstung? Schreiben Sie uns, wir antworten mit den wichtigen Informationen.', emailLabel: 'Per E-Mail schreiben', emailIntro: 'Für eine Anfrage zu Brennholz oder landwirtschaftlicher Ausrüstung nennen Sie bitte Ihren Bedarf und die wichtigsten Details.', formTitle: 'Nachricht senden', name: 'Name', email: 'E-Mail', subject: 'Betreff', message: 'Ihre Nachricht', send: 'E-Mail vorbereiten', note: 'Ihr E-Mail-Programm öffnet sich mit der vorbereiteten Nachricht.', sent: 'Ihre Nachricht ist bereit zum Senden.' },
-  it: { eyebrow: 'CONTATTI', title: 'Parliamo delle tue esigenze.', intro: 'Domande su un prodotto, una consegna o un’attrezzatura? Scrivici e ti risponderemo con le informazioni utili.', emailLabel: 'Scrivici via email', emailIntro: 'Per una richiesta di legna o attrezzatura agricola, indica le tue esigenze e i dettagli importanti.', formTitle: 'Invia un messaggio', name: 'Nome', email: 'Email', subject: 'Oggetto', message: 'Il tuo messaggio', send: 'Prepara email', note: 'Il tuo programma email si aprirà con il messaggio preparato.', sent: 'Il tuo messaggio è pronto per essere inviato.' },
+  fr: {
+    eyebrow: 'CONTACT',
+    title: 'Parlons de votre projet de chauffage.',
+    intro: 'Une question sur le choix du combustible, la puissance d’un poêle ou l’organisation de la livraison ? Écrivez-nous, notre équipe vous répond sous 24 h ouvrées.',
+    emailLabel: 'Support client Braviko',
+    emailIntro: 'Pour toute demande sur nos bûches, granulés, poêles, inserts ou braseros, précisez le produit souhaité et votre commune de livraison.',
+    hours: 'Réponse par e-mail du lundi au vendredi (délai habituel : moins de 24 h ouvrées).',
+    formTitle: 'Envoyer un message',
+    name: 'Nom complet',
+    email: 'Adresse e-mail',
+    orderRef: 'Référence commande ou produit (facultatif)',
+    subject: 'Objet de votre demande',
+    message: 'Votre message',
+    send: 'Envoyer le message',
+    sending: 'Envoi en cours…',
+    sentSuccess: 'Votre message a bien été enregistré. Notre équipe vous répondra très rapidement par e-mail.',
+    errorUnavailable: 'Le formulaire direct est momentanément indisponible. Vous pouvez envoyer votre message en un clic via votre messagerie.',
+    errorGeneric: 'Vérifiez les champs saisis et réessayez, ou utilisez votre logiciel de messagerie.',
+    mailtoFallback: 'Ouvrir dans ma messagerie',
+  },
+  de: {
+    eyebrow: 'KONTAKT',
+    title: 'Sprechen wir über Ihr Heizprojekt.',
+    intro: 'Fragen zur Brennstoffwahl, zur Ofenleistung oder zur Anlieferung per Spedition? Schreiben Sie uns, wir antworten innerhalb von 24 Werktagen-Stunden.',
+    emailLabel: 'Braviko Kundendienst',
+    emailIntro: 'Für Anfragen zu Brennholz, Pellets, Kaminöfen, Heizeinsätzen oder Feuerschalen geben Sie bitte das Produkt und Ihre Postleitzahl an.',
+    hours: 'Antwort per E-Mail von Montag bis Freitag (üblich innerhalb von 24 Stunden).',
+    formTitle: 'Nachricht senden',
+    name: 'Vollständiger Name',
+    email: 'E-Mail-Adresse',
+    orderRef: 'Bestell- oder Produktreferenz (optional)',
+    subject: 'Betreff',
+    message: 'Ihre Nachricht',
+    send: 'Nachricht senden',
+    sending: 'Wird gesendet…',
+    sentSuccess: 'Ihre Nachricht wurde erfolgreich übermittelt. Unser Team antwortet Ihnen zeitnah per E-Mail.',
+    errorUnavailable: 'Das Direktformular ist vorübergehend nicht verfügbar. Nutzen Sie den Button unten für den Versand per E-Mail.',
+    errorGeneric: 'Bitte prüfen Sie Ihre Eingaben oder senden Sie Ihre Anfrage per E-Mail.',
+    mailtoFallback: 'E-Mail-Programm öffnen',
+  },
+  it: {
+    eyebrow: 'CONTATTI',
+    title: 'Parliamo del tuo progetto di riscaldamento.',
+    intro: 'Domande su legna, pellet, potenza di una stufa o accesso per la consegna? Scrivici, il nostro team risponde entro 24 ore lavorative.',
+    emailLabel: 'Assistenza clienti Braviko',
+    emailIntro: 'Per richieste su legna da ardere, pellet, stufe, inserti o bracieri, indica il prodotto e il comune di consegna.',
+    hours: 'Risposta via email dal lunedì al venerdì (solitamente entro 24 ore lavorative).',
+    formTitle: 'Invia un messaggio',
+    name: 'Nome e cognome',
+    email: 'Indirizzo email',
+    orderRef: 'Riferimento ordine o prodotto (facoltativo)',
+    subject: 'Oggetto della richiesta',
+    message: 'Il tuo messaggio',
+    send: 'Invia il messaggio',
+    sending: 'Invio in corso…',
+    sentSuccess: 'Il tuo messaggio è stato registrato. Il nostro team ti risponderà al più presto via email.',
+    errorUnavailable: 'Il modulo diretto è temporaneamente non disponibile. Invia il messaggio con un clic tramite email.',
+    errorGeneric: 'Controlla i campi inseriti e riprova, oppure invia tramite il tuo programma di posta.',
+    mailtoFallback: 'Apri nel programma email',
+  },
 } as const
 
 export default function ContactPage() {
   const { locale } = useI18n()
   const c = copy[locale]
-  const [sent, setSent] = useState(false)
-  function submit(event: FormEvent<HTMLFormElement>) {
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'sent' | 'unavailable' | 'error'>('idle')
+  const [fallbackMailto, setFallbackMailto] = useState('')
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const data = new FormData(event.currentTarget)
-    const subject = String(data.get('subject') || '')
-    const body = `${String(data.get('message') || '')}\n\n${String(data.get('name') || '')}\n${String(data.get('email') || '')}`
-    window.location.href = `mailto:contact@braviko.fr?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-    setSent(true)
+    const form = event.currentTarget
+    const data = new FormData(form)
+    const name = String(data.get('name') || '').trim()
+    const email = String(data.get('email') || '').trim()
+    const orderRef = String(data.get('orderRef') || '').trim()
+    const subject = String(data.get('subject') || '').trim()
+    const message = String(data.get('message') || '').trim()
+
+    const mailBody = [
+      message,
+      orderRef ? `Référence : ${orderRef}` : '',
+      `De : ${name} (${email})`,
+    ]
+      .filter(Boolean)
+      .join('\n\n')
+    const mailtoHref = `mailto:contact@braviko.fr?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailBody)}`
+    setFallbackMailto(mailtoHref)
+    setStatus('submitting')
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, orderRef, subject, message, locale }),
+      })
+      if (response.ok) {
+        form.reset()
+        setStatus('sent')
+        return
+      }
+      const payload = await response.json().catch(() => ({}))
+      if (response.status === 503 || payload?.error === 'contact_storage_unavailable') {
+        setStatus('unavailable')
+      } else {
+        setStatus('error')
+      }
+    } catch {
+      setStatus('unavailable')
+    }
   }
-  return <><Header /><main id="main-content" className="bk-home bk-container bk-contact-page"><header><p className="bk-eyebrow">{c.eyebrow}</p><h1 className="bk-title">{c.title}</h1><p className="bk-lead">{c.intro}</p></header><div className="bk-contact-layout"><section className="bk-contact-aside" aria-labelledby="contact-email-title"><p className="bk-eyebrow">{c.emailLabel}</p><h2 id="contact-email-title">contact@braviko.fr</h2><p>{c.emailIntro}</p><a className="bk-text-link" href="mailto:contact@braviko.fr">contact@braviko.fr <span aria-hidden="true">↗</span></a></section><form className="bk-contact-form" onSubmit={submit}><div className="bk-contact-form-heading"><p className="bk-eyebrow">BRAVIKO</p><h2>{c.formTitle}</h2></div><div className="bk-contact-fields"><label>{c.name}<input name="name" required autoComplete="name" /></label><label>{c.email}<input name="email" type="email" required autoComplete="email" /></label></div><label>{c.subject}<input name="subject" required /></label><label>{c.message}<textarea name="message" required rows={7} /></label><button className="bk-button" type="submit">{c.send}<span aria-hidden="true">↗</span></button>{sent && <p className="bk-form-message" role="status">{c.sent} {c.note}</p>}</form></div></main><Footer /></>
+
+  return (
+    <>
+      <Header />
+      <main id="main-content" className="bk-home bk-container bk-contact-page">
+        <header>
+          <p className="bk-eyebrow">{c.eyebrow}</p>
+          <h1 className="bk-title">{c.title}</h1>
+          <p className="bk-lead">{c.intro}</p>
+        </header>
+        <div className="bk-contact-layout">
+          <section className="bk-contact-aside" aria-labelledby="contact-email-title">
+            <p className="bk-eyebrow">{c.emailLabel}</p>
+            <h2 id="contact-email-title">contact@braviko.fr</h2>
+            <p>{c.emailIntro}</p>
+            <p>{c.hours}</p>
+            <a className="bk-text-link" href="mailto:contact@braviko.fr">
+              contact@braviko.fr <span aria-hidden="true">↗</span>
+            </a>
+          </section>
+          <form className="bk-contact-form" onSubmit={submit}>
+            <div className="bk-contact-form-heading">
+              <p className="bk-eyebrow">BRAVIKO</p>
+              <h2>{c.formTitle}</h2>
+            </div>
+            <div className="bk-contact-fields">
+              <label>{c.name}<input name="name" required autoComplete="name" /></label>
+              <label>{c.email}<input name="email" type="email" required autoComplete="email" /></label>
+            </div>
+            <label>{c.orderRef}<input name="orderRef" /></label>
+            <label>{c.subject}<input name="subject" required /></label>
+            <label>{c.message}<textarea name="message" required minLength={5} rows={6} /></label>
+            <button className="bk-button" type="submit" disabled={status === 'submitting'}>
+              {status === 'submitting' ? c.sending : c.send}
+              <span aria-hidden="true">↗</span>
+            </button>
+            {status === 'sent' && (
+              <p className="bk-form-message" role="status">
+                {c.sentSuccess}
+              </p>
+            )}
+            {(status === 'unavailable' || status === 'error') && (
+              <div className="bk-form-error" role="alert">
+                <p>{status === 'unavailable' ? c.errorUnavailable : c.errorGeneric}</p>
+                {fallbackMailto && (
+                  <p style={{ marginTop: '10px' }}>
+                    <a className="bk-text-link" href={fallbackMailto}>
+                      {c.mailtoFallback} <span aria-hidden="true">↗</span>
+                    </a>
+                  </p>
+                )}
+              </div>
+            )}
+          </form>
+        </div>
+      </main>
+      <Footer />
+    </>
+  )
 }
