@@ -16,7 +16,7 @@
 .bk-toast p { margin-top: 4px; color: var(--bk-muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
 .bk-toast button { flex-shrink: 0; color: var(--bk-muted); font-size: 22px; line-height: 1; }
 @keyframes bk-toast-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes bk-route-enter { from { opacity: .001; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bk-route-enter { from { opacity: .001; } to { opacity: 1; } }
 .bk-navigation-progress.is-loading { opacity: 1; transform: scaleX(.72); animation: bk-progress 1.2s ease-in-out infinite; }
 @keyframes bk-progress { 0% { transform: translateX(-35%) scaleX(.55); } 100% { transform: translateX(100%) scaleX(.55); } }
 .bk-page-loading { min-height: 100dvh; padding: 140px max(20px, 7vw) 80px; background: var(--bk-canvas); }

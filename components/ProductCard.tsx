@@ -19,18 +19,35 @@ export default function ProductCard({ product }: { product: Product }) {
   const [animating, setAnimating] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [isSquareOrPortrait, setIsSquareOrPortrait] = useState(false)
-  const [displayImage, setDisplayImage] = useState(product.image)
+  const [displayImage, setDisplayImage] = useState(product.image || fallbackImage)
   const timer = useRef<ReturnType<typeof setTimeout>>()
+  const imgRef = useRef<HTMLImageElement | null>(null)
+  const prevPropImage = useRef(product.image)
   const copy = bravikoCopy[locale]
   const label = productLabel(product, locale)
   const variant = product.variants?.[0]
   const price = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(variant?.price ?? product.price)
+  const markImageReady = (img: HTMLImageElement | null) => {
+    if (!img) return
+    if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+      setIsSquareOrPortrait(img.naturalWidth / img.naturalHeight < 1.15)
+    }
+    if (img.complete && img.naturalWidth > 0) {
+      setImageLoaded(true)
+    }
+  }
   useEffect(() => () => clearTimeout(timer.current), [])
   useEffect(() => {
-    setDisplayImage(product.image || fallbackImage)
-    setImageLoaded(false)
-    setIsSquareOrPortrait(false)
+    if (prevPropImage.current !== product.image) {
+      prevPropImage.current = product.image
+      setDisplayImage(product.image || fallbackImage)
+      setImageLoaded(false)
+      setIsSquareOrPortrait(false)
+    }
   }, [product.image])
+  useEffect(() => {
+    markImageReady(imgRef.current)
+  }, [displayImage])
   const add = () => {
     addItem(product, 1, variant?.id)
     showToast({ title: copy.added, description: `${label.name} è stato aggiunto al carrello.` })
@@ -53,17 +70,16 @@ export default function ProductCard({ product }: { product: Product }) {
         <div className={'bk-product-photo' + (imageLoaded ? ' is-loaded' : '') + (isSquareOrPortrait ? ' is-contain' : '')}>
           {!imageLoaded && <span className="bk-image-placeholder" aria-hidden="true" />}
           <Image
+            ref={imgRef}
             onLoad={(event) => {
-              const img = event.currentTarget
-              if (img.naturalWidth && img.naturalHeight) {
-                setIsSquareOrPortrait(img.naturalWidth / img.naturalHeight < 1.15)
-              }
+              markImageReady(event.currentTarget)
               setImageLoaded(true)
             }}
             onError={handleImageError}
             src={displayImage}
             alt={label.name}
             fill
+            loading="eager"
             sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className={isSquareOrPortrait ? 'bk-image bk-product-front bk-image-contain' : 'bk-image bk-product-front'}
             quality={70}

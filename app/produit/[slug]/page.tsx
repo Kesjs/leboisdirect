@@ -959,76 +959,77 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
           </section>
         )}
 
-        {isZoomOpen && selectedMedia?.type === 'image' && (
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={localizedProduct.name}
-            className="fixed inset-0 z-50 bg-[#252823]/85 flex items-center justify-center p-[16px] backdrop-blur-sm"
-            onClick={() => setIsZoomOpen(false)}
-          >
-            <div
-              className="relative max-w-4xl max-h-[90dvh] w-full h-full flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                type="button"
-                onClick={() => setIsZoomOpen(false)}
-                className="absolute top-[12px] right-[12px] z-10 w-[44px] h-[44px] rounded-full bg-white border border-[#DEDFD6] text-[#252823] hover:bg-[#EEEEE7] flex items-center justify-center transition-colors"
-                aria-label="Chiudi ingrandimento"
-              >
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
-                  <path d="M4 4l10 10M14 4L4 14" strokeLinecap="round" />
-                </svg>
-              </button>
-              <div className="relative w-full h-full">
-                <Image
-                  key={selectedMedia.src}
-                  src={selectedMedia.src}
-                  alt={localizedProduct.name}
-                  fill
-                  className="object-contain"
-                  sizes="100vw"
-                  quality={90}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Espace pour que la barre mobile ne cache pas le bas de page */}
-        <div className="h-[72px] lg:hidden" aria-hidden="true" />
-
-        {/* Barre d'achat collante (mobile uniquement) */}
-        <div
-          aria-hidden={!showStickyBar}
-          className={`lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white border-t border-[#DEDFD6] px-[16px] pt-[10px] flex items-center gap-[12px] transition-transform duration-200 ${
-            showStickyBar ? 'translate-y-0' : 'translate-y-full pointer-events-none'
-          }`}
-          style={{ paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))' }}
-        >
-          <div className="min-w-0 shrink-0 tabular-nums">
-            <div className="text-[18px] font-semibold text-[#252823] leading-tight">
-              {formatPrice(currentPrice * quantity)}
-            </div>
-            <div className="text-[11px] text-[#64685F]">IVA incl.</div>
-          </div>
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            tabIndex={showStickyBar ? 0 : -1}
-            className="min-h-[48px] flex-1 px-[16px] rounded-[4px] bg-[#252823] hover:bg-[#995033] text-white font-medium text-[14px] transition-colors active:translate-y-[1px] flex items-center justify-center gap-[8px]"
-          >
-            {added && (
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                <path d="m3.5 8.5 3 3 6-6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            )}
-            <span>{added ? 'Aggiunto al carrello' : 'Aggiungi al carrello'}</span>
-          </button>
-        </div>
       </main>
       <Footer />
+
+      {/* Espace pour que la barre mobile ne cache pas le bas de page */}
+      <div className="h-[72px] lg:hidden" aria-hidden="true" />
+
+      {isZoomOpen && selectedMedia?.type === 'image' && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={localizedProduct.name}
+          className="fixed inset-0 z-50 bg-[#252823]/85 flex items-center justify-center p-[16px] backdrop-blur-sm"
+          onClick={() => setIsZoomOpen(false)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90dvh] w-full h-full flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setIsZoomOpen(false)}
+              className="absolute top-[12px] right-[12px] z-10 w-[44px] h-[44px] rounded-full bg-white border border-[#DEDFD6] text-[#252823] hover:bg-[#EEEEE7] flex items-center justify-center transition-colors"
+              aria-label="Chiudi ingrandimento"
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+                <path d="M4 4l10 10M14 4L4 14" strokeLinecap="round" />
+              </svg>
+            </button>
+            <div className="relative w-full h-full">
+              <Image
+                key={selectedMedia.src}
+                src={selectedMedia.src}
+                alt={localizedProduct.name}
+                fill
+                className="object-contain"
+                sizes="100vw"
+                quality={90}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Barre d'achat collante (mobile uniquement) */}
+      <div
+        aria-hidden={!showStickyBar}
+        className={`lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white border-t border-[#DEDFD6] px-[16px] pt-[10px] flex items-center gap-[12px] transition-transform duration-200 ${
+          showStickyBar ? 'translate-y-0' : 'translate-y-full pointer-events-none'
+        }`}
+        style={{ paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))' }}
+      >
+        <div className="min-w-0 shrink-0 tabular-nums">
+          <div className="text-[18px] font-semibold text-[#252823] leading-tight">
+            {formatPrice(currentPrice * quantity)}
+          </div>
+          <div className="text-[11px] text-[#64685F]">IVA incl.</div>
+        </div>
+        <button
+          type="button"
+          onClick={handleAddToCart}
+          tabIndex={showStickyBar ? 0 : -1}
+          className="min-h-[48px] flex-1 px-[16px] rounded-[4px] bg-[#252823] hover:bg-[#995033] text-white font-medium text-[14px] transition-colors active:translate-y-[1px] flex items-center justify-center gap-[8px]"
+        >
+          {added && (
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+              <path d="m3.5 8.5 3 3 6-6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+          <span>{added ? 'Aggiunto al carrello' : 'Aggiungi al carrello'}</span>
+        </button>
+      </div>
     </>
   )
 }
