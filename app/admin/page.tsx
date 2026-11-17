@@ -10,6 +10,10 @@ import CatalogWorkspace, {
   AdminProduct,
   ProductValues,
 } from "@/components/admin/CatalogWorkspace";
+import MessagesWorkspace, {
+  AdminContactMessage,
+  ContactMessageStatus,
+} from "@/components/admin/MessagesWorkspace";
 import PageSkeleton from "@/components/PageSkeleton";
 
 type CatalogDraft = {
@@ -52,6 +56,12 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [catalogDraft, setCatalogDraft] = useState<CatalogDraft | null>(null);
   const [importing, setImporting] = useState(false);
+  const [activeTab, setActiveTab] = useState<"catalog" | "messages">("catalog");
+  const [contactMessages, setContactMessages] = useState<AdminContactMessage[]>(
+    [],
+  );
+  const [messagesLoading, setMessagesLoading] = useState(false);
+  const [messagesError, setMessagesError] = useState("");
   const checkAccess = useCallback(async () => {
     const timeout = new Promise<never>((_, reject) =>
       window.setTimeout(
@@ -142,12 +152,66 @@ export default function AdminPage() {
     setProducts(mapped);
     setCategories((categoryData || []) as AdminCategory[]);
   }, []);
+  const loadMessages = useCallback(async () => {
+    setMessagesLoading(true);
+    setMessagesError("");
+    try {
+      const response = await fetch("/api/admin/contact-messages", {
+        cache: "no-store",
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        messages?: AdminContactMessage[];
+        error?: string;
+      };
+      if (!response.ok) {
+        setMessagesError(
+          payload.error || "Impossible de charger les messages clients.",
+        );
+        return;
+      }
+      setContactMessages(payload.messages || []);
+    } catch {
+      setMessagesError("Impossible de charger les messages clients.");
+    } finally {
+      setMessagesLoading(false);
+    }
+  }, []);
+  const updateMessageStatus = useCallback(
+    async (id: string, status: ContactMessageStatus) => {
+      setMessagesError("");
+      const response = await fetch("/api/admin/contact-messages", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        message?: AdminContactMessage;
+        error?: string;
+      };
+      if (!response.ok || !payload.message) {
+        setMessagesError(
+          payload.error || "Impossible de mettre à jour ce message.",
+        );
+        return;
+      }
+      const updated = payload.message;
+      setContactMessages((current) =>
+        current.map((item) => (item.id === updated.id ? updated : item)),
+      );
+    },
+    [],
+  );
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("tab") === "messages") setActiveTab("messages");
     checkAccess();
   }, [checkAccess]);
   useEffect(() => {
-    if (authorized) loadCatalog();
-  }, [authorized, loadCatalog]);
+    if (authorized) {
+      loadCatalog();
+      loadMessages();
+    }
+  }, [authorized, loadCatalog, loadMessages]);
   async function uploadImages(
     productId: string,
     files: File[],
@@ -597,27 +661,80 @@ export default function AdminPage() {
               <span className="px-3 py-2.5 text-white/80 sm:px-4">
                 {categories.length} catégories
               </span>
-              <span className="px-3 py-2.5 text-white/80 sm:px-4">
-                Images avec aperçu
-              </span>
+              <button
+                type="button"
+                onClick={() => setActiveTab("messages")}
+                className="px-3 py-2.5 text-left text-white/85 transition hover:bg-white/10 sm:px-4"
+              >
+                {contactMessages.filter((m) => m.status === "new").length} nouveau(x) message(s)
+              </button>
             </div>
           </div>
         </section>
       </div>
-      <div className="admin-container mx-auto px-4 py-6 sm:px-8 sm:py-10">
-        <CatalogWorkspace
-          products={products}
-          categories={categories}
-          error={error}
-          message={message}
-          onCreate={createProduct}
-          onSave={saveProduct}
-          onDelete={deleteProduct}
-          onImportFile={readCatalogFile}
-          catalogDraft={catalogDraft}
-          importing={importing}
-          onImport={importCatalogDraft}
-        />
+      <div className="admin-container mx-auto px-4 pt-6 sm:px-8">
+        <div
+          className="inline-flex rounded-[12px] border border-hairline bg-white p-1"
+          role="tablist"
+          aria-label="Sections d’administration"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "catalog"}
+            onClick={() => setActiveTab("catalog")}
+            className={`rounded-[9px] px-4 py-2 text-xs font-medium transition sm:text-sm ${
+              activeTab === "catalog"
+                ? "bg-charcoal text-white"
+                : "text-smoke hover:text-charcoal"
+            }`}
+          >
+            Catalogue ({products.length})
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "messages"}
+            onClick={() => setActiveTab("messages")}
+            className={`inline-flex items-center gap-2 rounded-[9px] px-4 py-2 text-xs font-medium transition sm:text-sm ${
+              activeTab === "messages"
+                ? "bg-charcoal text-white"
+                : "text-smoke hover:text-charcoal"
+            }`}
+          >
+            <span>Messages ({contactMessages.length})</span>
+            {contactMessages.some((m) => m.status === "new") && (
+              <span className="inline-flex min-w-[20px] items-center justify-center rounded-full bg-braise px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
+                {contactMessages.filter((m) => m.status === "new").length}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+      <div className="admin-container mx-auto px-4 py-6 sm:px-8 sm:py-8">
+        {activeTab === "catalog" ? (
+          <CatalogWorkspace
+            products={products}
+            categories={categories}
+            error={error}
+            message={message}
+            onCreate={createProduct}
+            onSave={saveProduct}
+            onDelete={deleteProduct}
+            onImportFile={readCatalogFile}
+            catalogDraft={catalogDraft}
+            importing={importing}
+            onImport={importCatalogDraft}
+          />
+        ) : (
+          <MessagesWorkspace
+            messages={contactMessages}
+            loading={messagesLoading}
+            error={messagesError}
+            onRefresh={loadMessages}
+            onUpdateStatus={updateMessageStatus}
+          />
+        )}
       </div>
     </main>
   );
