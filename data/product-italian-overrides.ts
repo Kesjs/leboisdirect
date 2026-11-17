@@ -606,9 +606,11 @@ const VARIANT_LABEL_TO_ITALIAN: Record<string, string> = {
   'Test unique - sans expedition': 'Test singolo - senza spedizione',
 }
 
+import { EXTRA_ITALIAN_OVERRIDES } from './extra-catalog-products'
+
 export function getItalianProductOverride(slug?: string | null): ItalianProductOverride | undefined {
   if (!slug) return undefined
-  return ITALIAN_PRODUCT_OVERRIDES[slug]
+  return ITALIAN_PRODUCT_OVERRIDES[slug] || EXTRA_ITALIAN_OVERRIDES[slug]
 }
 
 export function translateVariantLabel(label?: string | null, slug?: string | null): string {

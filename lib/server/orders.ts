@@ -149,27 +149,41 @@ export async function createServerOrder(params: {
   if (translationError) throw translationError
 
   const { getItalianProductOverride, translateVariantLabel } = await import('@/data/product-italian-overrides')
+  const { EXTRA_CATALOG_PRODUCTS } = await import('@/data/extra-catalog-products')
+  const extraByProductId = new Map(EXTRA_CATALOG_PRODUCTS.map((p) => [p.id, p]))
   const slugByProductId = new Map((dbProducts || []).map((p) => [p.id, p.slug]))
 
   const resolvedItems = items.map((item) => {
-    const productVariants = (variants || [])
-      .filter((v) => v.product_id === item.productId)
-      .sort((a, b) => Number(a.price) - Number(b.price))
+    const extraProduct = extraByProductId.get(item.productId)
+    const dbProductVariants = (variants || []).filter((v) => v.product_id === item.productId)
+    const productVariants = (
+      dbProductVariants.length > 0
+        ? dbProductVariants
+        : extraProduct
+          ? extraProduct.variants.map((v) => ({
+              id: v.id,
+              product_id: extraProduct.id,
+              price: v.price,
+              label: v.label,
+            }))
+          : []
+    ).sort((a, b) => Number(a.price) - Number(b.price))
 
-    const variant = item.variantId
-      ? productVariants.find((v) => v.id === item.variantId)
-      : productVariants[0]
+    const variant =
+      (item.variantId ? productVariants.find((v) => v.id === item.variantId) : undefined) ||
+      productVariants[0]
 
     if (!variant) {
       throw new Error('PRODUCT_UNAVAILABLE')
     }
 
-    const slug = slugByProductId.get(item.productId)
+    const slug = slugByProductId.get(item.productId) || extraProduct?.slug
     const override = getItalianProductOverride(slug)
     const name =
       (locale === 'it' ? override?.name : undefined) ||
       translations?.find((t) => t.product_id === item.productId && t.locale === locale)?.name ||
       override?.name ||
+      extraProduct?.italianOverride.name ||
       translations?.find((t) => t.product_id === item.productId && t.locale === 'it')?.name ||
       translations?.find((t) => t.product_id === item.productId && t.locale === 'fr')?.name
     if (!name) {

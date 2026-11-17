@@ -16,10 +16,36 @@ import { useToast } from '@/components/Toast'
 import { useI18n } from '@/lib/i18n-context'
 import { categoryLabel, productLabel } from '@/data/product-labels'
 import { uiCopy } from '@/data/ui-copy'
+import { getProductReviews } from '@/data/product-reviews'
 import { getProductVideo, getYouTubeEmbedUrl, getYouTubeThumbnail } from '@/data/product-videos'
 import { getProductRichSpec } from '@/data/product-rich-specs'
 import { computeDynamicUnitPriceLabel } from '@/lib/unit-price'
 import { PaymentBadgesRow, SecureShieldIcon, DeliveryTruckIcon } from '@/components/PaymentLogos'
+
+function StarRatingRow({ rating, size = 15 }: { rating: number; size?: number }) {
+  const filledCount = Math.max(0, Math.min(5, Math.round(rating)))
+  return (
+    <span className="inline-flex items-center gap-[2px]" aria-label={`${filledCount} su 5`}>
+      {Array.from({ length: 5 }, (_, index) => {
+        const filled = index < filledCount
+        return (
+          <svg
+            key={index}
+            width={size}
+            height={size}
+            viewBox="0 0 20 20"
+            fill={filled ? '#FBBF24' : 'none'}
+            stroke="#B45309"
+            strokeWidth="1.4"
+            aria-hidden="true"
+          >
+            <path d="M10 2.5l2.32 4.7 5.18.75-3.75 3.65.88 5.16L10 14.32l-4.63 2.44.88-5.16L2.5 7.95l5.18-.75L10 2.5z" />
+          </svg>
+        )
+      })}
+    </span>
+  )
+}
 
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
@@ -129,6 +155,13 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       : []),
   ]
   const selectedMedia = galleryItems[selectedMediaIndex] || galleryItems[0]
+  const productReviews = getProductReviews(product.slug)
+  const reviewCount = productReviews.length
+  const averageRating =
+    reviewCount > 0
+      ? productReviews.reduce((sum, review) => sum + (review.rating ?? 5), 0) / reviewCount
+      : 0
+  const formattedRating = averageRating.toFixed(1).replace('.', ',')
   const dynamicUnitPriceLabel = computeDynamicUnitPriceLabel(
     product,
     currentVariant,
@@ -420,6 +453,23 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 <h1 className="text-[26px] sm:text-[32px] font-semibold tracking-tight text-[#252823] leading-[1.16] text-balance">
                   {localizedProduct.name}
                 </h1>
+
+                {reviewCount > 0 && (
+                  <div className="mt-[10px]">
+                    <a
+                      href="#testimonianze-clienti"
+                      className="inline-flex items-center gap-[8px] px-[10px] py-[6px] rounded-[6px] bg-white border border-[#DEDFD6] hover:border-[#FBBF24] transition-colors"
+                    >
+                      <StarRatingRow rating={averageRating} size={16} />
+                      <strong className="text-[13px] font-semibold text-[#252823] tabular-nums">
+                        {formattedRating}/5
+                      </strong>
+                      <span className="text-[12px] text-[#64685F]">
+                        · {reviewCount} testimonianze clienti
+                      </span>
+                    </a>
+                  </div>
+                )}
 
                 <div className="flex items-center gap-[10px] mt-[10px] text-[12px] flex-wrap">
                   <span className="inline-flex items-center gap-[8px] px-[10px] py-[4px] rounded-[4px] bg-[#EEEEE7] text-[#252823] border border-[#DEDFD6] font-medium">
@@ -824,6 +874,73 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             </div>
           </div>
         </div>
+
+        {reviewCount > 0 && (
+          <section
+            id="testimonianze-clienti"
+            className="container-custom pt-[40px] sm:pt-[48px] scroll-mt-[110px]"
+            aria-labelledby="testimonials-title"
+          >
+            <div className="rounded-[12px] bg-white border border-[#DEDFD6] p-[20px] sm:p-[28px]">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[12px] pb-[18px] border-b border-[#DEDFD6]">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#995033]">
+                    Esperienze sull’articolo
+                  </p>
+                  <h2 id="testimonials-title" className="mt-[4px] text-[20px] sm:text-[24px] font-semibold text-[#252823] tracking-tight">
+                    Testimonianze dei clienti
+                  </h2>
+                </div>
+                <div className="inline-flex items-center gap-[8px] self-start sm:self-auto px-[12px] py-[8px] rounded-[6px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                  <StarRatingRow rating={averageRating} size={16} />
+                  <strong className="text-[14px] font-semibold text-[#252823] tabular-nums">
+                    {formattedRating}/5
+                  </strong>
+                  <span className="text-[12px] text-[#64685F]">
+                    ({reviewCount} opinioni)
+                  </span>
+                </div>
+              </div>
+
+              <div
+                className={`mt-[18px] grid grid-cols-1 gap-[14px] ${
+                  reviewCount === 4 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'
+                }`}
+              >
+                {productReviews.map((rev, i) => (
+                  <article
+                    key={i}
+                    className="p-[16px] sm:p-[18px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6] flex flex-col justify-between gap-[14px]"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-[8px] mb-[10px]">
+                        <StarRatingRow rating={rev.rating || 5} size={15} />
+                        {rev.label && (
+                          <span className="text-[11px] font-medium px-[8px] py-[2px] rounded-[4px] bg-[#EEEEE7] text-[#34483A] border border-[#DEDFD6]">
+                            {rev.label}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[13px] sm:text-[14px] text-[#252823] leading-[1.6]">
+                        « {rev.text} »
+                      </p>
+                    </div>
+                    <div className="pt-[10px] border-t border-[#DEDFD6]/70 flex items-center justify-between gap-[8px] text-[12px]">
+                      <strong className="font-semibold text-[#252823]">
+                        {rev.author}
+                      </strong>
+                      {rev.city && (
+                        <span className="text-[#64685F]">
+                          {rev.city}
+                        </span>
+                      )}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {relatedProducts.length > 0 && (
           <section className="container-custom pt-[56px]" aria-labelledby="cross-selling-title">

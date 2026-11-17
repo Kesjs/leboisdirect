@@ -62,11 +62,17 @@ const videosBySlug: Record<string, ProductVideo> = {
     mp4Url: '/videos/radiateur-electrique-connecte-sauter-hekla-1500w.mp4',
     title: 'Radiatore elettrico connesso Sauter Hekla – 1500 W',
   },
+  'radiateur-electrique-connecte-sauter-ipala-1500w': {
+    mp4Url: '/videos/radiateur-electrique-connecte-sauter-ipala-1500w.mp4',
+    title: 'Radiatore elettrico connesso Sauter Ipala – 1500 W',
+  },
   'ofyr-cage-100-accessoire-cuisson': {
     mp4Url: '/videos/ofyr-cage-100-accessoire-cuisson.mp4',
     title: 'OFYR Cage 100 – Accessorio premium per braciere',
   },
 }
+
+import { EXTRA_VIDEOS_BY_SLUG } from './extra-catalog-products'
 
 const videoSlugAliases: Record<string, string> = {
   'chariot-le-marquier-fjord-noir': 'chariot-buches-le-marquier-fjord-noir',
@@ -77,7 +83,7 @@ const videoSlugAliases: Record<string, string> = {
 
 export function getProductVideo(slug: string): ProductVideo | null {
   const resolved = videoSlugAliases[slug] || slug
-  return videosBySlug[resolved] ?? null
+  return videosBySlug[resolved] ?? EXTRA_VIDEOS_BY_SLUG[resolved] ?? null
 }
 
 export function getYouTubeThumbnail(youtubeId: string): string {

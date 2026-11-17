@@ -763,7 +763,9 @@ const slugAliases: Record<string, string> = {
   'foyer-cheminee-acaminetti-flat-150x50': 'foyer-bois-panoramique-acaminetti-flat-150x50',
 }
 
+import { EXTRA_RICH_SPECS } from './extra-catalog-products'
+
 export function getProductRichSpec(slug: string): RichProductSpec | undefined {
   const resolvedSlug = slugAliases[slug] || slug
-  return productRichSpecs[resolvedSlug]
+  return productRichSpecs[resolvedSlug] || EXTRA_RICH_SPECS[resolvedSlug]
 }

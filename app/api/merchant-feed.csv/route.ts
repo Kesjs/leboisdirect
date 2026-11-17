@@ -7,6 +7,8 @@ import {
   translateVariantLabel,
 } from "@/data/product-italian-overrides";
 
+import { EXTRA_CATALOG_PRODUCTS } from "@/data/extra-catalog-products";
+
 export const dynamic = "force-dynamic";
 
 function csv(value: unknown) {
@@ -89,6 +91,33 @@ export async function GET(request: NextRequest) {
         id, title, description, `${baseUrl}/produit/${product.slug}`, image,
         `${Number(variant.price).toFixed(2)} EUR`, Number(variant.stock || 0) > 0 ? "in_stock" : "out_of_stock",
         "Braviko", "new", override?.googleCategory || "Casa e giardino > Riscaldamento",
+      ]);
+    }
+  }
+
+  const existingSlugs = new Set((data || []).map((product: any) => product.slug));
+  for (const extra of EXTRA_CATALOG_PRODUCTS) {
+    if (existingSlugs.has(extra.slug)) continue;
+    if (!isHeatingCategory(extra.category)) continue;
+    const override = extra.italianOverride;
+    const image = extra.images[0].startsWith("http")
+      ? extra.images[0]
+      : `${baseUrl}/${extra.images[0].replace(/^\//, "")}`;
+    for (const variant of extra.variants) {
+      if (variant.price == null || Number(variant.price) <= 0) continue;
+      const id = variant.sku || `${extra.id}-${variant.id}`;
+      const title = [override.name, variant.label].filter(Boolean).join(" - ");
+      rows.push([
+        id,
+        title,
+        override.description,
+        `${baseUrl}/produit/${extra.slug}`,
+        image,
+        `${Number(variant.price).toFixed(2)} EUR`,
+        "in_stock",
+        "Braviko",
+        "new",
+        override.googleCategory || "Casa e giardino > Riscaldamento",
       ]);
     }
   }

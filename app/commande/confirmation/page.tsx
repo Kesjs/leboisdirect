@@ -7,6 +7,7 @@ import Footer from '@/components/Footer'
 import PageSkeleton from '@/components/PageSkeleton'
 import { useI18n } from '@/lib/i18n-context'
 import { useAuth } from '@/lib/auth-context'
+import { useCart } from '@/lib/cart-context'
 import { uiCopy } from '@/data/ui-copy'
 
 type Receipt = {
@@ -32,8 +33,10 @@ export default function OrderConfirmationPage() {
   const [attempt, setAttempt] = useState(0)
   const { locale } = useI18n()
   const { user, loading: authLoading } = useAuth()
+  const { clearCart } = useCart()
   const c = uiCopy[locale].confirmation
   const trackedConversion = useRef<string | null>(null)
+  const cartCleared = useRef(false)
 
   useEffect(() => {
     const sessionId = new URLSearchParams(window.location.search).get('session_id')
@@ -64,6 +67,14 @@ export default function OrderConfirmationPage() {
     void load(4)
     return () => { active = false; controller.abort(); if (timer) clearTimeout(timer) }
   }, [attempt])
+
+  useEffect(() => {
+    if (receipt?.paid && !cartCleared.current) {
+      cartCleared.current = true
+      clearCart()
+      try { window.localStorage.removeItem('braviko-checkout-step') } catch { /* Ignore unavailable storage. */ }
+    }
+  }, [clearCart, receipt])
 
   useEffect(() => {
     if (!receipt?.paid || receipt.testMode || receipt.amount == null) return

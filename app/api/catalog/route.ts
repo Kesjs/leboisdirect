@@ -6,6 +6,11 @@ import {
   translateVariantLabel,
 } from "@/data/product-italian-overrides";
 
+import {
+  EXTRA_CATALOG_PRODUCTS,
+  formatExtraProductForCatalog,
+} from "@/data/extra-catalog-products";
+
 function getCatalogClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -138,16 +143,23 @@ export async function GET(request: NextRequest) {
     };
   });
 
+  const existingSlugs = new Set(products.map((item: any) => item.slug));
+  const extraProducts = EXTRA_CATALOG_PRODUCTS.filter(
+    (item) => !existingSlugs.has(item.slug) && (!slug || item.slug === slug),
+  ).map(formatExtraProductForCatalog);
+
+  const allProducts = [...products, ...extraProducts];
+
   const categories = [
     ...new Map(
-      products.map((product: any) => [
+      allProducts.map((product: any) => [
         product.category,
         { id: product.category, name: product.category },
       ]),
     ).values(),
   ];
   return NextResponse.json(
-    { products, categories },
+    { products: allProducts, categories },
     {
       headers: { "Cache-Control": "no-store" },
     },

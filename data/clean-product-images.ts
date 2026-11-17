@@ -1,4 +1,7 @@
+import { EXTRA_CLEAN_IMAGES_BY_SLUG } from './extra-catalog-products'
+
 export const cleanImagesBySlug: Record<string, string[]> = {
+  ...EXTRA_CLEAN_IMAGES_BY_SLUG,
   'insert-bois-invicta-p947044-10-kw': [
     '/images/insert-bois-invicta-p947044-10-kw-primary.jpg',
     '/images/insert-bois-invicta-p947044-10-kw-secondary.jpg',

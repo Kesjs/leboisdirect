@@ -31,11 +31,31 @@ export async function GET(request: Request) {
     ) {
       return NextResponse.json({ error: 'ORDER_NOT_FOUND' }, { status: 404, headers })
     }
+    let isPaid = session.payment_status === 'paid' && order.payment_status === 'paid'
+    if (session.payment_status === 'paid' && order.payment_status === 'pending') {
+      const paymentIntentId =
+        typeof session.payment_intent === 'string'
+          ? session.payment_intent
+          : session.payment_intent?.id ?? null
+      await supabase
+        .from('braviko_orders')
+        .update({
+          status: 'confirmed',
+          payment_status: 'paid',
+          payment_method: session.payment_method_types?.[0] ?? 'card',
+          stripe_session_id: session.id,
+          stripe_payment_intent_id: paymentIntentId,
+          paid_at: new Date().toISOString(),
+        })
+        .eq('reference', reference)
+      isPaid = true
+    }
+
     // This unguessable session URL exposes only a minimal receipt, never
     // customer identity, contact details or delivery information.
     return NextResponse.json({
       reference: order.reference,
-      paid: session.payment_status === 'paid' && order.payment_status === 'paid',
+      paid: isPaid,
       failed: session.status === 'expired' || order.payment_status === 'failed',
       refunded: order.payment_status === 'refunded',
       testMode: !session.livemode,
