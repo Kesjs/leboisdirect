@@ -60,6 +60,9 @@ function ShopContent() {
 
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = catalogProducts.filter(product => {
+      if (product.slug === 'test-paiement-1-euro') {
+        return Boolean(query) && selectedGroup === 'all' && selectedCategory === 'all'
+      }
       return isHeatingCategory(product.category)
     })
     if (selectedGroup !== 'all') {

@@ -51,6 +51,7 @@ export async function GET(request: NextRequest) {
   const baseUrl = siteUrl(request);
 
   for (const product of data || []) {
+    if (product.slug === "test-paiement-1-euro") continue;
     const categorySlug = (product as any).braviko_categories?.slug || "";
     if (!isHeatingCategory(categorySlug)) continue;
     const translations = (product.braviko_product_translations || []) as any[];

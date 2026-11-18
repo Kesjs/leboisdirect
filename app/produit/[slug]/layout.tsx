@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       return {
         title: `${product.name} | Braviko`,
         description,
+        robots: slug === 'test-paiement-1-euro' ? { index: false, follow: false } : undefined,
         alternates: { canonical: `/produit/${encodeURIComponent(product.slug)}` },
         openGraph: {
           type: 'website',

@@ -20,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (response.ok) {
       const payload = await response.json() as { products?: Array<{ slug: string }> }
       for (const product of payload.products || []) {
+        if (product.slug === 'test-paiement-1-euro') continue
         entries.push({
           url: `${baseUrl}/produit/${encodeURIComponent(product.slug)}`,
           changeFrequency: 'weekly',

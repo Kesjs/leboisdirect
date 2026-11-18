@@ -29,6 +29,7 @@ export const categoryLabels = {
     'rangement-stockage': 'Range-bûches',
     'rangement-transport-bois': 'Chariots à bûches',
     'stockage-exterieur': 'Abris & bûchers extérieurs',
+    alimentazione: 'Test interne',
   },
   de: {
     buches: 'Brennholz',
@@ -57,6 +58,7 @@ export const categoryLabels = {
     'rangement-stockage': 'Holzregale',
     'rangement-transport-bois': 'Holzwagen',
     'stockage-exterieur': 'Holzunterstände',
+    alimentazione: 'Interner Test',
   },
   it: {
     buches: 'Legna',
@@ -85,6 +87,7 @@ export const categoryLabels = {
     'rangement-stockage': 'Portalegna',
     'rangement-transport-bois': 'Carrelli portalegna',
     'stockage-exterieur': 'Legnaie da esterno',
+    alimentazione: 'Test interno',
   },
 }
 

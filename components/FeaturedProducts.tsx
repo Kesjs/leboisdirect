@@ -36,7 +36,9 @@ export default function FeaturedProducts({
   const reduced = useReducedMotion()
 
   const universeProducts = useMemo(() => {
-    const heating = catalogProducts.filter(product => isHeatingCategory(product.category))
+    const heating = catalogProducts.filter(
+      product => product.slug !== 'test-paiement-1-euro' && isHeatingCategory(product.category),
+    )
     return [...heating].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)))
   }, [catalogProducts])
 
