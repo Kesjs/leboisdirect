@@ -9,6 +9,9 @@ import Footer from '@/components/Footer'
 import FeaturedProducts from '@/components/FeaturedProducts'
 import StorytellingSection from '@/components/StorytellingSection'
 import TrustSignals from '@/components/TrustSignals'
+import LandingReassuranceStrip from '@/components/LandingReassuranceStrip'
+import DeliveryCheckerSection from '@/components/DeliveryCheckerSection'
+import LandingTrustSections from '@/components/LandingTrustSections'
 import LandingMotion from '@/components/motion/LandingMotion'
 import { useI18n } from '@/lib/i18n-context'
 import { bravikoCopy } from '@/data/braviko-copy'
@@ -23,8 +26,10 @@ export default function Home() {
       <Header />
       <main id="main-content" className="bk-home">
         <Hero />
+        <LandingReassuranceStrip />
         <LandingMotion>
           <TrustSignals activeGroup={selectedGroup} onSelectGroup={setSelectedGroup} />
+          <DeliveryCheckerSection />
           <FeaturedProducts selectedGroup={selectedGroup} onSelectGroup={setSelectedGroup} />
           <StorytellingSection />
           <section id="preuves" className="bk-quality bk-section bk-container" aria-labelledby="quality-title">
@@ -36,10 +41,10 @@ export default function Home() {
           <section className="bk-delivery bk-section bk-container" aria-labelledby="delivery-title">
             <div className="bk-delivery-photo" data-reveal>
               <Image src="/images/delivery-firewood-pallet.png" alt="" fill sizes="(max-width: 900px) 100vw, 50vw" className="bk-image" quality={85} />
-              <span className="bk-photo-caption">{copy.heating}</span>
+              <span className="bk-photo-caption">{copy.infoDelivery}</span>
             </div>
             <div>
-              <div data-reveal><p className="bk-eyebrow">{copy.delivery}</p><h2 id="delivery-title" className="bk-title">{copy.deliveryTitle}</h2><p className="bk-lead">{copy.deliveryIntro}</p></div>
+              <div data-reveal><p className="bk-eyebrow">{copy.delivery} · 0 €</p><h2 id="delivery-title" className="bk-title">{copy.deliveryTitle}</h2><p className="bk-lead">{copy.deliveryIntro}</p></div>
               <div className="bk-delivery-timeline" data-delivery-steps>
                 <span className="bk-delivery-line" aria-hidden="true"><span data-delivery-progress /></span>
                 <ol className="bk-delivery-steps">
@@ -49,6 +54,7 @@ export default function Home() {
               <Link className="bk-text-link" href="/livraison">{copy.deliveryCta}<span aria-hidden="true">↗</span></Link>
             </div>
           </section>
+          <LandingTrustSections />
           <section className="bk-final bk-container" aria-labelledby="final-title">
             <div className="bk-final-photo" data-reveal><Image src="/images/view-woman-relaxing-home-with-warm-drink.jpg" alt="" fill sizes="(max-width: 700px) 100vw, 45vw" className="bk-image" /></div>
             <div className="bk-final-copy" data-reveal><h2 id="final-title">{copy.finalTitle}</h2><p>{copy.finalBody}</p><Link href="/boutique" className="bk-button">{copy.finalCta}<span aria-hidden="true">↗</span></Link></div>

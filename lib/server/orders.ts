@@ -54,15 +54,18 @@ export function validateCustomerInput(input?: OrderCustomerInput) {
   const postalCode = cleanText(input?.postalCode, 16)
   const city = cleanText(input?.city, 100)
 
+  const phoneDigits = phone.replace(/\D/g, '')
+
   if (
     !email ||
     !EMAIL_REGEX.test(email) ||
-    !firstName ||
-    !lastName ||
-    phone.replace(/\D/g, '').length < 6 ||
-    !street ||
-    !postalCode ||
-    !city
+    firstName.length < 2 ||
+    lastName.length < 2 ||
+    phoneDigits.length < 8 ||
+    phoneDigits.length > 16 ||
+    street.length < 4 ||
+    postalCode.length < 3 ||
+    city.length < 2
   ) {
     throw new Error('INVALID_CUSTOMER')
   }

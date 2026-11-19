@@ -75,10 +75,10 @@ export const commerceInfoCopy: Record<'retours-remboursements' | 'expedition' | 
     it: {
       eyebrow: 'BRAVIKO / SPEDIZIONE E TRASPORTO',
       title: 'Spedizione e consegna',
-      intro: 'Spedizione gratuita in tutta Italia, preparazione entro 48 ore lavorative e appuntamento per i carichi pesanti.',
+      intro: 'Spedizione gratuita su tutto il catalogo senza minimo d’ordine, preparazione entro 48 ore lavorative e appuntamento per i carichi pesanti.',
       updated: 'Aggiornato il 14 novembre 2026',
       sections: [
-        { title: 'Consegna gratuita in tutta Italia', body: 'Tutti gli articoli a catalogo beneficiano della consegna inclusa in tutta Italia, senza costi nascosti al checkout.' },
+        { title: 'Consegna gratuita su tutto il catalogo', body: 'Tutti gli articoli a catalogo beneficiano della consegna gratuita nelle destinazioni servite (Italia, Francia, Svizzera, Germania, Belgio e Lussemburgo), senza minimo d’ordine e senza costi nascosti al checkout.' },
         { title: 'Tempi di preparazione e consegna', body: 'I prodotti disponibili partono entro 48 ore lavorative. La consegna avviene in 3–5 giorni lavorativi per i pacchi e in 5–12 giorni lavorativi in base al formato su appuntamento per bancali di legna, pellet, legnaie e apparecchi pesanti.' },
         { title: 'Appuntamento e accesso camion con sponda', body: 'Prima della consegna di un bancale o di una stufa, il corriere ti contatta per telefono o SMS per concordare la fascia oraria. Prevedi accesso carrabile libero e superficie piana e compatta (asfalto, cemento o pavimentazione) per lo scarico con transpallet.' },
         { title: 'Controllo alla ricezione', body: 'Verifica imballo, reggettatura o integrità del prodotto davanti all’autista. In caso di anomalie visibili, annota riserve dettagliate sul documento di trasporto e scrivi a contact@braviko.fr entro 48 ore.' },

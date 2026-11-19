@@ -18,7 +18,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.fr'),
   title: 'Braviko — Riscaldamento a legna e soluzioni per l’inverno',
-  description: 'Prepara il riscaldamento a legna per l’inverno: legna da ardere, pellet, tronchetti compressi, stufe e bracieri con spedizione gratuita in Italia.',
+  description: 'Prepara il riscaldamento a legna per l’inverno: legna da ardere, pellet, tronchetti compressi, stufe e bracieri con spedizione gratuita su tutto il catalogo.',
   keywords: 'Braviko, legna da ardere, pellet, tronchetti compressi, stufe a legna, inserti camino, bracieri, riscaldamento, Italia',
   alternates: { canonical: '/' },
   verification: {
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     siteName: 'Braviko',
     locale: 'it_IT',
     title: 'Braviko — Riscaldamento a legna e soluzioni per l’inverno',
-    description: 'Prepara il riscaldamento a legna per l’inverno: legna da ardere, pellet, tronchetti compressi, stufe e bracieri con spedizione gratuita in Italia.',
+    description: 'Prepara il riscaldamento a legna per l’inverno: legna da ardere, pellet, tronchetti compressi, stufe e bracieri con spedizione gratuita su tutto il catalogo.',
   },
 }
 

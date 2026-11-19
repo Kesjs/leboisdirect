@@ -94,9 +94,9 @@ export const pageCopy = {
   },
   it: {
     delivery: {
-      eyebrow: 'BRAVIKO / CONSEGNA ITALIA',
+      eyebrow: 'BRAVIKO / CONSEGNA GRATUITA',
       title: 'Una consegna organizzata con te, fino a casa tua.',
-      intro: 'La consegna è gratuita in tutta Italia. Spedizione entro 48 ore lavorative e appuntamento telefonico preventivo per tutti i bancali e gli apparecchi pesanti.',
+      intro: 'La consegna è gratuita su tutto il catalogo, senza minimo d’ordine. Spedizione entro 48 ore lavorative e appuntamento telefonico preventivo per tutti i bancali e gli apparecchi pesanti.',
       steps: [
         ['Ordine confermato online', 'Paga in sicurezza con carta tramite Stripe o bonifico SEPA, anche senza creare un account.'],
         ['Preparazione e controllo in 48 h', 'Il tuo bancale, apparecchio o pacco viene verificato, reggettato e affidato al corriere specializzato entro 48 ore lavorative.'],
@@ -104,7 +104,7 @@ export const pageCopy = {
         ['Scarico con sponda idraulica e transpallet', 'Consegna accurata al piano strada o su viale carrabile piano e stabile (asfalto, cemento, autobloccanti) in 3–12 giorni lavorativi in base al formato.'],
       ],
       zones: 'Area servita',
-      zonesBody: 'Consegna gratuita in tutta Italia, senza minimo d’ordine e senza costi nascosti al checkout.',
+      zonesBody: 'Consegna gratuita su tutto il catalogo in Italia, Francia, Svizzera, Germania, Belgio e Lussemburgo, senza minimo d’ordine e senza costi nascosti al checkout.',
       unload: 'Accesso e scarico',
       unloadBody: 'Camion dotato di sponda idraulica e transpallet manuale (carichi fino a 1,1 t). Prevedere un accesso libero su terreno duro e piano.',
       delays: 'Tempi indicativi',

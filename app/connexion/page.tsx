@@ -11,17 +11,15 @@ import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/auth-context'
 import { useI18n } from '@/lib/i18n-context'
 import { accountCopy } from '@/data/account-copy'
+import { CountryPrefixSelect } from '@/components/CountrySelect'
+import {
+  getCountryByIso,
+  sanitizePhoneInput,
+  validatePhoneForCountry,
+  type CountryIso,
+} from '@/lib/countries'
 
 type Mode = 'login' | 'signup' | 'reset'
-
-const countries = [
-  { code: '+39', short: 'IT', flag: 'it' },
-  { code: '+33', short: 'FR', flag: 'fr' },
-  { code: '+49', short: 'DE', flag: 'de' },
-  { code: '+32', short: 'BE', flag: 'be' },
-  { code: '+41', short: 'CH', flag: 'ch' },
-  { code: '+352', short: 'LU', flag: 'lu' },
-] as const
 
 function ConnectionContent() {
   const router = useRouter()
@@ -38,7 +36,7 @@ function ConnectionContent() {
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const [phoneCountry, setPhoneCountry] = useState('+39')
+  const [phoneCountry, setPhoneCountry] = useState<CountryIso>('IT')
   const [phone, setPhone] = useState('')
   const [message, setMessage] = useState(params.get('reason') === 'checkout' ? c.checkoutRequired : '')
   const [error, setError] = useState('')
@@ -78,9 +76,13 @@ function ConnectionContent() {
       if (mode === 'signup') {
         if (!firstName.trim()) { setError(c.requiredFirstName); return }
         if (!lastName.trim()) { setError(c.requiredLastName); return }
-        const cleanedPhone = phone.replace(/\D/g, '').replace(/^0/, '')
-        const normalizedPhone = cleanedPhone ? `${phoneCountry}${cleanedPhone}` : ''
-        if (normalizedPhone && !/^\+\d{8,15}$/.test(normalizedPhone)) { setError(c.invalidPhone); return }
+        const selectedDial = getCountryByIso(phoneCountry)
+        if (phone.trim()) {
+          const phoneErr = validatePhoneForCountry(phoneCountry, phone, locale)
+          if (phoneErr) { setError(phoneErr); return }
+        }
+        const cleanedDigits = phone.replace(/\D/g, '')
+        const normalizedPhone = cleanedDigits ? `${selectedDial.dialCode} ${phone.trim()}` : ''
         if (!trimmedEmail) { setError(c.requiredEmail); return }
         if (!emailPattern.test(trimmedEmail)) { setError(c.invalidEmail); return }
         if (!password) { setError(c.requiredPassword); return }
@@ -125,7 +127,7 @@ function ConnectionContent() {
 
   const switchMode = (next: Mode) => { setMode(next); setError(''); setMessage('') }
   const signup = mode === 'signup'
-  const selectedCountry = countries.find(country => country.code === phoneCountry) || countries[0]
+  const selectedCountry = getCountryByIso(phoneCountry)
 
   return <>
     <Header />
@@ -144,7 +146,30 @@ function ConnectionContent() {
         <form onSubmit={submit} className="bk-account-form" noValidate>
           {signup && <>
             <div className="bk-form-row"><label htmlFor="first-name">{c.firstName}<input id="first-name" name="firstName" value={firstName} onChange={event => setFirstName(event.target.value)} required autoComplete="given-name" /></label><label htmlFor="last-name">{c.lastName}<input id="last-name" name="lastName" value={lastName} onChange={event => setLastName(event.target.value)} required autoComplete="family-name" /></label></div>
-            <div className="bk-field"><label htmlFor="phone">{c.phone} <span className="text-smoke">({c.optional})</span></label><span className="bk-phone-field"><span className="bk-country-select"><span className={`bk-country-flag bk-flag-${selectedCountry.flag}`} aria-hidden="true" /><select id="phone-country" name="phoneCountry" value={phoneCountry} onChange={event => setPhoneCountry(event.target.value)} aria-label={c.phoneCountry}>{countries.map(country => <option key={country.code} value={country.code}>{country.short} {country.code}</option>)}</select></span><input id="phone" name="phone" value={phone} onChange={event => setPhone(event.target.value.replace(/[^\d ]/g, ''))} aria-label={c.phone} inputMode="tel" autoComplete="tel-national" placeholder="333 123 4567" /></span></div>
+            <div className="bk-field">
+              <label htmlFor="phone">{c.phone} <span className="text-smoke">({c.optional})</span></label>
+              <div className="bk-phone-field">
+                <CountryPrefixSelect
+                  id="phone-country"
+                  value={phoneCountry}
+                  onChange={(country) => setPhoneCountry(country.iso)}
+                  ariaLabel={c.phoneCountry as string}
+                  surface="canvas"
+                />
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={event => setPhone(sanitizePhoneInput(event.target.value))}
+                  aria-label={c.phone as string}
+                  inputMode="tel"
+                  autoComplete="tel-national"
+                  maxLength={selectedCountry.phoneInputMaxLength}
+                  placeholder={selectedCountry.phonePlaceholder}
+                />
+              </div>
+            </div>
           </>}
           {(!user || mode !== 'reset') && <label htmlFor="email">{c.email}<input id="email" name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" /></label>}
           {mode !== 'reset' || user ? <div className="bk-field"><label htmlFor="password">{c.password}</label><span className="bk-password-field"><input id="password" name="password" type={showPassword ? 'text' : 'password'} value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete={signup || mode === 'reset' ? 'new-password' : 'current-password'} aria-describedby="password-hint" /><button className="bk-password-toggle" type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? c.hidePassword : c.showPassword}>{showPassword ? c.hidePassword : c.showPassword}</button></span><span id="password-hint" className="bk-form-hint">{c.passwordHint}</span></div> : null}

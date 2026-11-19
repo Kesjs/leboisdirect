@@ -28,7 +28,7 @@ export default function Footer() {
               <a href="mailto:contact@braviko.fr" className="bk-footer-email">
                 contact@braviko.fr
               </a>
-              <span>Spedizione gratuita in tutta Italia</span>
+              <span>{copy.infoDelivery}</span>
               <PaymentBadgesRow className="bk-footer-payments" />
             </div>
           </div>

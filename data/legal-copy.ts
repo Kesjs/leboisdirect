@@ -117,7 +117,7 @@ export const legalCopy: Record<'mentions-legales' | 'confidentialite' | 'conditi
       updated: 'Aggiornato il 14 novembre 2026',
       sections: [
         { title: 'Ordine ospite o con account', body: 'È possibile acquistare direttamente come ospite senza registrazione oppure tramite il proprio account cliente.' },
-        { title: 'Prezzi e pagamenti', body: 'I prezzi sono espressi in euro IVA inclusa con spedizione gratuita in tutta Italia. Pagamento immediato con carta via Stripe o tramite bonifico SEPA.' },
+        { title: 'Prezzi e pagamenti', body: 'I prezzi sono espressi in euro IVA inclusa con spedizione gratuita su tutto il catalogo. Pagamento immediato con carta via Stripe o tramite bonifico SEPA.' },
         { title: 'Spedizione e consegna', body: 'Spedizione in 48 ore lavorative per i prodotti a stock; consegna in 3–12 giorni lavorativi in base al formato previo appuntamento con il corriere e scarico con sponda idraulica.' },
         { title: 'Recesso (14 giorni) e garanzie', body: 'Diritto di recesso entro 14 giorni dalla consegna per articoli integri e non utilizzati (contact@braviko.fr), oltre alle garanzie legali e del produttore.' },
       ],
