@@ -144,12 +144,15 @@ export function DeliveryTruckIcon({ className = 'w-[20px] h-[20px]' }: { classNa
   )
 }
 
-export function PaymentBadgesRow({ className = 'flex items-center gap-[8px]' }: { className?: string }) {
+export function PaymentBadgesRow({ className = '' }: { className?: string }) {
   return (
-    <div className={className} aria-label="Metodi di pagamento accettati">
-      <CbLogo className="h-[26px] w-auto rounded-[4px]" />
-      <VisaLogo className="h-[26px] w-auto rounded-[4px]" />
-      <MastercardLogo className="h-[26px] w-auto rounded-[4px]" />
+    <div
+      className={`flex flex-row flex-wrap items-center gap-[8px] ${className}`.trim()}
+      aria-label="Metodi di pagamento accettati"
+    >
+      <CbLogo className="h-[26px] w-auto shrink-0 rounded-[4px]" />
+      <VisaLogo className="h-[26px] w-auto shrink-0 rounded-[4px]" />
+      <MastercardLogo className="h-[26px] w-auto shrink-0 rounded-[4px]" />
     </div>
   )
 }

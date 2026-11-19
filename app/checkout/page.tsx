@@ -811,7 +811,7 @@ export default function CheckoutPage() {
                         <label htmlFor="phone" className="block text-body-sm font-medium text-charcoal mb-8">
                           {c.phone}
                         </label>
-                        <div className="grid grid-cols-1 gap-10 min-[420px]:grid-cols-[152px_minmax(0,1fr)]">
+                        <div className="grid grid-cols-1 gap-8 min-[420px]:grid-cols-[152px_minmax(0,1fr)]">
                           <CountryPrefixSelect
                             id="phoneCountry"
                             value={formData.phoneCountry}
@@ -859,7 +859,7 @@ export default function CheckoutPage() {
                   <div className="bg-white rounded-card border border-hairline p-24 md:p-32">
                     <div className="mb-24 flex flex-wrap items-start justify-between gap-12 border-b border-hairline pb-20">
                       <div>
-                        <h2 className="text-heading-sm font-semibold text-charcoal mb-6">
+                        <h2 className="text-heading-sm font-semibold text-charcoal mb-4">
                           {c.deliveryAddress}
                         </h2>
                         <p className="text-body-sm text-smoke">
@@ -1093,33 +1093,30 @@ export default function CheckoutPage() {
                       <div className="grid gap-12 sm:grid-cols-2">
                         <button
                           type="submit"
-                          className="min-h-[76px] w-full rounded-[6px] bg-charcoal px-20 py-14 text-left text-white transition-colors hover:bg-charcoal/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                          className="inline-flex h-[48px] w-full items-center justify-center gap-8 rounded-[6px] bg-charcoal px-16 text-[14px] font-semibold text-white transition-colors hover:bg-charcoal/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                           disabled={submitting || bankSubmitting}
                           aria-busy={submitting}
                         >
-                          <span className="flex w-full items-center justify-between gap-16">
-                            <span>
-                              <span className="block font-semibold">{submitting ? 'Apertura del pagamento…' : paymentCopy.card}</span>
-                              <span className="mt-4 block text-body-sm text-white/75">{paymentCopy.cardBody}</span>
-                            </span>
-                          </span>
+                          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <rect x="2" y="5" width="20" height="14" rx="2" />
+                            <path d="M2 10h20" />
+                          </svg>
+                          <span>{submitting ? 'Apertura del pagamento…' : paymentCopy.card}</span>
                         </button>
                         <button
                           type="button"
-                          className="min-h-[76px] w-full rounded-[6px] border border-charcoal bg-white px-20 py-14 text-left text-charcoal transition-colors hover:bg-mist focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                          className="inline-flex h-[48px] w-full items-center justify-center gap-8 rounded-[6px] border border-charcoal bg-white px-16 text-[14px] font-semibold text-charcoal transition-colors hover:bg-mist focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-braise focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                           onClick={handleBankTransfer}
                           disabled={submitting || bankSubmitting}
                           aria-busy={bankSubmitting}
                         >
-                          <span className="flex items-center gap-16">
-                            <span>
-                              <span className="block font-semibold">{bankSubmitting ? 'Preparazione bonifico…' : paymentCopy.bank}</span>
-                              <span className="mt-4 block text-body-sm text-smoke">{paymentCopy.bankBody}</span>
-                            </span>
-                          </span>
+                          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3" />
+                          </svg>
+                          <span>{bankSubmitting ? 'Preparazione bonifico…' : paymentCopy.bank}</span>
                         </button>
                       </div>
-                      <Button type="button" variant="secondary" size="md" className="w-full rounded-[6px]" onClick={() => { setFormError(''); setStep(1) }}>
+                      <Button type="button" variant="secondary" size="md" className="h-[46px] w-full rounded-[6px]" onClick={() => { setFormError(''); setStep(1) }}>
                         {c.back}
                       </Button>
                     </div>
@@ -1185,7 +1182,7 @@ export default function CheckoutPage() {
                   <span className="font-semibold text-charcoal">{formatPrice(totalPrice)}</span>
                 </div>
 
-                <div className="mt-24 pt-20 border-t border-hairline space-y-10 text-[13px] text-smoke">
+                <div className="mt-24 pt-20 border-t border-hairline space-y-8 text-[13px] text-smoke">
                   <p className="flex items-center gap-[8px]">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34483A" strokeWidth="2" aria-hidden="true">
                       <path d="M20 6 9 17l-5-5" />
