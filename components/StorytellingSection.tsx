@@ -9,8 +9,8 @@ import { useI18n } from '@/lib/i18n-context'
 import { bravikoCopy } from '@/data/braviko-copy'
 
 const images = [
-  '/images/snowy-firewood-sunset.png',
-  '/images/snowy-wood-preparation.png',
+  '/images/decorative-metallic-holder-with-heap-wooden-logs-stony-fireplace-with-burning-logs.jpg',
+  '/images/view-fireplace-with-burning-logs-natural-fur-skin-floor-holder-with-logs-cozy-room.jpg',
   '/images/cozy-stove-comfort.jpg',
 ]
 

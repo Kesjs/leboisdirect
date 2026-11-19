@@ -27,7 +27,7 @@ const FEATURED_REVIEW_SLUGS: Array<{ slug: string; productLabel: Record<Locale, 
       de: 'Brennholz Eiche, Buche & Hainbuche 33 cm',
     },
     categoryTag: { it: 'Legna essiccata < 20 %', fr: 'Bois séché < 20 %', de: 'Kammergetrocknet < 20 %' },
-    author: 'Cristiano D.',
+    author: 'Donatella V.',
   },
   {
     slug: 'granules-bois-premium-6mm-palette-990-kg',
@@ -37,7 +37,7 @@ const FEATURED_REVIEW_SLUGS: Array<{ slug: string; productLabel: Record<Locale, 
       de: 'Holzpellets Premium 6 mm – 990 kg',
     },
     categoryTag: { it: 'Certificato ENplus A1', fr: 'Certifié ENplus A1', de: 'ENplus A1 zertifiziert' },
-    author: 'Oliviero D.',
+    author: 'Davide L.',
   },
   {
     slug: 'buches-densifiees-premium-palette-1000-kg',
@@ -47,7 +47,7 @@ const FEATURED_REVIEW_SLUGS: Array<{ slug: string; productLabel: Record<Locale, 
       de: 'Holzbriketts – Palette 1000 kg',
     },
     categoryTag: { it: 'Alta densità', fr: 'Haute densité', de: 'Hohe Dichte' },
-    author: 'Michele C.',
+    author: 'Silvia P.',
   },
   {
     slug: 'poele-bois-fonte-bronpi-karen-8-kw',
@@ -67,7 +67,7 @@ const FEATURED_REVIEW_SLUGS: Array<{ slug: string; productLabel: Record<Locale, 
       de: 'Kamineinsatz Invicta 10 kW',
     },
     categoryTag: { it: 'Inserto ghisa 10 kW', fr: 'Insert fonte 10 kW', de: 'Kamineinsatz 10 kW' },
-    author: 'Bernardo P.',
+    author: 'Cesare G.',
   },
   {
     slug: 'brasero-plancha-le-bigorneau-acier-corten-100-cm',
@@ -248,7 +248,16 @@ export default function LandingTrustSections() {
             <article key={`${item.slug}-${item.author}`} className="bk-home-review-card">
               <div className="bk-home-review-top">
                 <span className="bk-home-review-stars" aria-label={`${item.rating} ${copy.ratingOf5}`}>
-                  {'★★★★★'.slice(0, item.rating)}
+                  {[1, 2, 3, 4, 5].map((starIndex) => (
+                    <span
+                      key={starIndex}
+                      className={starIndex <= item.rating ? 'is-filled' : 'is-empty'}
+                      aria-hidden="true"
+                    >
+                      ★
+                    </span>
+                  ))}
+                  <strong className="bk-home-review-score">{item.rating}/5</strong>
                 </span>
                 <span className="bk-home-review-tag">{item.categoryTag}</span>
               </div>

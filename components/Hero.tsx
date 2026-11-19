@@ -8,9 +8,37 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useI18n } from '@/lib/i18n-context'
 import { bravikoCopy } from '@/data/braviko-copy'
 
+const heroCardsCopy = {
+  it: {
+    fuelTag: 'COMBUSTIBILI CERTIFICATI',
+    fuelTitle: 'Legna da ardere, pellet & tronchetti',
+    fuelSub: 'Essiccata < 20 % pronta all’uso · Consegna gratuita su bancale',
+    stoveTag: 'APPARECCHI & ESTERNI',
+    stoveTitle: 'Stufe, inserti & bracieri',
+    stoveSub: 'Ghisa e acciaio ad alto rendimento · Spedizione gratuita',
+  },
+  fr: {
+    fuelTag: 'COMBUSTIBLES CERTIFIÉS',
+    fuelTitle: 'Bois de chauffage, granulés & bûches',
+    fuelSub: 'Séché < 20 % prêt à brûler · Livraison gratuite sur palette',
+    stoveTag: 'APPAREILS & EXTÉRIEUR',
+    stoveTitle: 'Poêles, inserts & braseros',
+    stoveSub: 'Fonte et acier haut rendement · Livraison offerte',
+  },
+  de: {
+    fuelTag: 'GEPRÜFTE BRENNSTOFFE',
+    fuelTitle: 'Brennholz, Pellets & Briketts',
+    fuelSub: 'Kammergetrocknet < 20 % · Kostenlose Palettenlieferung',
+    stoveTag: 'ÖFEN & OUTDOOR',
+    stoveTitle: 'Kaminöfen, Einsätze & Feuerschalen',
+    stoveSub: 'Gusseisen & Stahl mit hohem Wirkungsgrad · Gratis Versand',
+  },
+} as const
+
 export default function Hero() {
   const { locale } = useI18n()
   const copy = bravikoCopy[locale]
+  const cards = heroCardsCopy[locale]
   const root = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -52,15 +80,42 @@ export default function Hero() {
           </div>
         </div>
       </div>
-      <div className="bk-hero-worlds bk-hero-worlds--single">
-        <Link href="/boutique?universe=heating" className="bk-world bk-world-heat" data-hero-enter>
+      <div className="bk-hero-worlds">
+        <Link href="/boutique?group=combustibles" className="bk-world bk-world-heat" data-hero-enter>
           <div className="bk-world-media" data-hero-parallax>
-            <Image src="/images/hero-winter-stove.png" alt="" fill priority sizes="(max-width: 700px) 100vw, 92vw" className="bk-image" quality={85} />
+            <Image
+              src="/images/photorealistic-perspective-wood-logs.jpg"
+              alt={cards.fuelTitle}
+              fill
+              priority
+              sizes="(max-width: 700px) 100vw, 55vw"
+              className="bk-image"
+              quality={85}
+            />
           </div>
           <div className="bk-world-shade" />
-          <div className="bk-world-top"><span>{copy.home}</span><span>01</span></div>
+          <div className="bk-world-top"><span>{cards.fuelTag}</span><span>01</span></div>
           <div className="bk-world-bottom">
-            <div><h2>{copy.heating}</h2><p>{copy.heatingSub}</p></div>
+            <div><h2>{cards.fuelTitle}</h2><p>{cards.fuelSub}</p></div>
+            <span className="bk-round-arrow" aria-hidden="true">↗</span>
+          </div>
+        </Link>
+        <Link href="/boutique?group=appareils" className="bk-world bk-world-heat" data-hero-enter>
+          <div className="bk-world-media" data-hero-parallax>
+            <Image
+              src="/images/fireplace-with-woods-modern-wooden-house.jpg"
+              alt={cards.stoveTitle}
+              fill
+              priority
+              sizes="(max-width: 700px) 100vw, 45vw"
+              className="bk-image"
+              quality={85}
+            />
+          </div>
+          <div className="bk-world-shade" />
+          <div className="bk-world-top"><span>{cards.stoveTag}</span><span>02</span></div>
+          <div className="bk-world-bottom">
+            <div><h2>{cards.stoveTitle}</h2><p>{cards.stoveSub}</p></div>
             <span className="bk-round-arrow" aria-hidden="true">↗</span>
           </div>
         </Link>

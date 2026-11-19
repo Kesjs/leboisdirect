@@ -1164,9 +1164,27 @@
 }
 
 .bk-home-review-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.bk-home-review-stars .is-filled {
   color: var(--bk-accent);
-  font-size: 14px;
-  letter-spacing: 0.08em;
+}
+
+.bk-home-review-stars .is-empty {
+  color: #c8cabf;
+}
+
+.bk-home-review-score {
+  margin-left: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bk-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .bk-home-review-tag {
