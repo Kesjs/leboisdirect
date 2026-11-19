@@ -73,7 +73,9 @@ export default function Header() {
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.9 8.2 7 10 4.1-1.8 7-5.4 7-10V6l-7-3Z" /><path d="m9 12 2 2 4-4" /></svg>{copy.infoSelection}</span>
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 8v5l3 2" /></svg>{copy.infoSupport}</span>
             </div>
-            <Link href="/livraison" onClick={collapse}>{copy.delivery}</Link>
+            <Link href="/boutique" className="bk-info-cta" onClick={collapse}>
+              {copy.orderNow} <span aria-hidden="true">↗</span>
+            </Link>
           </div>
         </div>
         <div className="bk-container bk-nav">

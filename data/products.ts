@@ -1,4 +1,4 @@
-export type ProductCategory = 'buches' | 'bois-compresse' | 'granules' | 'allumage' | 'allume-feu' | 'accessoires-chauffage' | 'machines-agricoles'
+export type ProductCategory = 'buches' | 'bois-compresse' | 'granules' | 'allumage' | 'allume-feu' | 'accessoires-chauffage' | 'machines-agricoles' | (string & {})
 
 export type WoodSpecies = 'chene' | 'hetre' | 'charme' | 'mixte'
 

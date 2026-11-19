@@ -19,8 +19,48 @@ import { uiCopy } from '@/data/ui-copy'
 import { getProductReviews } from '@/data/product-reviews'
 import { getProductVideo, getYouTubeEmbedUrl, getYouTubeThumbnail } from '@/data/product-videos'
 import { getProductRichSpec } from '@/data/product-rich-specs'
+import {
+  BRAVIKO_ABOUT_CONTENT,
+  resolveProductContent,
+  type BenefitIconName,
+} from '@/data/product-category-content'
 import { computeDynamicUnitPriceLabel } from '@/lib/unit-price'
 import { PaymentBadgesRow, SecureShieldIcon, DeliveryTruckIcon } from '@/components/PaymentLogos'
+
+function BenefitIcon({ name }: { name: BenefitIconName }) {
+  switch (name) {
+    case 'truck':
+      return <DeliveryTruckIcon className="w-[18px] h-[18px]" />
+    case 'humidity':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+          <path d="M12 3s6 6.7 6 11a6 6 0 1 1-12 0c0-4.3 6-11 6-11Z" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'flame':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+          <path d="M12 2.8c2.2 3 4.8 5.3 4.8 9.2a4.8 4.8 0 1 1-9.6 0c0-1.9.7-3.6 1.8-5.1-.1 1.7.8 2.8 1.9 3.2-.5-2.1.2-4.8 1.1-7.3Z" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'leaf':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+          <path d="M19 5c-7 0-12 4.3-12 11 0 1.1.2 2.1.6 3 6.7 0 11.4-5 11.4-14Z" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M6.5 19.5 14 12" strokeLinecap="round" />
+        </svg>
+      )
+    case 'wrench':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76Z" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'shield':
+    default:
+      return <SecureShieldIcon className="w-[18px] h-[18px]" />
+  }
+}
 
 function StarRatingRow({ rating, size = 15 }: { rating: number; size?: number }) {
   const filledCount = Math.max(0, Math.min(5, Math.round(rating)))
@@ -57,7 +97,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [selectedVariant, setSelectedVariant] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
-  const [activeAccordion, setActiveAccordion] = useState<string | null>('specs')
   const [isZoomOpen, setIsZoomOpen] = useState(false)
   const [containBySrc, setContainBySrc] = useState<Record<string, boolean>>({})
   const [showStickyBar, setShowStickyBar] = useState(false)
@@ -169,6 +208,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     richSpec,
   )
   const localizedProduct = productLabel(product, locale)
+  const resolvedContent = resolveProductContent(product, richSpec)
 
   const recordImageAspect = (src: string, img: HTMLImageElement) => {
     if (!img.naturalWidth || !img.naturalHeight) return
@@ -247,10 +287,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const handleBuyNow = () => {
     addItem(product, quantity, selectedVariant || undefined)
     router.push('/checkout')
-  }
-
-  const toggleAccordion = (id: string) => {
-    setActiveAccordion((curr) => (curr === id ? null : id))
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://braviko.fr'
@@ -597,6 +633,32 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 </div>
               </div>
 
+              {resolvedContent.quickBenefits.length > 0 && (
+                <div
+                  className="grid grid-cols-2 gap-[8px]"
+                  aria-label="Vantaggi principali"
+                >
+                  {resolvedContent.quickBenefits.map((benefit) => (
+                    <div
+                      key={benefit.label}
+                      className="flex items-start gap-[10px] rounded-[8px] border border-[#DEDFD6] bg-white p-[12px]"
+                    >
+                      <span className="p-[6px] rounded-[4px] bg-[#FAF9F6] border border-[#DEDFD6] text-[#995033] shrink-0">
+                        <BenefitIcon name={benefit.icon} />
+                      </span>
+                      <div className="min-w-0">
+                        <strong className="block text-[12px] font-semibold text-[#252823] leading-snug">
+                          {benefit.label}
+                        </strong>
+                        <span className="block text-[11px] text-[#64685F] mt-[2px] leading-snug">
+                          {benefit.detail}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="rounded-[8px] p-[16px] bg-[#EEEEE7] border border-[#DEDFD6] text-[12px] flex flex-col gap-[12px] mt-[4px]">
                 <div className="flex items-start gap-[12px]">
                   <span className="p-[8px] rounded-[4px] bg-white border border-[#DEDFD6] text-[#995033] shrink-0">
@@ -604,10 +666,10 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   </span>
                   <div className="min-w-0">
                     <strong className="block font-semibold text-[#252823] text-[13px]">
-                      {richSpec?.delivery.delay || 'Consegna in 5–8 giorni lavorativi'}
+                      {resolvedContent.delivery.delay}
                     </strong>
                     <p className="text-[#64685F] mt-[4px] leading-[1.5]">
-                      {richSpec?.delivery.headline || 'Consegna accurata con appuntamento telefonico.'}
+                      {resolvedContent.delivery.headline}
                     </p>
                   </div>
                 </div>
@@ -633,247 +695,300 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-[#34483A] shrink-0" aria-hidden="true">
                     <path d="m3.5 8.5 3 3 6-6" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                  <span>{richSpec?.warranty || 'Garanzia legale di conformità 2 anni'} · Assistenza clienti in italiano</span>
+                  <span>{resolvedContent.warranty} · Assistenza clienti in italiano</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div id="details-fiche" className="container-custom pt-[16px] scroll-mt-[100px]">
-          <div className="bg-white rounded-[8px] border border-[#DEDFD6] overflow-hidden divide-y divide-[#DEDFD6]">
-            <div className="px-[20px] py-[16px] sm:px-[28px] sm:py-[20px]">
-              <button
-                type="button"
-                onClick={() => toggleAccordion('specs')}
-                className="w-full min-h-[48px] flex items-center justify-between text-left gap-[16px] group"
-                aria-expanded={activeAccordion === 'specs'}
-              >
-                <h2 className="text-[17px] sm:text-[19px] font-semibold text-[#252823] group-hover:text-[#995033] transition-colors">
-                  Descrizione e caratteristiche tecniche
-                </h2>
-                <span className="w-[40px] h-[40px] rounded-full border border-[#DEDFD6] flex items-center justify-center text-[#64685F] group-hover:border-[#995033] group-hover:text-[#995033] transition-colors shrink-0">
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
-                    <path d="M3 8h10" strokeLinecap="round" />
-                    {activeAccordion !== 'specs' && <path d="M8 3v10" strokeLinecap="round" />}
-                  </svg>
-                </span>
-              </button>
+        {/* 1. DESCRIZIONE, PERCHÉ SCEGLIERE & SPECIFICHE TECNICHE (sempre visibile) */}
+        <section id="details-fiche" className="container-custom pt-[16px] scroll-mt-[110px]" aria-labelledby="specs-section-title">
+          <div className="rounded-[12px] bg-white border border-[#DEDFD6] p-[20px] sm:p-[32px]">
+            <div className="pb-[18px] border-b border-[#DEDFD6]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#995033]">
+                Scheda tecnica e vantaggi
+              </p>
+              <h2 id="specs-section-title" className="mt-[4px] text-[22px] sm:text-[26px] font-semibold text-[#252823] tracking-tight">
+                Descrizione, benefici e caratteristiche
+              </h2>
+            </div>
 
-              {activeAccordion === 'specs' && (
-                <div className="pt-[24px] mt-[16px] border-t border-[#DEDFD6]">
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-[28px] lg:gap-[40px] items-start">
-                    <div className="lg:col-span-5 min-w-0">
-                      <h3 className="text-[11px] font-semibold text-[#995033] uppercase tracking-[0.12em] mb-[12px]">
-                        Descrizione
-                      </h3>
-                      <div className="space-y-[12px] max-w-[58ch] text-[#3F433B] text-[14px] sm:text-[15px] leading-[1.7]">
-                        {descriptionParagraphs.map((paragraph, idx) => (
-                          <p key={idx}>{paragraph}</p>
-                        ))}
-                      </div>
+            <div className="pt-[24px] grid grid-cols-1 lg:grid-cols-12 gap-[28px] lg:gap-[40px] items-start">
+              <div className={`${mergedSpecs.length > 0 ? 'lg:col-span-5' : 'lg:col-span-12'} min-w-0`}>
+                <h3 className="text-[11px] font-semibold text-[#995033] uppercase tracking-[0.12em] mb-[12px]">
+                  Descrizione
+                </h3>
+                <div className="space-y-[12px] max-w-[60ch] text-[#3F433B] text-[14px] sm:text-[15px] leading-[1.7]">
+                  {descriptionParagraphs.map((paragraph, idx) => (
+                    <p key={idx}>{paragraph}</p>
+                  ))}
+                </div>
 
-                      {summaryHighlights.length > 0 && (
-                        <div className="mt-[22px] pt-[18px] border-t border-[#DEDFD6]">
-                          <h4 className="text-[11px] font-semibold text-[#64685F] uppercase tracking-[0.12em] mb-[10px]">
-                            In sintesi
-                          </h4>
-                          <ul className="space-y-[8px]">
-                            {summaryHighlights.map((item, idx) => (
-                              <li key={idx} className="flex items-start gap-[10px] text-[13px] text-[#252823] leading-[1.5]">
-                                <span className="w-[14px] h-[1px] bg-[#995033] shrink-0 mt-[10px]" aria-hidden="true" />
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
+                <div className="mt-[24px] pt-[20px] border-t border-[#DEDFD6]">
+                  <h3 className="text-[11px] font-semibold text-[#34483A] uppercase tracking-[0.12em] mb-[12px]">
+                    {resolvedContent.whyChooseTitle}
+                  </h3>
+                  <ul className="space-y-[10px]">
+                    {resolvedContent.whyChoosePoints.map((point, idx) => (
+                      <li key={idx} className="flex items-start gap-[10px] text-[13px] sm:text-[14px] text-[#252823] leading-[1.55]">
+                        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.9" className="text-[#995033] shrink-0 mt-[4px]" aria-hidden="true">
+                          <path d="m3.5 8.5 3 3 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-                    {mergedSpecs.length > 0 && (
-                      <div className="lg:col-span-7 min-w-0">
-                        <h3 className="text-[11px] font-semibold text-[#64685F] uppercase tracking-[0.12em] mb-[12px]">
-                          Specifiche tecniche
-                        </h3>
-                        <div className="rounded-[8px] border border-[#DEDFD6] overflow-hidden bg-white">
-                          <table className="w-full text-left text-[13px]">
-                            <tbody>
-                              {mergedSpecs.map((spec, i) => (
-                                <tr
-                                  key={`${spec.label}-${i}`}
-                                  className={i % 2 === 0 ? 'bg-[#FAF9F6]' : 'bg-white'}
-                                >
-                                  <td className="py-[10px] px-[16px] font-medium text-[#252823] w-[42%] border-b border-[#DEDFD6] align-top">
-                                    {spec.label}
-                                  </td>
-                                  <td className="py-[10px] px-[16px] text-[#52564E] border-b border-[#DEDFD6] tabular-nums">
-                                    {spec.value}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    )}
+                {summaryHighlights.length > 0 && (
+                  <div className="mt-[22px] pt-[18px] border-t border-[#DEDFD6]">
+                    <h4 className="text-[11px] font-semibold text-[#64685F] uppercase tracking-[0.12em] mb-[10px]">
+                      In sintesi
+                    </h4>
+                    <ul className="space-y-[8px]">
+                      {summaryHighlights.map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-[10px] text-[13px] text-[#252823] leading-[1.5]">
+                          <span className="w-[14px] h-[1px] bg-[#995033] shrink-0 mt-[10px]" aria-hidden="true" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
 
-            <div className="px-[20px] py-[16px] sm:px-[28px] sm:py-[20px]">
-              <button
-                type="button"
-                onClick={() => toggleAccordion('usage')}
-                className="w-full min-h-[48px] flex items-center justify-between text-left gap-[16px] group"
-                aria-expanded={activeAccordion === 'usage'}
-              >
-                <h2 className="text-[17px] sm:text-[19px] font-semibold text-[#252823] group-hover:text-[#995033] transition-colors">
-                  Consigli d’uso e conservazione ottimale
-                </h2>
-                <span className="w-[40px] h-[40px] rounded-full border border-[#DEDFD6] flex items-center justify-center text-[#64685F] group-hover:border-[#995033] group-hover:text-[#995033] transition-colors shrink-0">
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
-                    <path d="M3 8h10" strokeLinecap="round" />
-                    {activeAccordion !== 'usage' && <path d="M8 3v10" strokeLinecap="round" />}
-                  </svg>
-                </span>
-              </button>
-
-              {activeAccordion === 'usage' && (
-                <div className="pt-[20px] mt-[16px] border-t border-[#DEDFD6] text-[14px] text-[#64685F] flex flex-col gap-[16px]">
-                  {richSpec?.usageTips && richSpec.usageTips.length > 0 && (
-                    <div>
-                      <h3 className="font-semibold text-[#252823] mb-[10px]">Buone pratiche di utilizzo</h3>
-                      <ul className="space-y-[8px]">
-                        {richSpec.usageTips.map((tip, idx) => (
-                          <li key={idx} className="flex items-start gap-[10px]">
-                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-[#34483A] shrink-0 mt-[4px]" aria-hidden="true">
-                              <path d="m3.5 8.5 3 3 6-6" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                            <span>{tip}</span>
-                          </li>
+              {mergedSpecs.length > 0 && (
+                <div className="lg:col-span-7 min-w-0">
+                  <h3 className="text-[11px] font-semibold text-[#64685F] uppercase tracking-[0.12em] mb-[12px]">
+                    Specifiche tecniche
+                  </h3>
+                  <div className="rounded-[8px] border border-[#DEDFD6] overflow-hidden bg-white">
+                    <table className="w-full text-left text-[13px]">
+                      <tbody>
+                        {mergedSpecs.map((spec, i) => (
+                          <tr
+                            key={`${spec.label}-${i}`}
+                            className={i % 2 === 0 ? 'bg-[#FAF9F6]' : 'bg-white'}
+                          >
+                            <td className="py-[10px] px-[16px] font-medium text-[#252823] w-[42%] border-b border-[#DEDFD6] align-top">
+                              {spec.label}
+                            </td>
+                            <td className="py-[10px] px-[16px] text-[#52564E] border-b border-[#DEDFD6] tabular-nums">
+                              {spec.value}
+                            </td>
+                          </tr>
                         ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {richSpec?.storageAdvice && (
-                    <div className="p-[16px] rounded-[8px] bg-[#EEEEE7] border border-[#DEDFD6] text-[#252823]">
-                      <strong className="block font-semibold mb-[4px] text-[#34483A]">Consigli di conservazione</strong>
-                      <p className="text-[13px] leading-[1.6] text-[#64685F]">{richSpec.storageAdvice}</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <div className="px-[20px] py-[16px] sm:px-[28px] sm:py-[20px]">
-              <button
-                type="button"
-                onClick={() => toggleAccordion('delivery')}
-                className="w-full min-h-[48px] flex items-center justify-between text-left gap-[16px] group"
-                aria-expanded={activeAccordion === 'delivery'}
-              >
-                <h2 className="text-[17px] sm:text-[19px] font-semibold text-[#252823] group-hover:text-[#995033] transition-colors">
-                  Modalità di consegna e accesso corriere
-                </h2>
-                <span className="w-[40px] h-[40px] rounded-full border border-[#DEDFD6] flex items-center justify-center text-[#64685F] group-hover:border-[#995033] group-hover:text-[#995033] transition-colors shrink-0">
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
-                    <path d="M3 8h10" strokeLinecap="round" />
-                    {activeAccordion !== 'delivery' && <path d="M8 3v10" strokeLinecap="round" />}
-                  </svg>
-                </span>
-              </button>
-
-              {activeAccordion === 'delivery' && (
-                <div className="pt-[20px] mt-[16px] border-t border-[#DEDFD6] text-[14px] text-[#64685F] flex flex-col gap-[14px] leading-[1.6]">
-                  <p className="font-medium text-[#252823]">
-                    {richSpec?.delivery.headline}
-                  </p>
-                  <p>{richSpec?.delivery.carrierNotice}</p>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px] mt-[4px]">
-                    {richSpec?.delivery.type === 'parcel' ? (
-                      <>
-                        <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                          <span className="font-semibold text-[#252823] block mb-[4px]">01. Imballo protetto</span>
-                          <p className="text-[12px] leading-[1.5]">Preparazione entro 48 ore lavorative con imballaggio rinforzato e protezione antiurto.</p>
-                        </div>
-                        <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                          <span className="font-semibold text-[#252823] block mb-[4px]">02. Tracciamento corriere</span>
-                          <p className="text-[12px] leading-[1.5]">Ricevi i riferimenti di tracciamento appena il collo parte verso l’indirizzo indicato.</p>
-                        </div>
-                        <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                          <span className="font-semibold text-[#252823] block mb-[4px]">03. Recapito a domicilio</span>
-                          <p className="text-[12px] leading-[1.5]">Consegna gratuita in tutta Italia in 3–5 giorni lavorativi senza costi aggiuntivi.</p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                          <span className="font-semibold text-[#252823] block mb-[4px]">01. Appuntamento preventivo</span>
-                          <p className="text-[12px] leading-[1.5]">Il corriere ti contatta telefonicamente o via SMS per concordare il giorno esatto di consegna.</p>
-                        </div>
-                        <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                          <span className="font-semibold text-[#252823] block mb-[4px]">02. Accesso veicolo</span>
-                          <p className="text-[12px] leading-[1.5]">Camion dotato di sponda idraulica. L’accesso deve essere carrabile e libero fino al punto di scarico.</p>
-                        </div>
-                        <div className="p-[14px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                          <span className="font-semibold text-[#252823] block mb-[4px]">03. Scarico sicuro</span>
-                          <p className="text-[12px] leading-[1.5]">Scarico accurato con transpallet su superficie stabile e piana (asfalto, cemento o autobloccanti).</p>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="px-[20px] py-[16px] sm:px-[28px] sm:py-[20px]">
-              <button
-                type="button"
-                onClick={() => toggleAccordion('reviews')}
-                className="w-full min-h-[48px] flex items-center justify-between text-left gap-[16px] group"
-                aria-expanded={activeAccordion === 'reviews'}
-              >
-                <h2 className="text-[17px] sm:text-[19px] font-semibold text-[#252823] group-hover:text-[#995033] transition-colors">
-                  Impegni qualità e resi prodotto
-                </h2>
-                <span className="w-[40px] h-[40px] rounded-full border border-[#DEDFD6] flex items-center justify-center text-[#64685F] group-hover:border-[#995033] group-hover:text-[#995033] transition-colors shrink-0">
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
-                    <path d="M3 8h10" strokeLinecap="round" />
-                    {activeAccordion !== 'reviews' && <path d="M8 3v10" strokeLinecap="round" />}
-                  </svg>
-                </span>
-              </button>
-
-              {activeAccordion === 'reviews' && (
-                <div className="pt-[20px] mt-[16px] border-t border-[#DEDFD6]">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px]">
-                    <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                      <span className="font-semibold text-[#252823] text-[13px] block mb-[6px]">01. Controllo qualità prima della partenza</span>
-                      <p className="text-[12px] text-[#64685F] leading-[1.55]">
-                        Ogni referenza selezionata da Braviko viene verificata su imballaggio, dati tecnici e accessori prima dell’affidamento al corriere.
-                      </p>
-                    </div>
-                    <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                      <span className="font-semibold text-[#252823] text-[13px] block mb-[6px]">02. Garanzie legali e del produttore</span>
-                      <p className="text-[12px] text-[#64685F] leading-[1.55]">
-                        {richSpec?.warranty ? `${richSpec.warranty}. ` : ''}Tutti i nostri apparecchi e attrezzature nuove beneficiano della garanzia legale di conformità di 2 anni.
-                      </p>
-                    </div>
-                    <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
-                      <span className="font-semibold text-[#252823] text-[13px] block mb-[6px]">03. Recesso e assistenza 14 giorni</span>
-                      <p className="text-[12px] text-[#64685F] leading-[1.55]">
-                        Diritto di recesso legale di 14 giorni di calendario dalla consegna su prodotto integro e non utilizzato, con assistenza clienti su contact@braviko.fr.
-                      </p>
-                    </div>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               )}
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* 2. CONDIZIONI, CONSIGLI D'USO E CONSERVAZIONE (sempre visibile) */}
+        <section id="condizioni-uso" className="container-custom pt-[28px] sm:pt-[36px] scroll-mt-[110px]" aria-labelledby="usage-section-title">
+          <div className="rounded-[12px] bg-white border border-[#DEDFD6] p-[20px] sm:p-[32px]">
+            <div className="pb-[18px] border-b border-[#DEDFD6]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#995033]">
+                Guida pratica
+              </p>
+              <h2 id="usage-section-title" className="mt-[4px] text-[22px] sm:text-[26px] font-semibold text-[#252823] tracking-tight">
+                Condizioni e consigli d’uso
+              </h2>
+            </div>
+
+            <div className="pt-[24px] grid grid-cols-1 lg:grid-cols-12 gap-[24px] lg:gap-[36px] items-start">
+              <div className="lg:col-span-7 min-w-0 divide-y divide-[#DEDFD6]">
+                {resolvedContent.usageTips.map((tip, idx) => (
+                  <div key={idx} className="flex items-start gap-[14px] py-[14px] first:pt-0 last:pb-0">
+                    <span className="text-[12px] font-semibold tabular-nums text-[#995033] pt-[2px] shrink-0">
+                      0{idx + 1}.
+                    </span>
+                    <p className="text-[14px] sm:text-[15px] text-[#252823] leading-[1.65]">
+                      {tip}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="lg:col-span-5 min-w-0 flex flex-col gap-[14px]">
+                <div className="p-[18px] rounded-[8px] bg-[#EEEEE7] border border-[#DEDFD6]">
+                  <h3 className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[#34483A] mb-[6px]">
+                    {resolvedContent.usageConditionTitle}
+                  </h3>
+                  <p className="text-[13px] leading-[1.65] text-[#252823]">
+                    {resolvedContent.usageConditionNote}
+                  </p>
+                </div>
+
+                <div className="p-[18px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                  <h3 className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[#252823] mb-[6px]">
+                    Conservazione e stoccaggio
+                  </h3>
+                  <p className="text-[13px] leading-[1.65] text-[#52564E]">
+                    {resolvedContent.storageAdvice}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 3. CONSEGNA, ACCESSO CORRIERE & GARANZIE (sempre visibile) */}
+        <section id="consegna-garanzie" className="container-custom pt-[28px] sm:pt-[36px] scroll-mt-[110px]" aria-labelledby="delivery-section-title">
+          <div className="rounded-[12px] bg-white border border-[#DEDFD6] p-[20px] sm:p-[32px]">
+            <div className="pb-[18px] border-b border-[#DEDFD6] flex flex-col sm:flex-row sm:items-end sm:justify-between gap-[10px]">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#995033]">
+                  Spedizione e tutela acquirente
+                </p>
+                <h2 id="delivery-section-title" className="mt-[4px] text-[22px] sm:text-[26px] font-semibold text-[#252823] tracking-tight">
+                  Consegna, accesso e garanzie
+                </h2>
+              </div>
+              <span className="text-[13px] font-medium text-[#34483A]">
+                {resolvedContent.delivery.delay}
+              </span>
+            </div>
+
+            <div className="pt-[22px] space-y-[20px]">
+              <div className="max-w-[74ch]">
+                <p className="font-semibold text-[15px] text-[#252823]">
+                  {resolvedContent.delivery.headline}
+                </p>
+                <p className="mt-[6px] text-[14px] text-[#52564E] leading-[1.65]">
+                  {resolvedContent.delivery.carrierNotice}
+                </p>
+              </div>
+
+              {!resolvedContent.isTestProduct && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px]">
+                  {resolvedContent.delivery.type === 'parcel' ? (
+                    <>
+                      <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                        <span className="font-semibold text-[#252823] text-[13px] block mb-[4px]">01. Imballo protetto</span>
+                        <p className="text-[12px] text-[#52564E] leading-[1.55]">Preparazione entro 48 ore lavorative con protezione rinforzata antiurto.</p>
+                      </div>
+                      <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                        <span className="font-semibold text-[#252823] text-[13px] block mb-[4px]">02. Tracciamento corriere</span>
+                        <p className="text-[12px] text-[#52564E] leading-[1.55]">Codice di tracking inviato via email e SMS alla partenza dal magazzino.</p>
+                      </div>
+                      <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                        <span className="font-semibold text-[#252823] text-[13px] block mb-[4px]">03. Recapito gratuito</span>
+                        <p className="text-[12px] text-[#52564E] leading-[1.55]">Consegna inclusa in tutta Italia in 3–5 giorni lavorativi senza supplementi.</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                        <span className="font-semibold text-[#252823] text-[13px] block mb-[4px]">01. Appuntamento preventivo</span>
+                        <p className="text-[12px] text-[#52564E] leading-[1.55]">Il trasportatore concorda il giorno esatto di passaggio telefonicamente o via SMS.</p>
+                      </div>
+                      <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                        <span className="font-semibold text-[#252823] text-[13px] block mb-[4px]">02. Accesso veicolo</span>
+                        <p className="text-[12px] text-[#52564E] leading-[1.55]">Mezzo con sponda idraulica: la via di accesso deve risultare carrabile e libera.</p>
+                      </div>
+                      <div className="p-[16px] rounded-[8px] bg-[#FAF9F6] border border-[#DEDFD6]">
+                        <span className="font-semibold text-[#252823] text-[13px] block mb-[4px]">03. Scarico sicuro</span>
+                        <p className="text-[12px] text-[#52564E] leading-[1.55]">Movimentazione con transpallet su pavimento piano e stabile (asfalto o cemento).</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+              <div className="pt-[18px] border-t border-[#DEDFD6] grid grid-cols-1 md:grid-cols-3 gap-[16px]">
+                <div>
+                  <strong className="block text-[13px] font-semibold text-[#252823]">Controllo pre-partenza</strong>
+                  <p className="mt-[4px] text-[12px] text-[#52564E] leading-[1.55]">Verifica di imballo, dati tecnici e dotazioni prima dell’affidamento al vettore.</p>
+                </div>
+                <div>
+                  <strong className="block text-[13px] font-semibold text-[#252823]">Garanzia inclusa</strong>
+                  <p className="mt-[4px] text-[12px] text-[#52564E] leading-[1.55]">{resolvedContent.warranty}. Garanzia legale di conformità 2 anni sui prodotti nuovi.</p>
+                </div>
+                <div>
+                  <strong className="block text-[13px] font-semibold text-[#252823]">Diritto di recesso 14 giorni</strong>
+                  <p className="mt-[4px] text-[12px] text-[#52564E] leading-[1.55]">Reso entro 14 giorni di calendario su articolo integro con assistenza su contact@braviko.fr.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 4. CHI SIAMO · IMPEGNI BRAVIKO (sempre visibile) */}
+        <section id="chi-siamo" className="container-custom pt-[28px] sm:pt-[36px] scroll-mt-[110px]" aria-labelledby="about-braviko-title">
+          <div className="rounded-[12px] bg-[#252823] text-[#FAF9F6] p-[24px] sm:p-[36px] grid grid-cols-1 lg:grid-cols-12 gap-[28px] lg:gap-[40px] items-start">
+            <div className="lg:col-span-5 min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#E49E7F]">
+                {BRAVIKO_ABOUT_CONTENT.eyebrow}
+              </p>
+              <h2 id="about-braviko-title" className="mt-[8px] text-[22px] sm:text-[28px] font-semibold tracking-tight leading-[1.18] text-white">
+                {BRAVIKO_ABOUT_CONTENT.title}
+              </h2>
+              <p className="mt-[14px] text-[14px] leading-[1.7] text-[#D8D7CE]">
+                {BRAVIKO_ABOUT_CONTENT.intro}
+              </p>
+            </div>
+
+            <div className="lg:col-span-7 min-w-0 divide-y divide-white/15">
+              {BRAVIKO_ABOUT_CONTENT.pillars.map((pillar, idx) => (
+                <div key={pillar.title} className="py-[14px] first:pt-0 last:pb-0 flex items-start gap-[14px]">
+                  <span className="text-[12px] font-semibold tabular-nums text-[#E49E7F] pt-[2px] shrink-0">
+                    0{idx + 1}.
+                  </span>
+                  <div>
+                    <h3 className="text-[15px] font-semibold text-white">
+                      {pillar.title}
+                    </h3>
+                    <p className="mt-[4px] text-[13px] leading-[1.6] text-[#D8D7CE]">
+                      {pillar.body}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 5. MINI-FAQ SUL PRODOTTO (sempre visibile senza accordeon) */}
+        {resolvedContent.faqItems.length > 0 && (
+          <section id="domande-frequenti" className="container-custom pt-[28px] sm:pt-[36px] scroll-mt-[110px]" aria-labelledby="product-faq-title">
+            <div className="rounded-[12px] bg-white border border-[#DEDFD6] p-[20px] sm:p-[32px]">
+              <div className="pb-[18px] border-b border-[#DEDFD6] flex flex-col sm:flex-row sm:items-end sm:justify-between gap-[10px]">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#995033]">
+                    Risposte rapide
+                  </p>
+                  <h2 id="product-faq-title" className="mt-[4px] text-[22px] sm:text-[26px] font-semibold text-[#252823] tracking-tight">
+                    Domande frequenti sull’articolo
+                  </h2>
+                </div>
+                <Link
+                  href="/faq"
+                  className="text-[13px] font-medium text-[#995033] hover:underline underline-offset-4 whitespace-nowrap"
+                >
+                  Tutte le FAQ ↗
+                </Link>
+              </div>
+
+              <div className="pt-[22px] grid grid-cols-1 md:grid-cols-2 gap-[20px] sm:gap-[28px]">
+                {resolvedContent.faqItems.map((faq, idx) => (
+                  <div key={idx} className="pb-[18px] border-b border-[#DEDFD6] last:border-b-0 md:[&:nth-last-child(-n+2)]:border-b-0 md:pb-0">
+                    <h3 className="text-[15px] font-semibold text-[#252823] leading-snug">
+                      {faq.question}
+                    </h3>
+                    <p className="mt-[8px] text-[13px] sm:text-[14px] text-[#52564E] leading-[1.65]">
+                      {faq.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {reviewCount > 0 && (
           <section
